@@ -1,0 +1,54 @@
+.\" ---------------------------------------------------------------------------
+.\"	gray.6
+.\"
+.\"	Copyright © 2005-2006, The Gray Matter Team, original authors.
+.\"		All rights reserved.
+.\" ---------------------------------------------------------------------------
+.\"	Process this file with: groff -man -Tascii gray.6|less
+.\" ---------------------------------------------------------------------------
+.Dd Nov 3, 2006
+.Os POSIX
+.Dt GRAY 6
+.\" ---------------------------------------------------------------------------
+.Sh NAME
+.Nm gray
+.Nd Gray Matter, a chess engine
+.\" ---------------------------------------------------------------------------
+.Sh SYNOPSIS
+.Nm xboard -fcp gray
+.\" ---------------------------------------------------------------------------
+.Sh DESCRIPTION
+.Nm Gray Matter
+is a chess engine.  It isn't very strong but is a good learning and teaching
+tool.  Its authors aim to write readable, understandable, and hackable code.
+It's written in C++, employs good object-oriented practices, and uses rotated
+bitboards, Zobrist hashing, a negamax move search, alpha-beta pruning,
+iterative deepening, move re-ordering, and a transposition table.
+.Pp
+Gray Matter doesn't have its own interface.  However, it conforms to the Chess
+Engine Communication Protocol and runs under XBoard.
+.\" ---------------------------------------------------------------------------
+.Sh BUGS
+.Bl -bullet -compact
+.It
+Its clock has a resolution of only 1 second.
+.El
+.\" ---------------------------------------------------------------------------
+.Sh TODO
+.Bl -bullet -compact
+.It
+Use an opening book.
+.It
+Ponder (think on the opponent's time).
+.El
+.\" ---------------------------------------------------------------------------
+.Sh SEE ALSO
+.Xr xboard 6
+.\" ---------------------------------------------------------------------------
+.Sh LEGAL
+Copyright (C) 2005-2006, The Gray Matter Team, original authors.
+.Pp
+Permission is granted to copy, distribute, and/or modify this document under
+the terms of the GNU Free Documentation License, version 1.1 or any later
+version published by the Free Software Foundation; with no Invariant Sections,
+no Front-Cover Texts, and no Back-Cover Texts.

@@ -1,0 +1,140 @@
+/*----------------------------------------------------------------------------*\
+ |	board.h - board representation interface			      |
+ |									      |
+ |	Copyright © 2005-2006, The Gray Matter Team, original authors.	      |
+ |		All rights reserved.					      |
+\*----------------------------------------------------------------------------*/
+
+/*
+ | This program is Free Software; you can redistribute it and/or modify it under
+ | the terms of the GNU General Public License as published by the Free Software
+ | Foundation; either version 2 of the License, or (at your option) any later
+ | version.
+ |
+ | This program is distributed in the hope that it will be useful, but WITHOUT
+ | ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ | FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ | details.
+ |
+ | You should have received a copy of the GNU General Public License along with
+ | this program; if not, write to:
+ |
+ |	The Free Software Foundation, Inc.
+ |	59 Temple Place, Suite 330
+ |	Boston MA 02111-1307
+ */
+
+#ifndef BOARD_H
+#define BOARD_H
+
+using namespace std;
+
+#include <config.h>
+#include <types.h>
+
+/* These macros represent the colors on and off move. */
+#define ON_MOVE		(state.whose)
+#define OFF_MOVE	(!state.whose)
+
+/* These macros manipulate bits in bitboards. */
+#define BIT_IDX(x, y)			((y) * 8 + (x))
+#define BIT_MSK(x, y)			(1ULL << BIT_IDX(x, y))
+#define BIT_GET(b, x, y)		((b) >> BIT_IDX(x, y) & 1)
+#define BIT_CLR(b, x, y)		((b) &= ~BIT_MSK(x, y))
+#define BIT_SET(b, x, y)		((b) |= BIT_MSK(x, y))
+#define BIT_MOV(b, x1, y1, x2, y2)	((b) ^= BIT_MSK(x1, y1) | BIT_MSK(x2, y2))
+
+/* These macros manipulate rows in 0° rotated bitboards and columns in 90°
+ * rotated bitboards. */
+#define ROW_NUM(x, y, a)		((a) == ZERO ? (y) : (x))
+#define ROW_LOC(x, y, a)		((a) == ZERO ? (x) : 7 - (y))
+#define ROW_IDX(n)			(BIT_IDX(0, n))
+#define ROW_MSK(n)			(0xFFULL << ROW_IDX(n))
+#define ROW_GET(b, n)			((b) >> ROW_IDX(n) & 0xFF)
+#define ROW_CLR(b, n)			((b) &= ~ROW_MSK(n))
+#define ROW_SET(b, n, r)		((b) |= (bitboard_t) (r) << ROW_IDX(n))
+
+/* These macros manipulate columns in 0° rotated bitboards and rows in 90°
+ * rotated bitboards. */
+#define COL_IDX(n)			(BIT_IDX(n, 0))
+#define COL_MSK(n)			(0x0101010101010101ULL << COL_IDX(n))
+#define COL_CLR(b, n)			((b) &= ~COL_MSK(n))
+
+/* These macros manipulate adjacent bits in 45° rotated bitboards, which
+ * correspond to diagonals in 0° and 90° rotated bitboards. */
+#define DIAG_NUM(x, y, a)		((a) == L45 ? (x) + (y) : 7 - (x) + (y))
+#define DIAG_LOC(x, y, a)		(BIT_IDX(coord[MAP][a][x][y][X], coord[MAP][a][x][y][Y]) - diag_index[DIAG_NUM(x, y, a)])
+#define DIAG_LEN(n)			(8 - abs(7 - (n)))
+#define DIAG_IDX(n)			(diag_index[n])
+#define DIAG_MSK(n)			((bitboard_t) diag_mask[n] << diag_index[n])
+#define DIAG_GET(b, n)			((b) >> diag_index[n] & diag_mask[n])
+#define DIAG_CLR(b, n)			((b) &= ~DIAG_MSK(n))
+#define DIAG_SET(b, n, d)		((b) |= (bitboard_t) (d) << diag_index[n])
+
+/* This macro represents a bitboard which contains all of a color's pieces. */
+#define ALL(s, c)			((s).piece[c][PAWN] | (s).piece[c][KNIGHT] | (s).piece[c][BISHOP] | (s).piece[c][ROOK] | (s).piece[c][QUEEN] | (s).piece[c][KING])
+
+/* This macro finds the first set bit in a bitboard. */
+#define FST(b)				(ffsll(b) - 1)
+
+/* This macro generates a 64-bit random number. */
+#define RAND()				((bitboard_t) rand() << 32 | rand())
+
+class board
+{
+public:
+	/* These functions set information. */
+	board();
+	void set_board();
+	board& operator=(const board& that);
+
+	/* These functions get information. */
+	bool get_whose() const;
+	bitboard_t get_hash() const;
+	int get_status();
+	int evaluate() const;
+
+	/* These functions generate, make, and take back moves. */
+	void generate(list<move_t> &l) const;
+	void make(move_t m);
+	void unmake();
+	void make(char *p);
+
+private:
+	list<state_t> states;                           /* Previous states.            */
+	state_t state;                                  /* Current state.              */
+	list<bitboard_t> rotations[ANGLES][COLORS + 1]; /* Previous rotated bitboards. */
+	bitboard_t rotation[ANGLES][COLORS + 1];        /* Current rotated bitboard.   */
+	list<bitboard_t> hashes;                        /* Previous Zobrist hash keys. */
+	bitboard_t hash;                                /* Current Zobrist hash key.   */
+
+	/* These functions start up games. */
+	void init_state();
+	void init_rotation();
+	void init_hash();
+
+	/* These functions generate moves. */
+	void precomp_king() const;
+	void precomp_row() const;
+	void precomp_knight() const;
+	void generate_king(list<move_t> &l) const;
+	void generate_queen(list<move_t> &l) const;
+	void generate_rook(list<move_t> &l) const;
+	void generate_bishop(list<move_t> &l) const;
+	void generate_knight(list<move_t> &l) const;
+	void generate_pawn(list<move_t> &l) const;
+
+	/* These functions test for various conditions. */
+	bool check(bitboard_t b1, bool color) const;
+	bool mate(int type);
+	bool insufficient() const;
+	bool three() const;
+	bool fifty() const;
+
+	/* These functions manipulate bitboards. */
+	bitboard_t rotate(bitboard_t b1, int map, int angle) const;
+	int count(bitboard_t b) const;
+	void insert(int x, int y, bitboard_t b, int angle, list<move_t> &l, bool pos) const;
+};
+
+#endif
