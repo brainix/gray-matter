@@ -39,6 +39,7 @@ class search
 {
 public:
 	search();
+	search& operator=(const search& that);
 	void bind(board *b, table *t, history *h, xboard *x);
 	void set_time(int t);
 	void set_depth(int d);
