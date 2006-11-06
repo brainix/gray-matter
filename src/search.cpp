@@ -46,6 +46,26 @@ search::search()
 }
 
 /*----------------------------------------------------------------------------*\
+ |				       =				      |
+\*----------------------------------------------------------------------------*/
+search& search::operator=(const search& that)
+{
+
+/* Overloaded assignment operator. */
+
+	if (this == &that)
+		return *this;
+
+	pv = that.pv;
+	max_time = that.max_time;
+	max_depth = that.max_depth;
+	nodes = that.nodes;
+	output = that.output;
+	bind(that.board_ptr, that.table_ptr, that.history_ptr, that.xboard_ptr);
+	return *this;
+}
+
+/*----------------------------------------------------------------------------*\
  |				     bind()				      |
 \*----------------------------------------------------------------------------*/
 void search::bind(board *b, table *t, history *h, xboard *x)
