@@ -1,0 +1,35 @@
+
+Read these instructions before disregarding them.
+To install Gray Matter:
+
+--------------------------------------------------------------------------------
+
+Extract the source:
+	· Type: unzip "Gray Matter.zip"
+	· Type: cd "Gray Matter"
+
+--------------------------------------------------------------------------------
+
+Edit inc/config.h (if necessary):
+	· This should be self-explanatory.  If it isn't, just skip it.
+
+--------------------------------------------------------------------------------
+
+Compile:
+	· Type: make clean
+	· Type: make
+
+--------------------------------------------------------------------------------
+
+Run:
+	· Type: xboard -fcp bin/gray
+
+--------------------------------------------------------------------------------
+
+If something goes wrong, email any member of The Gray Matter Team with a
+detailed description of your problem.  (Email addresses are provided in:
+doc/credits)  We'll reply as quickly as we can.
+
+Happy hacking!  :-)
+The Gray Matter Team
+
