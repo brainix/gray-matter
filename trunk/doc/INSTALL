@@ -4,13 +4,14 @@ To install Gray Matter:
 
 --------------------------------------------------------------------------------
 
-Extract the source:
+Extract:
 	· Type: unzip "Gray Matter.zip"
 	· Type: cd "Gray Matter"
 
 --------------------------------------------------------------------------------
 
-Edit inc/config.h (if necessary):
+Configure:
+	· Edit: inc/config.h
 	· This should be self-explanatory.  If it isn't, just skip it.
 
 --------------------------------------------------------------------------------
@@ -26,9 +27,11 @@ Run:
 
 --------------------------------------------------------------------------------
 
-If something goes wrong, email any member of The Gray Matter Team with a
-detailed description of your problem.  (Email addresses are provided in:
-doc/credits)  We'll reply as quickly as we can.
+If something goes wrong, report your issue [1] or email any member of The Gray
+Matter Team [2].  We'll reply as quickly as we can.
+
+[1]  The issue list is at: http://code.google.com/p/gray-matter/issues/list
+[2]  Email addresses are provided in: doc/credits
 
 Happy hacking!  :-)
 The Gray Matter Team
