@@ -233,7 +233,7 @@ void search::extract(move_t m)
 		board_ptr->make(m);
 	}
 
-	for (int j = 0; j < pv.length(); j++)
+	for (int j = 0; j < pv.size(); j++)
 		board_ptr->unmake();
 }
 
