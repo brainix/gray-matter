@@ -29,7 +29,7 @@
 /*
  | This file contains user-tunable settings for Gray Matter.  If you don't know
  | what you're doing, leave this file alone.  The defaults are good enough for
- | me, so they're more than good enough for you.
+ | me, so they're more than good enough for you.  ;-)
  */
 
 
