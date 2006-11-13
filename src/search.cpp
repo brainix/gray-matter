@@ -225,18 +225,15 @@ void search::extract(move_t m)
 
 /* Extract the principal variation from the transposition table. */
 
-	int j = 0;
-
 	pv.clear();
 
 	while (table_ptr->probe(board_ptr->get_hash(), &m, 0))
 	{
 		pv.push_back(m);
 		board_ptr->make(m);
-		j++;
 	}
 
-	while (j--)
+	for (int j = 0; j < pv.length(); j++)
 		board_ptr->unmake();
 }
 
@@ -246,7 +243,8 @@ void search::extract(move_t m)
 bool compare(move_t m1, move_t m2)
 {
 
-/* Pass this function to l.sort() to sort the list in descending order. */
+/* Pass this function to l.sort() to sort the move list in descending order by
+ * score. */
 
 	return m1.value > m2.value;
 }
