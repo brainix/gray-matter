@@ -123,8 +123,8 @@ move_t search::iterate()
 	alarm(max_time);
 	nodes = 0;
 
-	/* Perform iterative deepening until the alarm sounds or we reach the
-	 * maximum depth. */
+	/* Perform iterative deepening until the alarm has sounded or we've
+	 * reached the maximum depth. */
 	for (int depth = 0; depth <= max_depth; depth++)
 	{
 		move_t tmp = negamax(depth, -WEIGHT_KING, WEIGHT_KING);
