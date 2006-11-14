@@ -125,7 +125,7 @@ move_t search::iterate()
 
 	/* Perform iterative deepening until the alarm sounds or we reach the
 	 * maximum depth. */
-	for (int depth = 0; !timeout && depth <= max_depth; depth++)
+	for (int depth = 0; depth <= max_depth; depth++)
 	{
 		move_t tmp = negamax(depth, -WEIGHT_KING, WEIGHT_KING);
 		if (timeout)
