@@ -40,29 +40,21 @@ search::search()
 
 /* Constructor. */
 
+	signal(SIGALRM, handle);
 	max_time = INT_MAX;
 	max_depth = DEPTH;
 	output = false;
 }
 
 /*----------------------------------------------------------------------------*\
- |				       =				      |
+ |				    handle()				      |
 \*----------------------------------------------------------------------------*/
-search& search::operator=(const search& that)
+void search::handle(int num)
 {
 
-/* Overloaded assignment operator. */
+/* The alarm has sounded.  Handle it. */
 
-	if (this == &that)
-		return *this;
-
-	pv = that.pv;
-	max_time = that.max_time;
-	max_depth = that.max_depth;
-	nodes = that.nodes;
-	output = that.output;
-	bind(that.board_ptr, that.table_ptr, that.history_ptr, that.xboard_ptr);
-	return *this;
+	timeout = true;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -114,14 +106,17 @@ void search::set_output(bool o)
 \*----------------------------------------------------------------------------*/
 move_t search::iterate()
 {
+	nodes = 0;
 	move_t m;
-	m.value = m.promo = m.new_y = m.new_x = m.old_y = m.old_x = 0;
 
 	/* Set the alarm. */
 	timeout = false;
-	signal(SIGALRM, handle);
-	alarm(max_time);
-	nodes = 0;
+	struct itimerval itimerval;
+	itimerval.it_interval.tv_sec = 0;
+	itimerval.it_interval.tv_usec = 0;
+	itimerval.it_value.tv_sec = max_time;
+	itimerval.it_value.tv_usec = 0;
+	setitimer(ITIMER_REAL, &itimerval, NULL);
 
 	/* Perform iterative deepening until the alarm has sounded or we've
 	 * reached the maximum depth. */
@@ -129,28 +124,27 @@ move_t search::iterate()
 	{
 		move_t tmp = negamax(depth, -WEIGHT_KING, WEIGHT_KING);
 		if (timeout)
+		{
+			/* Oops.  The alarm has interrupted this iteration; the
+			 * current results are incomplete and unreliable.  Go
+			 * with the last iteration's results. */
+			assert(depth);
 			break;
+		}
 		extract(m = tmp);
 		if (output)
-			xboard_ptr->print_output(depth + 1, m.value, alarm(alarm(0)) * 100, nodes, pv);
+		{
+			getitimer(ITIMER_REAL, &itimerval);
+			xboard_ptr->print_output(depth + 1, m.value, itimerval.it_value.tv_sec * 100, nodes, pv);
+		}
 		if (m.value == WEIGHT_KING || m.value == -WEIGHT_KING)
+			/* Oops.  The game will be over at this depth.  There's
+			 * no point in searching deeper. */
 			break;
 	}
 
-	/* Clear the alarm. */
-	alarm(0);
+	/* Return the best move. */
 	return m;
-}
-
-/*----------------------------------------------------------------------------*\
- |				    handle()				      |
-\*----------------------------------------------------------------------------*/
-void search::handle(int num)
-{
-
-/* The alarm has sounded.  Handle it. */
-
-	timeout = true;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -233,7 +227,7 @@ void search::extract(move_t m)
 		board_ptr->make(m);
 	}
 
-	for (int j = 0; j < pv.size(); j++)
+	for (int j = 0; (size_t) j < pv.size(); j++)
 		board_ptr->unmake();
 }
 

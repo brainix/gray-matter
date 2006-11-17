@@ -29,12 +29,14 @@
 
 /* C stuff: */
 #include <ctype.h>
+#include <inttypes.h>
 #include <pthread.h>
 #include <signal.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <strings.h>
+#include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
 

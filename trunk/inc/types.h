@@ -52,8 +52,12 @@
  | unsigned 8-bit integer which represents up to 8 adjacent squares: a row in a
  | 0° bitboard, a column in a 90° bitboard, or a diagonal in a 45° bitboard.
  */
+/*
 typedef unsigned long long bitboard_t;
 typedef unsigned char bitrow_t;
+ */
+typedef uint64_t bitboard_t;
+typedef uint8_t bitrow_t;
 
 /*
  | This structure describes the entire state of the board.  It contains the
