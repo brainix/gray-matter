@@ -39,13 +39,12 @@ class search
 {
 public:
 	search();
-	search& operator=(const search& that);
+	static void handle(int num);
 	void bind(board *b, table *t, history *h, xboard *x);
 	void set_time(int t);
 	void set_depth(int d);
 	void set_output(bool o);
 	move_t iterate();
-	static void handle(int num);
 private:
 	list<move_t> pv;      /* Principal variation.                        */
 	int max_time;         /* Maximum search time.                        */
