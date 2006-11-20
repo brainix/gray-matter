@@ -33,8 +33,8 @@ using namespace std;
 #include <types.h>
 
 /* These macros represent the colors on and off move. */
-#define ON_MOVE		(state.whose)
-#define OFF_MOVE	(!state.whose)
+#define ON_MOVE				(state.whose)
+#define OFF_MOVE			(!state.whose)
 
 /* These macros manipulate bits in bitboards. */
 #define BIT_IDX(x, y)			((y) * 8 + (x))
