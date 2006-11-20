@@ -135,8 +135,7 @@ static int weight_castle[] = {WEIGHT_CAN_CASTLE, WEIGHT_CANT_CASTLE, WEIGHT_HAS_
 board::board()
 {
 
-/* Constructor.  Important!  Seed the random number generator - issue
- * srand(time(NULL)); - before instantiating this class! */
+/* Constructor. */
 
 	set_board();      /* Set the board.                       */
 	precomp_king();   /* Pre-compute the king moves.          */

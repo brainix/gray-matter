@@ -75,10 +75,16 @@ using namespace std;
 #define ALL(s, c)			((s).piece[c][PAWN] | (s).piece[c][KNIGHT] | (s).piece[c][BISHOP] | (s).piece[c][ROOK] | (s).piece[c][QUEEN] | (s).piece[c][KING])
 
 /* This macro finds the first set bit in a bitboard. */
-#define FST(b)				(ffsll(b) - 1)
+#if (LONG_BIT == 32)
+	#define FST(b)			(ffsll(b) - 1)
+#elif (LONG_BIT == 64)
+	#define FST(b)			(ffsl(b) - 1)
+#else
+	#define FST(b)			(ffs(b) - 1)
+#endif
 
 /* This macro generates a 64-bit random number. */
-#define RAND()				((bitboard_t) rand() << 32 | rand())
+#define RAND()				((bitboard_t) arc4random() << 32 | arc4random())
 
 class board
 {

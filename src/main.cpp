@@ -34,9 +34,6 @@ int main();
 \*----------------------------------------------------------------------------*/
 int main()
 {
-	/* Seed the random number generator. */
-	srand(time(NULL));
-
 	/* Instantiate the classes. */
 	board b;
 	table t;
