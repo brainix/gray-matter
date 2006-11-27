@@ -139,7 +139,7 @@ move_t search::iterate()
 			assert(depth);
 			break;
 		}
-		extract(false);
+		extract(THINKING);
 		if (output)
 		{
 			getitimer(ITIMER_REAL, &itimerval);
@@ -160,20 +160,26 @@ move_t search::iterate()
 \*----------------------------------------------------------------------------*/
 void search::ponder()
 {
+
+/* Ponder - think on our opponent's time. */
+
 	timeout = false;
 	clock_t start = clock();
 
-	assert(pv.size() >= 2);
+	if (pv.size() < 2)
+		return;
 	pv.pop_front();
 	board_ptr->make(pv.front());
 	pv.pop_front();
 
+	/* Perform iterative deepening until our opponent has moved or we've
+	 * reached the maximum depth. */
 	for (int depth = pv.size(); depth <= max_depth; depth++)
 	{
 		negamax(depth, -WEIGHT_KING, WEIGHT_KING);
 		if (timeout)
 			break;
-		extract(true);
+		extract(PONDERING);
 		if (output)
 			xboard_ptr->print_output(depth + 1, pv.front().value, (clock() - start) / CLK_TCK, nodes, pv);
 		if (pv.front().value == WEIGHT_KING || pv.front().value == -WEIGHT_KING)
@@ -252,7 +258,7 @@ move_t search::negamax(int depth, int alpha, int beta)
 /*----------------------------------------------------------------------------*\
  |				   extract()				      |
 \*----------------------------------------------------------------------------*/
-void search::extract(bool ponder)
+void search::extract(bool pondering)
 {
 
 /* Extract the principal variation and hint from the transposition table. */
@@ -269,7 +275,7 @@ void search::extract(bool ponder)
 	for (size_t j = 0; j < pv.size(); j++)
 		board_ptr->unmake();
 
-	if (pv.size() >= 2 && !ponder)
+	if (pv.size() >= 2 && !pondering)
 	{
 		list<move_t>::iterator it = pv.begin();
 		it++;
