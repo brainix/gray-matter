@@ -38,7 +38,7 @@
 \*----------------------------------------------------------------------------*/
 
 /* In an excess of time, the maximum search depth (in plies): */
-#define DEPTH	8
+#define DEPTH	16
 
 /*
  | The number of transposition table entries.  Each entry takes 16 bytes.  Use

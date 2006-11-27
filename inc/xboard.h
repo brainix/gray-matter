@@ -46,6 +46,7 @@ public:
 private:
 	char s[80];
 	bool force;
+	bool ponder;
 	bool output;
 
 	board *board_ptr;         /* Board representation object. */

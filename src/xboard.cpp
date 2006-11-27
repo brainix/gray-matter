@@ -40,6 +40,7 @@ xboard::xboard()
 
 	/* Initialize the variables. */
 	force = false;
+	ponder = false;
 	output = false;
 }
 
@@ -103,6 +104,9 @@ void xboard::loop()
 			do_nopost();
 		else
 			printf("Error (unknown command): %s\n", s);
+
+		if (ponder && !strncmp(s, "usermove", 8))
+			search_ptr->ponder();
 	}
 }
 
@@ -357,7 +361,7 @@ void xboard::do_hard() const
 
 /* Turn on pondering. */
 
-	search_ptr->set_ponder(true);
+	ponder = true;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -368,7 +372,7 @@ void xboard::do_easy() const
 
 /* Turn off pondering. */
 
-	search_ptr->set_ponder(false);
+	ponder = false;
 }
 
 /*----------------------------------------------------------------------------*\
