@@ -139,7 +139,7 @@ move_t search::iterate()
 			assert(depth);
 			break;
 		}
-		extract();
+		extract(false);
 		if (output)
 		{
 			getitimer(ITIMER_REAL, &itimerval);
@@ -166,13 +166,14 @@ void search::ponder()
 	assert(pv.size() >= 2);
 	pv.pop_front();
 	board_ptr->make(pv.front());
+	pv.pop_front();
 
 	for (int depth = pv.size(); depth <= max_depth; depth++)
 	{
 		negamax(depth, -WEIGHT_KING, WEIGHT_KING);
 		if (timeout)
 			break;
-		extract();
+		extract(true);
 		if (output)
 			xboard_ptr->print_output(depth + 1, pv.front().value, (clock() - start) / CLK_TCK, nodes, pv);
 		if (pv.front().value == WEIGHT_KING || pv.front().value == -WEIGHT_KING)
@@ -251,10 +252,10 @@ move_t search::negamax(int depth, int alpha, int beta)
 /*----------------------------------------------------------------------------*\
  |				   extract()				      |
 \*----------------------------------------------------------------------------*/
-void search::extract()
+void search::extract(bool ponder)
 {
 
-/* Extract the principal variation from the transposition table. */
+/* Extract the principal variation and hint from the transposition table. */
 
 	move_t m;
 	pv.clear();
@@ -267,14 +268,21 @@ void search::extract()
 
 	for (size_t j = 0; j < pv.size(); j++)
 		board_ptr->unmake();
+
+	if (pv.size() >= 2 && !ponder)
+	{
+		list<move_t>::iterator it = pv.begin();
+		it++;
+		hint = *it;
+	}
 }
 
 /*----------------------------------------------------------------------------*\
- |				     hint()				      |
+ |				   get_hint()				      |
 \*----------------------------------------------------------------------------*/
-move_t search::hint() const
+move_t search::get_hint() const
 {
-	return pv.front();
+	return hint;
 }
 
 /*----------------------------------------------------------------------------*\
