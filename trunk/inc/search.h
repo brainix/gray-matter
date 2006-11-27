@@ -45,8 +45,8 @@ public:
 	void set_time(int t);
 	void set_depth(int d);
 	void set_output(bool o);
-	void set_ponder(bool p);
 	move_t iterate();
+	void ponder();
 	move_t hint() const;
 private:
 	list<move_t> pv;      /* Principal variation.                        */
@@ -54,7 +54,6 @@ private:
 	int max_depth;        /* Maximum search depth.                       */
 	int nodes;            /* Number of nodes searched.                   */
 	bool output;          /* Whether to print thinking output.           */
-	bool ponder;          /* Whether to ponder.                          */
 
 	board *board_ptr;     /* Board representation object.                */
 	table *table_ptr;     /* Transposition table object.                 */

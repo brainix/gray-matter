@@ -44,7 +44,6 @@ search::search()
 	max_time = INT_MAX;
 	max_depth = DEPTH;
 	output = false;
-	ponder = true;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -112,23 +111,11 @@ void search::set_output(bool o)
 }
 
 /*----------------------------------------------------------------------------*\
- |				  set_ponder()				      |
-\*----------------------------------------------------------------------------*/
-void search::set_ponder(bool p)
-{
-
-/* Set whether to ponder. */
-
-	ponder = p;
-}
-
-/*----------------------------------------------------------------------------*\
  |				   iterate()				      |
 \*----------------------------------------------------------------------------*/
 move_t search::iterate()
 {
 	nodes = 0;
-	move_t m;
 
 	/* Set the alarm. */
 	timeout = false;
@@ -143,7 +130,7 @@ move_t search::iterate()
 	 * reached the maximum depth. */
 	for (int depth = 0; depth <= max_depth; depth++)
 	{
-		move_t tmp = negamax(depth, -WEIGHT_KING, WEIGHT_KING);
+		negamax(depth, -WEIGHT_KING, WEIGHT_KING);
 		if (timeout)
 		{
 			/* Oops.  The alarm has interrupted this iteration; the
@@ -152,21 +139,49 @@ move_t search::iterate()
 			assert(depth);
 			break;
 		}
-		m = tmp;
 		extract();
 		if (output)
 		{
 			getitimer(ITIMER_REAL, &itimerval);
-			xboard_ptr->print_output(depth + 1, m.value, itimerval.it_value.tv_sec * 100, nodes, pv);
+			xboard_ptr->print_output(depth + 1, pv.front().value, itimerval.it_value.tv_sec * 100, nodes, pv);
 		}
-		if (m.value == WEIGHT_KING || m.value == -WEIGHT_KING)
+		if (pv.front().value == WEIGHT_KING || pv.front().value == -WEIGHT_KING)
 			/* Oops.  The game will be over at this depth.  There's
 			 * no point in searching deeper. */
 			break;
 	}
 
 	/* Return the best move. */
-	return m;
+	return pv.front();
+}
+
+/*----------------------------------------------------------------------------*\
+ |				    ponder()				      |
+\*----------------------------------------------------------------------------*/
+void search::ponder()
+{
+	timeout = false;
+	clock_t start = clock();
+
+	assert(pv.size() >= 2);
+	pv.pop_front();
+	board_ptr->make(pv.front());
+
+	for (int depth = pv.size(); depth <= max_depth; depth++)
+	{
+		negamax(depth, -WEIGHT_KING, WEIGHT_KING);
+		if (timeout)
+			break;
+		extract();
+		if (output)
+			xboard_ptr->print_output(depth + 1, pv.front().value, (clock() - start) / CLK_TCK, nodes, pv);
+		if (pv.front().value == WEIGHT_KING || pv.front().value == -WEIGHT_KING)
+			/* Oops.  The game will be over at this depth.  There's
+			 * no point in searching deeper. */
+			break;
+	}
+
+	board_ptr->unmake();
 }
 
 /*----------------------------------------------------------------------------*\
