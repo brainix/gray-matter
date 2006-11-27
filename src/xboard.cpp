@@ -327,9 +327,8 @@ void xboard::do_ping()
 \*----------------------------------------------------------------------------*/
 void xboard::do_hint() const
 {
-	move_t m = search_ptr->iterate();
 	printf("Hint: ");
-	print_move(m);
+	print_move(search_ptr->hint());
 	printf("\n");
 }
 

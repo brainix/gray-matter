@@ -152,7 +152,8 @@ move_t search::iterate()
 			assert(depth);
 			break;
 		}
-		extract(m = tmp);
+		m = tmp;
+		extract();
 		if (output)
 		{
 			getitimer(ITIMER_REAL, &itimerval);
@@ -235,11 +236,12 @@ move_t search::negamax(int depth, int alpha, int beta)
 /*----------------------------------------------------------------------------*\
  |				   extract()				      |
 \*----------------------------------------------------------------------------*/
-void search::extract(move_t m)
+void search::extract()
 {
 
 /* Extract the principal variation from the transposition table. */
 
+	move_t m;
 	pv.clear();
 
 	while (table_ptr->probe(board_ptr->get_hash(), &m, 0))
@@ -248,8 +250,16 @@ void search::extract(move_t m)
 		board_ptr->make(m);
 	}
 
-	for (int j = 0; (size_t) j < pv.size(); j++)
+	for (size_t j = 0; j < pv.size(); j++)
 		board_ptr->unmake();
+}
+
+/*----------------------------------------------------------------------------*\
+ |				     hint()				      |
+\*----------------------------------------------------------------------------*/
+move_t search::hint() const
+{
+	return pv.front();
 }
 
 /*----------------------------------------------------------------------------*\
