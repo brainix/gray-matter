@@ -47,7 +47,7 @@ int main()
 
 	/* Bind the objects. */
 	o.bind(&b, &t);
-	x.bind(&b, &t, &h, &s);
+	x.bind(&b, &s);
 	s.bind(&b, &t, &h, &x);
 
 	/* Launch the event loop. */

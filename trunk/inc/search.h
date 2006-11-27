@@ -41,17 +41,19 @@ public:
 	search();
 	static void handle(int num);
 	void bind(board *b, table *t, history *h, xboard *x);
+	void clear() const;
 	void set_time(int t);
 	void set_depth(int d);
 	void set_output(bool o);
+	void set_ponder(bool p);
 	move_t iterate();
 private:
 	list<move_t> pv;      /* Principal variation.                        */
 	int max_time;         /* Maximum search time.                        */
 	int max_depth;        /* Maximum search depth.                       */
 	int nodes;            /* Number of nodes searched.                   */
-//	bool timeout;         /* Whether the search has timed out.           */
 	bool output;          /* Whether to print thinking output.           */
+	bool ponder;          /* Whether to ponder.                          */
 
 	board *board_ptr;     /* Board representation object.                */
 	table *table_ptr;     /* Transposition table object.                 */

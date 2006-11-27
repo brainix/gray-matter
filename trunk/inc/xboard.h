@@ -39,7 +39,7 @@ class xboard
 {
 public:
 	xboard();
-	void bind(board *b, table *t, history *h, class search *s);
+	void bind(board *b, class search *s);
 	void loop();
 	void print_output(int ply, int value, int time, int nodes, list<move_t> &pv) const;
 	void print_move(move_t m) const;
@@ -49,8 +49,6 @@ private:
 	bool output;
 
 	board *board_ptr;         /* Board representation object. */
-	table *table_ptr;         /* Transposition table object.  */
-	history *history_ptr;     /* History table object.        */
 	class search *search_ptr; /* Move search object.          */
 
 	void do_xboard() const;
@@ -70,6 +68,8 @@ private:
 	void do_hint() const;
 	void do_undo() const;
 	void do_remove() const;
+	void do_hard() const;
+	void do_easy() const;
 	void do_post() const;
 	void do_nopost() const;
 
