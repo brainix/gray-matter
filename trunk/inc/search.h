@@ -47,6 +47,7 @@ public:
 	void set_output(bool o);
 	void set_ponder(bool p);
 	move_t iterate();
+	move_t hint() const;
 private:
 	list<move_t> pv;      /* Principal variation.                        */
 	int max_time;         /* Maximum search time.                        */
@@ -61,7 +62,7 @@ private:
 	xboard *xboard_ptr;   /* Chess Engine Communication Protocol object. */
 
 	move_t negamax(int depth, int alpha, int beta);
-	void extract(move_t m);
+	void extract();
 };
 
 #endif
