@@ -332,7 +332,7 @@ void xboard::do_ping()
 void xboard::do_hint() const
 {
 	printf("Hint: ");
-	print_move(search_ptr->hint());
+	print_move(search_ptr->get_hint());
 	printf("\n");
 }
 

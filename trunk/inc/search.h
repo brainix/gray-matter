@@ -47,9 +47,10 @@ public:
 	void set_output(bool o);
 	move_t iterate();
 	void ponder();
-	move_t hint() const;
+	move_t get_hint() const;
 private:
 	list<move_t> pv;      /* Principal variation.                        */
+	move_t hint;          /* Opponent's best move.                       */
 	int max_time;         /* Maximum search time.                        */
 	int max_depth;        /* Maximum search depth.                       */
 	int nodes;            /* Number of nodes searched.                   */
