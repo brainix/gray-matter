@@ -161,6 +161,10 @@
 #define EXACT		3
 #define ENTRY_TYPES	4
 
+/* */
+#define THINKING	0
+#define PONDERING	1
+
 /* Convenient bitboards: */
 #define CENTER		0x0000001818000000ULL /* The 4 center squares.      */
 #define EXPANDED_CENTER	0x00003C3C3C3C0000ULL /* The 16 center squares.     */

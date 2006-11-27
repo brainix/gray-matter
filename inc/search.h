@@ -62,7 +62,7 @@ private:
 	xboard *xboard_ptr;   /* Chess Engine Communication Protocol object. */
 
 	move_t negamax(int depth, int alpha, int beta);
-	void extract();
+	void extract(bool pondering);
 };
 
 #endif
