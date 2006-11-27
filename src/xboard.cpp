@@ -46,11 +46,9 @@ xboard::xboard()
 /*----------------------------------------------------------------------------*\
  |				     bind()				      |
 \*----------------------------------------------------------------------------*/
-void xboard::bind(board *b, table *t, history *h, class search *s)
+void xboard::bind(board *b, class search *s)
 {
 	board_ptr = b;
-	table_ptr = t;
-	history_ptr = h;
 	search_ptr = s;
 }
 
@@ -95,6 +93,10 @@ void xboard::loop()
 			do_undo();
 		else if (!strncmp(s, "remove", 6))
 			do_remove();
+		else if (!strncmp(s, "hard", 4))
+			do_hard();
+		else if (!strncmp(s, "easy", 4))
+			do_easy();
 		else if (!strncmp(s, "post", 4))
 			do_post();
 		else if (!strncmp(s, "nopost", 6))
@@ -187,8 +189,7 @@ void xboard::do_rejected() const
 void xboard::do_new()
 {
 	board_ptr->set_board();
-	table_ptr->clear();
-	history_ptr->clear();
+	search_ptr->clear();
 	search_ptr->set_depth(DEPTH);
 	force = false;
 }
@@ -257,6 +258,9 @@ void xboard::do_level() const
 \*----------------------------------------------------------------------------*/
 void xboard::do_st() const
 {
+
+/* Set the maximum search time. */
+
 	search_ptr->set_time(str_to_num(&s[3]));
 }
 
@@ -265,6 +269,9 @@ void xboard::do_st() const
 \*----------------------------------------------------------------------------*/
 void xboard::do_sd() const
 {
+
+/* Set the maximum search depth. */
+
 	search_ptr->set_depth(str_to_num(&s[3]));
 }
 
@@ -344,10 +351,35 @@ void xboard::do_remove() const
 }
 
 /*----------------------------------------------------------------------------*\
+ |				   do_hard()				      |
+\*----------------------------------------------------------------------------*/
+void xboard::do_hard() const
+{
+
+/* Turn on pondering. */
+
+	search_ptr->set_ponder(true);
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   do_easy()				      |
+\*----------------------------------------------------------------------------*/
+void xboard::do_easy() const
+{
+
+/* Turn off pondering. */
+
+	search_ptr->set_ponder(false);
+}
+
+/*----------------------------------------------------------------------------*\
  |				   do_post()				      |
 \*----------------------------------------------------------------------------*/
 void xboard::do_post() const
 {
+
+/* Turn on thinking output. */
+
 	search_ptr->set_output(true);
 }
 
@@ -356,6 +388,9 @@ void xboard::do_post() const
 \*----------------------------------------------------------------------------*/
 void xboard::do_nopost() const
 {
+
+/* Turn off thinking output. */
+
 	search_ptr->set_output(false);
 }
 
