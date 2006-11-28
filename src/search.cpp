@@ -181,18 +181,27 @@ move_t search::iterate(bool pondering)
 move_t search::negamax(int depth, int alpha, int beta)
 {
 
-/* Search for the best move. */
+/* From the current position, search for the best move.  This method implements
+ * the clever negamax algorithm.  Negamax produces the same results as minimax
+ * but is simpler to code.  Instead of juggling around two players, max and min,
+ * negamax treats both players as max and negates and swaps the values of alpha
+ * and beta on each recursive call. */
 
 	list<move_t> l;
 	list<move_t>::iterator it;
 	move_t m;
 	int type = ALPHA;
 
+	/* Before anything else, do some research to avoid re-search.  ;-)  If
+	 * we've already sufficiently examined this position, return the best
+	 * move from our previous search. */
 	if (table_ptr->probe(board_ptr->get_hash(), &m, depth, alpha, beta) != USELESS)
 		return m;
 
+	/* If this position is terminal (the end of the game), there's no legal
+	 * move.  All we have to do is determine if we've won, the game is
+	 * drawn, or our opponent has won.  Check for this case. */
 	m.promo = m.new_y = m.new_x = m.old_y = m.old_x = 0;
-/*
 	switch (board_ptr->get_status())
 	{
 		case IN_PROGRESS :                         break;
@@ -200,7 +209,6 @@ move_t search::negamax(int depth, int alpha, int beta)
 		case CHECKMATE   : m.value = -WEIGHT_KING; return m;
 		case ILLEGAL     : m.value = -WEIGHT_KING; return m;
 	}
- */
 
 	/* Generate and re-order the move list. */
 	nodes++;
