@@ -29,9 +29,6 @@
 /* Global variables: */
 bool timeout;
 
-/* Function prototypes: */
-bool compare(move_t m1, move_t m2);
-
 /*----------------------------------------------------------------------------*\
  |				    search()				      |
 \*----------------------------------------------------------------------------*/
@@ -115,13 +112,19 @@ void search::set_output(bool o)
 \*----------------------------------------------------------------------------*/
 move_t search::iterate(bool pondering)
 {
-	if (!pondering)
-		nodes = 0;
 
-	/* Set the alarm. */
+/* Perform iterative deepening.  This method handles both thinking (on our own
+ * time) and pondering (on our opponent's time) since they're so similar. */
+
+	/* Note the start time. */
 	timeout = false;
+	clock_t start = clock();
+
 	if (!pondering)
 	{
+		/* OK, we're thinking (on our own time).  Initialize the number
+		 * of nodes searched and set the alarm. */
+		nodes = 0;
 		struct itimerval itimerval;
 		itimerval.it_interval.tv_sec = 0;
 		itimerval.it_interval.tv_usec = 0;
@@ -129,14 +132,13 @@ move_t search::iterate(bool pondering)
 		itimerval.it_value.tv_usec = 0;
 		setitimer(ITIMER_REAL, &itimerval, NULL);
 	}
-	clock_t start = clock();
-
-	if (pondering)
+	else
 	{
-		/* Currently, the principal variation starts with the move we
-		 * just made and the move we think our opponent will make.  Get rid
-		 * rid of the move we just made, assume our opponent will make
-		 * the move we think she'll make, and formulate our response. */
+		/* OK, we're pondering (on our opponent's time).  Currently, the
+		 * principal variation starts with the move we just made and the
+		 * move we think our opponent will make.  Get rid of the move we
+		 * just made and assume our opponent will make the move we think
+		 * she'll make. */
 		if (pv.size() < 2)
 			return;
 		pv.pop_front();
@@ -276,7 +278,7 @@ move_t search::get_hint() const
 /*----------------------------------------------------------------------------*\
  |				   compare()				      |
 \*----------------------------------------------------------------------------*/
-bool compare(move_t m1, move_t m2)
+bool search::compare(move_t m1, move_t m2) const
 {
 
 /* Pass this function to l.sort() to sort the move list in descending order by
