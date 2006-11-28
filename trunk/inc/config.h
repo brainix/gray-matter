@@ -162,8 +162,8 @@
 #define ENTRY_TYPES	4
 
 /* */
-#define THINKING	0
-#define PONDERING	1
+#define THINKING	0 /* Thinking (on our own time).         */
+#define PONDERING	1 /* Pondering (on our opponent's time). */
 
 /* Convenient bitboards: */
 #define CENTER		0x0000001818000000ULL /* The 4 center squares.      */
