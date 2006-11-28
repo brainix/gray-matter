@@ -113,22 +113,41 @@ void search::set_output(bool o)
 /*----------------------------------------------------------------------------*\
  |				   iterate()				      |
 \*----------------------------------------------------------------------------*/
-move_t search::iterate()
+move_t search::iterate(bool pondering)
 {
-	nodes = 0;
+	if (!pondering)
+		nodes = 0;
 
 	/* Set the alarm. */
 	timeout = false;
-	struct itimerval itimerval;
-	itimerval.it_interval.tv_sec = 0;
-	itimerval.it_interval.tv_usec = 0;
-	itimerval.it_value.tv_sec = max_time;
-	itimerval.it_value.tv_usec = 0;
-	setitimer(ITIMER_REAL, &itimerval, NULL);
+	if (!pondering)
+	{
+		struct itimerval itimerval;
+		itimerval.it_interval.tv_sec = 0;
+		itimerval.it_interval.tv_usec = 0;
+		itimerval.it_value.tv_sec = max_time;
+		itimerval.it_value.tv_usec = 0;
+		setitimer(ITIMER_REAL, &itimerval, NULL);
+	}
+	clock_t start = clock();
 
-	/* Perform iterative deepening until the alarm has sounded or we've
-	 * reached the maximum depth. */
-	for (int depth = 0; depth <= max_depth; depth++)
+	if (pondering)
+	{
+		/* Currently, the principal variation starts with the move we
+		 * just made and the move we think our opponent will make.  Get rid
+		 * rid of the move we just made, assume our opponent will make
+		 * the move we think she'll make, and formulate our response. */
+		if (pv.size() < 2)
+			return;
+		pv.pop_front();
+		board_ptr->make(pv.front());
+		pv.pop_front();
+	}
+
+	/* Perform iterative deepening until the alarm has sounded (if we're
+	 * thinking), our opponent has moved (if we're pondering), or we've
+	 * reached the maximum depth (either way). */
+	for (int depth = !pondering ? 0 : pv.size(); depth <= max_depth; depth++)
 	{
 		negamax(depth, -WEIGHT_KING, WEIGHT_KING);
 		if (timeout)
@@ -139,47 +158,7 @@ move_t search::iterate()
 			assert(depth);
 			break;
 		}
-		extract(THINKING);
-		if (output)
-		{
-			getitimer(ITIMER_REAL, &itimerval);
-			xboard_ptr->print_output(depth + 1, pv.front().value, itimerval.it_value.tv_sec * 100, nodes, pv);
-		}
-		if (pv.front().value == WEIGHT_KING || pv.front().value == -WEIGHT_KING)
-			/* Oops.  The game will be over at this depth.  There's
-			 * no point in searching deeper. */
-			break;
-	}
-
-	/* Return the best move. */
-	return pv.front();
-}
-
-/*----------------------------------------------------------------------------*\
- |				    ponder()				      |
-\*----------------------------------------------------------------------------*/
-void search::ponder()
-{
-
-/* Ponder - think on our opponent's time. */
-
-	timeout = false;
-	clock_t start = clock();
-
-	if (pv.size() < 2)
-		return;
-	pv.pop_front();
-	board_ptr->make(pv.front());
-	pv.pop_front();
-
-	/* Perform iterative deepening until our opponent has moved or we've
-	 * reached the maximum depth. */
-	for (int depth = pv.size(); depth <= max_depth; depth++)
-	{
-		negamax(depth, -WEIGHT_KING, WEIGHT_KING);
-		if (timeout)
-			break;
-		extract(PONDERING);
+		extract(pondering);
 		if (output)
 			xboard_ptr->print_output(depth + 1, pv.front().value, (clock() - start) / CLK_TCK, nodes, pv);
 		if (pv.front().value == WEIGHT_KING || pv.front().value == -WEIGHT_KING)
@@ -188,7 +167,10 @@ void search::ponder()
 			break;
 	}
 
-	board_ptr->unmake();
+	/* Return the best move. */
+	if (pondering)
+		board_ptr->unmake();
+	return pv.front();
 }
 
 /*----------------------------------------------------------------------------*\
