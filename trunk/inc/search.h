@@ -45,8 +45,7 @@ public:
 	void set_time(int t);
 	void set_depth(int d);
 	void set_output(bool o);
-	move_t iterate();
-	void ponder();
+	move_t iterate(bool pondering);
 	move_t get_hint() const;
 private:
 	list<move_t> pv;      /* Principal variation.                        */

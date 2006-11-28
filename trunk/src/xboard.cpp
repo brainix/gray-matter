@@ -106,7 +106,7 @@ void xboard::loop()
 			printf("Error (unknown command): %s\n", s);
 
 		if (ponder && !strncmp(s, "usermove", 8))
-			search_ptr->ponder();
+			search_ptr->iterate(PONDERING);
 	}
 }
 
@@ -221,7 +221,7 @@ void xboard::do_go()
 	move_t m;
 
 	force = false;
-	if ((m = search_ptr->iterate()).value == -WEIGHT_KING)
+	if ((m = search_ptr->iterate(THINKING)).value == -WEIGHT_KING)
 	{
 		printf("resign\n");
 		return;
@@ -301,7 +301,7 @@ void xboard::do_usermove() const
 	if (force || game_over())
 		return;
 
-	if ((m = search_ptr->iterate()).value == -WEIGHT_KING)
+	if ((m = search_ptr->iterate(THINKING)).value == -WEIGHT_KING)
 	{
 		printf("resign\n");
 		return;
