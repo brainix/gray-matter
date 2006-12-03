@@ -69,8 +69,8 @@ private:
 	void do_hint() const;
 	void do_undo() const;
 	void do_remove() const;
-	void do_hard() const;
-	void do_easy() const;
+	void do_hard();
+	void do_easy();
 	void do_post() const;
 	void do_nopost() const;
 

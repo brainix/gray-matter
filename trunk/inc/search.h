@@ -62,7 +62,7 @@ private:
 
 	move_t negamax(int depth, int alpha, int beta);
 	void extract(bool pondering);
-	static bool compare(move_t m1, move_t m2) const;
+	static bool compare(move_t m1, move_t m2);
 };
 
 #endif

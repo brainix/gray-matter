@@ -369,7 +369,7 @@ void board::make(move_t m)
 
 		/* If we're performing an en passant, remove the captured
 		 * pawn. */
-		if ((int) m.new_x == state.en_passant && (m.new_y == ON_MOVE ? 2 : 5))
+		if ((int) m.new_x == state.en_passant && m.new_y == (ON_MOVE ? 2 : 5))
 		{
 			BIT_CLR(state.piece[OFF_MOVE][PAWN], m.new_x, m.old_y);
 			for (int angle = L45; angle <= R90; angle++)
