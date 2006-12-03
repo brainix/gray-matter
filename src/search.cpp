@@ -286,10 +286,10 @@ move_t search::get_hint() const
 /*----------------------------------------------------------------------------*\
  |				   compare()				      |
 \*----------------------------------------------------------------------------*/
-bool search::compare(move_t m1, move_t m2) const
+bool search::compare(move_t m1, move_t m2)
 {
 
-/* Pass this function to l.sort() to sort the move list in descending order by
+/* Pass this method to l.sort() to sort the move list in descending order by
  * score. */
 
 	return m1.value > m2.value;
