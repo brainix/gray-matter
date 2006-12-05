@@ -28,6 +28,7 @@
 #define GRAY_H
 
 /* C stuff: */
+#include <assert.h>
 #include <ctype.h>
 #include <inttypes.h>
 #include <pthread.h>

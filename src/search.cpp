@@ -139,8 +139,7 @@ move_t search::iterate(bool pondering)
 		 * move we think our opponent will make.  Get rid of the move we
 		 * just made and assume our opponent will make the move we think
 		 * she'll make. */
-		if (pv.size() < 2)
-			return;
+		assert(pv.size() >= 2);
 		pv.pop_front();
 		board_ptr->make(pv.front());
 		pv.pop_front();
