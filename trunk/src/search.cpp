@@ -161,7 +161,7 @@ move_t search::iterate(bool pondering)
 		}
 		extract(pondering);
 		if (output)
-			xboard_ptr->print_output(depth + 1, pv.front().value, (clock() - start) / CLK_TCK, nodes, pv);
+			xboard_ptr->print_output(depth + 1, pv.front().value, (clock() - start) / CLOCKS_PER_SEC, nodes, pv);
 		if (pv.front().value == WEIGHT_KING || pv.front().value == -WEIGHT_KING)
 			/* Oops.  The game will be over at this depth.  There's
 			 * no point in searching deeper. */
