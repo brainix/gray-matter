@@ -1177,8 +1177,28 @@ int board::count(bitboard_t b) const
 
 	int sum = 0;
 
-	for (int n; (n = FST(b)) != -1; BIT_CLR(b, n % 8, n / 8))
-		sum++;
+//	for (int n; (n = FST(b)) != -1; BIT_CLR(b, n % 8, n / 8))
+//		sum++;
+	for (; b; b >>= 4)
+		switch (b & 0xFF)
+		{
+			case 0x0: sum += 0; break;
+			case 0x1: sum += 1; break;
+			case 0x2: sum += 1; break;
+			case 0x3: sum += 2; break;
+			case 0x4: sum += 1; break;
+			case 0x5: sum += 2; break;
+			case 0x6: sum += 2; break;
+			case 0x7: sum += 3; break;
+			case 0x8: sum += 1; break;
+			case 0x9: sum += 2; break;
+			case 0xA: sum += 2; break;
+			case 0xB: sum += 3; break;
+			case 0xC: sum += 2; break;
+			case 0xD: sum += 3; break;
+			case 0xE: sum += 3; break;
+			case 0xF: sum += 4; break;
+		}
 	return sum;
 }
 
