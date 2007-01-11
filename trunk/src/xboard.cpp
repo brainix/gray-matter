@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------*\
  |	xboard.cpp - Chess Engine Communication Protocol implementation	      |
  |									      |
- |	Copyright © 2005-2006, The Gray Matter Team, original authors.	      |
+ |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
  |		All rights reserved.					      |
 \*----------------------------------------------------------------------------*/
 
@@ -118,11 +118,7 @@ void xboard::print_output(int ply, int value, int time, int nodes, list<move_t> 
 
 /* Print thinking output. */
 
-	printf("%d ", ply);
-	printf("%d ", value);
-	printf("%d ", time);
-	printf("%d",  nodes);
-
+	printf("%d %d %d %d", ply, value, time, nodes);
 	for (list<move_t>::iterator it = pv.begin(); it != pv.end(); it++)
 	{
 		printf(" ");

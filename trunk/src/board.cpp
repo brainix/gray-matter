@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------*\
  |	board.cpp - board representation implementation			      |
  |									      |
- |	Copyright © 2005-2006, The Gray Matter Team, original authors.	      |
+ |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
  |		All rights reserved.					      |
 \*----------------------------------------------------------------------------*/
 
@@ -923,16 +923,14 @@ void board::generate_pawn(list<move_t> &l) const
 	/* If our pawn is on our fifth row, and our opponent's pawn is beside
 	 * our pawn, and, as her last move, our opponent advanced her pawn two
 	 * squares, we can perform an en passant. */
-/*
-	if (state.en_passant != -1)
-	{
-		m.old_y = (m.new_y = ON_MOVE ? 2 : 5) + (ON_MOVE ? 1 : -1);
-		m.new_x = state.en_passant;
-		for (m.old_x = state.en_passant == 0 ? 1 : state.en_passant - 1; m.old_x <= (unsigned) (state.en_passant == 7 ? 6 : state.en_passant + 1); m.old_x += 2)
-			if (BIT_GET(state.piece[ON_MOVE][PAWN], m.old_x, m.old_y))
-				l.push_front(m);
-	}
- */
+//	if (state.en_passant != -1)
+//	{
+//		m.old_y = (m.new_y = ON_MOVE ? 2 : 5) + (ON_MOVE ? 1 : -1);
+//		m.new_x = state.en_passant;
+//		for (m.old_x = state.en_passant == 0 ? 1 : state.en_passant - 1; m.old_x <= (unsigned) (state.en_passant == 7 ? 6 : state.en_passant + 1); m.old_x += 2)
+//			if (BIT_GET(state.piece[ON_MOVE][PAWN], m.old_x, m.old_y))
+//				l.push_front(m);
+//	}
 
 	/* A pawn can advance one square. */
 	b = state.piece[ON_MOVE][PAWN];
@@ -1179,8 +1177,10 @@ int board::count(bitboard_t b) const
 
 //	for (int n; (n = FST(b)) != -1; BIT_CLR(b, n % 8, n / 8))
 //		sum++;
+//	return sum;
+
 	for (; b; b >>= 4)
-		switch (b & 0xFF)
+		switch (b & 0xF)
 		{
 			case 0x0: sum += 0; break;
 			case 0x1: sum += 1; break;
