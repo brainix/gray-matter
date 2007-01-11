@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------*\
  |	search.cpp - move search implementation				      |
  |									      |
- |	Copyright © 2005-2006, The Gray Matter Team, original authors.	      |
+ |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
  |		All rights reserved.					      |
 \*----------------------------------------------------------------------------*/
 
@@ -183,8 +183,8 @@ move_t search::negamax(int depth, int alpha, int beta)
 /* From the current position, search for the best move.  This method implements
  * the clever negamax algorithm.  Negamax produces the same results as minimax
  * but is simpler to code.  Instead of juggling around two players, max and min,
- * negamax treats both players as max and negates and swaps the values of alpha
- * and beta on each recursive call. */
+ * negamax treats both players as max and negates the scores and negates and
+ * swaps the values of alpha and beta on each recursive call. */
 
 	list<move_t> l;
 	list<move_t>::iterator it;
@@ -198,8 +198,8 @@ move_t search::negamax(int depth, int alpha, int beta)
 		return m;
 
 	/* If this position is terminal (the end of the game), there's no legal
-	 * move.  All we have to do is determine if we've won, the game is
-	 * drawn, or our opponent has won.  Check for this case. */
+	 * move.  All we have to do is determine if the game is drawn or won.
+	 * Check for this case. */
 	m.promo = m.new_y = m.new_x = m.old_y = m.old_x = 0;
 	switch (board_ptr->get_status())
 	{
@@ -261,6 +261,8 @@ void search::extract(bool pondering)
 	{
 		pv.push_back(m);
 		board_ptr->make(m);
+		if (pv.size() == max_depth)
+			break;
 	}
 
 	for (size_t j = 0; j < pv.size(); j++)

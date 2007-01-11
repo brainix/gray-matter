@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------*\
  |	xboard.h - Chess Engine Communication Protocol interface	      |
  |									      |
- |	Copyright © 2005-2006, The Gray Matter Team, original authors.	      |
+ |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
  |		All rights reserved.					      |
 \*----------------------------------------------------------------------------*/
 

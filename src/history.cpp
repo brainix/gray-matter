@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------*\
  |	history.cpp - history table implementation			      |
  |									      |
- |	Copyright © 2005-2006, The Gray Matter Team, original authors.	      |
+ |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
  |		All rights reserved.					      |
 \*----------------------------------------------------------------------------*/
 
@@ -44,7 +44,7 @@ history::history()
 void history::clear()
 {
 	/* Prevent other threads from shitting on our heads. */
-	pthread_mutex_lock(&mutex);
+//	pthread_mutex_lock(&mutex);
 
 	for (int color = WHITE; color <= BLACK; color++)
 		for (int old_y = 0; old_y <= 7; old_y++)
@@ -54,7 +54,7 @@ void history::clear()
 						data[color][old_x][old_y][new_x][new_y] = 0;
 
 	/* Allow other threads to shit on our heads again. */
-	pthread_mutex_unlock(&mutex);
+//	pthread_mutex_unlock(&mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -65,12 +65,12 @@ int history::probe(bool color, move_t move)
 	int value;
 
 	/* Prevent other threads from shitting on our heads. */
-	pthread_mutex_lock(&mutex);
+//	pthread_mutex_lock(&mutex);
 
 	value = data[color][move.old_x][move.old_y][move.new_x][move.new_y];
 
 	/* Allow other threads to shit on our heads again. */
-	pthread_mutex_unlock(&mutex);
+//	pthread_mutex_unlock(&mutex);
 	return value;
 }
 
@@ -81,13 +81,13 @@ void history::store(bool color, move_t move, int depth)
 {
 
 /* Gray Matter has searched to the specified depth and determined the specified
- * move for the specified color to be the best.  Note this fact. */
+ * move for the specified color to be the best.  Note this. */
 
 	/* Prevent other threads from shitting on our heads. */
-	pthread_mutex_lock(&mutex);
+//	pthread_mutex_lock(&mutex);
 
 	data[color][move.old_x][move.old_y][move.new_x][move.new_y] += 1 << depth;
 
 	/* Allow other threads to shit on our heads again. */
-	pthread_mutex_unlock(&mutex);
+//	pthread_mutex_unlock(&mutex);
 }
