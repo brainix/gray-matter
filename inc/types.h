@@ -57,7 +57,7 @@ typedef uint8_t bitrow_t;
 
 /*
  | This structure describes the entire state of the board.  It contains the
- | aforementioned 12 bitboards, along with castling statuses, en passant
+ | aforementioned 12 bitboards along with castling statuses, en passant
  | vulnerability, and the color on move.
  */
 typedef struct state
