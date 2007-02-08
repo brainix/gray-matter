@@ -220,7 +220,17 @@ move_t search::negamax(int depth, int alpha, int beta)
 	for (it = l.begin(); !timeout && it != l.end(); it++)
 	{
 		board_ptr->make(*it);
-		it->value = depth ? -negamax(depth - 1, -beta, -alpha).value : board_ptr->evaluate();
+		if (!depth)
+			/* Base case. */
+			it->value = board_ptr->evaluate();
+		else
+		{
+			/* Recursive case. */
+			if (type == EXACT)
+				it->value = -negamax(depth - 1, -alpha - 1, -alpha).value;
+			if (type != EXACT || it->value > alpha && it->value < beta)
+				it->value = -negamax(depth - 1, -beta, -alpha).value;
+		}
 		board_ptr->unmake();
 
 		if (it->value > alpha)
