@@ -208,18 +208,18 @@ bitboard_t board::get_hash() const
 \*----------------------------------------------------------------------------*/
 int board::get_status()
 {
+	int type;
+
 	if (!state.piece[WHITE][KING] || !state.piece[BLACK][KING])
 		return ILLEGAL;
-	if (mate(STALEMATE))
-		return STALEMATE;
+	if ((type = mate()) != IN_PROGRESS)
+		return type;
 	if (insufficient())
 		return INSUFFICIENT;
 	if (three())
 		return THREE;
 	if (fifty())
 		return FIFTY;
-	if (mate(CHECKMATE))
-		return CHECKMATE;
 	return IN_PROGRESS;
 }
 
@@ -1042,7 +1042,7 @@ bool board::check(bitboard_t b1, bool color) const
 /*----------------------------------------------------------------------------*\
  |				     mate()				      |
 \*----------------------------------------------------------------------------*/
-bool board::mate(int type)
+int board::mate()
 {
 
 /* Is the game over due to stalemate or checkmate?  We test for both conditions
@@ -1053,30 +1053,20 @@ bool board::mate(int type)
 	list<move_t> l;
 	bool escape = false;
 
-	/* Check for check.  ;-) */
-	if (type == STALEMATE &&  check(state.piece[ON_MOVE][KING], OFF_MOVE) ||
-	    type == CHECKMATE && !check(state.piece[ON_MOVE][KING], OFF_MOVE))
-		/* We're testing for stalemate and the king is in check, or
-		 * we're testing for checkmate and the king isn't in check.
-		 * Either way, the game isn't over due to whatever we're testing
-		 * for. */
-		return false;
-
-	/* OK.  We're testing for stalemate and the king isn't in check, or
-	 * we're testing for checkmate and the king is in check.  So far, so
-	 * good.  The game is over, right?  Not so fast, asshole.  Look for a
-	 * legal move. */
+	/* Look for a legal move. */
 	generate(l);
 	for (list<move_t>::iterator it = l.begin(); it != l.end() && !escape; it++)
 	{
 		make(*it);
 		if (!check(state.piece[OFF_MOVE][KING], ON_MOVE))
-			/* See?  The game isn't over.  There's a legal move,
-			 * asshole. */
 			escape = true;
 		unmake();
 	}
-	return !escape;
+
+	/* If there's a legal move, the game isn't over.  Otherwise, if the king
+	 * isn't attacked, the game is over due to stalemate.  Otherwise, the
+	 * game is over due to checkmate. */
+	return escape ? IN_PROGRESS : !check(state.piece[ON_MOVE][KING], OFF_MOVE) ? STALEMATE : CHECKMATE;
 }
 
 /*----------------------------------------------------------------------------*\

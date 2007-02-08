@@ -171,3 +171,10 @@
 #define WHITE_SIDE	0x00000000FFFFFFFFULL /* The 16 white side squares. */
 #define BLACK_SIDE	0xFFFFFFFF00000000ULL /* The 16 black side squares. */
 #define CORNERS		0x8100000000000081ULL /* The 4 corner squares.      */
+
+/* Memory units: */
+#define B		1           /* Byte.     */
+#define KB		(1024 * B)  /* Kilobyte. */
+#define MB		(1024 * KB) /* Megabyte. */
+#define GB		(1024 * MB) /* Gigabyte. */
+#define TB		(1024 * GB) /* Terabyte. */

@@ -35,13 +35,15 @@ using namespace std;
 class table
 {
 public:
-	table();
+	table(int mb = 0);
+	~table();
 	void clear();
 	int probe(bitboard_t hash, move_t *move_ptr, int depth, int alpha = INT_MIN, int beta = INT_MAX);
 	void store(bitboard_t hash, move_t move, int depth, int type);
 private:
 	pthread_mutex_t mutex;
-	entry_t data[POLICIES][ENTRIES / 2];
+	int entries;
+	entry_t **data;
 };
 
 #endif

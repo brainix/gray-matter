@@ -127,7 +127,7 @@ private:
 
 	/* These methods test for various conditions. */
 	bool check(bitboard_t b1, bool color) const;
-	bool mate(int type);
+	int mate();
 	bool insufficient() const;
 	bool three() const;
 	bool fifty() const;
