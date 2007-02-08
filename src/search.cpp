@@ -227,8 +227,8 @@ move_t search::negamax(int depth, int alpha, int beta)
 		{
 			/* Recursive case. */
 			if (type == EXACT)
-				it->value = -negamax(depth - 1, -alpha - 1, -alpha).value;
-			if (type != EXACT || it->value > alpha && it->value < beta)
+				it->value = -negamax(depth - 1, -alpha - WEIGHT_PAWN, -alpha).value;
+			if (type != EXACT || alpha < it->value && it->value < beta)
 				it->value = -negamax(depth - 1, -beta, -alpha).value;
 		}
 		board_ptr->unmake();
