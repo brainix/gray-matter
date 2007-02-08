@@ -280,25 +280,40 @@ void xboard::do_sd() const
 \*----------------------------------------------------------------------------*/
 void xboard::do_usermove() const
 {
+
+/* Our opponent has moved.  If the move is legal, we're not in force mode, and
+ * the last move didn't just end the game: formulate a response. */
+
 	move_t m;
 
+	/* Is the move legal? */
 	m.old_x = s[ 9] - 'a'; m.old_y = s[10] - '1';
 	m.new_x = s[11] - 'a'; m.new_y = s[12] - '1';
 	m.promo = char_to_shape(s[13]);
 	if (!test_move(m))
 	{
+		/* No!  The jackass is trying to pull a fast one on us! */
 		printf("Illegal move: ");
 		print_move(m);
 		printf("\n");
 		return;
 	}
 
+	/* Alright, so the move is legal.  Are we in force mode, or did the last
+	 * move just end the game? */
 	board_ptr->make(m);
 	if (force || game_over())
+		/* Yes, either we're in force mode, or the last move just ended
+		 * the game.  Either way, we're not to respond. */
 		return;
 
+	/* Alright, so we're not in force mode, and the last move didn't just
+	 * end the game.  Formulate a response. */
 	if ((m = search_ptr->iterate(THINKING)).value == -WEIGHT_KING)
 	{
+		/* Bloody hell.  At this point, even our best response leads to
+		 * a loss; there's no hope.  We might as well take it like
+		 * samurais and eviscerate ourselves. */
 		printf("resign\n");
 		return;
 	}
@@ -327,6 +342,9 @@ void xboard::do_ping()
 \*----------------------------------------------------------------------------*/
 void xboard::do_hint() const
 {
+
+/* Aww, poor baby.  Our opponent needs us to hold her hand.  Give her a hint. */
+
 	printf("Hint: ");
 	print_move(search_ptr->get_hint());
 	printf("\n");
@@ -337,6 +355,9 @@ void xboard::do_hint() const
 \*----------------------------------------------------------------------------*/
 void xboard::do_undo() const
 {
+
+/* Take back one ply. */
+
 	board_ptr->unmake();
 }
 
@@ -345,6 +366,9 @@ void xboard::do_undo() const
 \*----------------------------------------------------------------------------*/
 void xboard::do_remove() const
 {
+
+/* Take back two plies. */
+
 	board_ptr->unmake();
 	board_ptr->unmake();
 }
@@ -355,7 +379,7 @@ void xboard::do_remove() const
 void xboard::do_hard()
 {
 
-/* Turn on pondering. */
+/* Turn on pondering.  No sleep for the wicked. */
 
 	ponder = true;
 }
@@ -366,7 +390,7 @@ void xboard::do_hard()
 void xboard::do_easy()
 {
 
-/* Turn off pondering. */
+/* Turn off pondering.  Grab a piña colada. */
 
 	ponder = false;
 }
@@ -457,6 +481,9 @@ int xboard::char_to_shape(char c) const
 \*----------------------------------------------------------------------------*/
 bool xboard::test_move(move_t m) const
 {
+
+/* In the current position, is the specified move legal? */
+
 	list<move_t> l;
 
 	board_ptr->generate(l);

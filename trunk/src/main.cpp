@@ -26,20 +26,44 @@
 
 #include <gray.h>
 
+/* Global variables: */
+int mb = 0; /* The size of the transposition (in megabytes). */
+
 /* Function prototypes: */
-int main();
+int main(int argc, char **argv);
 
 /*----------------------------------------------------------------------------*\
  |				     main()				      |
 \*----------------------------------------------------------------------------*/
-int main()
+int main(int argc, char **argv)
 {
+	/* Define the command-line arguments. */
+	static struct option options[] =
+	{
+		{"mb",	required_argument,	0,	'm'},
+		{0,	0,			0,	0}
+	};
+	int index = 0, c;
+
+	/* Parse the command-line arguments. */
+	while ((c = getopt_long(argc, argv, "m", options, &index)) != -1)
+		switch (c)
+		{
+			case 'm':
+				mb = 0;
+				break;
+			default:
+				fprintf();
+				exit(EXIT_FAILURE);
+				break;
+		}
+
 	/* Seed the random number generator. */
 	srand(time(NULL));
 
 	/* Instantiate the classes. */
 	board b;
-	table t;
+	table t(mb);
 	opening o;
 	history h;
 	xboard x;

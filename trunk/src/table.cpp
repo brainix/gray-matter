@@ -29,13 +29,26 @@
 /*----------------------------------------------------------------------------*\
  |				    table()				      |
 \*----------------------------------------------------------------------------*/
-table::table()
+table::table(int mb)
 {
 
 /* Constructor. */
 
 	pthread_mutex_init(&mutex, NULL);
+	entries = mb * MB / sizeof(entry_t);
+	assert(data = malloc(sizeof(entry_t)) * entries);
 	clear();
+}
+
+/*----------------------------------------------------------------------------*\
+ |				    ~table()				      |
+\*----------------------------------------------------------------------------*/
+table::~table()
+{
+
+/* Destructor. */
+
+	free(data);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -43,11 +56,16 @@ table::table()
 \*----------------------------------------------------------------------------*/
 void table::clear()
 {
+	/* Do we even have a transposition table?  If not, don't do a damn
+	 * thing. */
+	if (!entries)
+		return;
+
 	/* Prevent other threads from shitting on our heads. */
 //	pthread_mutex_lock(&mutex);
 
 	for (int policy = DEEP; policy <= FRESH; policy++)
-		for (bitboard_t index = 0; index < ENTRIES / 2; index++)
+		for (bitboard_t index = 0; index < entries / 2; index++)
 		{
 			data[policy][index].hash = 0;
 			data[policy][index].depth = 0;
@@ -63,25 +81,27 @@ void table::clear()
 \*----------------------------------------------------------------------------*/
 int table::probe(bitboard_t hash, move_t *move_ptr, int depth, int alpha, int beta)
 {
-	bitboard_t index = hash % (ENTRIES / 2);
+	bitboard_t index = hash % (entries / 2);
 	int type = USELESS;
+
+	/* Do we even have a transposition table?  If not, don't do a damn
+	 * thing. */
+	if (!entries)
+		return type;
 
 	/* Prevent other threads from shitting on our heads. */
 //	pthread_mutex_lock(&mutex);
 
 	for (int policy = DEEP; policy <= FRESH; policy++)
-		if (data[policy][index].hash == hash &&
-		    data[policy][index].depth >= (unsigned) depth)
+		if (data[policy][index].hash == hash && data[policy][index].depth >= (unsigned) depth)
 		{
 			*move_ptr = data[policy][index].move;
-			if (data[policy][index].type == ALPHA &&
-			    move_ptr->value <= alpha)
+			if (data[policy][index].type == ALPHA && move_ptr->value <= alpha)
 			{
 				move_ptr->value = alpha;
 				type = ALPHA;
 			}
-			if (data[policy][index].type == BETA &&
-			    move_ptr->value >= beta)
+			if (data[policy][index].type == BETA && move_ptr->value >= beta)
 			{
 				move_ptr->value = beta;
 				type = BETA;
@@ -100,7 +120,12 @@ int table::probe(bitboard_t hash, move_t *move_ptr, int depth, int alpha, int be
 \*----------------------------------------------------------------------------*/
 void table::store(bitboard_t hash, move_t move, int depth, int type)
 {
-	bitboard_t index = hash % (ENTRIES / 2);
+	bitboard_t index = hash % (entries / 2);
+
+	/* Do we even have a transposition table?  If not, don't do a damn
+	 * thing. */
+	if (!entries)
+		return;
 
 	/* Prevent other threads from shitting on our heads. */
 //	pthread_mutex_lock(&mutex);

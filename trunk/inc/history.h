@@ -35,12 +35,13 @@ class history
 {
 public:
 	history();
+	~history();
 	void clear();
 	int probe(bool color, move_t move);
 	void store(bool color, move_t move, int depth);
 private:
 	pthread_mutex_t mutex;
-	int data[COLORS][8][8][8][8];
+	int *****data;
 };
 
 #endif
