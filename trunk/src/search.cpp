@@ -150,7 +150,7 @@ move_t search::iterate(bool pondering)
 	 * reached the maximum depth (either way). */
 	for (int depth = !pondering ? 0 : pv.size(); depth <= max_depth; depth++)
 	{
-		negamax(depth, -WEIGHT_KING, WEIGHT_KING);
+		negascout(depth, -WEIGHT_KING, WEIGHT_KING);
 		if (timeout)
 		{
 			/* Oops.  The alarm has interrupted this iteration; the
@@ -175,9 +175,9 @@ move_t search::iterate(bool pondering)
 }
 
 /*----------------------------------------------------------------------------*\
- |				   negamax()				      |
+ |				  negascout()				      |
 \*----------------------------------------------------------------------------*/
-move_t search::negamax(int depth, int alpha, int beta)
+move_t search::negascout(int depth, int alpha, int beta)
 {
 
 /* From the current position, search for the best move.  This method implements
@@ -227,9 +227,9 @@ move_t search::negamax(int depth, int alpha, int beta)
 		{
 			/* Recursive case. */
 			if (type == EXACT)
-				it->value = -negamax(depth - 1, -alpha - WEIGHT_PAWN, -alpha).value;
+				it->value = -negascout(depth - 1, -alpha - WEIGHT_PAWN, -alpha).value;
 			if (type != EXACT || alpha < it->value && it->value < beta)
-				it->value = -negamax(depth - 1, -beta, -alpha).value;
+				it->value = -negascout(depth - 1, -beta, -alpha).value;
 		}
 		board_ptr->unmake();
 
