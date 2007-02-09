@@ -71,7 +71,7 @@ history::~history()
 					free(data[color][old_x][old_y][new_x]);
 				free(data[color][old_x][old_y]);
 			}
-			free(data[color][old_y]);
+			free(data[color][old_x]);
 		}
 		free(data[color]);
 	}
