@@ -271,7 +271,7 @@ void search::extract(bool pondering)
 	{
 		pv.push_back(m);
 		board_ptr->make(m);
-		if (pv.size() == max_depth)
+		if (pv.size() == (unsigned) max_depth)
 			break;
 	}
 

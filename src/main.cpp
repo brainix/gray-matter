@@ -53,7 +53,6 @@ int main(int argc, char **argv)
 				mb = 0;
 				break;
 			default:
-				fprintf();
 				exit(EXIT_FAILURE);
 				break;
 		}

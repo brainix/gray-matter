@@ -42,7 +42,7 @@ public:
 	void store(bitboard_t hash, move_t move, int depth, int type);
 private:
 	pthread_mutex_t mutex;
-	int entries;
+	bitboard_t entries;
 	entry_t **data;
 };
 
