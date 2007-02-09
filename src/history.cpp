@@ -35,7 +35,22 @@ history::history()
 /* Constructor. */
 
 	pthread_mutex_init(&mutex, NULL);
-	assert(data = (int *****) malloc(sizeof(int) * COLORS * 8 * 8 * 8 * 8));
+//	data = (int *****) malloc(sizeof(int) * COLORS * 8 * 8 * 8 * 8);
+	data = malloc(COLORS * sizeof(int ****));
+	for (int color = WHITE; color <= BLACK; color++)
+	{
+		data[color] = malloc(8 * sizeof(int ***));
+		for (int old_x = 0; old_x <= 7; old_x++)
+		{
+			data[color][old_x] = malloc(8 * sizeof(int **));
+			for (int old_y = 0; old_y <= 7; old_y++)
+			{
+				data[color][old_x][old_y] = malloc(8 * sizeof(int *));
+				for (int new_x = 0; new_x <= 7; new_x++)
+					data[color][old_x][old_y][new_x] = malloc(8 * sizeof(int));
+			}
+		}
+	}
 	clear();
 }
 
