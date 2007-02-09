@@ -50,6 +50,9 @@ table::~table()
 
 /* Destructor. */
 
+	for (int policy = DEEP; policy <= FRESH; policy++)
+		free(data[policy]);
+	free(data);
 }
 
 /*----------------------------------------------------------------------------*\
