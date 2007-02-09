@@ -60,7 +60,7 @@ private:
 	history *history_ptr; /* History table object.                       */
 	xboard *xboard_ptr;   /* Chess Engine Communication Protocol object. */
 
-	move_t negamax(int depth, int alpha, int beta);
+	move_t negascout(int depth, int alpha, int beta);
 	void extract(bool pondering);
 	static bool compare(move_t m1, move_t m2);
 };
