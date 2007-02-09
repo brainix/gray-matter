@@ -36,8 +36,9 @@ table::table(int mb)
 
 	pthread_mutex_init(&mutex, NULL);
 	entries = mb * MB / sizeof(entry_t);
-	data = (entry_t **) malloc(sizeof(entry_t) * entries);
-	assert(data != NULL);
+	data = (entry_t **) malloc(POLICIES * sizeof(entry_t *));
+	for (int policy = DEEP; policy <= FRESH; policy++)
+		data[policy] = (entry_t *) malloc(entries / 2 * sizeof(entry_t));
 	clear();
 }
 
