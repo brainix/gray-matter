@@ -36,7 +36,7 @@ table::table(int mb)
 
 	pthread_mutex_init(&mutex, NULL);
 	entries = mb * MB / sizeof(entry_t);
-	assert(data = malloc(sizeof(entry_t)) * entries);
+	assert(data = (entry_t **) malloc(sizeof(entry_t) * entries));
 	clear();
 }
 
