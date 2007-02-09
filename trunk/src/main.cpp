@@ -27,7 +27,7 @@
 #include <gray.h>
 
 /* Global variables: */
-int mb = 0; /* The size of the transposition (in megabytes). */
+int mb = 1; /* The size of the transposition (in megabytes). */
 
 /* Function prototypes: */
 int main(int argc, char **argv);
