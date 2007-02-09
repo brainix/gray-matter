@@ -50,7 +50,7 @@ int main(int argc, char **argv)
 		switch (c)
 		{
 			case 'm':
-				mb = 0;
+				assert(mb = atoi(optarg));
 				break;
 			default:
 				exit(EXIT_FAILURE);

@@ -40,23 +40,6 @@
 /* In an excess of time, the maximum search depth (in plies): */
 #define DEPTH	16
 
-/*
- | The number of transposition table entries.  Each entry takes 16 bytes.  Use
- | the following chart for reference; make the table as big as you can afford.
- |
- |	   65536 entries:   1 MB
- |	  131072 entries:   2 MB
- |	  262144 entries:   4 MB
- |	  524288 entries:   8 MB
- |	 1048576 entries:  16 MB
- |	 2097152 entries:  32 MB
- |	 4194304 entries:  64 MB
- |	 8388608 entries: 128 MB
- |	16777216 entries: 256 MB
- |	33554432 entries: 512 MB
- */
-#define ENTRIES	1048576
-
 /* The opening book file name: */
 #define BOOK	"book.pgn"
 
