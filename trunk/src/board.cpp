@@ -647,8 +647,8 @@ void board::precomp_king() const
 
 	/*
 	 | Abraham Maslow once noted, "If the only tool you have is a hammer,
-	 | you tend to see every problem as a nail."  Well, the only tool I have
-	 | is a bitboard, so I tend to see every problem as a headache.
+	 | you tend to see every problem as a [thumb]nail."  Well, the only tool
+	 | I have is a bitboard, so I tend to see every problem as a headache.
 	 |
 	 | These bitboards represent the squares which mustn't be occupied or
 	 | attacked on the respective sides in order for the respective kings to
