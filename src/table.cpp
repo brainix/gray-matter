@@ -35,7 +35,7 @@ table::table(int mb)
 /* Constructor. */
 
 	pthread_mutex_init(&mutex, NULL);
-	entries = mb * MB / sizeof(entry_t);
+	assert(entries = mb * MB / sizeof(entry_t));
 	assert(data = (entry_t **) malloc(POLICIES * sizeof(entry_t *)));
 	for (int policy = DEEP; policy <= FRESH; policy++)
 		assert(data[policy] = (entry_t *) malloc(entries / 2 * sizeof(entry_t)));
@@ -60,11 +60,6 @@ table::~table()
 \*----------------------------------------------------------------------------*/
 void table::clear()
 {
-	/* Do we even have a transposition table?  If not, don't do a damn
-	 * thing. */
-	if (!entries)
-		return;
-
 	/* Prevent other threads from shitting on our heads. */
 //	pthread_mutex_lock(&mutex);
 
@@ -87,11 +82,6 @@ int table::probe(bitboard_t hash, move_t *move_ptr, int depth, int alpha, int be
 {
 	bitboard_t index = hash % (entries / 2);
 	int type = USELESS;
-
-	/* Do we even have a transposition table?  If not, don't do a damn
-	 * thing. */
-	if (!entries)
-		return type;
 
 	/* Prevent other threads from shitting on our heads. */
 //	pthread_mutex_lock(&mutex);
@@ -125,11 +115,6 @@ int table::probe(bitboard_t hash, move_t *move_ptr, int depth, int alpha, int be
 void table::store(bitboard_t hash, move_t move, int depth, int type)
 {
 	bitboard_t index = hash % (entries / 2);
-
-	/* Do we even have a transposition table?  If not, don't do a damn
-	 * thing. */
-	if (!entries)
-		return;
 
 	/* Prevent other threads from shitting on our heads. */
 //	pthread_mutex_lock(&mutex);
