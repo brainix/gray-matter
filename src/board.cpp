@@ -281,6 +281,10 @@ void board::make(move_t m)
 			rotations[angle][color].push_back(rotation[angle][color]);
 	hashes.push_back(hash);
 
+	/* If we're making a null move, skip a bunch of this nonsense. */
+	if (m.old_x == 0 && m.old_y == 0 && m.new_x == 0 && m.new_y == 0)
+		goto end;
+
 	/* Move the piece and remove the captured piece. */
 	for (int shape = PAWN; shape <= KING; shape++)
 	{
@@ -388,6 +392,7 @@ void board::make(move_t m)
 	hash ^= state.en_passant == -1 ? key_no_en_passant : key_en_passant[state.en_passant];
 
 	/* Set the other color on move. */
+end:
 	state.whose = !state.whose;
 	hash ^= key_whose;
 
