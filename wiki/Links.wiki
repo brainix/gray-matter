@@ -1,10 +1,10 @@
 #summary Relevant links.
 
 =Chess Engine Programming=
+  * [http://www.gamedev.net/reference/programming/features/chess1/ Chess Programming] - Currently down for maintenance.  :-(
+  * [http://www.frayn.net/beowulf/theory.html Computer Chess Programming Theory] - Overviews of various concepts by Colin Frayn, the author of Beowulf.
   * [http://www.cis.uab.edu/hyatt/pubs.html Bob Hyatt's Online Technical Papers] - In-depth discussions of bitboards, hashing, and parallel search by the author of Crafty.
   * [http://www.tim-mann.org/xboard/engine-intf.html Chess Engine Communication Protocol] - By Tim Mann, the author of XBoard.
-  * [http://www.frayn.net/beowulf/theory.html Computer Chess Programming Theory] - Overviews of various concepts by Colin Frayn, the author of Beowulf.
-  * [http://www.gamedev.net/reference/programming/features/chess1/ Chess Programming]
 
 =Fun=
   * [http://www.scottmccloud.com/comics/chess/chess.html My Obsession with Chess] - A comic by Scott !McCloud.
