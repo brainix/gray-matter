@@ -7,4 +7,4 @@
   * [http://www.gamedev.net/reference/programming/features/chess1/ Chess Programming]
 
 =Fun=
-  * [http://www.scottmccloud.com/comics/chess/chess.html My Obsession with Chess] - A comic by Scott McCloud.
+  * [http://www.scottmccloud.com/comics/chess/chess.html My Obsession with Chess] - A comic by Scott !McCloud.
