@@ -65,6 +65,7 @@ private:
 	void do_st() const;
 	void do_sd() const;
 	void do_usermove() const;
+	void do_question() const;
 	void do_ping();
 	void do_hint() const;
 	void do_undo() const;
