@@ -86,6 +86,8 @@ void xboard::loop()
 			do_sd();
 		else if (!strncmp(s, "usermove", 8))
 			do_usermove();
+		else if (!strncmp(s, "?", 1))
+			do_question();
 		else if (!strncmp(s, "ping", 4))
 			do_ping();
 		else if (!strncmp(s, "hint", 4))
@@ -322,6 +324,14 @@ void xboard::do_usermove() const
 	print_move(m);
 	printf("\n");
 	game_over();
+}
+
+/*----------------------------------------------------------------------------*\
+ |				 do_question()				      |
+\*----------------------------------------------------------------------------*/
+void xboard::do_question() const
+{
+	search_ptr->set_timeout(true);
 }
 
 /*----------------------------------------------------------------------------*\

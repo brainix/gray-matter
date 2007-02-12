@@ -45,6 +45,7 @@ public:
 	void set_time(int t);
 	void set_depth(int d);
 	void set_output(bool o);
+	void set_timeout(bool t);
 	move_t iterate(bool pondering);
 	move_t get_hint() const;
 private:
