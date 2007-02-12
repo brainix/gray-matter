@@ -1,1 +1,3 @@
 #summary Mission statement.
+
+[http://gray-matter.googlecode.com/svn/trunk/doc/credits The Gray Matter Team]'s mission is to develop a competitive, pedagogical chess engine.  And, more importantly, to have fun while doing it!
