@@ -1,0 +1,4 @@
+#summary This page contains links relevant to Gray Matter.
+
+=Chess Engine Programming=
+[http://www.cis.uab.edu/hyatt/pubs.html Bob Hyatt's Online Technical Papers]
