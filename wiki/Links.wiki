@@ -2,3 +2,6 @@
 
 =Chess Engine Programming=
 [http://www.cis.uab.edu/hyatt/pubs.html Bob Hyatt's Online Technical Papers]
+[http://www.tim-mann.org/xboard/engine-intf.html Chess Engine Communication Protocol]
+[http://www.frayn.net/beowulf/theory.html Computer Chess Programming Theory]
+[http://www.gamedev.net/reference/programming/features/chess1/ Chess Programming]
