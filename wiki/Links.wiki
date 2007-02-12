@@ -3,7 +3,7 @@
 =Chess Engine Programming=
   * [http://www.cis.uab.edu/hyatt/pubs.html Bob Hyatt's Online Technical Papers] - By the author of Crafty.
   * [http://www.tim-mann.org/xboard/engine-intf.html Chess Engine Communication Protocol] - By Tim Mann, the author of XBoard.
-  * [http://www.frayn.net/beowulf/theory.html Computer Chess Programming Theory]
+  * [http://www.frayn.net/beowulf/theory.html Computer Chess Programming Theory] - By Colin Frayn, the author of Beowulf.
   * [http://www.gamedev.net/reference/programming/features/chess1/ Chess Programming]
 
 =Fun=
