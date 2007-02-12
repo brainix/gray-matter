@@ -149,11 +149,12 @@
 #define PONDERING	1 /* Pondering (on our opponent's time). */
 
 /* Convenient bitboards: */
-#define CENTER		0x0000001818000000ULL /* The 4 center squares.      */
-#define EXPANDED_CENTER	0x00003C3C3C3C0000ULL /* The 16 center squares.     */
-#define WHITE_SIDE	0x00000000FFFFFFFFULL /* The 16 white side squares. */
-#define BLACK_SIDE	0xFFFFFFFF00000000ULL /* The 16 black side squares. */
-#define CORNERS		0x8100000000000081ULL /* The 4 corner squares.      */
+#define CENTER		0x0000001818000000ULL /* The 4 center squares.              */
+#define EXPANDED_CENTER	0x00003C3C3C3C0000ULL /* The 16 center squares.             */
+#define PRINCIPAL_DIAGS	0x8142241818244281ULL /* The 16 principal diagonal squares. */
+#define WHITE_SIDE	0x00000000FFFFFFFFULL /* The 16 white side squares.         */
+#define BLACK_SIDE	0xFFFFFFFF00000000ULL /* The 16 black side squares.         */
+#define CORNERS		0x8100000000000081ULL /* The 4 corner squares.              */
 
 /* Memory units: */
 #define B		1           /* Byte.     */
