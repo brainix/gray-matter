@@ -6,6 +6,5 @@
   * [http://www.frayn.net/beowulf/theory.html Computer Chess Programming Theory]
   * [http://www.gamedev.net/reference/programming/features/chess1/ Chess Programming]
 
-
-
-
+=Fun=
+  * [http://www.scottmccloud.com/comics/chess/chess.html My Obsession with Chess]
