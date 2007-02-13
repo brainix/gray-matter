@@ -159,14 +159,11 @@ move_t search::iterate(bool pondering)
 	for (int depth = !pondering ? 0 : pv.size(); depth <= max_depth; depth++)
 	{
 		negascout(depth, -WEIGHT_KING, WEIGHT_KING);
-		if (timeout)
-		{
+		if (timeout && depth)
 			/* Oops.  The alarm has interrupted this iteration; the
 			 * current results are incomplete and unreliable.  Go
 			 * with the last iteration's results. */
-			assert(depth);
 			break;
-		}
 		extract(pondering);
 		if (output)
 			xboard_ptr->print_output(depth + 1, pv.front().value, (clock() - start) / CLOCKS_PER_SEC, nodes, pv);
@@ -188,11 +185,21 @@ move_t search::iterate(bool pondering)
 move_t search::negascout(int depth, int alpha, int beta)
 {
 
-/* From the current position, search for the best move.  This method implements
- * the clever negamax algorithm.  Negamax produces the same results as minimax
- * but is simpler to code.  Instead of juggling around two players, max and min,
- * negamax treats both players as max and negates the scores and negates and
- * swaps the values of alpha and beta on each recursive call. */
+/*
+ | From the current position, search for the best move.  This method implements
+ | the NegaMax algorithm.  NegaMax produces the same results as MiniMax but is
+ | simpler to code.  Instead of juggling around two players, Max and Min,
+ | NegaMax treats both players as Max and negates the scores and negates and
+ | swaps the values of alpha and beta on each recursive call.
+ |
+ | On top of NegaMax, this method implements the NegaScout algorithm.  NegaScout
+ | assumes the first node is in the principal variation and searches this node
+ | with a full alpha-beta window.  NegaScout tests its assumption by searching
+ | the rest of the nodes with a null window where alpha and beta are equal.  If
+ | the test fails, NegaScout assumes the node at which it failed is in the
+ | principal variation and so on.  NegaScout works best when there is good move
+ | re-ordering and typically yields a 10% performance increase.
+ */
 
 	list<move_t> l;
 	list<move_t>::iterator it;
@@ -202,8 +209,8 @@ move_t search::negascout(int depth, int alpha, int beta)
 	bitboard_t hash = board_ptr->get_hash();
 
 	/* Before anything else, do some Research Re: search & Research.  ;-)
-	 * If we've already sufficiently examined this position, return the best
-	 * move from our previous search. */
+	 * (Apologies to Aske Plaat.)  If we've already sufficiently examined
+	 * this position, return the best move from our previous search. */
 	if (table_ptr->probe(hash, &m, depth, alpha, beta) != USELESS)
 		return m;
 
@@ -235,9 +242,10 @@ move_t search::negascout(int depth, int alpha, int beta)
 			it->value = board_ptr->evaluate();
 		else
 		{
-			/* Recursive case. */
+			/* Recursive case - null window. */
 			if (type == EXACT)
 				it->value = -negascout(depth - 1, -alpha - WEIGHT_PAWN, -alpha).value;
+			/* Recursive case - full alpha-beta window. */
 			if (type != EXACT || alpha < it->value && it->value < beta)
 				it->value = -negascout(depth - 1, -beta, -alpha).value;
 		}
@@ -257,7 +265,8 @@ move_t search::negascout(int depth, int alpha, int beta)
 		}
 	}
 
-	/* Find the best move in the list. */
+	/* Find the best move in the list.  This loop seems wasteful.  Can
+	 * anyone think of a better way? */
 	for (m = l.front(), it = l.begin(); it != l.end(); it++)
 		if (it->value > m.value)
 			m = *it;
