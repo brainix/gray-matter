@@ -927,7 +927,7 @@ void board::generate_pawn(list<move_t> &l) const
 
 	/* If our pawn is on our fifth row, and our opponent's pawn is beside
 	 * our pawn, and, as her last move, our opponent advanced her pawn two
-	 * squares, we can perform an en passant. */
+	 * squares, then we can perform an en passant. */
 //	if (state.en_passant != -1)
 //	{
 //		m.old_y = (m.new_y = ON_MOVE ? 2 : 5) + (ON_MOVE ? 1 : -1);
