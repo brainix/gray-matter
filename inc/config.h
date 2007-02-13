@@ -40,6 +40,9 @@
 /* In an excess of time, the maximum search depth (in plies): */
 #define DEPTH	16
 
+/* The default size of the transposition table (in megabytes): */
+#define MB	256
+
 /* The opening book file name: */
 #define BOOK	"book.pgn"
 
