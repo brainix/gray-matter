@@ -199,8 +199,8 @@ move_t search::negascout(int depth, int alpha, int beta)
 	move_t m;
 	int type = ALPHA;
 
-	/* Before anything else, do some research to avoid re-search.  ;-)  If
-	 * we've already sufficiently examined this position, return the best
+	/* Before anything else, do some Research Re: search & Research.  ;-)
+	 * If we've already sufficiently examined this position, return the best
 	 * move from our previous search. */
 	if (table_ptr->probe(board_ptr->get_hash(), &m, depth, alpha, beta) != USELESS)
 		return m;
