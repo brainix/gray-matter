@@ -198,11 +198,13 @@ move_t search::negascout(int depth, int alpha, int beta)
 	list<move_t>::iterator it;
 	move_t m;
 	int type = ALPHA;
+	bool whose = board_ptr->get_whose();
+	bitboard_t hash = board_ptr->get_hash();
 
 	/* Before anything else, do some Research Re: search & Research.  ;-)
 	 * If we've already sufficiently examined this position, return the best
 	 * move from our previous search. */
-	if (table_ptr->probe(board_ptr->get_hash(), &m, depth, alpha, beta) != USELESS)
+	if (table_ptr->probe(hash, &m, depth, alpha, beta) != USELESS)
 		return m;
 
 	/* If this position is terminal (the end of the game), there's no legal
@@ -221,7 +223,7 @@ move_t search::negascout(int depth, int alpha, int beta)
 	nodes++;
 	board_ptr->generate(l);
 	for (it = l.begin(); it != l.end(); it++)
-		it->value = history_ptr->probe(board_ptr->get_whose(), *it);
+		it->value = history_ptr->probe(whose, *it);
 	l.sort(compare);
 
 	/* Score each move in the list. */
@@ -250,7 +252,7 @@ move_t search::negascout(int depth, int alpha, int beta)
 		if (it->value >= beta)
 		{
 			it->value = beta;
-			table_ptr->store(board_ptr->get_hash(), *it, depth, BETA);
+			table_ptr->store(hash, *it, depth, BETA);
 			return *it;
 		}
 	}
@@ -259,8 +261,8 @@ move_t search::negascout(int depth, int alpha, int beta)
 	for (m = l.front(), it = l.begin(); it != l.end(); it++)
 		if (it->value > m.value)
 			m = *it;
-	table_ptr->store(board_ptr->get_hash(), m, depth, type);
-	history_ptr->store(board_ptr->get_whose(), m, depth);
+	table_ptr->store(hash, m, depth, type);
+	history_ptr->store(whose, m, depth);
 	return m;
 }
 
