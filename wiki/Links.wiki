@@ -1,7 +1,7 @@
 #summary Relevant links.
 
 =Chess Engine Programming=
-  * [http://www.gamedev.net/reference/programming/features/chess1/ Chess Programming] - Currently down for maintenance.  :-(
+  * [http://www.gamedev.net/reference/programming/features/chess1/ Chess Programming] - Overviews of various concepts by François-Dominic Laramée, the author of Java Chess.
   * [http://www.frayn.net/beowulf/theory.html Computer Chess Programming Theory] - Overviews of various concepts by Colin Frayn, the author of Beowulf.
   * [http://www.cis.uab.edu/hyatt/pubs.html Online Technical Papers] - In-depth discussions of bitboards, hashing, and parallel search by Bob Hyatt, the author of Crafty.
   * [http://www.tim-mann.org/xboard/engine-intf.html Chess Engine Communication Protocol] - By Tim Mann, the author of XBoard.
