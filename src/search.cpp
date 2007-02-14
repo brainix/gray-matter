@@ -215,7 +215,7 @@ move_t search::negascout(int depth, int alpha, int beta)
 		return m;
 
 	/* If this position is terminal (the end of the game), there's no legal
-	 * move.  All we have to do is determine if the game is drawn or won.
+	 * move.  All we have to do is determine if the game is drawn or lost.
 	 * Check for this case.  Subtle!  We couldn't have just won because our
 	 * opponent moved last. */
 	m.promo = m.new_y = m.new_x = m.old_y = m.old_x = 0;
