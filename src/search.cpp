@@ -43,8 +43,8 @@ search::search()
 	output = false;
 	pthread_mutex_init(&mutex, NULL);
 	pthread_cond_init(&cond, NULL);
-	stat = IDLING;
-	pthread_create(thread, NULL, start, NULL);
+	status = IDLING;
+	pthread_create(&thread, NULL, start, NULL);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -138,14 +138,14 @@ void *search::start(void *arg)
 {
 	while (true)
 	{
-		stat = IDLING;
+		status = IDLING;
 
 		pthread_mutex_lock(&mutex);
-		while (stat == IDLING)
+		while (status == IDLING)
 			pthread_cond_wait(&cond, &mutex);
 		pthread_mutex_unlock(&mutex);
 
-		switch (stat)
+		switch (status)
 		{
 			case THINKING:  xboard_ptr->print_result(iterate(THINKING));  break;
 			case PONDERING: xboard_ptr->print_result(iterate(PONDERING)); break;
@@ -163,7 +163,7 @@ void search::change(int s)
 /* Change the search status (to idling, thinking, pondering, or quitting). */
 
 	pthread_mutex_lock(&mutex);
-	if (stat != s && !(timeout = (stat = s) == IDLING))
+	if (status != s && !(timeout = (status = s) == IDLING))
 		pthread_cond_signal(&cond);
 	pthread_mutex_unlock(&mutex);
 }

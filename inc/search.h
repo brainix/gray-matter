@@ -59,7 +59,7 @@ private:
 
 	pthread_mutex_t mutex; /* */
 	pthread_cond_t cond;   /* */
-	int stat;              /* */
+	int status;            /* */
 	pthread_t thread;      /* */
 
 	board *board_ptr;      /* Board representation object.                */
