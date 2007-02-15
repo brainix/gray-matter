@@ -146,9 +146,9 @@ void *search::start(void *arg)
 
 		switch (stat)
 		{
-			case THINKING:  iterate(THINKING);  break;
-			case PONDERING: iterate(PONDERING); break;
-			case QUITTING:  pthread_exit(NULL); break;
+			case THINKING:  xboard_ptr->print_result(iterate(THINKING));  break;
+			case PONDERING: xboard_ptr->print_result(iterate(PONDERING)); break;
+			case QUITTING:  pthread_exit(NULL);                           break;
 		}
 	}
 }
