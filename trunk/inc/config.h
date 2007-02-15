@@ -151,7 +151,8 @@
 #define IDLING		0 /* Masturbating.                       */
 #define THINKING	1 /* Thinking (on our own time).         */
 #define PONDERING	2 /* Pondering (on our opponent's time). */
-#define SEARCH_STATS	3
+#define QUITTING	3 /* Terminating the search thread.      */
+#define SEARCH_STATS	4
 
 /* Convenient bitboards: */
 #define CENTER		0x0000001818000000ULL /* The 4 center squares.              */

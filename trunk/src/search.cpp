@@ -70,6 +70,29 @@ void search::handle(int num)
 }
 
 /*----------------------------------------------------------------------------*\
+ |				    start()				      |
+\*----------------------------------------------------------------------------*/
+void *search::start(void *arg)
+{
+	while (true)
+	{
+		stat = IDLING;
+
+		pthread_mutex_lock(&mutex);
+		while (stat == IDLING)
+			pthread_cond_wait(&cond, &mutex);
+		pthread_mutex_unlock(&mutex);
+
+		switch (stat)
+		{
+			case THINKING:  iterate(THINKING);  break;
+			case PONDERING: iterate(PONDERING); break;
+			case QUITTING:  pthread_exit(NULL); break;
+		}
+	}
+}
+
+/*----------------------------------------------------------------------------*\
  |				     bind()				      |
 \*----------------------------------------------------------------------------*/
 void search::bind(board *b, table *t, history *h, xboard *x)
@@ -120,6 +143,17 @@ void search::set_output(bool o)
 /* Set whether to print thinking output. */
 
 	output = o;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   set_stat()				      |
+\*----------------------------------------------------------------------------*/
+void search::set_stat(int s)
+{
+
+/* Set the search status (to idling, thinking, or pondering). */
+
+	stat = s;
 }
 
 /*----------------------------------------------------------------------------*\

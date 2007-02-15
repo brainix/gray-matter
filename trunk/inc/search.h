@@ -41,11 +41,13 @@ public:
 	search();
 	~search();
 	static void handle(int num);
+	static void *start(void *arg);
 	void bind(board *b, table *t, history *h, xboard *x);
 	void clear() const;
 	void set_time(int t);
 	void set_depth(int d);
 	void set_output(bool o);
+	void set_stat(int s);
 	void set_timeout(bool t);
 	move_t iterate(int s);
 	move_t get_hint() const;
