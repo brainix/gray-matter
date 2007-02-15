@@ -76,6 +76,7 @@ history::~history()
 		free(data[color]);
 	}
 	free(data);
+	pthread_mutex_destroy(&mutex);
 }
 
 /*----------------------------------------------------------------------------*\
