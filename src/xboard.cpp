@@ -331,7 +331,7 @@ void xboard::do_usermove() const
 \*----------------------------------------------------------------------------*/
 void xboard::do_question() const
 {
-	search_ptr->set_timeout(true);
+	search_ptr->change(IDLING);
 }
 
 /*----------------------------------------------------------------------------*\
