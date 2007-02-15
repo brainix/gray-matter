@@ -106,9 +106,6 @@ void xboard::loop()
 			do_nopost();
 		else
 			printf("Error (unknown command): %s\n", s);
-
-		if (ponder && !strncmp(s, "usermove", 8))
-			search_ptr->iterate(PONDERING);
 	}
 }
 
@@ -127,6 +124,26 @@ void xboard::print_output(int ply, int value, int time, int nodes, list<move_t> 
 		print_move(*it);
 	}
 	printf("\n");
+}
+
+/*----------------------------------------------------------------------------*\
+ |				 print_result()				      |
+\*----------------------------------------------------------------------------*/
+void xboard::print_result(move_t m) const
+{
+	if (m.value == -WEIGHT_KING)
+	{
+		/* Bloody hell.  At this point, even our best response leads to
+		 * a loss; there's no hope.  We might as well take it like
+		 * samurais and eviscerate ourselves. */
+		printf("resign\n");
+		return;
+	}
+	board_ptr->make(m);
+	printf("move ");
+	print_move(m);
+	printf("\n");
+	game_over();
 }
 
 /*----------------------------------------------------------------------------*\
@@ -216,19 +233,8 @@ void xboard::do_force()
 \*----------------------------------------------------------------------------*/
 void xboard::do_go()
 {
-	move_t m;
-
 	force = false;
-	if ((m = search_ptr->iterate(THINKING)).value == -WEIGHT_KING)
-	{
-		printf("resign\n");
-		return;
-	}
-	board_ptr->make(m);
-	printf("move ");
-	print_move(m);
-	printf("\n");
-	game_over();
+	print_result(search_ptr->iterate(THINKING));
 }
 
 /*----------------------------------------------------------------------------*\
@@ -311,19 +317,7 @@ void xboard::do_usermove() const
 
 	/* Alright, so we're not in force mode, and the last move didn't just
 	 * end the game.  Formulate a response. */
-	if ((m = search_ptr->iterate(THINKING)).value == -WEIGHT_KING)
-	{
-		/* Bloody hell.  At this point, even our best response leads to
-		 * a loss; there's no hope.  We might as well take it like
-		 * samurais and eviscerate ourselves. */
-		printf("resign\n");
-		return;
-	}
-	board_ptr->make(m);
-	printf("move ");
-	print_move(m);
-	printf("\n");
-	game_over();
+	print_result(search_ptr->iterate(THINKING));
 }
 
 /*----------------------------------------------------------------------------*\

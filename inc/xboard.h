@@ -42,6 +42,7 @@ public:
 	void bind(board *b, class search *s);
 	void loop();
 	void print_output(int ply, int value, int time, int nodes, list<move_t> &pv) const;
+	void print_result(move_t m) const;
 	void print_move(move_t m) const;
 private:
 	char s[80];
