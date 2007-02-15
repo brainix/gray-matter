@@ -35,7 +35,7 @@ using namespace std;
 class table
 {
 public:
-	table(int mb = 1);
+	table(int mb = TABLE_MB);
 	~table();
 	void clear();
 	int probe(bitboard_t hash, move_t *move_ptr, int depth, int alpha = INT_MIN, int beta = INT_MAX);

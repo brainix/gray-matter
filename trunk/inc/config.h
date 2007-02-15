@@ -148,8 +148,10 @@
 #define ENTRY_TYPES	4
 
 /* */
-#define THINKING	0 /* Thinking (on our own time).         */
-#define PONDERING	1 /* Pondering (on our opponent's time). */
+#define IDLING		0 /* Masturbating.                       */
+#define THINKING	1 /* Thinking (on our own time).         */
+#define PONDERING	2 /* Pondering (on our opponent's time). */
+#define SEARCH_STATS	3
 
 /* Convenient bitboards: */
 #define CENTER		0x0000001818000000ULL /* The 4 center squares.              */

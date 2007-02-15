@@ -39,6 +39,7 @@ class search
 {
 public:
 	search();
+	~search();
 	static void handle(int num);
 	void bind(board *b, table *t, history *h, xboard *x);
 	void clear() const;
@@ -46,23 +47,27 @@ public:
 	void set_depth(int d);
 	void set_output(bool o);
 	void set_timeout(bool t);
-	move_t iterate(bool pondering);
+	move_t iterate(int s);
 	move_t get_hint() const;
 private:
-	list<move_t> pv;      /* Principal variation.                        */
-	move_t hint;          /* Opponent's best move.                       */
-	int max_time;         /* Maximum search time.                        */
-	int max_depth;        /* Maximum search depth.                       */
-	int nodes;            /* Number of nodes searched.                   */
-	bool output;          /* Whether to print thinking output.           */
+	list<move_t> pv;       /* Principal variation.                        */
+	move_t hint;           /* Opponent's best move.                       */
+	int max_time;          /* Maximum search time.                        */
+	int max_depth;         /* Maximum search depth.                       */
+	int nodes;             /* Number of nodes searched.                   */
+	bool output;           /* Whether to print thinking output.           */
 
-	board *board_ptr;     /* Board representation object.                */
-	table *table_ptr;     /* Transposition table object.                 */
-	history *history_ptr; /* History table object.                       */
-	xboard *xboard_ptr;   /* Chess Engine Communication Protocol object. */
+	pthread_mutex_t mutex; /* */
+	pthread_cond_t cond;   /* */
+	int stat;              /* */
+
+	board *board_ptr;      /* Board representation object.                */
+	table *table_ptr;      /* Transposition table object.                 */
+	history *history_ptr;  /* History table object.                       */
+	xboard *xboard_ptr;    /* Chess Engine Communication Protocol object. */
 
 	move_t negascout(int depth, int alpha, int beta);
-	void extract(bool pondering);
+	void extract(int s);
 	static bool compare(move_t m1, move_t m2);
 };
 

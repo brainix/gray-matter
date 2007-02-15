@@ -41,6 +41,21 @@ search::search()
 	max_time = INT_MAX;
 	max_depth = DEPTH;
 	output = false;
+	pthread_mutex_init(&mutex, NULL);
+	pthread_cond_init(&cond, NULL);
+	stat = IDLING;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   ~search()				      |
+\*----------------------------------------------------------------------------*/
+search::~search()
+{
+
+/* Destructor. */
+
+	pthread_cond_destroy(&cond);
+	pthread_mutex_destroy(&mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -118,7 +133,7 @@ void search::set_timeout(bool t)
 /*----------------------------------------------------------------------------*\
  |				   iterate()				      |
 \*----------------------------------------------------------------------------*/
-move_t search::iterate(bool pondering)
+move_t search::iterate(int s)
 {
 
 /* Perform iterative deepening.  This method handles both thinking (on our own
@@ -128,7 +143,7 @@ move_t search::iterate(bool pondering)
 	timeout = false;
 	clock_t start = clock();
 
-	if (!pondering)
+	if (s == THINKING)
 	{
 		/* OK, we're thinking (on our own time).  Initialize the number
 		 * of nodes searched and set the alarm. */
@@ -156,7 +171,7 @@ move_t search::iterate(bool pondering)
 	/* Perform iterative deepening until the alarm has sounded (if we're
 	 * thinking), our opponent has moved (if we're pondering), or we've
 	 * reached the maximum depth (either way). */
-	for (int depth = !pondering ? 0 : pv.size(); depth <= max_depth; depth++)
+	for (int depth = s == THINKING ? 0 : pv.size(); depth <= max_depth; depth++)
 	{
 		negascout(depth, -WEIGHT_KING, WEIGHT_KING);
 		if (timeout && depth)
@@ -164,7 +179,7 @@ move_t search::iterate(bool pondering)
 			 * current results are incomplete and unreliable.  Go
 			 * with the last iteration's results. */
 			break;
-		extract(pondering);
+		extract(s);
 		if (output)
 			xboard_ptr->print_output(depth + 1, pv.front().value, (clock() - start) / CLOCKS_PER_SEC, nodes, pv);
 		if (pv.front().value == WEIGHT_KING || pv.front().value == -WEIGHT_KING)
@@ -174,7 +189,7 @@ move_t search::iterate(bool pondering)
 	}
 
 	/* Return the best move. */
-	if (pondering)
+	if (s == PONDERING)
 		board_ptr->unmake();
 	return pv.front();
 }
@@ -279,7 +294,7 @@ move_t search::negascout(int depth, int alpha, int beta)
 /*----------------------------------------------------------------------------*\
  |				   extract()				      |
 \*----------------------------------------------------------------------------*/
-void search::extract(bool pondering)
+void search::extract(int s)
 {
 
 /* Extract the principal variation and hint from the transposition table. */
@@ -298,7 +313,7 @@ void search::extract(bool pondering)
 	for (size_t j = 0; j < pv.size(); j++)
 		board_ptr->unmake();
 
-	if (pv.size() >= 2 && !pondering)
+	if (pv.size() >= 2 && s == THINKING)
 	{
 		list<move_t>::iterator it = pv.begin();
 		it++;
