@@ -44,6 +44,7 @@ search::search()
 	pthread_mutex_init(&mutex, NULL);
 	pthread_cond_init(&cond, NULL);
 	stat = IDLING;
+	pthread_create(thread, NULL, start, NULL);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -162,7 +163,7 @@ void search::change(int s)
 /* Change the search status (to idling, thinking, pondering, or quitting). */
 
 	pthread_mutex_lock(&mutex);
-	if (!(timeout = (stat = s) == IDLING))
+	if (stat != s && !(timeout = (stat = s) == IDLING))
 		pthread_cond_signal(&cond);
 	pthread_mutex_unlock(&mutex);
 }
@@ -177,7 +178,6 @@ move_t search::iterate(int s)
  * time) and pondering (on our opponent's time) since they're so similar. */
 
 	/* Note the start time. */
-	timeout = false;
 	clock_t start = clock();
 
 	if (s == THINKING)

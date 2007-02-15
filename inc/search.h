@@ -49,7 +49,6 @@ public:
 	void set_output(bool o);
 	static void *start(void *arg);
 	void change(int s);
-	move_t iterate(int s);
 private:
 	list<move_t> pv;       /* Principal variation.                        */
 	move_t hint;           /* Opponent's best move.                       */
@@ -61,12 +60,14 @@ private:
 	pthread_mutex_t mutex; /* */
 	pthread_cond_t cond;   /* */
 	int stat;              /* */
+	pthread_t thread;      /* */
 
 	board *board_ptr;      /* Board representation object.                */
 	table *table_ptr;      /* Transposition table object.                 */
 	history *history_ptr;  /* History table object.                       */
 	xboard *xboard_ptr;    /* Chess Engine Communication Protocol object. */
 
+	move_t iterate(int s);
 	move_t negascout(int depth, int alpha, int beta);
 	void extract(int s);
 	static bool compare(move_t m1, move_t m2);
