@@ -234,7 +234,7 @@ void xboard::do_force()
 void xboard::do_go()
 {
 	force = false;
-	print_result(search_ptr->iterate(THINKING));
+	search_ptr->change(THINKING);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -317,7 +317,7 @@ void xboard::do_usermove() const
 
 	/* Alright, so we're not in force mode, and the last move didn't just
 	 * end the game.  Formulate a response. */
-	print_result(search_ptr->iterate(THINKING));
+	search_ptr->change(THINKING);
 }
 
 /*----------------------------------------------------------------------------*\
