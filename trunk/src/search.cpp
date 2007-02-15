@@ -70,29 +70,6 @@ void search::handle(int num)
 }
 
 /*----------------------------------------------------------------------------*\
- |				    start()				      |
-\*----------------------------------------------------------------------------*/
-void *search::start(void *arg)
-{
-	while (true)
-	{
-		stat = IDLING;
-
-		pthread_mutex_lock(&mutex);
-		while (stat == IDLING)
-			pthread_cond_wait(&cond, &mutex);
-		pthread_mutex_unlock(&mutex);
-
-		switch (stat)
-		{
-			case THINKING:  iterate(THINKING);  break;
-			case PONDERING: iterate(PONDERING); break;
-			case QUITTING:  pthread_exit(NULL); break;
-		}
-	}
-}
-
-/*----------------------------------------------------------------------------*\
  |				     bind()				      |
 \*----------------------------------------------------------------------------*/
 void search::bind(board *b, table *t, history *h, xboard *x)
@@ -110,6 +87,14 @@ void search::clear() const
 {
 	table_ptr->clear();
 	history_ptr->clear();
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   get_hint()				      |
+\*----------------------------------------------------------------------------*/
+move_t search::get_hint() const
+{
+	return hint;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -146,22 +131,40 @@ void search::set_output(bool o)
 }
 
 /*----------------------------------------------------------------------------*\
- |				   set_stat()				      |
+ |				    start()				      |
 \*----------------------------------------------------------------------------*/
-void search::set_stat(int s)
+void *search::start(void *arg)
 {
+	while (true)
+	{
+		stat = IDLING;
 
-/* Set the search status (to idling, thinking, or pondering). */
+		pthread_mutex_lock(&mutex);
+		while (stat == IDLING)
+			pthread_cond_wait(&cond, &mutex);
+		pthread_mutex_unlock(&mutex);
 
-	stat = s;
+		switch (stat)
+		{
+			case THINKING:  iterate(THINKING);  break;
+			case PONDERING: iterate(PONDERING); break;
+			case QUITTING:  pthread_exit(NULL); break;
+		}
+	}
 }
 
 /*----------------------------------------------------------------------------*\
- |				 set_timeout()				      |
+ |				    change()				      |
 \*----------------------------------------------------------------------------*/
-void search::set_timeout(bool t)
+void search::change(int s)
 {
-	timeout = t;
+
+/* Change the search status (to idling, thinking, pondering, or quitting). */
+
+	pthread_mutex_lock(&mutex);
+	if (!(timeout = (stat = s) == IDLING))
+		pthread_cond_signal(&cond);
+	pthread_mutex_unlock(&mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -353,14 +356,6 @@ void search::extract(int s)
 		it++;
 		hint = *it;
 	}
-}
-
-/*----------------------------------------------------------------------------*\
- |				   get_hint()				      |
-\*----------------------------------------------------------------------------*/
-move_t search::get_hint() const
-{
-	return hint;
 }
 
 /*----------------------------------------------------------------------------*\
