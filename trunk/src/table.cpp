@@ -34,7 +34,6 @@ table::table(int mb)
 
 /* Constructor. */
 
-	pthread_mutex_init(&mutex, NULL);
 	assert(entries = mb * MB / sizeof(entry_t));
 	assert(data = (entry_t **) malloc(POLICIES * sizeof(entry_t *)));
 	for (int policy = DEEP; policy <= FRESH; policy++)
@@ -53,7 +52,6 @@ table::~table()
 	for (int policy = DEEP; policy <= FRESH; policy++)
 		free(data[policy]);
 	free(data);
-	pthread_mutex_destroy(&mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -61,9 +59,6 @@ table::~table()
 \*----------------------------------------------------------------------------*/
 void table::clear()
 {
-	/* Prevent other threads from shitting on our heads. */
-//	pthread_mutex_lock(&mutex);
-
 	for (int policy = DEEP; policy <= FRESH; policy++)
 		for (bitboard_t index = 0; index < entries / 2; index++)
 		{
@@ -71,9 +66,6 @@ void table::clear()
 			data[policy][index].depth = 0;
 			data[policy][index].type = USELESS;
 		}
-
-	/* Allow other threads to shit on our heads again. */
-//	pthread_mutex_unlock(&mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -83,9 +75,6 @@ int table::probe(bitboard_t hash, move_t *move_ptr, int depth, int alpha, int be
 {
 	bitboard_t index = hash % (entries / 2);
 	int type = USELESS;
-
-	/* Prevent other threads from shitting on our heads. */
-//	pthread_mutex_lock(&mutex);
 
 	for (int policy = DEEP; policy <= FRESH; policy++)
 		if (data[policy][index].hash == hash && data[policy][index].depth >= (unsigned) depth)
@@ -104,9 +93,6 @@ int table::probe(bitboard_t hash, move_t *move_ptr, int depth, int alpha, int be
 			if (data[policy][index].type == EXACT)
 				type = EXACT;
 		}
-
-	/* Allow other threads to shit on our heads again. */
-//	pthread_mutex_unlock(&mutex);
 	return type;
 }
 
@@ -117,9 +103,6 @@ void table::store(bitboard_t hash, move_t move, int depth, int type)
 {
 	bitboard_t index = hash % (entries / 2);
 
-	/* Prevent other threads from shitting on our heads. */
-//	pthread_mutex_lock(&mutex);
-
 	for (int policy = DEEP; policy <= FRESH; policy++)
 		if (policy == FRESH || (unsigned) depth >= data[DEEP][index].depth)
 		{
@@ -128,7 +111,4 @@ void table::store(bitboard_t hash, move_t move, int depth, int type)
 			data[policy][index].depth = depth;
 			data[policy][index].type = type;
 		}
-
-	/* Allow other threads to shit on our heads again. */
-//	pthread_mutex_unlock(&mutex);
 }

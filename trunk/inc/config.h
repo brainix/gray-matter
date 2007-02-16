@@ -154,11 +154,6 @@
 #define QUITTING	3 /* Terminating the search thread.      */
 #define SEARCH_STATS	4
 
-/* */
-#define RED_LIGHT	0 /* */
-#define GREEN_LIGHT	1 /* */
-#define IO_STATS	2 /* */
-
 /* Convenient bitboards: */
 #define CENTER		0x0000001818000000ULL /* The 4 center squares.              */
 #define EXPANDED_CENTER	0x00003C3C3C3C0000ULL /* The 16 center squares.             */
