@@ -27,11 +27,11 @@
 #include <gray.h>
 
 /* Global variables: */
-pthread_t thread;      /* */
-pthread_mutex_t mutex; /* */
-pthread_cond_t cond;   /* */
-int status;            /* */
-bool timeout;          /* */
+pthread_t thread;      /* The thread in which this...       */
+pthread_mutex_t mutex; /* ...mutex protects this...         */
+pthread_cond_t cond;   /* ...condition which watches the... */
+int status;            /* ...search status!  :-D            */
+bool timeout;
 
 /*----------------------------------------------------------------------------*\
  |				    search()				      |
@@ -156,11 +156,13 @@ void *search::start(void *arg)
 void search::change(int s)
 {
 
-/* Change the search status (to idling, thinking, pondering, or quitting). */
+/* Change the search status (to idling, thinking, pondering, or quitting) and
+ * set the timeout flag appropriately. */
 
 	assert(!pthread_mutex_lock(&mutex));
-	if (status != s && !(timeout = (status = s) == IDLING))
-		assert(!pthread_cond_signal(&cond));
+	status = s;
+	timeout = status != THINKING && status != PONDERING;
+	assert(!pthread_cond_signal(&cond));
 	assert(!pthread_mutex_unlock(&mutex));
 }
 
@@ -180,9 +182,9 @@ void search::iterate(int s)
 	struct itimerval itimerval;
 	nodes = 0;
 
+	/* If we're thinking, set the alarm. */
 	if (s == THINKING)
 	{
-		/* OK, we're thinking (on our own time).  Set the alarm. */
 		itimerval.it_interval.tv_sec = 0;
 		itimerval.it_interval.tv_usec = 0;
 		itimerval.it_value.tv_sec = max_time;
@@ -210,7 +212,8 @@ void search::iterate(int s)
 			break;
 	}
 
-	/* Unlock the board. */
+	/* If we've just finished thinking, clear the alarm and inform XBoard of
+	 * our favorite move.  Unlock the board. */
 	if (s == THINKING)
 	{
 		itimerval.it_value.tv_sec = 0;
@@ -293,23 +296,23 @@ move_t search::negascout(int depth, int alpha, int beta)
 		}
 		board_ptr->unmake();
 
-		if (it->value > alpha)
-		{
-			alpha = it->value;
-			m = *it;
-			type = EXACT;
-		}
 		if (it->value >= beta)
 		{
 			it->value = beta;
 			table_ptr->store(hash, *it, depth, BETA);
 			return *it;
 		}
+		if (it->value > alpha)
+		{
+			alpha = it->value;
+			m = *it;
+			type = EXACT;
+		}
 	}
 
 	/* Find the best move in the list.  This loop seems wasteful.  Can
 	 * anyone think of a better way? */
-	for (m = l.front(), it = l.begin(); it != l.end(); it++)
+	for (m = l.front(), it = l.begin(), it++; it != l.end(); it++)
 		if (it->value > m.value)
 			m = *it;
 	table_ptr->store(hash, m, depth, type);
@@ -328,6 +331,7 @@ void search::extract(int s)
 	move_t m;
 	pv.clear();
 
+	/* Get the principal variation. */
 	while (table_ptr->probe(board_ptr->get_hash(), &m, 0))
 	{
 		pv.push_back(m);
@@ -335,15 +339,14 @@ void search::extract(int s)
 		if (pv.size() == (unsigned) max_depth)
 			break;
 	}
-
 	for (size_t j = 0; j < pv.size(); j++)
 		board_ptr->unmake();
 
-	if (pv.size() >= 2 && s == THINKING)
+	/* Get the hint. */
+	if (s == THINKING && pv.size() >= 2)
 	{
 		list<move_t>::iterator it = pv.begin();
-		it++;
-		hint = *it;
+		hint = *++it;
 	}
 	if (s == PONDERING)
 		hint = pv.front();
