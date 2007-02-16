@@ -86,8 +86,11 @@ class board
 public:
 	/* These methods set information. */
 	board();
+	~board();
 	void set_board();
 	board& operator=(const board& that);
+	void lock();
+	void unlock();
 
 	/* These methods get information. */
 	bool get_whose() const;
@@ -108,6 +111,7 @@ private:
 	bitboard_t rotation[ANGLES][COLORS + 1];        /* Current rotated bitboard.   */
 	list<bitboard_t> hashes;                        /* Previous Zobrist hash keys. */
 	bitboard_t hash;                                /* Current Zobrist hash key.   */
+	pthread_mutex_t mutex;				/* ?                           */
 
 	/* These methods start up games. */
 	void init_state();
