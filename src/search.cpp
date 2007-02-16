@@ -127,19 +127,17 @@ void search::set_output(bool o)
 void *search::start(void *arg)
 {
 	class search *search_ptr = (class search *) arg;
-
+	int tmp = status = IDLING;
 	pthread_mutex_init(&mutex, NULL);
 	pthread_cond_init(&cond, NULL);
 
 	do
 	{
-		/* Initialize the status. */
-		status = IDLING;
-
 		/* Wait for the status to change. */
 		pthread_mutex_lock(&mutex);
-		while (status == IDLING)
+		while (status == tmp)
 			pthread_cond_wait(&cond, &mutex);
+		tmp = status;
 		pthread_mutex_unlock(&mutex);
 
 		/* Do the requested work - think, ponder, or quit. */
