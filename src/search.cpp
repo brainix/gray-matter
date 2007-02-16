@@ -46,7 +46,7 @@ search::search()
 	output = false;
 
 	signal(SIGALRM, handle);
-	pthread_create(&thread, NULL, start, this);
+	assert(!pthread_create(&thread, NULL, start, this));
 }
 
 /*----------------------------------------------------------------------------*\
@@ -128,25 +128,25 @@ void *search::start(void *arg)
 {
 	class search *search_ptr = (class search *) arg;
 	int tmp = status = IDLING;
-	pthread_mutex_init(&mutex, NULL);
-	pthread_cond_init(&cond, NULL);
+	assert(!pthread_mutex_init(&mutex, NULL));
+	assert(!pthread_cond_init(&cond, NULL));
 
 	do
 	{
 		/* Wait for the status to change. */
-		pthread_mutex_lock(&mutex);
+		assert(!pthread_mutex_lock(&mutex));
 		while (status == tmp)
-			pthread_cond_wait(&cond, &mutex);
+			assert(!pthread_cond_wait(&cond, &mutex));
 		tmp = status;
-		pthread_mutex_unlock(&mutex);
+		assert(!pthread_mutex_unlock(&mutex));
 
 		/* Do the requested work - think, ponder, or quit. */
 		if (status == THINKING || status == PONDERING)
 			search_ptr->iterate(status);
 	} while (status != QUITTING);
 
-	pthread_cond_destroy(&cond);
-	pthread_mutex_destroy(&mutex);
+	assert(!pthread_cond_destroy(&cond));
+	assert(!pthread_mutex_destroy(&mutex));
 	pthread_exit(NULL);
 }
 
@@ -158,10 +158,10 @@ void search::change(int s)
 
 /* Change the search status (to idling, thinking, pondering, or quitting). */
 
-	pthread_mutex_lock(&mutex);
+	assert(!pthread_mutex_lock(&mutex));
 	if (status != s && !(timeout = (status = s) == IDLING))
-		pthread_cond_signal(&cond);
-	pthread_mutex_unlock(&mutex);
+		assert(!pthread_cond_signal(&cond));
+	assert(!pthread_mutex_unlock(&mutex));
 }
 
 /*----------------------------------------------------------------------------*\
