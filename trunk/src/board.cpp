@@ -142,7 +142,7 @@ board::board()
 	precomp_king();   /* Pre-compute the king moves.          */
 	precomp_row();    /* Pre-compute the sliding piece moves. */
 	precomp_knight(); /* Pre-compute the knight moves.        */
-	pthread_mutex_init(&mutex, NULL);
+	assert(!pthread_mutex_init(&mutex, NULL));
 }
 
 /*----------------------------------------------------------------------------*\
