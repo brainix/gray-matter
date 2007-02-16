@@ -196,7 +196,8 @@ void search::iterate(int s)
 		 * move we think our opponent will make.  Get rid of the move we
 		 * just made and assume our opponent will make the move we think
 		 * she'll make. */
-		assert(pv.size() >= 2);
+		if (pv.size() < 2)
+			goto end;
 		pv.pop_front();
 		board_ptr->make(pv.front());
 		pv.pop_front();
@@ -231,6 +232,7 @@ void search::iterate(int s)
 	}
 	else
 		board_ptr->unmake();
+end:
 	board_ptr->unlock();
 }
 
