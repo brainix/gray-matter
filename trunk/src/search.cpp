@@ -49,7 +49,7 @@ search::search()
 	status = IDLING;
 	pthread_cond_init(&cond, NULL);
 	pthread_mutex_init(&mutex, NULL);
-	pthread_create(&thread, NULL, start, NULL);
+	pthread_create(&thread, NULL, start, this);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -141,6 +141,8 @@ void search::set_output(bool o)
 \*----------------------------------------------------------------------------*/
 void *search::start(void *arg)
 {
+	class search *search_ptr = (class search *) arg;
+
 	while (true)
 	{
 		status = IDLING;
@@ -153,8 +155,8 @@ void *search::start(void *arg)
 		switch (status)
 		{
 			case THINKING:
-			case PONDERING: iterate(status);    break;
-			case QUITTING:  pthread_exit(NULL); break;
+			case PONDERING: search_ptr->iterate(status); break;
+			case QUITTING:  pthread_exit(NULL);          break;
 		}
 	}
 }
