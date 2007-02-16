@@ -132,6 +132,7 @@ void xboard::print_output(int ply, int value, int time, int nodes, list<move_t> 
 \*----------------------------------------------------------------------------*/
 void xboard::print_result(move_t m) const
 {
+	board_ptr->lock();
 	if (m.value == -WEIGHT_KING)
 	{
 		/* Bloody hell.  At this point, even our best response leads to
@@ -147,6 +148,7 @@ void xboard::print_result(move_t m) const
 	game_over();
 	if (ponder)
 		search_ptr->change(PONDERING);
+	board_ptr->unlock();
 }
 
 /*----------------------------------------------------------------------------*\
@@ -210,10 +212,13 @@ void xboard::do_rejected() const
 \*----------------------------------------------------------------------------*/
 void xboard::do_new()
 {
+	board_ptr->lock();
 	board_ptr->set_board();
 	search_ptr->clear();
 	search_ptr->set_depth(DEPTH);
+	search_ptr->change(IDLING);
 	force = false;
+	board_ptr->unlock();
 }
 
 /*----------------------------------------------------------------------------*\
@@ -297,6 +302,9 @@ void xboard::do_usermove() const
 
 	move_t m;
 
+	/* Lock the board. */
+	board_ptr->lock();
+
 	/* Is the move legal? */
 	m.old_x = s[ 9] - 'a'; m.old_y = s[10] - '1';
 	m.new_x = s[11] - 'a'; m.new_y = s[12] - '1';
@@ -321,6 +329,9 @@ void xboard::do_usermove() const
 	/* Alright, so we're not in force mode, and the last move didn't just
 	 * end the game.  Formulate a response. */
 	search_ptr->change(THINKING);
+
+	/* Unlock the board. */
+	board_ptr->unlock();
 }
 
 /*----------------------------------------------------------------------------*\
@@ -365,7 +376,10 @@ void xboard::do_undo() const
 
 /* Take back one ply. */
 
+	search_ptr->change(IDLING);
+	board_ptr->lock();
 	board_ptr->unmake();
+	board_ptr->unlock();
 }
 
 /*----------------------------------------------------------------------------*\
@@ -376,8 +390,11 @@ void xboard::do_remove() const
 
 /* Take back two plies. */
 
+	search_ptr->change(IDLING);
+	board_ptr->lock();
 	board_ptr->unmake();
 	board_ptr->unmake();
+	board_ptr->unlock();
 }
 
 /*----------------------------------------------------------------------------*\
@@ -429,6 +446,7 @@ void xboard::do_nopost() const
 \*----------------------------------------------------------------------------*/
 int xboard::game_over() const
 {
+	board_ptr->lock();
 	int status = board_ptr->get_status();
 
 	switch (status)
@@ -439,6 +457,7 @@ int xboard::game_over() const
 		case FIFTY        : printf("1/2-1/2 {Fifty move rule}\n");                                                 break;
 		case CHECKMATE    : printf("%s mates}\n", !board_ptr->get_whose() == WHITE ? "1-0 {White" : "0-1 {Black"); break;
 	}
+	board_ptr->unlock();
 	return status;
 }
 
