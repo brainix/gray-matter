@@ -34,7 +34,6 @@ history::history()
 
 /* Constructor. */
 
-	pthread_mutex_init(&mutex, NULL);
 	assert(data = (int *****) malloc(COLORS * sizeof(int ****)));
 	for (int color = WHITE; color <= BLACK; color++)
 	{
@@ -76,7 +75,6 @@ history::~history()
 		free(data[color]);
 	}
 	free(data);
-	pthread_mutex_destroy(&mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -84,18 +82,12 @@ history::~history()
 \*----------------------------------------------------------------------------*/
 void history::clear()
 {
-	/* Prevent other threads from shitting on our heads. */
-//	pthread_mutex_lock(&mutex);
-
 	for (int color = WHITE; color <= BLACK; color++)
 		for (int old_y = 0; old_y <= 7; old_y++)
 			for (int old_x = 0; old_x <= 7; old_x++)
 				for (int new_y = 0; new_y <= 7; new_y++)
 					for (int new_x = 0; new_x <= 7; new_x++)
 						data[color][old_x][old_y][new_x][new_y] = 0;
-
-	/* Allow other threads to shit on our heads again. */
-//	pthread_mutex_unlock(&mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -103,16 +95,7 @@ void history::clear()
 \*----------------------------------------------------------------------------*/
 int history::probe(bool color, move_t move)
 {
-	int value;
-
-	/* Prevent other threads from shitting on our heads. */
-//	pthread_mutex_lock(&mutex);
-
-	value = data[color][move.old_x][move.old_y][move.new_x][move.new_y];
-
-	/* Allow other threads to shit on our heads again. */
-//	pthread_mutex_unlock(&mutex);
-	return value;
+	return data[color][move.old_x][move.old_y][move.new_x][move.new_y];
 }
 
 /*----------------------------------------------------------------------------*\
@@ -124,11 +107,5 @@ void history::store(bool color, move_t move, int depth)
 /* Gray Matter has searched to the specified depth and determined the specified
  * move for the specified color to be the best.  Note this. */
 
-	/* Prevent other threads from shitting on our heads. */
-//	pthread_mutex_lock(&mutex);
-
 	data[color][move.old_x][move.old_y][move.new_x][move.new_y] += 1 << depth;
-
-	/* Allow other threads to shit on our heads again. */
-//	pthread_mutex_unlock(&mutex);
 }

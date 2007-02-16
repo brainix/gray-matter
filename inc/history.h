@@ -40,7 +40,6 @@ public:
 	int probe(bool color, move_t move);
 	void store(bool color, move_t move, int depth);
 private:
-	pthread_mutex_t mutex;
 	int *****data;
 };
 
