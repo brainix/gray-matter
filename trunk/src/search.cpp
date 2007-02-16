@@ -224,9 +224,10 @@ void search::iterate(int s)
 	}
 
 	/* Return the best move. */
-	if (s == PONDERING)
+	if (s == THINKING)
+		xboard_ptr->print_result(pv.front());
+	else
 		board_ptr->unmake();
-	xboard_ptr->print_result(pv.front());
 }
 
 /*----------------------------------------------------------------------------*\
