@@ -175,15 +175,14 @@ void search::iterate(int s)
 /* Perform iterative deepening.  This method handles both thinking (on our own
  * time) and pondering (on our opponent's time) since they're so similar. */
 
-	/* Note the start time. */
+	/* Note the start time and initialize the number of nodes searched. */
 	clock_t start = clock();
+	struct itimerval itimerval;
+	nodes = 0;
 
 	if (s == THINKING)
 	{
-		/* OK, we're thinking (on our own time).  Initialize the number
-		 * of nodes searched and set the alarm. */
-		nodes = 0;
-		struct itimerval itimerval;
+		/* OK, we're thinking (on our own time).  Set the alarm. */
 		itimerval.it_interval.tv_sec = 0;
 		itimerval.it_interval.tv_usec = 0;
 		itimerval.it_value.tv_sec = max_time;
@@ -225,7 +224,11 @@ void search::iterate(int s)
 
 	/* Return the best move. */
 	if (s == THINKING)
+	{
+		itimerval.it_value.tv_sec = 0;
+		setitimer(ITIMER_REAL, &itimerval, NULL);
 		xboard_ptr->print_result(pv.front());
+	}
 	else
 		board_ptr->unmake();
 }
