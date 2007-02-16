@@ -57,17 +57,12 @@ private:
 	int nodes;             /* Number of nodes searched.                   */
 	bool output;           /* Whether to print thinking output.           */
 
-	pthread_mutex_t mutex; /* */
-	pthread_cond_t cond;   /* */
-	int status;            /* */
-	pthread_t thread;      /* */
-
 	board *board_ptr;      /* Board representation object.                */
 	table *table_ptr;      /* Transposition table object.                 */
 	history *history_ptr;  /* History table object.                       */
 	xboard *xboard_ptr;    /* Chess Engine Communication Protocol object. */
 
-	move_t iterate(int s);
+	void iterate(int s);
 	move_t negascout(int depth, int alpha, int beta);
 	void extract(int s);
 	static bool compare(move_t m1, move_t m2);

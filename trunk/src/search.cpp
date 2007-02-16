@@ -27,7 +27,11 @@
 #include <gray.h>
 
 /* Global variables: */
-bool timeout;
+pthread_t thread;      /* */
+pthread_mutex_t mutex; /* */
+pthread_cond_t cond;   /* */
+int status;            /* */
+bool timeout;          /* */
 
 /*----------------------------------------------------------------------------*\
  |				    search()				      |
@@ -37,13 +41,14 @@ search::search()
 
 /* Constructor. */
 
-	signal(SIGALRM, handle);
 	max_time = INT_MAX;
 	max_depth = DEPTH;
 	output = false;
-	pthread_mutex_init(&mutex, NULL);
-	pthread_cond_init(&cond, NULL);
+
+	signal(SIGALRM, handle);
 	status = IDLING;
+	pthread_cond_init(&cond, NULL);
+	pthread_mutex_init(&mutex, NULL);
 	pthread_create(&thread, NULL, start, NULL);
 }
 
@@ -147,9 +152,9 @@ void *search::start(void *arg)
 
 		switch (status)
 		{
-			case THINKING:  xboard_ptr->print_result(iterate(THINKING));  break;
-			case PONDERING: xboard_ptr->print_result(iterate(PONDERING)); break;
-			case QUITTING:  pthread_exit(NULL);                           break;
+			case THINKING:
+			case PONDERING: iterate(status);    break;
+			case QUITTING:  pthread_exit(NULL); break;
 		}
 	}
 }
@@ -171,7 +176,7 @@ void search::change(int s)
 /*----------------------------------------------------------------------------*\
  |				   iterate()				      |
 \*----------------------------------------------------------------------------*/
-move_t search::iterate(int s)
+void search::iterate(int s)
 {
 
 /* Perform iterative deepening.  This method handles both thinking (on our own
@@ -228,7 +233,7 @@ move_t search::iterate(int s)
 	/* Return the best move. */
 	if (s == PONDERING)
 		board_ptr->unmake();
-	return pv.front();
+	xboard_ptr->print_result(pv.front());
 }
 
 /*----------------------------------------------------------------------------*\
