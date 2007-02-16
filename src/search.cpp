@@ -46,22 +46,7 @@ search::search()
 	output = false;
 
 	signal(SIGALRM, handle);
-	status = IDLING;
-	pthread_cond_init(&cond, NULL);
-	pthread_mutex_init(&mutex, NULL);
 	pthread_create(&thread, NULL, start, this);
-}
-
-/*----------------------------------------------------------------------------*\
- |				   ~search()				      |
-\*----------------------------------------------------------------------------*/
-search::~search()
-{
-
-/* Destructor. */
-
-	pthread_cond_destroy(&cond);
-	pthread_mutex_destroy(&mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -143,22 +128,28 @@ void *search::start(void *arg)
 {
 	class search *search_ptr = (class search *) arg;
 
-	while (true)
+	pthread_mutex_init(&mutex, NULL);
+	pthread_cond_init(&cond, NULL);
+
+	do
 	{
+		/* Initialize the status. */
 		status = IDLING;
 
+		/* Wait for the status to change. */
 		pthread_mutex_lock(&mutex);
 		while (status == IDLING)
 			pthread_cond_wait(&cond, &mutex);
 		pthread_mutex_unlock(&mutex);
 
-		switch (status)
-		{
-			case THINKING:
-			case PONDERING: search_ptr->iterate(status); break;
-			case QUITTING:  pthread_exit(NULL);          break;
-		}
-	}
+		/* Do the requested work - think, ponder, or quit. */
+		if (status == THINKING || status == PONDERING)
+			search_ptr->iterate(status);
+	} while (status != QUITTING);
+
+	pthread_cond_destroy(&cond);
+	pthread_mutex_destroy(&mutex);
+	pthread_exit(NULL);
 }
 
 /*----------------------------------------------------------------------------*\

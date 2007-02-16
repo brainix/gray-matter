@@ -39,7 +39,6 @@ class search
 {
 public:
 	search();
-	~search();
 	static void handle(int num);
 	void bind(board *b, table *t, history *h, xboard *x);
 	void clear() const;

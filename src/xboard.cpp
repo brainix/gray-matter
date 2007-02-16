@@ -107,6 +107,7 @@ void xboard::loop()
 		else
 			printf("Error (unknown command): %s\n", s);
 	}
+	search_ptr->change(QUITTING);
 }
 
 /*----------------------------------------------------------------------------*\
