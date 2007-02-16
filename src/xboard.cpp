@@ -145,6 +145,8 @@ void xboard::print_result(move_t m) const
 	print_move(m);
 	printf("\n");
 	game_over();
+	if (ponder)
+		search_ptr->change(PONDERING);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -427,9 +429,9 @@ void xboard::do_nopost() const
 \*----------------------------------------------------------------------------*/
 int xboard::game_over() const
 {
-	int status;
+	int status = board_ptr->get_status();
 
-	switch (status = board_ptr->get_status())
+	switch (status)
 	{
 		case STALEMATE    : printf("1/2-1/2 {Stalemate}\n");                                                       break;
 		case INSUFFICIENT : printf("1/2-1/2 {Insufficient material}\n");                                           break;
