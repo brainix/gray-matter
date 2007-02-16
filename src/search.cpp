@@ -189,24 +189,11 @@ void search::iterate(int s)
 		itimerval.it_value.tv_usec = 0;
 		setitimer(ITIMER_REAL, &itimerval, NULL);
 	}
-	else
-	{
-		/* OK, we're pondering (on our opponent's time).  Currently, the
-		 * principal variation starts with the move we just made and the
-		 * move we think our opponent will make.  Get rid of the move we
-		 * just made and assume our opponent will make the move we think
-		 * she'll make. */
-		if (pv.size() < 2)
-			goto end;
-		pv.pop_front();
-		board_ptr->make(pv.front());
-		pv.pop_front();
-	}
 
 	/* Perform iterative deepening until the alarm has sounded (if we're
 	 * thinking), our opponent has moved (if we're pondering), or we've
 	 * reached the maximum depth (either way). */
-	for (int depth = s == THINKING ? 0 : pv.size(); depth <= max_depth; depth++)
+	for (int depth = 0; depth <= max_depth; depth++)
 	{
 		negascout(depth, -WEIGHT_KING, WEIGHT_KING);
 		if (timeout && depth)
@@ -230,9 +217,6 @@ void search::iterate(int s)
 		setitimer(ITIMER_REAL, &itimerval, NULL);
 		xboard_ptr->print_result(pv.front());
 	}
-	else
-		board_ptr->unmake();
-end:
 	board_ptr->unlock();
 }
 
