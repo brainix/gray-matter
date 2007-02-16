@@ -345,6 +345,8 @@ void search::extract(int s)
 		it++;
 		hint = *it;
 	}
+	if (s == PONDERING)
+		hint = pv.front();
 }
 
 /*----------------------------------------------------------------------------*\
