@@ -113,6 +113,9 @@ static int coord[MAPS][ANGLES][8][8][COORDS] =
 static int diag_index[15] = {0, 1, 3, 6, 10, 15, 21, 28, 36, 43, 49, 54, 58, 61, 63};
 static bitrow_t diag_mask[15] = {0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x7F, 0xFF, 0x7F, 0x3F, 0x1F, 0x0F, 0x07, 0x03, 0x01};
 
+/* Whether the moves and Zobrist hash keys have been precomputed: */
+bool initialized = false;
+
 /* Pre-computed moves: */
 bitboard_t squares_king[8][8];
 bitboard_t squares_castle[COLORS][SIDES][REQS];
@@ -138,10 +141,15 @@ board::board()
 /* Constructor.  Important!  Seed the random number generator - issue
  * srand(time(NULL)); - before instantiating this class! */
 
-	set_board();      /* Set the board.                       */
-	precomp_king();   /* Pre-compute the king moves.          */
-	precomp_row();    /* Pre-compute the sliding piece moves. */
-	precomp_knight(); /* Pre-compute the knight moves.        */
+	if (!initialized)
+	{
+		initialized = true;
+		precomp_key();    /* Pre-compute the Zobrist hash keys.   */
+		precomp_king();   /* Pre-compute the king moves.          */
+		precomp_row();    /* Pre-compute the sliding piece moves. */
+		precomp_knight(); /* Pre-compute the knight moves.        */
+	}
+	set_board(); /* Set the board. */
 	assert(!pthread_mutex_init(&mutex, NULL));
 }
 
@@ -163,7 +171,7 @@ void board::set_board()
 
 	init_state();    /* Initialize the state.             */
 	init_rotation(); /* Initialize the rotated bitboards. */
-	init_hash();     /* Initialize Zobrist hashing.       */
+	init_hash();     /* Initialize the Zobrist hash.      */
 }
 
 /*----------------------------------------------------------------------------*\
@@ -607,7 +615,7 @@ void board::init_rotation()
 void board::init_hash()
 {
 
-/* Initialize Zobrist hashing. */
+/* Initialize the Zobrist hash. */
 
 	hashes.clear();
 	hash = 0;
@@ -616,9 +624,6 @@ void board::init_hash()
 	{
 		for (int shape = PAWN; shape <= KING; shape++)
 		{
-			for (int y = 0; y <= 7; y++)
-				for (int x = 0; x <= 7; x++)
-					key_piece[color][shape][x][y] = RAND();
 			bitboard_t b = state.piece[color][shape];
 			for (int n, x, y; (n = FST(b)) != -1; BIT_CLR(b, x, y))
 			{
@@ -629,20 +634,39 @@ void board::init_hash()
 		}
 
 		for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
-		{
+			hash ^= key_castle[color][side][state.castle[color][side]];
+	}
+
+	hash ^= key_no_en_passant;
+
+	hash ^= key_whose;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				 precomp_key()				      |
+\*----------------------------------------------------------------------------*/
+void board::precomp_key() const
+{
+
+/* Pre-compute the Zobrist hash keys. */
+
+	for (int color = WHITE; color <= BLACK; color++)
+	{
+		for (int shape = PAWN; shape <= KING; shape++)
+			for (int y = 0; y <= 7; y++)
+				for (int x = 0; x <= 7; x++)
+					key_piece[color][shape][x][y] = RAND();
+
+		for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
 			for (int stat = CAN_CASTLE; stat <= HAS_CASTLED; stat++)
 				key_castle[color][side][stat] = RAND();
-			hash ^= key_castle[color][side][state.castle[color][side]];
-		}
 	}
 
 	key_no_en_passant = RAND();
 	for (int x = 0; x <= 8; x++)
 		key_en_passant[x] = RAND();
-	hash ^= key_no_en_passant;
 
 	key_whose = RAND();
-	hash ^= key_whose;
 }
 
 /*----------------------------------------------------------------------------*\
