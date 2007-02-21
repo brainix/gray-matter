@@ -62,7 +62,7 @@
 /* Penalties for castling statuses: */
 #define WEIGHT_CANT_CASTLE	 -100
 #define WEIGHT_CAN_CASTLE	    0
-#define WEIGHT_HAS_CASTLED	  100
+#define WEIGHT_HAS_CASTLED	  200
 
 /* How much we hate our opponent: */
 #define CONTEMPT		  900
