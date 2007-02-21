@@ -938,7 +938,11 @@ void board::generate_pawn(list<move_t> &l) const
 	/* For its first move, a pawn can advance two squares. */
 	bitboard_t b = state.piece[ON_MOVE][PAWN] & ROW_MSK(ON_MOVE ? 6 : 1);
 	for (int y = 1; y <= 2; y++)
-		b = b << (ON_MOVE ? -8 : 8) & ~rotation[ZERO][COLORS];
+	{
+		b <<= ON_MOVE ? 0 : 8;
+		b >>= ON_MOVE ? 8 : 0;
+		b &= ~rotation[ZERO][COLORS];
+	}
 	for (int n; (n = FST(b)) != -1; BIT_CLR(b, m.new_x, m.new_y))
 	{
 		m.old_x = m.new_x = n % 8;
@@ -959,7 +963,10 @@ void board::generate_pawn(list<move_t> &l) const
 	}
 
 	/* A pawn can advance one square. */
-	b = state.piece[ON_MOVE][PAWN] << (ON_MOVE ? -8 : 8) & ~rotation[ZERO][COLORS];
+	b = state.piece[ON_MOVE][PAWN];
+	b <<= ON_MOVE ? 0 : 8;
+	b >>= ON_MOVE ? 8 : 0;
+	b &= ~rotation[ZERO][COLORS];
 	for (int n; (n = FST(b)) != -1; BIT_CLR(b, m.new_x, m.new_y))
 	{
 		m.old_x = m.new_x = n % 8;
@@ -977,8 +984,11 @@ void board::generate_pawn(list<move_t> &l) const
 	/* A pawn can capture diagonally. */
 	for (int x = -1; x <= 1; x += 2)
 	{
-		b = state.piece[ON_MOVE][PAWN] << (ON_MOVE ? x == -1 ? -9 : -7 : x == -1 ? 7 : 9) & rotation[ZERO][OFF_MOVE];
+		b = state.piece[ON_MOVE][PAWN];
+		b <<= ON_MOVE ? 0 : x == -1 ? 7 : 9;
+		b >>= ON_MOVE ? x == -1 ? 9 : 7 : 0;
 		COL_CLR(b, x == -1 ? 7 : 0);
+		b &= rotation[ZERO][OFF_MOVE];
 		for (int n; (n = FST(b)) != -1; BIT_CLR(b, m.new_x, m.new_y))
 		{
 			m.old_x = (m.new_x = n % 8) - x;
