@@ -113,6 +113,9 @@ static int coord[MAPS][ANGLES][8][8][COORDS] =
 static int diag_index[15] = {0, 1, 3, 6, 10, 15, 21, 28, 36, 43, 49, 54, 58, 61, 63};
 static bitrow_t diag_mask[15] = {0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x7F, 0xFF, 0x7F, 0x3F, 0x1F, 0x0F, 0x07, 0x03, 0x01};
 
+/* Whether the moves and hash keys have been pre-computed: */
+bool precomputed = false;
+
 /* Pre-computed moves: */
 bitboard_t squares_king[8][8];
 bitboard_t squares_castle[COLORS][SIDES][REQS];
@@ -138,10 +141,15 @@ board::board()
 /* Constructor.  Important!  Seed the random number generator - issue
  * srand(time(NULL)); - before instantiating this class! */
 
-	set_board();      /* Set the board.                       */
-	precomp_king();   /* Pre-compute the king moves.          */
-	precomp_row();    /* Pre-compute the sliding piece moves. */
-	precomp_knight(); /* Pre-compute the knight moves.        */
+	if (!precomputed)
+	{
+		precomp_king();   /* Pre-compute the king moves.          */
+		precomp_row();    /* Pre-compute the sliding piece moves. */
+		precomp_knight(); /* Pre-compute the knight moves.        */
+		precomp_key();    /* Pre-compute the Zobrist hash keys.   */
+		precomputed = true;
+	}
+	set_board(); /* Set the board. */
 	assert(!pthread_mutex_init(&mutex, NULL));
 }
 
@@ -163,7 +171,7 @@ void board::set_board()
 
 	init_state();    /* Initialize the state.             */
 	init_rotation(); /* Initialize the rotated bitboards. */
-	init_hash();     /* Initialize Zobrist hashing.       */
+	init_hash();     /* Initialize the Zobrist hash.      */
 }
 
 /*----------------------------------------------------------------------------*\
@@ -607,7 +615,7 @@ void board::init_rotation()
 void board::init_hash()
 {
 
-/* Initialize Zobrist hashing. */
+/* Initialize the Zobrist hash. */
 
 	hashes.clear();
 	hash = 0;
@@ -616,9 +624,6 @@ void board::init_hash()
 	{
 		for (int shape = PAWN; shape <= KING; shape++)
 		{
-			for (int y = 0; y <= 7; y++)
-				for (int x = 0; x <= 7; x++)
-					key_piece[color][shape][x][y] = RAND();
 			bitboard_t b = state.piece[color][shape];
 			for (int n, x, y; (n = FST(b)) != -1; BIT_CLR(b, x, y))
 			{
@@ -629,135 +634,39 @@ void board::init_hash()
 		}
 
 		for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
-		{
+			hash ^= key_castle[color][side][state.castle[color][side]];
+	}
+
+	hash ^= key_no_en_passant;
+
+	hash ^= key_whose;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				 precomp_key()				      |
+\*----------------------------------------------------------------------------*/
+void board::precomp_key() const
+{
+
+/* Pre-compute the Zobrist hash keys. */
+
+	for (int color = WHITE; color <= BLACK; color++)
+	{
+		for (int shape = PAWN; shape <= KING; shape++)
+			for (int y = 0; y <= 7; y++)
+				for (int x = 0; x <= 7; x++)
+					key_piece[color][shape][x][y] = RAND();
+
+		for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
 			for (int stat = CAN_CASTLE; stat <= HAS_CASTLED; stat++)
 				key_castle[color][side][stat] = RAND();
-			hash ^= key_castle[color][side][state.castle[color][side]];
-		}
 	}
 
 	key_no_en_passant = RAND();
 	for (int x = 0; x <= 8; x++)
 		key_en_passant[x] = RAND();
-	hash ^= key_no_en_passant;
 
 	key_whose = RAND();
-	hash ^= key_whose;
-}
-
-/*----------------------------------------------------------------------------*\
- |				 precomp_king()				      |
-\*----------------------------------------------------------------------------*/
-void board::precomp_king() const
-{
-
-/* Pre-compute the king moves. */
-
-	/* Imagine the board is empty except for a king at (x, y).  Mark the
-	 * king's legal moves in the bitboard squares_king[x][y]. */
-	for (int y = 0; y <= 7; y++)
-		for (int x = 0; x <= 7; x++)
-		{
-			squares_king[x][y] = 0;
-			for (int k = -1; k <= 1; k++)
-				for (int j = -1; j <= 1; j++)
-				{
-					if (!j && !k)
-						/* Oops.  The king can't stand
-						 * still. */
-						continue;
-					if (x + j < 0 || x + j > 7 ||
-					    y + k < 0 || y + k > 7)
-						/* Oops.  The king can't step
-						 * off the board. */
-						continue;
-					BIT_SET(squares_king[x][y], x + j, y + k);
-				}
-		}
-
-	/*
-	 | Abraham Maslow once noted, "If the only tool you have is a hammer,
-	 | you tend to see every problem as a [thumb]nail."  Well, the only tool
-	 | I have is a bitboard, so I tend to see every problem as a headache.
-	 |
-	 | These bitboards represent the squares which mustn't be occupied or
-	 | attacked on the respective sides in order for the respective kings to
-	 | be able to castle.
-	 */
-	squares_castle[WHITE][QUEEN_SIDE][UNOCCUPIED] = 0x000000000000000EULL;
-	squares_castle[WHITE][QUEEN_SIDE][UNATTACKED] = 0x000000000000001CULL;
-	squares_castle[WHITE][ KING_SIDE][UNOCCUPIED] = 0x0000000000000060ULL;
-	squares_castle[WHITE][ KING_SIDE][UNATTACKED] = 0x0000000000000070ULL;
-	squares_castle[BLACK][QUEEN_SIDE][UNOCCUPIED] = 0x0E00000000000000ULL;
-	squares_castle[BLACK][QUEEN_SIDE][UNATTACKED] = 0x1C00000000000000ULL;
-	squares_castle[BLACK][ KING_SIDE][UNOCCUPIED] = 0x6000000000000000ULL;
-	squares_castle[BLACK][ KING_SIDE][UNATTACKED] = 0x7000000000000000ULL;
-}
-
-/*----------------------------------------------------------------------------*\
- |				 precomp_row()				      |
-\*----------------------------------------------------------------------------*/
-void board::precomp_row() const
-{
-
-/* Pre-compute the sliding piece moves. */
-
-	/* Imagine there's a sliding piece on square x.  For each possible
-	 * occupancy (combination) of enemy pieces along the sliding piece's
-	 * row, mark the sliding piece's legal moves in the bitrow
-	 * squares_row[x][occ]. */
-	for (int x = 0; x <= 7; x++)
-		for (int occ = 0; occ <= 255; occ++)
-		{
-			squares_row[x][occ] = 0;
-			if (!BIT_GET(occ, x, 0))
-				/* Oops.  This occupancy is impossible because
-				 * there must be a sliding piece on square x. */
-				continue;
-			for (int dir = -1; dir <= 1; dir += 2)
-				for (int j = x + dir; j >= 0 && j <= 7; j += dir)
-				{
-					BIT_SET(squares_row[x][occ], j, 0);
-					if (BIT_GET(occ, j, 0))
-						/* Oops.  The sliding piece
-						 * can't slide through an enemy
-						 * piece. */
-						break;
-				}
-		}
-}
-
-/*----------------------------------------------------------------------------*\
- |				precomp_knight()			      |
-\*----------------------------------------------------------------------------*/
-void board::precomp_knight() const
-{
-
-/* Pre-compute the knight moves. */
-
-	/* Imagine the board is empty except for a knight at (x, y).  Mark the
-	 * knight's legal moves in the bitboard squares_knight[x][y]. */
-	for (int y = 0; y <= 7; y++)
-		for (int x = 0; x <= 7; x++)
-		{
-			squares_knight[x][y] = 0;
-			for (int k = -2; k <= 2; k++)
-				for (int j = -2; j <= 2; j++)
-				{
-					if (abs(j) == abs(k) || !j || !k)
-						/* Oops.  The knight can only
-						 * jump two squares in one
-						 * direction and one square in a
-						 * perpendicular direction. */
-						continue;
-					if (x + j < 0 || x + j > 7 ||
-					    y + k < 0 || y + k > 7)
-						/* Oops.  The knight can't jump
-						 * off the board. */
-						continue;
-					BIT_SET(squares_knight[x][y], x + j, y + k);
-				}
-		}
 }
 
 /*----------------------------------------------------------------------------*\
@@ -1003,6 +912,121 @@ void board::generate_pawn(list<move_t> &l) const
 			m.promo = 0;
 		}
 	}
+}
+
+/*----------------------------------------------------------------------------*\
+ |				 precomp_king()				      |
+\*----------------------------------------------------------------------------*/
+void board::precomp_king() const
+{
+
+/* Pre-compute the king moves. */
+
+	/* Imagine the board is empty except for a king at (x, y).  Mark the
+	 * king's legal moves in the bitboard squares_king[x][y]. */
+	for (int y = 0; y <= 7; y++)
+		for (int x = 0; x <= 7; x++)
+		{
+			squares_king[x][y] = 0;
+			for (int k = -1; k <= 1; k++)
+				for (int j = -1; j <= 1; j++)
+				{
+					if (!j && !k)
+						/* Oops.  The king can't stand
+						 * still. */
+						continue;
+					if (x + j < 0 || x + j > 7 ||
+					    y + k < 0 || y + k > 7)
+						/* Oops.  The king can't step
+						 * off the board. */
+						continue;
+					BIT_SET(squares_king[x][y], x + j, y + k);
+				}
+		}
+
+	/*
+	 | Abraham Maslow once noted, "If the only tool you have is a hammer,
+	 | you tend to see every problem as a [thumb]nail."  Well, the only tool
+	 | I have is a bitboard, so I tend to see every problem as a headache.
+	 |
+	 | These bitboards represent the squares which mustn't be occupied or
+	 | attacked on the respective sides in order for the respective kings to
+	 | be able to castle.
+	 */
+	squares_castle[WHITE][QUEEN_SIDE][UNOCCUPIED] = 0x000000000000000EULL;
+	squares_castle[WHITE][QUEEN_SIDE][UNATTACKED] = 0x000000000000001CULL;
+	squares_castle[WHITE][ KING_SIDE][UNOCCUPIED] = 0x0000000000000060ULL;
+	squares_castle[WHITE][ KING_SIDE][UNATTACKED] = 0x0000000000000070ULL;
+	squares_castle[BLACK][QUEEN_SIDE][UNOCCUPIED] = 0x0E00000000000000ULL;
+	squares_castle[BLACK][QUEEN_SIDE][UNATTACKED] = 0x1C00000000000000ULL;
+	squares_castle[BLACK][ KING_SIDE][UNOCCUPIED] = 0x6000000000000000ULL;
+	squares_castle[BLACK][ KING_SIDE][UNATTACKED] = 0x7000000000000000ULL;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				 precomp_row()				      |
+\*----------------------------------------------------------------------------*/
+void board::precomp_row() const
+{
+
+/* Pre-compute the sliding piece moves. */
+
+	/* Imagine there's a sliding piece on square x.  For each possible
+	 * occupancy (combination) of enemy pieces along the sliding piece's
+	 * row, mark the sliding piece's legal moves in the bitrow
+	 * squares_row[x][occ]. */
+	for (int x = 0; x <= 7; x++)
+		for (int occ = 0; occ <= 255; occ++)
+		{
+			squares_row[x][occ] = 0;
+			if (!BIT_GET(occ, x, 0))
+				/* Oops.  This occupancy is impossible because
+				 * there must be a sliding piece on square x. */
+				continue;
+			for (int dir = -1; dir <= 1; dir += 2)
+				for (int j = x + dir; j >= 0 && j <= 7; j += dir)
+				{
+					BIT_SET(squares_row[x][occ], j, 0);
+					if (BIT_GET(occ, j, 0))
+						/* Oops.  The sliding piece
+						 * can't slide through an enemy
+						 * piece. */
+						break;
+				}
+		}
+}
+
+/*----------------------------------------------------------------------------*\
+ |				precomp_knight()			      |
+\*----------------------------------------------------------------------------*/
+void board::precomp_knight() const
+{
+
+/* Pre-compute the knight moves. */
+
+	/* Imagine the board is empty except for a knight at (x, y).  Mark the
+	 * knight's legal moves in the bitboard squares_knight[x][y]. */
+	for (int y = 0; y <= 7; y++)
+		for (int x = 0; x <= 7; x++)
+		{
+			squares_knight[x][y] = 0;
+			for (int k = -2; k <= 2; k++)
+				for (int j = -2; j <= 2; j++)
+				{
+					if (abs(j) == abs(k) || !j || !k)
+						/* Oops.  The knight can only
+						 * jump two squares in one
+						 * direction and one square in a
+						 * perpendicular direction. */
+						continue;
+					if (x + j < 0 || x + j > 7 ||
+					    y + k < 0 || y + k > 7)
+						/* Oops.  The knight can't jump
+						 * off the board. */
+						continue;
+					BIT_SET(squares_knight[x][y], x + j, y + k);
+				}
+		}
 }
 
 /*----------------------------------------------------------------------------*\
