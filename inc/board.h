@@ -117,7 +117,6 @@ private:
 	void init_state();
 	void init_rotation();
 	void init_hash();
-	void precomp_key() const;
 
 	/* These methods generate moves. */
 	void precomp_king() const;
