@@ -272,8 +272,8 @@ int board::evaluate() const
 			sum += sign * coefficient * weight;
 		}
 
-		weight = GREATER(weight_castle[state.castle[color][QUEEN_SIDE]], weight_castle[state.castle[color][KING_SIDE]]);
-		sum += sign * weight;
+		for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
+			sum += sign * weight_castle[state.castle[color][side]];
 	}
 	return sum;
 }
