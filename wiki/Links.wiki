@@ -6,5 +6,7 @@
   * [http://www.cis.uab.edu/hyatt/pubs.html Online Technical Papers] - In-depth discussions of bitboards, hashing, and parallel search by Bob Hyatt, the author of Crafty.
   * [http://www.tim-mann.org/xboard/engine-intf.html Chess Engine Communication Protocol] - By Tim Mann, the author of XBoard.
 
+  * [http://www.ascotti.org/programming/chess/Shannon%20-%20Programming%20a%20computer%20for%20playing%20chess.pdf Programming a Computer for Playing Chess] - By Claude E. Shannon
+
 =Fun=
   * [http://www.scottmccloud.com/comics/chess/chess.html My Obsession with Chess] - A comic by Scott !McCloud.
