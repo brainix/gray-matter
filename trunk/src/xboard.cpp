@@ -210,10 +210,12 @@ void xboard::do_rejected() const
 \*----------------------------------------------------------------------------*/
 void xboard::do_new()
 {
+	search_ptr->change(IDLING);
+	board_ptr->lock();
 	board_ptr->set_board();
+	board_ptr->unlock();
 	search_ptr->clear();
 	search_ptr->set_depth(DEPTH);
-	search_ptr->change(IDLING);
 	force = false;
 }
 
