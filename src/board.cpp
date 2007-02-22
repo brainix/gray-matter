@@ -182,6 +182,14 @@ board& board::operator=(const board& that)
 
 /* Overloaded assignment operator. */
 
+	/*
+	 | It's like this and like that and like this and uh.
+	 | It's like that and like this and like that and uh.
+	 | It's like this.  And who gives a f*ck about those?
+	 | So just chill, 'til the next episode.
+	 |
+	 |	Snoop Doggy Dogg and Dr. Dre on overloading the = operator
+	 */
 	if (this == &that)
 		return *this;
 
