@@ -366,7 +366,10 @@ void xboard::do_undo() const
 
 /* Take back one ply. */
 
+	search_ptr->change(IDLING);
+	board_ptr->lock();
 	board_ptr->unmake();
+	board_ptr->unlock();
 }
 
 /*----------------------------------------------------------------------------*\
@@ -377,8 +380,11 @@ void xboard::do_remove() const
 
 /* Take back two plies. */
 
+	search_ptr->change(IDLING);
+	board_ptr->lock();
 	board_ptr->unmake();
 	board_ptr->unmake();
+	board_ptr->unlock();
 }
 
 /*----------------------------------------------------------------------------*\
