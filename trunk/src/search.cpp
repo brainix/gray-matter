@@ -263,13 +263,13 @@ move_t search::negascout(int depth, int alpha, int beta)
 	 * Check for this case.  Subtle!  We couldn't have just won because our
 	 * opponent moved last. */
 	m.promo = m.new_y = m.new_x = m.old_y = m.old_x = 0;
-//	switch (board_ptr->get_status())
-//	{
-//		case IN_PROGRESS :                         break;
-//		default          : m.value =  CONTEMPT;    return m;
-//		case CHECKMATE   : m.value = -WEIGHT_KING; return m;
-//		case ILLEGAL     : m.value = -WEIGHT_KING; return m;
-//	}
+	switch (board_ptr->get_status())
+	{
+		case IN_PROGRESS :                         break;
+		default          : m.value =  CONTEMPT;    return m;
+		case CHECKMATE   : m.value = -WEIGHT_KING; return m;
+		case ILLEGAL     : m.value = -WEIGHT_KING; return m;
+	}
 
 	/* Generate and re-order the move list. */
 	nodes++;

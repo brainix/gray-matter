@@ -249,12 +249,12 @@ bitboard_t board::get_hash() const
 \*----------------------------------------------------------------------------*/
 int board::get_status()
 {
-	int type;
+//	int type;
 
 	if (!state.piece[WHITE][KING] || !state.piece[BLACK][KING])
 		return ILLEGAL;
-	if ((type = mate()) != IN_PROGRESS)
-		return type;
+//	if ((type = mate()) != IN_PROGRESS)
+//		return type;
 	if (insufficient())
 		return INSUFFICIENT;
 	if (three())
