@@ -141,10 +141,10 @@ void xboard::print_result(move_t m) const
 		return;
 	}
 
-	search_ptr->change(IDLING);
-	board_ptr->lock();
+//	search_ptr->change(IDLING);
+//	board_ptr->lock();
 	board_ptr->make(m);
-	board_ptr->unlock();
+//	board_ptr->unlock();
 
 	printf("move ");
 	print_move(m);
@@ -320,10 +320,10 @@ void xboard::do_usermove() const
 		return;
 	}
 
-	search_ptr->change(IDLING);
-	board_ptr->lock();
+//	search_ptr->change(IDLING);
+//	board_ptr->lock();
 	board_ptr->make(m);
-	board_ptr->unlock();
+//	board_ptr->unlock();
 
 	/* Alright, so the move was legal.  Are we in force mode, or did the
 	 * move just end the game? */
@@ -451,8 +451,8 @@ int xboard::game_over() const
 {
 	int status;
 
-	search_ptr->change(IDLING);
-	board_ptr->lock();
+//	search_ptr->change(IDLING);
+//	board_ptr->lock();
 	switch (status = board_ptr->get_status())
 	{
 		case STALEMATE    : printf("1/2-1/2 {Stalemate}\n");                                                       break;
@@ -461,7 +461,7 @@ int xboard::game_over() const
 		case FIFTY        : printf("1/2-1/2 {Fifty move rule}\n");                                                 break;
 		case CHECKMATE    : printf("%s mates}\n", !board_ptr->get_whose() == WHITE ? "1-0 {White" : "0-1 {Black"); break;
 	}
-	board_ptr->unlock();
+//	board_ptr->unlock();
 	return status;
 }
 
