@@ -52,7 +52,7 @@ search::search()
 /*----------------------------------------------------------------------------*\
  |				       =				      |
 \*----------------------------------------------------------------------------*/
-search& search::operator=(const search& that)
+class search& search::operator=(const search& that)
 {
 
 /* Overloaded assignment operator. */

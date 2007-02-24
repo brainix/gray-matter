@@ -42,7 +42,7 @@ public:
 	void bind(class search *s);
 	void loop();
 	void print_output(int ply, int value, int time, int nodes, list<move_t> &pv) const;
-	void print_result(move_t m) const;
+	void print_result(move_t m);
 	void print_move(move_t m) const;
 private:
 	char s[80];
@@ -65,18 +65,18 @@ private:
 	void do_level() const;
 	void do_st() const;
 	void do_sd() const;
-	void do_usermove() const;
+	void do_usermove();
 	void do_question() const;
 	void do_ping();
 	void do_hint() const;
-	void do_undo() const;
-	void do_remove() const;
+	void do_undo();
+	void do_remove();
 	void do_hard();
 	void do_easy();
 	void do_post() const;
 	void do_nopost() const;
 
-	int game_over() const;
+	int game_over();
 	int str_to_num(const char *p) const;
 	int str_to_secs(const char *p) const;
 	int char_to_shape(char c) const;
