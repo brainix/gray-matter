@@ -47,9 +47,8 @@ xboard::xboard()
 /*----------------------------------------------------------------------------*\
  |				     bind()				      |
 \*----------------------------------------------------------------------------*/
-void xboard::bind(board *b, class search *s)
+void xboard::bind(class search *s)
 {
-	board_ptr = b;
 	search_ptr = s;
 }
 
@@ -70,8 +69,6 @@ void xboard::loop()
 			do_rejected();
 		else if (!strncmp(s, "new", 3))
 			do_new();
-		else if (!strncmp(s, "quit", 4))
-			do_quit();
 		else if (!strncmp(s, "force", 5))
 			do_force();
 		else if (!strncmp(s, "go", 2))
@@ -107,7 +104,7 @@ void xboard::loop()
 		else
 			printf("Error (unknown command): %s\n", s);
 	}
-	search_ptr->change(QUITTING);
+	do_quit();
 }
 
 /*----------------------------------------------------------------------------*\
@@ -141,17 +138,13 @@ void xboard::print_result(move_t m) const
 		return;
 	}
 
-//	search_ptr->change(IDLING);
-//	board_ptr->lock();
-	board_ptr->make(m);
-//	board_ptr->unlock();
+	b.make(m);
+	search_ptr->change(ponder ? PONDERING : IDLING, b);
 
 	printf("move ");
 	print_move(m);
 	printf("\n");
 	game_over();
-	if (ponder)
-		search_ptr->change(PONDERING);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -215,15 +208,11 @@ void xboard::do_rejected() const
 \*----------------------------------------------------------------------------*/
 void xboard::do_new()
 {
-	search_ptr->change(IDLING);
-	board_ptr->lock();
-	board_ptr->set_board();
-	board_ptr->unlock();
-
+	force = false;
+	b.set_board();
+	search_ptr->change(IDLING, b);
 	search_ptr->clear();
 	search_ptr->set_depth(DEPTH);
-
-	force = false;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -231,6 +220,7 @@ void xboard::do_new()
 \*----------------------------------------------------------------------------*/
 void xboard::do_quit() const
 {
+	search_ptr->change(QUITTING, b);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -247,7 +237,7 @@ void xboard::do_force()
 void xboard::do_go()
 {
 	force = false;
-	search_ptr->change(THINKING);
+	search_ptr->change(THINKING, b);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -320,10 +310,7 @@ void xboard::do_usermove() const
 		return;
 	}
 
-//	search_ptr->change(IDLING);
-//	board_ptr->lock();
-	board_ptr->make(m);
-//	board_ptr->unlock();
+	b.make(m);
 
 	/* Alright, so the move was legal.  Are we in force mode, or did the
 	 * move just end the game? */
@@ -334,7 +321,7 @@ void xboard::do_usermove() const
 
 	/* Alright, so the move was legal, we're not in force mode, and the move
 	 * didn't just end the game.  Formulate a response. */
-	search_ptr->change(THINKING);
+	search_ptr->change(THINKING, b);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -342,7 +329,7 @@ void xboard::do_usermove() const
 \*----------------------------------------------------------------------------*/
 void xboard::do_question() const
 {
-	search_ptr->change(IDLING);
+	search_ptr->change(IDLING, b);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -379,10 +366,7 @@ void xboard::do_undo() const
 
 /* Take back one ply. */
 
-	search_ptr->change(IDLING);
-	board_ptr->lock();
-	board_ptr->unmake();
-	board_ptr->unlock();
+	b.unmake();
 }
 
 /*----------------------------------------------------------------------------*\
@@ -393,11 +377,8 @@ void xboard::do_remove() const
 
 /* Take back two plies. */
 
-	search_ptr->change(IDLING);
-	board_ptr->lock();
-	board_ptr->unmake();
-	board_ptr->unmake();
-	board_ptr->unlock();
+	b.unmake();
+	b.unmake();
 }
 
 /*----------------------------------------------------------------------------*\
@@ -449,19 +430,16 @@ void xboard::do_nopost() const
 \*----------------------------------------------------------------------------*/
 int xboard::game_over() const
 {
-	int status;
+	int status = b.get_status(true);
 
-//	search_ptr->change(IDLING);
-//	board_ptr->lock();
-	switch (status = board_ptr->get_status())
+	switch (status)
 	{
-		case STALEMATE    : printf("1/2-1/2 {Stalemate}\n");                                                       break;
-		case INSUFFICIENT : printf("1/2-1/2 {Insufficient material}\n");                                           break;
-		case THREE        : printf("1/2-1/2 {Threefold repetition}\n");                                            break;
-		case FIFTY        : printf("1/2-1/2 {Fifty move rule}\n");                                                 break;
-		case CHECKMATE    : printf("%s mates}\n", !board_ptr->get_whose() == WHITE ? "1-0 {White" : "0-1 {Black"); break;
+		case STALEMATE    : printf("1/2-1/2 {Stalemate}\n");                                              break;
+		case INSUFFICIENT : printf("1/2-1/2 {Insufficient material}\n");                                  break;
+		case THREE        : printf("1/2-1/2 {Threefold repetition}\n");                                   break;
+		case FIFTY        : printf("1/2-1/2 {Fifty move rule}\n");                                        break;
+		case CHECKMATE    : printf("%s mates}\n", !b.get_whose() == WHITE ? "1-0 {White" : "0-1 {Black"); break;
 	}
-//	board_ptr->unlock();
 	return status;
 }
 
@@ -516,11 +494,7 @@ bool xboard::test_move(move_t m) const
 
 	list<move_t> l;
 
-	search_ptr->change(IDLING);
-	board_ptr->lock();
-	board_ptr->generate(l);
-	board_ptr->unlock();
-
+	b.generate(l);
 	for (list<move_t>::iterator it = l.begin(); it != l.end(); it++)
 		if (it->old_x == m.old_x && it->old_y == m.old_y &&
 		    it->new_x == m.new_x && it->new_y == m.new_y &&

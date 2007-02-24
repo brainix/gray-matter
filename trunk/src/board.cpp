@@ -150,28 +150,6 @@ board::board()
 		precomputed = true;
 	}
 	set_board(); /* Set the board. */
-	assert(!pthread_mutex_init(&mutex, NULL));
-}
-
-/*----------------------------------------------------------------------------*\
- |				    ~board()				      |
-\*----------------------------------------------------------------------------*/
-board::~board()
-{
-	assert(!pthread_mutex_destroy(&mutex));
-}
-
-/*----------------------------------------------------------------------------*\
- |				  set_board()				      |
-\*----------------------------------------------------------------------------*/
-void board::set_board()
-{
-
-/* Set the board. */
-
-	init_state();    /* Initialize the state.             */
-	init_rotation(); /* Initialize the rotated bitboards. */
-	init_hash();     /* Initialize the Zobrist hash.      */
 }
 
 /*----------------------------------------------------------------------------*\
@@ -207,19 +185,16 @@ board& board::operator=(const board& that)
 }
 
 /*----------------------------------------------------------------------------*\
- |				     lock()				      |
+ |				  set_board()				      |
 \*----------------------------------------------------------------------------*/
-void board::lock()
+void board::set_board()
 {
-	assert(!pthread_mutex_lock(&mutex));
-}
 
-/*----------------------------------------------------------------------------*\
- |				    unlock()				      |
-\*----------------------------------------------------------------------------*/
-void board::unlock()
-{
-	assert(!pthread_mutex_unlock(&mutex));
+/* Set the board. */
+
+	init_state();    /* Initialize the state.             */
+	init_rotation(); /* Initialize the rotated bitboards. */
+	init_hash();     /* Initialize the Zobrist hash.      */
 }
 
 /*----------------------------------------------------------------------------*\
@@ -247,14 +222,15 @@ bitboard_t board::get_hash() const
 /*----------------------------------------------------------------------------*\
  |				  get_status()				      |
 \*----------------------------------------------------------------------------*/
-int board::get_status()
+int board::get_status(bool mate_test)
 {
-//	int type;
+	int type;
 
 	if (!state.piece[WHITE][KING] || !state.piece[BLACK][KING])
 		return ILLEGAL;
-//	if ((type = mate()) != IN_PROGRESS)
-//		return type;
+	if (mate_test)
+		if ((type = mate()) != IN_PROGRESS)
+			return type;
 	if (insufficient())
 		return INSUFFICIENT;
 	if (three())
@@ -274,9 +250,6 @@ int board::evaluate() const
  * perspective of the player who's just moved (the color that's off move). */
 
 	int sign, coefficient, weight, sum = 0;
-
-	if (!state.piece[OFF_MOVE][KING] || !state.piece[ON_MOVE][KING])
-		return !state.piece[OFF_MOVE][KING] ? -WEIGHT_KING : WEIGHT_KING;
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
@@ -870,14 +843,14 @@ void board::generate_pawn(list<move_t> &l) const
 	/* If our pawn is on our fifth row, and our opponent's pawn is beside
 	 * our pawn, and, as her last move, our opponent advanced her pawn two
 	 * squares, then we can perform an en passant. */
-//	if (state.en_passant != -1)
-//	{
-//		m.old_y = (m.new_y = ON_MOVE ? 2 : 5) + (ON_MOVE ? 1 : -1);
-//		m.new_x = state.en_passant;
-//		for (m.old_x = state.en_passant == 0 ? 1 : state.en_passant - 1; m.old_x <= (unsigned) (state.en_passant == 7 ? 6 : state.en_passant + 1); m.old_x += 2)
-//			if (BIT_GET(state.piece[ON_MOVE][PAWN], m.old_x, m.old_y))
-//				l.push_front(m);
-//	}
+	if (state.en_passant != -1)
+	{
+		m.old_y = (m.new_y = ON_MOVE ? 2 : 5) + (ON_MOVE ? 1 : -1);
+		m.new_x = (unsigned) state.en_passant;
+		for (m.old_x = state.en_passant == 0 ? 1 : (unsigned) (state.en_passant - 1); m.old_x <= (unsigned) (state.en_passant == 7 ? 6 : state.en_passant + 1); m.old_x += 2)
+			if (BIT_GET(state.piece[ON_MOVE][PAWN], m.old_x, m.old_y))
+				l.push_front(m);
+	}
 
 	/* A pawn can advance one square. */
 	b = state.piece[ON_MOVE][PAWN];
@@ -1038,6 +1011,36 @@ void board::precomp_knight() const
 }
 
 /*----------------------------------------------------------------------------*\
+ |				     mate()				      |
+\*----------------------------------------------------------------------------*/
+int board::mate()
+{
+
+/* Is the game over due to stalemate or checkmate?  We test for both conditions
+ * in the same function because they're so similar.  During both, the color on
+ * move doesn't have a legal move.  The only difference: during stalemate, her
+ * king isn't attacked; during checkmate, her king is attacked. */
+
+	list<move_t> l;
+	bool escape = false;
+
+	/* Look for a legal move. */
+	generate(l);
+	for (list<move_t>::iterator it = l.begin(); it != l.end() && !escape; it++)
+	{
+		make(*it);
+		if (!check(state.piece[OFF_MOVE][KING], ON_MOVE))
+			escape = true;
+		unmake();
+	}
+
+	/* If there's a legal move, the game isn't over.  Otherwise, if the king
+	 * isn't attacked, the game is over due to stalemate.  Otherwise, the
+	 * game is over due to checkmate. */
+	return escape ? IN_PROGRESS : !check(state.piece[ON_MOVE][KING], OFF_MOVE) ? STALEMATE : CHECKMATE;
+}
+
+/*----------------------------------------------------------------------------*\
  |				    check()				      |
 \*----------------------------------------------------------------------------*/
 bool board::check(bitboard_t b1, bool color) const
@@ -1099,36 +1102,6 @@ bool board::check(bitboard_t b1, bool color) const
 			return true;
 	}
 	return false;
-}
-
-/*----------------------------------------------------------------------------*\
- |				     mate()				      |
-\*----------------------------------------------------------------------------*/
-int board::mate()
-{
-
-/* Is the game over due to stalemate or checkmate?  We test for both conditions
- * in the same function because they're so similar.  During both, the color on
- * move doesn't have a legal move.  The only difference: during stalemate, her
- * king isn't attacked; during checkmate, her king is attacked. */
-
-	list<move_t> l;
-	bool escape = false;
-
-	/* Look for a legal move. */
-	generate(l);
-	for (list<move_t>::iterator it = l.begin(); it != l.end() && !escape; it++)
-	{
-		make(*it);
-		if (!check(state.piece[OFF_MOVE][KING], ON_MOVE))
-			escape = true;
-		unmake();
-	}
-
-	/* If there's a legal move, the game isn't over.  Otherwise, if the king
-	 * isn't attacked, the game is over due to stalemate.  Otherwise, the
-	 * game is over due to checkmate. */
-	return escape ? IN_PROGRESS : !check(state.piece[ON_MOVE][KING], OFF_MOVE) ? STALEMATE : CHECKMATE;
 }
 
 /*----------------------------------------------------------------------------*\
