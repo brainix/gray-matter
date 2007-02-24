@@ -127,7 +127,7 @@ void xboard::print_output(int ply, int value, int time, int nodes, list<move_t> 
 /*----------------------------------------------------------------------------*\
  |				 print_result()				      |
 \*----------------------------------------------------------------------------*/
-void xboard::print_result(move_t m) const
+void xboard::print_result(move_t m)
 {
 	if (m.value == -WEIGHT_KING)
 	{
@@ -289,7 +289,7 @@ void xboard::do_sd() const
 /*----------------------------------------------------------------------------*\
  |				 do_usermove()				      |
 \*----------------------------------------------------------------------------*/
-void xboard::do_usermove() const
+void xboard::do_usermove()
 {
 
 /* Our opponent has moved.  If the move was legal, we're not in force mode, and
@@ -361,7 +361,7 @@ void xboard::do_hint() const
 /*----------------------------------------------------------------------------*\
  |				   do_undo()				      |
 \*----------------------------------------------------------------------------*/
-void xboard::do_undo() const
+void xboard::do_undo()
 {
 
 /* Take back one ply. */
@@ -372,7 +372,7 @@ void xboard::do_undo() const
 /*----------------------------------------------------------------------------*\
  |				  do_remove()				      |
 \*----------------------------------------------------------------------------*/
-void xboard::do_remove() const
+void xboard::do_remove()
 {
 
 /* Take back two plies. */
@@ -428,7 +428,7 @@ void xboard::do_nopost() const
 /*----------------------------------------------------------------------------*\
  |				  game_over()				      |
 \*----------------------------------------------------------------------------*/
-int xboard::game_over() const
+int xboard::game_over()
 {
 	int status = b.get_status(true);
 
