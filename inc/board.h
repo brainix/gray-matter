@@ -86,16 +86,13 @@ class board
 public:
 	/* These methods set information. */
 	board();
-	~board();
-	void set_board();
 	board& operator=(const board& that);
-	void lock();
-	void unlock();
+	void set_board();
 
 	/* These methods get information. */
 	bool get_whose() const;
 	bitboard_t get_hash() const;
-	int get_status();
+	int get_status(bool mate_test);
 	int evaluate() const;
 
 	/* These methods generate, make, and take back moves. */
@@ -111,7 +108,6 @@ private:
 	bitboard_t rotation[ANGLES][COLORS + 1];        /* Current rotated bitboard.   */
 	list<bitboard_t> hashes;                        /* Previous Zobrist hash keys. */
 	bitboard_t hash;                                /* Current Zobrist hash key.   */
-	pthread_mutex_t mutex;				/* ?                           */
 
 	/* These methods start up games. */
 	void init_state();
@@ -131,8 +127,8 @@ private:
 	void precomp_knight() const;
 
 	/* These methods test for various conditions. */
-	bool check(bitboard_t b1, bool color) const;
 	int mate();
+	bool check(bitboard_t b1, bool color) const;
 	bool insufficient() const;
 	bool three() const;
 	bool fifty() const;

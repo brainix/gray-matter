@@ -39,7 +39,7 @@ class xboard
 {
 public:
 	xboard();
-	void bind(board *b, class search *s);
+	void bind(class search *s);
 	void loop();
 	void print_output(int ply, int value, int time, int nodes, list<move_t> &pv) const;
 	void print_result(move_t m) const;
@@ -50,7 +50,7 @@ private:
 	bool ponder;
 	bool output;
 
-	board *board_ptr;         /* Board representation object. */
+	board b;                  /* Board representation object. */
 	class search *search_ptr; /* Move search object.          */
 
 	void do_xboard() const;

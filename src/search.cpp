@@ -50,6 +50,32 @@ search::search()
 }
 
 /*----------------------------------------------------------------------------*\
+ |				       =				      |
+\*----------------------------------------------------------------------------*/
+search& search::operator=(const search& that)
+{
+
+/* Overloaded assignment operator. */
+
+	if (this == &that)
+		return *this;
+
+	pv = that.pv;
+	hint = that.hint;
+	max_time = that.max_time;
+	max_depth = that.max_depth;
+	nodes = that.nodes;
+	output = that.output;
+
+	b = that.b;
+	table_ptr = that.table_ptr;
+	history_ptr = that.history_ptr;
+	xboard_ptr = that.xboard_ptr;
+
+	return *this;
+}
+
+/*----------------------------------------------------------------------------*\
  |				    handle()				      |
 \*----------------------------------------------------------------------------*/
 void search::handle(int num)
@@ -63,9 +89,8 @@ void search::handle(int num)
 /*----------------------------------------------------------------------------*\
  |				     bind()				      |
 \*----------------------------------------------------------------------------*/
-void search::bind(board *b, table *t, history *h, xboard *x)
+void search::bind(table *t, history *h, xboard *x)
 {
-	board_ptr = b;
 	table_ptr = t;
 	history_ptr = h;
 	xboard_ptr = x;
@@ -153,7 +178,7 @@ void *search::start(void *arg)
 /*----------------------------------------------------------------------------*\
  |				    change()				      |
 \*----------------------------------------------------------------------------*/
-void search::change(int s)
+void search::change(int s, const board& now)
 {
 
 /* Change the search status (to idling, thinking, pondering, or quitting) and
@@ -161,6 +186,8 @@ void search::change(int s)
 
 	assert(!pthread_mutex_lock(&mutex));
 	status = s;
+	if (status == THINKING || status == PONDERING)
+		b = now;
 	timeout = status != THINKING && status != PONDERING;
 	assert(!pthread_cond_signal(&cond));
 	assert(!pthread_mutex_unlock(&mutex));
@@ -175,9 +202,7 @@ void search::iterate(int s)
 /* Perform iterative deepening.  This method handles both thinking (on our own
  * time) and pondering (on our opponent's time) since they're so similar. */
 
-	/* Lock the board, note the start time, and initialize the number of
-	 * nodes searched. */
-	board_ptr->lock();
+	/* Note the start time and initialize the number of nodes searched. */
 	clock_t start = clock();
 	struct itimerval itimerval;
 	nodes = 0;
@@ -213,14 +238,13 @@ void search::iterate(int s)
 	}
 
 	/* If we've just finished thinking, clear the alarm and inform XBoard of
-	 * our favorite move.  Unlock the board. */
+	 * our favorite move. */
 	if (s == THINKING)
 	{
 		itimerval.it_value.tv_sec = 0;
 		setitimer(ITIMER_REAL, &itimerval, NULL);
 		xboard_ptr->print_result(pv.front());
 	}
-	board_ptr->unlock();
 }
 
 /*----------------------------------------------------------------------------*\
@@ -249,8 +273,8 @@ move_t search::negascout(int depth, int alpha, int beta)
 	list<move_t>::iterator it;
 	move_t m;
 	int type = ALPHA;
-	bool whose = board_ptr->get_whose();
-	bitboard_t hash = board_ptr->get_hash();
+	bool whose = b.get_whose();
+	bitboard_t hash = b.get_hash();
 
 	/* Before anything else, do some Research Re: search & Research.  ;-)
 	 * (Apologies to Aske Plaat.)  If we've already sufficiently examined
@@ -263,17 +287,17 @@ move_t search::negascout(int depth, int alpha, int beta)
 	 * Check for this case.  Subtle!  We couldn't have just won because our
 	 * opponent moved last. */
 	m.promo = m.new_y = m.new_x = m.old_y = m.old_x = 0;
-	switch (board_ptr->get_status())
+	switch (b.get_status(false))
 	{
 		case IN_PROGRESS :                         break;
 		default          : m.value =  CONTEMPT;    return m;
-		case CHECKMATE   : m.value = -WEIGHT_KING; return m;
+		case CHECKMATE   :
 		case ILLEGAL     : m.value = -WEIGHT_KING; return m;
 	}
 
 	/* Generate and re-order the move list. */
 	nodes++;
-	board_ptr->generate(l);
+	b.generate(l);
 	for (it = l.begin(); it != l.end(); it++)
 		it->value = history_ptr->probe(whose, *it);
 	l.sort(compare);
@@ -281,10 +305,10 @@ move_t search::negascout(int depth, int alpha, int beta)
 	/* Score each move in the list. */
 	for (it = l.begin(); !timeout && it != l.end(); it++)
 	{
-		board_ptr->make(*it);
+		b.make(*it);
 		if (!depth)
 			/* Base case. */
-			it->value = board_ptr->evaluate();
+			it->value = b.evaluate();
 		else
 		{
 			/* Recursive case - null window. */
@@ -294,7 +318,7 @@ move_t search::negascout(int depth, int alpha, int beta)
 			if (type != EXACT || alpha < it->value && it->value < beta)
 				it->value = -negascout(depth - 1, -beta, -alpha).value;
 		}
-		board_ptr->unmake();
+		b.unmake();
 
 		if (it->value >= beta)
 		{
@@ -332,15 +356,15 @@ void search::extract(int s)
 	pv.clear();
 
 	/* Get the principal variation. */
-	while (table_ptr->probe(board_ptr->get_hash(), &m, 0))
+	while (table_ptr->probe(b.get_hash(), &m, 0))
 	{
 		pv.push_back(m);
-		board_ptr->make(m);
+		b.make(m);
 		if (pv.size() == (unsigned) max_depth)
 			break;
 	}
 	for (size_t j = 0; j < pv.size(); j++)
-		board_ptr->unmake();
+		b.unmake();
 
 	/* Get the hint. */
 	if (s == THINKING && pv.size() >= 2)

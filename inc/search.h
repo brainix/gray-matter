@@ -39,27 +39,28 @@ class search
 {
 public:
 	search();
+	search& operator=(const search& that);
 	static void handle(int num);
-	void bind(board *b, table *t, history *h, xboard *x);
+	void bind(table *t, history *h, xboard *x);
 	void clear() const;
 	move_t get_hint() const;
 	void set_time(int t);
 	void set_depth(int d);
 	void set_output(bool o);
 	static void *start(void *arg);
-	void change(int s);
+	void change(int s, const board& now);
 private:
-	list<move_t> pv;       /* Principal variation.                        */
-	move_t hint;           /* Opponent's best move.                       */
-	int max_time;          /* Maximum search time.                        */
-	int max_depth;         /* Maximum search depth.                       */
-	int nodes;             /* Number of nodes searched.                   */
-	bool output;           /* Whether to print thinking output.           */
+	list<move_t> pv;      /* Principal variation.                        */
+	move_t hint;          /* Opponent's best move.                       */
+	int max_time;         /* Maximum search time.                        */
+	int max_depth;        /* Maximum search depth.                       */
+	int nodes;            /* Number of nodes searched.                   */
+	bool output;          /* Whether to print thinking output.           */
 
-	board *board_ptr;      /* Board representation object.                */
-	table *table_ptr;      /* Transposition table object.                 */
-	history *history_ptr;  /* History table object.                       */
-	xboard *xboard_ptr;    /* Chess Engine Communication Protocol object. */
+	board b;              /* Board representation object.                */
+	table *table_ptr;     /* Transposition table object.                 */
+	history *history_ptr; /* History table object.                       */
+	xboard *xboard_ptr;   /* Chess Engine Communication Protocol object. */
 
 	void iterate(int s);
 	move_t negascout(int depth, int alpha, int beta);

@@ -98,6 +98,11 @@
 #define HAS_CASTLED	2
 #define CASTLE_STATS	3
 
+/* Castling requirements: */
+#define UNOCCUPIED	0
+#define UNATTACKED	1
+#define REQS		2
+
 /* Game statuses: */
 #define IN_PROGRESS	0
 #define STALEMATE	1
@@ -108,12 +113,7 @@
 #define ILLEGAL		6
 #define GAME_STATS	7
 
-/* Castling requirements: */
-#define UNOCCUPIED	0
-#define UNATTACKED	1
-#define REQS		2
-
-/* */
+/* Rotated bitboard maps: */
 #define MAP		0
 #define UNMAP		1
 #define MAPS		2
@@ -125,9 +125,9 @@
 #define R90		3
 #define ANGLES		4
 
-/* */
-#define X		0
-#define Y		1
+/* Board coordinates: */
+#define X		0 /* x-coordinate (file). */
+#define Y		1 /* y-coordinate (rank). */
 #define COORDS		2
 
 /* List positions: */

@@ -70,8 +70,8 @@ int main(int argc, char **argv)
 
 	/* Bind the objects. */
 	o.bind(&b, &t);
-	x.bind(&b, &s);
-	s.bind(&b, &t, &h, &x);
+	x.bind(&s);
+	s.bind(&t, &h, &x);
 
 	/* Launch the event loop. */
 	x.loop();
