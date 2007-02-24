@@ -140,7 +140,12 @@ void xboard::print_result(move_t m) const
 		printf("resign\n");
 		return;
 	}
+
+	search_ptr->change(IDLING);
+	board_ptr->lock();
 	board_ptr->make(m);
+	board_ptr->unlock();
+
 	printf("move ");
 	print_move(m);
 	printf("\n");
@@ -214,8 +219,10 @@ void xboard::do_new()
 	board_ptr->lock();
 	board_ptr->set_board();
 	board_ptr->unlock();
+
 	search_ptr->clear();
 	search_ptr->set_depth(DEPTH);
+
 	force = false;
 }
 
@@ -313,9 +320,13 @@ void xboard::do_usermove() const
 		return;
 	}
 
+	search_ptr->change(IDLING);
+	board_ptr->lock();
+	board_ptr->make(m);
+	board_ptr->unlock();
+
 	/* Alright, so the move was legal.  Are we in force mode, or did the
 	 * move just end the game? */
-	board_ptr->make(m);
 	if (force || game_over())
 		/* Yes, either we're in force mode, or the move just ended the
 		 * game.  Either way, we're not to respond. */
@@ -438,9 +449,11 @@ void xboard::do_nopost() const
 \*----------------------------------------------------------------------------*/
 int xboard::game_over() const
 {
-	int status = board_ptr->get_status();
+	int status;
 
-	switch (status)
+	search_ptr->change(IDLING);
+	board_ptr->lock();
+	switch (status = board_ptr->get_status())
 	{
 		case STALEMATE    : printf("1/2-1/2 {Stalemate}\n");                                                       break;
 		case INSUFFICIENT : printf("1/2-1/2 {Insufficient material}\n");                                           break;
@@ -448,6 +461,7 @@ int xboard::game_over() const
 		case FIFTY        : printf("1/2-1/2 {Fifty move rule}\n");                                                 break;
 		case CHECKMATE    : printf("%s mates}\n", !board_ptr->get_whose() == WHITE ? "1-0 {White" : "0-1 {Black"); break;
 	}
+	board_ptr->unlock();
 	return status;
 }
 
