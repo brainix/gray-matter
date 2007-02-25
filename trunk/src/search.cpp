@@ -189,9 +189,8 @@ void search::change(int s, const board& now)
 {
 
 /*
- | Change the search status (to idling, thinking, pondering, or quitting), set
- | the timeout flag appropriately, and synchronize the board to the position
- | we're to search from.
+ | Synchronize the board to the position we're to search from (if necessary) and
+ | change the search status (to idling, thinking, pondering, or quitting).
  |
  | Subtle!  start() and change() operate on the same search object (therefore
  | the same board object) but are called from different threads.  Unless we take
@@ -218,16 +217,15 @@ void search::change(int s, const board& now)
  |	 12		start thinking
  */
 
-	assert(!pthread_mutex_lock(&mutex));
-	status = s;
 	timeout = true;
-	if (status == THINKING || status == PONDERING)
+	if (s == THINKING || s == PONDERING)
 	{
 		b.lock();
 		b = now;
 		b.unlock();
 	}
-	timeout = status == IDLING || status == QUITTING;
+	assert(!pthread_mutex_lock(&mutex));
+	status = s;
 	assert(!pthread_cond_signal(&cond));
 	assert(!pthread_mutex_unlock(&mutex));
 }
@@ -241,14 +239,16 @@ void search::iterate(int s)
 /* Perform iterative deepening.  This method handles both thinking (on our own
  * time) and pondering (on our opponent's time) since they're so similar. */
 
-	/* Note the start time and initialize the number of nodes searched. */
-	clock_t start = clock();
-	struct itimerval itimerval;
+	/* Initialize the number of nodes searched and the timeout flag and note
+	 * the start time. */
 	nodes = 0;
+	timeout = false;
+	clock_t start = clock();
 
 	/* If we're to think, set the alarm. */
 	if (s == THINKING)
 	{
+		struct itimerval itimerval;
 		itimerval.it_interval.tv_sec = 0;
 		itimerval.it_interval.tv_usec = 0;
 		itimerval.it_value.tv_sec = max_time;
@@ -280,7 +280,11 @@ void search::iterate(int s)
 	 * our favorite move. */
 	if (s == THINKING)
 	{
+		struct itimerval itimerval;
+		itimerval.it_interval.tv_sec = 0;
+		itimerval.it_interval.tv_usec = 0;
 		itimerval.it_value.tv_sec = 0;
+		itimerval.it_value.tv_usec = 0;
 		setitimer(ITIMER_REAL, &itimerval, NULL);
 		xboard_ptr->print_result(pv.front());
 	}
