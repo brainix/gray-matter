@@ -375,9 +375,9 @@ move_t search::negascout(int depth, int alpha, int beta)
 
 	/* Find the best move in the list.  This loop seems wasteful.  Can
 	 * anyone think of a better way? */
-//	for (m = l.front(), it = l.begin(), it++; it != l.end(); it++)
-//		if (it->value > m.value)
-//			m = *it;
+	for (m = l.front(), it = l.begin(), it++; it != l.end(); it++)
+		if (it->value > m.value)
+			m = *it;
 	table_ptr->store(hash, m, depth, type);
 	history_ptr->store(whose, m, depth);
 	return m;
