@@ -372,7 +372,6 @@ move_t search::negascout(int depth, int alpha, int beta)
 		if (it->value > alpha)
 		{
 			alpha = it->value;
-			m = *it;
 			type = EXACT;
 		}
 	}
