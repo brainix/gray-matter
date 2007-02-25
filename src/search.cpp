@@ -171,9 +171,9 @@ void *search::start(void *arg)
 		/* Do the requested work - idle, think, ponder, or quit. */
 		if (status == THINKING || status == PONDERING)
 		{
-			b.lock();
+			search_ptr->b.lock();
 			search_ptr->iterate(status);
-			b.unlock();
+			search_ptr->b.unlock();
 		}
 	} while (status != QUITTING);
 
