@@ -151,6 +151,9 @@ void search::set_output(bool o)
 \*----------------------------------------------------------------------------*/
 void *search::start(void *arg)
 {
+
+/* Think of this method as main() for the search thread. */
+
 	class search *search_ptr = (class search *) arg;
 	int tmp = status = IDLING;
 	assert(!pthread_mutex_init(&mutex, NULL));
@@ -160,14 +163,18 @@ void *search::start(void *arg)
 	{
 		/* Wait for the status to change. */
 		assert(!pthread_mutex_lock(&mutex));
-		while (status == tmp)
+		while (tmp == status)
 			assert(!pthread_cond_wait(&cond, &mutex));
 		tmp = status;
 		assert(!pthread_mutex_unlock(&mutex));
 
-		/* Do the requested work - think, ponder, or quit. */
+		/* Do the requested work - idle, think, ponder, or quit. */
 		if (status == THINKING || status == PONDERING)
+		{
+			b.lock();
 			search_ptr->iterate(status);
+			b.unlock();
+		}
 	} while (status != QUITTING);
 
 	assert(!pthread_cond_destroy(&cond));
@@ -181,14 +188,46 @@ void *search::start(void *arg)
 void search::change(int s, const board& now)
 {
 
-/* Change the search status (to idling, thinking, pondering, or quitting) and
- * set the timeout flag appropriately. */
+/*
+ | Change the search status (to idling, thinking, pondering, or quitting), set
+ | the timeout flag appropriately, and synchronize the board to the position
+ | we're to search from.
+ |
+ | Subtle!  start() and change() operate on the same search object (therefore
+ | the same board object) but are called from different threads.  Unless we take
+ | care to avoid this race condition, start() could ponder and go nuts on the
+ | board while change() could simultaneously set the board to a different
+ | position.  We avoid this naughty situation by using the search's timeout
+ | mechanism and the board's locking mechanism to guarantee the events occur in
+ | the following sequence:
+ |
+ |	time		search thread		I/O thread
+ |	----		-------------		----------
+ |	  0		grab board
+ |	  1		start pondering
+ |	  2					force pondering timeout
+ |	  3					wait for board
+ |	  4		stop pondering
+ |	  5		release board
+ |	  6		wait for command
+ |	  7					grab board
+ |	  8					set board position
+ |	  9					release board
+ |	 10					send thinking command
+ |	 11		grab board
+ |	 12		start thinking
+ */
 
 	assert(!pthread_mutex_lock(&mutex));
 	status = s;
+	timeout = true;
 	if (status == THINKING || status == PONDERING)
+	{
+		b.lock();
 		b = now;
-	timeout = status != THINKING && status != PONDERING;
+		b.unlock();
+	}
+	timeout = status == IDLING || status == QUITTING;
 	assert(!pthread_cond_signal(&cond));
 	assert(!pthread_mutex_unlock(&mutex));
 }
@@ -207,7 +246,7 @@ void search::iterate(int s)
 	struct itimerval itimerval;
 	nodes = 0;
 
-	/* If we're thinking, set the alarm. */
+	/* If we're to think, set the alarm. */
 	if (s == THINKING)
 	{
 		itimerval.it_interval.tv_sec = 0;
@@ -311,10 +350,10 @@ move_t search::negascout(int depth, int alpha, int beta)
 			it->value = b.evaluate();
 		else
 		{
-			/* Recursive case - null window. */
+			/* Recursive case: null window. */
 			if (type == EXACT)
 				it->value = -negascout(depth - 1, -alpha - WEIGHT_PAWN, -alpha).value;
-			/* Recursive case - full alpha-beta window. */
+			/* Recursive case: full alpha-beta window. */
 			if (type != EXACT || alpha < it->value && it->value < beta)
 				it->value = -negascout(depth - 1, -beta, -alpha).value;
 		}
@@ -336,9 +375,9 @@ move_t search::negascout(int depth, int alpha, int beta)
 
 	/* Find the best move in the list.  This loop seems wasteful.  Can
 	 * anyone think of a better way? */
-	for (m = l.front(), it = l.begin(), it++; it != l.end(); it++)
-		if (it->value > m.value)
-			m = *it;
+//	for (m = l.front(), it = l.begin(), it++; it != l.end(); it++)
+//		if (it->value > m.value)
+//			m = *it;
 	table_ptr->store(hash, m, depth, type);
 	history_ptr->store(whose, m, depth);
 	return m;
