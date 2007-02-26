@@ -42,6 +42,7 @@ xboard::xboard()
 	force = false;
 	ponder = true;
 	output = false;
+	draw = false;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -87,6 +88,8 @@ void xboard::loop()
 			do_question();
 		else if (!strncmp(s, "ping", 4))
 			do_ping();
+		else if (!strncmp(s, "draw", 4))
+			do_draw();
 		else if (!strncmp(s, "hint", 4))
 			do_hint();
 		else if (!strncmp(s, "undo", 4))
@@ -133,9 +136,15 @@ void xboard::print_result(move_t m)
 	{
 		/* Bloody hell.  At this point, even our best response leads to
 		 * a loss; there's no hope.  We might as well take it like
-		 * samurais and eviscerate ourselves. */
-		printf("resign\n");
-		return;
+		 * samurais and eviscerate ourselves.  If our opponent has
+		 * offered a draw, accept it.  Otherwise, resign. */
+		if (draw)
+			printf("offer draw\n");
+		else
+		{
+			printf("resign\n");
+			return;
+		}
 	}
 
 	b.make(m);
@@ -210,6 +219,7 @@ void xboard::do_new()
 {
 	force = false;
 	ponder = true;
+	draw = false;
 	b.set_board();
 	search_ptr->change(IDLING, b);
 	search_ptr->clear();
@@ -344,6 +354,14 @@ void xboard::do_ping()
 
 	s[1] = 'o';
 	printf("%s\n", s);
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   do_draw()				      |
+\*----------------------------------------------------------------------------*/
+void xboard::do_draw()
+{
+	draw = true;
 }
 
 /*----------------------------------------------------------------------------*\

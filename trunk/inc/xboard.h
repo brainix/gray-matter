@@ -49,6 +49,7 @@ private:
 	bool force;
 	bool ponder;
 	bool output;
+	bool draw;
 
 	board b;                  /* Board representation object. */
 	class search *search_ptr; /* Move search object.          */
@@ -68,6 +69,7 @@ private:
 	void do_usermove();
 	void do_question() const;
 	void do_ping();
+	void do_draw();
 	void do_hint() const;
 	void do_undo();
 	void do_remove();
