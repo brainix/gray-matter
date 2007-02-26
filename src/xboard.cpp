@@ -40,7 +40,7 @@ xboard::xboard()
 
 	/* Initialize the variables. */
 	force = false;
-	ponder = false;
+	ponder = true;
 	output = false;
 }
 
@@ -209,6 +209,7 @@ void xboard::do_rejected() const
 void xboard::do_new()
 {
 	force = false;
+	ponder = true;
 	b.set_board();
 	search_ptr->change(IDLING, b);
 	search_ptr->clear();
