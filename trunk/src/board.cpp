@@ -150,7 +150,10 @@ board::board()
 		precomputed = true;
 	}
 	set_board(); /* Set the board. */
-	assert(!pthread_mutex_init(&mutex, NULL));
+
+	pthread_mutexattr_t attr;
+	assert(!pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE));
+	assert(!pthread_mutex_init(&mutex, &attr));
 }
 
 /*----------------------------------------------------------------------------*\
