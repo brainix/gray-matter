@@ -272,7 +272,7 @@ void xboard::do_level() const
 	while (*p++ != ' ')
 		;
 	int inc = str_to_num(p);
-	search_ptr->set_time(secs / moves + inc);
+	search_ptr->set_time(secs / (moves ? moves : 40) + inc);
 }
 
 /*----------------------------------------------------------------------------*\
