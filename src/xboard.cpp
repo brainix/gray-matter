@@ -39,9 +39,8 @@ xboard::xboard()
 	setbuf(stdin, NULL);
 
 	/* Initialize the variables. */
-	force = false;
 	ponder = true;
-	output = false;
+	force = false;
 	draw = false;
 }
 
@@ -188,7 +187,7 @@ void xboard::do_protover() const
 	printf("feature playother=1\n");
 	printf("feature usermove=1\n");
 	printf("feature time=0\n");
-	printf("feature draw=0\n");
+	printf("feature draw=1\n");
 	printf("feature sigint=0\n");
 	printf("feature analyze=0\n");
 	printf("feature myname=\"Gray Matter\"\n");
@@ -217,8 +216,8 @@ void xboard::do_rejected() const
 \*----------------------------------------------------------------------------*/
 void xboard::do_new()
 {
-	force = false;
 	ponder = true;
+	force = false;
 	draw = false;
 	b.set_board();
 	search_ptr->change(IDLING, b);
@@ -240,6 +239,7 @@ void xboard::do_quit() const
 void xboard::do_force()
 {
 	force = true;
+	search_ptr->change(IDLING, b);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -257,6 +257,7 @@ void xboard::do_go()
 void xboard::do_playother()
 {
 	force = false;
+	search_ptr->change(ponder ? PONDERING : IDLING, b);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -398,6 +399,7 @@ void xboard::do_remove()
 
 	b.unmake();
 	b.unmake();
+	search_ptr->change(ponder ? PONDERING : IDLING, b);
 }
 
 /*----------------------------------------------------------------------------*\

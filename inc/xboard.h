@@ -46,9 +46,8 @@ public:
 	void print_move(move_t m) const;
 private:
 	char s[80];
-	bool force;
 	bool ponder;
-	bool output;
+	bool force;
 	bool draw;
 
 	board b;                  /* Board representation object. */
