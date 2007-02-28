@@ -27,6 +27,8 @@
 #ifndef GRAY_H
 #define GRAY_H
 
+#define _REENTRANT
+
 /* C stuff: */
 #include <assert.h>
 #include <ctype.h>
