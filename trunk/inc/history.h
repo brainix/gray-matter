@@ -31,6 +31,9 @@ using namespace std;
 
 #include <config.h>
 
+namespace gray
+{
+
 class history
 {
 public:
@@ -43,4 +46,5 @@ private:
 	int *****data;
 };
 
+};
 #endif

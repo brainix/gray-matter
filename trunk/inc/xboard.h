@@ -35,6 +35,9 @@ using namespace std;
 #include <search.h>
 #include <types.h>
 
+namespace gray
+{
+
 class xboard
 {
 public:
@@ -84,4 +87,5 @@ private:
 	bool test_move(move_t m) const;
 };
 
+};
 #endif

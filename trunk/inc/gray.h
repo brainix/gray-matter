@@ -62,4 +62,6 @@
 #define LESSER(j, k)	((j) < (k) ? (j) : (k))
 #define GREATER(j, k)	((j) > (k) ? (j) : (k))
 
+using namespace gray;
+
 #endif

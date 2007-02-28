@@ -32,6 +32,9 @@ using namespace std;
 #include <config.h>
 #include <types.h>
 
+namespace gray
+{
+
 class table
 {
 public:
@@ -45,4 +48,5 @@ private:
 	entry_t **data;
 };
 
+};
 #endif
