@@ -27,6 +27,13 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+/*
+ | Hack to get uint*_t types defined on win32.  They aren't by default.
+ */
+#ifndef uint64_t
+#include <stdint.h>
+#endif
+
 #include <config.h>
 
 /*
