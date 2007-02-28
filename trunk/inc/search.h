@@ -44,6 +44,7 @@ public:
 	void bind(table *t, history *h, xboard *x);
 	void clear() const;
 	move_t get_hint() const;
+	pthread_t get_thread() const;
 	void set_time(int t);
 	void set_depth(int d);
 	void set_output(bool o);
