@@ -30,6 +30,13 @@
 #include <config.h>
 
 /*
+ | hack to get the uint*_t types defined on win32.  They aren't by default.
+ */
+ #ifndef uint64_t
+ #include <stdint.h>
+ #endif
+
+/*
  | A bitboard is a brilliant data structure based on this observation: there
  | are 64 bits in an unsigned long long integer, there are 64 squares on a chess
  | board.  See where I'm going?  A bitboard is an unsigned 64-bit integer in
