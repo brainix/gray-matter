@@ -191,6 +191,7 @@ void *search::start(void *arg)
 		/* Do the requested work - idle, think, ponder, or quit. */
 		if (status == THINKING || status == PONDERING)
 		{
+			timeout = false;
 			search_ptr->b.lock();
 			search_ptr->iterate(status);
 			search_ptr->b.unlock();
@@ -257,10 +258,8 @@ void search::iterate(int s)
 /* Perform iterative deepening.  This method handles both thinking (on our own
  * time) and pondering (on our opponent's time) since they're so similar. */
 
-	/* Initialize the number of nodes searched and the timeout flag and note
-	 * the start time. */
+	/* Initialize the number of nodes searched and note the start time. */
 	nodes = 0;
-	timeout = false;
 	clock_t start = clock();
 
 	/* If we're to think, set the alarm. */
