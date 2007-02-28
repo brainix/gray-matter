@@ -40,7 +40,11 @@
 /* In an excess of time, the maximum search depth (in plies): */
 #define DEPTH		16
 
-/* The default size of the transposition table (in megabytes): */
+/*
+ | The default transposition table size (in megabytes).  This is only the
+ | default and can be overridden at run-time by issuing the command like so:
+ | 	xboard -fcp "gray --mb=512"
+ */
 #define TABLE_MB	256
 
 /* The opening book file name: */
@@ -51,7 +55,7 @@
 /*----------------------------------------------------------------------------*\
 \*----------------------------------------------------------------------------*/
 
-/* Value of material: */
+/* Value of material (in centipawns): */
 #define WEIGHT_PAWN		  100
 #define WEIGHT_KNIGHT		  300
 #define WEIGHT_BISHOP		  300
@@ -59,10 +63,19 @@
 #define WEIGHT_QUEEN		  900
 #define WEIGHT_KING		10300
 
-/* Penalties for castling statuses: */
-#define WEIGHT_CANT_CASTLE	 -100
-#define WEIGHT_CAN_CASTLE	    0
-#define WEIGHT_HAS_CASTLED	  200
+/* Penalty/bonus for castling statuses: */
+#define WEIGHT_CANT_CASTLE	 -100 // The penalty/bonus for castling ranges
+#define WEIGHT_CAN_CASTLE	    0 // from -2 pawns (for being unable to
+#define WEIGHT_HAS_CASTLED	  200 // castle on either side) to +1 pawn (for
+				      // having castled).  This means, in some
+				      // situations, Gray Matter would give up 3
+				      // pawns in order to castle and be quite
+				      // pleased with itself!  I can't think of
+				      // a better way (without doing something
+				      // ugly like mucking about with fractions
+				      // of a pawn) to prevent absurd rook moves
+				      // early in games.  :-(  Someone should
+				      // fix this before we challenge Kasparov.
 
 /* How much we hate our opponent: */
 #define CONTEMPT		  900
