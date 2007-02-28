@@ -39,6 +39,7 @@ class search
 {
 public:
 	search();
+	~search();
 	search& operator=(const search& that);
 	static void handle(int num);
 	void bind(table *t, history *h, xboard *x);

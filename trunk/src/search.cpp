@@ -46,7 +46,21 @@ search::search()
 	output = false;
 
 	signal(SIGALRM, handle);
+	assert(!pthread_mutex_init(&mutex, NULL));
+	assert(!pthread_cond_init(&cond, NULL));
 	assert(!pthread_create(&thread, NULL, start, this));
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   ~search()				      |
+\*----------------------------------------------------------------------------*/
+search::~search()
+{
+
+/* Destructor. */
+
+	assert(!pthread_cond_destroy(&cond));
+	assert(!pthread_mutex_destroy(&mutex));
 }
 
 /*----------------------------------------------------------------------------*\
@@ -164,8 +178,6 @@ void *search::start(void *arg)
 
 	class search *search_ptr = (class search *) arg;
 	int tmp = status = IDLING;
-	assert(!pthread_mutex_init(&mutex, NULL));
-	assert(!pthread_cond_init(&cond, NULL));
 
 	do
 	{
@@ -185,8 +197,6 @@ void *search::start(void *arg)
 		}
 	} while (status != QUITTING);
 
-	assert(!pthread_cond_destroy(&cond));
-	assert(!pthread_mutex_destroy(&mutex));
 	pthread_exit(NULL);
 }
 
