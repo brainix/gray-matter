@@ -81,6 +81,9 @@ using namespace std;
 /* This macro generates a 64-bit random number. */
 #define RAND()			((bitboard_t) rand() << 32 | rand())
 
+namespace gray
+{
+
 class board
 {
 public:
@@ -143,4 +146,5 @@ private:
 	void insert(int x, int y, bitboard_t b, int angle, list<move_t> &l, bool pos) const;
 };
 
+};
 #endif

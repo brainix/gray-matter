@@ -35,6 +35,9 @@ using namespace std;
 #include <xboard.h>
 #include <types.h>
 
+namespace gray
+{
+
 class search
 {
 public:
@@ -70,4 +73,5 @@ private:
 	static bool compare(move_t m1, move_t m2);
 };
 
+};
 #endif

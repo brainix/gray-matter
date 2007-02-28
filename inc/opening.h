@@ -32,6 +32,9 @@ using namespace std;
 #include <board.h>
 #include <table.h>
 
+namespace gray
+{
+
 class opening
 {
 public:
@@ -44,4 +47,5 @@ private:
 	table *table_ptr; /* Transposition table object.  */
 };
 
+};
 #endif
