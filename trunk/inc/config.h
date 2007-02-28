@@ -139,8 +139,8 @@
 #define ANGLES		4
 
 /* Board coordinates: */
-#define X		0 /* x-coordinate (file). */
-#define Y		1 /* y-coordinate (rank). */
+#define X		0 // x-coordinate (file).
+#define Y		1 // y-coordinate (rank).
 #define COORDS		2
 
 /* List positions: */
@@ -149,8 +149,8 @@
 #define POSITIONS	2
 
 /* Transposition table entry replacement policies: */
-#define DEEP		0 /* Only replace if same depth or deeper. */
-#define FRESH		1 /* Always replace.                       */
+#define DEEP		0 // Only replace if same depth or deeper.
+#define FRESH		1 // Always replace.
 #define POLICIES	2
 
 /* Transposition table entry types: */
@@ -161,23 +161,23 @@
 #define ENTRY_TYPES	4
 
 /* */
-#define IDLING		0 /* Masturbating.                       */
-#define THINKING	1 /* Thinking (on our own time).         */
-#define PONDERING	2 /* Pondering (on our opponent's time). */
-#define QUITTING	3 /* Terminating the search thread.      */
+#define IDLING		0 // Masturbating.
+#define THINKING	1 // Thinking (on our own time).
+#define PONDERING	2 // Pondering (on our opponent's time).
+#define QUITTING	3 // Terminating the search thread.
 #define SEARCH_STATS	4
 
 /* Convenient bitboards: */
-#define CENTER		0x0000001818000000ULL /* The 4 center squares.              */
-#define EXPANDED_CENTER	0x00003C3C3C3C0000ULL /* The 16 center squares.             */
-#define PRINCIPAL_DIAGS	0x8142241818244281ULL /* The 16 principal diagonal squares. */
-#define WHITE_SIDE	0x00000000FFFFFFFFULL /* The 16 white side squares.         */
-#define BLACK_SIDE	0xFFFFFFFF00000000ULL /* The 16 black side squares.         */
-#define CORNERS		0x8100000000000081ULL /* The 4 corner squares.              */
+#define CENTER		0x0000001818000000ULL // The 4 center squares.
+#define EXPANDED_CENTER	0x00003C3C3C3C0000ULL // The 16 center squares.
+#define PRINCIPAL_DIAGS	0x8142241818244281ULL // The 16 principal diagonal squares.
+#define WHITE_SIDE	0x00000000FFFFFFFFULL // The 16 white side squares.
+#define BLACK_SIDE	0xFFFFFFFF00000000ULL // The 16 black side squares.
+#define CORNERS		0x8100000000000081ULL // The 4 corner squares.
 
 /* Memory units: */
-#define B		1           /* Byte.     */
-#define KB		(1024 * B)  /* Kilobyte. */
-#define MB		(1024 * KB) /* Megabyte. */
-#define GB		(1024 * MB) /* Gigabyte. */
-#define TB		(1024 * GB) /* Terabyte. */
+#define B		1           // Byte.
+#define KB		(1024 * B)  // Kilobyte.
+#define MB		(1024 * KB) // Megabyte.
+#define GB		(1024 * MB) // Gigabyte.
+#define TB		(1024 * GB) // Terabyte.
