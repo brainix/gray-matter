@@ -2,14 +2,14 @@
 
 = Introduction =
 
-I've given up on using mingw to cross-compile from linux to win32.  This is mainly because mingw doesn't support pthreads.  "Luckily," there's an open source pthreads implementation for windows: [http://sourceware.org/pthreads-win32/].  I've successfully used it with devcpp on a Windows XP host to resolve that issue.  Now for the nasty:
+I've given up on using MinGW to cross-compile from Linux to Win32.  This is mainly because MinGW doesn't support Pthreads.  "Luckily," there's an [http://sourceware.org/pthreads-win32/ open source Pthreads implementation for Windows].  I've successfully used it with Dev-C++ on a Windows XP host to resolve that issue.  Now for the nasty:
 
 = Details =
 
-*uint64_t*:  win32 doesn't include these types by default, so an #ifdef is needed in types.h to #include <stdint.h> if a uint64_t isn't defined.
+*uint64_t*:  Win32 doesn't include these types by default, so an #ifdef is needed in types.h, if uint64_t isn't defined, to #include <stdint.h>.
 
 *Idea*:  Why not just #include <stdint.h> no matter what?  It's probably included by default under Linux, right?  And that's why those types are defined?  So including it again couldn't hurt anything?  I'm doing it.  :-)  If I mess everything up, please: svn merge -r 149:148 https://gray-matter.googlecode.com/svn/trunk/
 
-*class search*:  There is a not-so-obvious recursive dependency with respect to 'class search' and 'class xboard'.  They both depend on each other's declaration.  I started with a simple forward declaration of 'class search' in xboard.h, but that didn't resolve the issue.  I then completely re-hauled the include system to be more "parallel".. instead of including everything in gray.h.  This actually worked.  Before you start getting the tar&feathers, I decided I had changed too much to be acceptable, so I'm back with the original layout and dependency problem.  Why on earth this doesn't occur on Linux is beyond me.  I'm thinking we need to put all the classes in a "namespace gray", because this might be caused by generic naming of classes.  "class search" isn't exactly unique.
+*class search*:  There is a not-so-obvious recursive dependency with respect to 'class search' and 'class xboard'.  They both depend on each other's declaration.  I started with a simple forward declaration of 'class search' in xboard.h, but that didn't resolve the issue.  I then completely re-hauled the include system to be more "parallel" - instead of including everything in gray.h.  This actually worked.  Before you start getting the tar and feathers, I decided I had changed too much to be acceptable, so I'm back with the original layout and dependency problem.  Why on earth this doesn't occur on Linux is beyond me.  I'm thinking we need to put all the classes in a "namespace gray", because this might be caused by generic naming of classes.  "class search" isn't exactly unique.
 
 *More Issues*?  We haven't resolved the recursive dependency issue yet, so who knows what else needs to be done to get a windows port.  ;-)
