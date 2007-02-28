@@ -2,7 +2,7 @@
 
 = Introduction =
 
-I've given up on using mingw to cross-compile from linux to win32.  Mainly this is because of pthread issues, which mingw doesn't come with.  "Luckily", there exists pthreads for windows: [http://sourceware.org/pthreads-win32/].  I've successfully used it with devcpp on a windows XP host to resolve that issue.  Now for the nasty:
+I've given up on using mingw to cross-compile from linux to win32.  This is mainly because mingw doesn't support pthreads.  "Luckily", there's an open source pthreads implementation for windows: [http://sourceware.org/pthreads-win32/].  I've successfully used it with devcpp on a Windows XP host to resolve that issue.  Now for the nasty:
 
 
 = Details =
@@ -15,7 +15,6 @@ There is a not-so-obvious recursive dependency with respect to 'class search' an
 
 *more issues*
 We have not resolved the recursive dependency issue yet, so who knows what else needs to be done to get a windows port.  :)
-
 
 
 
