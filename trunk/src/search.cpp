@@ -304,7 +304,8 @@ void search::iterate(int s)
 		itimerval.it_value.tv_sec = 0;
 		itimerval.it_value.tv_usec = 0;
 		setitimer(ITIMER_REAL, &itimerval, NULL);
-		xboard_ptr->print_result(pv.front());
+		if (status != QUITTING)
+			xboard_ptr->print_result(pv.front());
 	}
 }
 
