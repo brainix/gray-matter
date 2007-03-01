@@ -43,13 +43,13 @@ using namespace std;
 class opening
 {
 public:
-	void bind(board *b, table *t);
+	void bind(table *t);
 	void read();
 private:
 	ifstream file;
 
-	board *board_ptr; /* Board representation object. */
-	table *table_ptr; /* Transposition table object.  */
+	board b;          // Board representation object.
+	table *table_ptr; // Transposition table object.
 };
 
 #endif

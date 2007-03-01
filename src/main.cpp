@@ -69,17 +69,16 @@ int main(int argc, char **argv)
 	srand(time(NULL));
 
 	/* Instantiate the classes. */
-	board b;
-	table t(mb);
-	opening o;
 	history h;
-	xboard x;
+	opening o;
 	class search s;
+	table t(mb);
+	xboard x;
 
 	/* Bind the objects. */
-	o.bind(&b, &t);
-	x.bind(&s);
+	o.bind(&t);
 	s.bind(&t, &h, &x);
+	x.bind(&s);
 
 	/* Launch the event loop. */
 	x.loop();
