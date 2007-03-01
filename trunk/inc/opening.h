@@ -29,11 +29,9 @@
 
 using namespace std;
 
-#include <board.h>
-#include <table.h>
-
-namespace gray
-{
+#include <fstream>
+#include "board.h"
+#include "table.h"
 
 class opening
 {
@@ -45,8 +43,6 @@ private:
 
 	board *board_ptr; /* Board representation object. */
 	table *table_ptr; /* Transposition table object.  */
-};
-
 };
 
 #endif

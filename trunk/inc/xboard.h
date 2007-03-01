@@ -29,14 +29,9 @@
 
 using namespace std;
 
-#include <board.h>
-#include <table.h>
-#include <history.h>
-#include <search.h>
-#include <types.h>
-
-namespace gray
-{
+#include <list>
+#include "board.h"
+#include "search.h"
 
 class xboard
 {
@@ -85,8 +80,6 @@ private:
 	int str_to_secs(const char *p) const;
 	int char_to_shape(char c) const;
 	bool test_move(move_t m) const;
-};
-
 };
 
 #endif

@@ -28,7 +28,8 @@
 #define TYPES_H
 
 #include <stdint.h> // For uint64_t and uint8_t.
-#include <config.h> // For COLORS, SHAPES, and SIDES.
+#include <limits.h> // for INT_MIN, etc
+#include "config.h" // For COLORS, SHAPES, and SIDES.
 
 /*
  | A bitboard is a brilliant data structure based on this observation: there
