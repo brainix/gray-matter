@@ -44,11 +44,12 @@
 #include <time.h>
 #include <unistd.h>
 
-/* C++ stuff: */
+/* C++ stuff:
 #include <fstream>
 #include <list>
+*/
 
-/* Gray Matter stuff: */
+/* Gray Matter stuff:
 #include <board.h>
 #include <config.h>
 #include <history.h>
@@ -57,11 +58,10 @@
 #include <table.h>
 #include <types.h>
 #include <xboard.h>
+*/
 
 /* Convenience macros: */
 #define LESSER(j, k)	((j) < (k) ? (j) : (k))
 #define GREATER(j, k)	((j) > (k) ? (j) : (k))
-
-using namespace gray;
 
 #endif

@@ -29,8 +29,10 @@
 
 using namespace std;
 
-#include <config.h>
-#include <types.h>
+#include <list>
+#include <pthread.h>
+#include "config.h"
+#include "types.h"
 
 /* These macros represent the colors on and off move. */
 #define ON_MOVE			(state.whose)
@@ -80,9 +82,6 @@ using namespace std;
 
 /* This macro generates a 64-bit random number. */
 #define RAND()			((bitboard_t) rand() << 32 | rand())
-
-namespace gray
-{
 
 class board
 {
@@ -144,8 +143,6 @@ private:
 	bitboard_t rotate(bitboard_t b1, int map, int angle) const;
 	int count(bitboard_t b) const;
 	void insert(int x, int y, bitboard_t b, int angle, list<move_t> &l, bool pos) const;
-};
-
 };
 
 #endif

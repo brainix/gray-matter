@@ -24,7 +24,15 @@
  |	Boston MA 02111-1307
  */
 
-#include <gray.h>
+#include "gray.h"
+#include "board.h"
+#include "config.h"
+#include "history.h"
+#include "opening.h"
+#include "search.h"
+#include "table.h"
+#include "types.h"
+#include "xboard.h"
 
 /* Global variables: */
 int mb = TABLE_MB; /* The size of the transposition (in megabytes). */

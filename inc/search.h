@@ -29,14 +29,18 @@
 
 using namespace std;
 
-#include <board.h>
-#include <table.h>
-#include <history.h>
-#include <xboard.h>
-#include <types.h>
+#include <list>
+#include <pthread.h>
+#include "board.h"
+#include "table.h"
+#include "history.h"
+#include "xboard.h"
+#include "types.h"
 
-namespace gray
-{
+//
+// forward declare xboard to avoid recursive dependency
+//
+class xboard;
 
 class search
 {
@@ -71,8 +75,6 @@ private:
 	move_t negascout(int depth, int alpha, int beta);
 	void extract(int s);
 	static bool compare(move_t m1, move_t m2);
-};
-
 };
 
 #endif

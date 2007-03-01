@@ -27,12 +27,8 @@
 #ifndef HISTORY_H
 #define HISTORY_H
 
-using namespace std;
-
-#include <config.h>
-
-namespace gray
-{
+#include "config.h"
+#include "types.h"
 
 class history
 {
@@ -44,8 +40,6 @@ public:
 	void store(bool color, move_t move, int depth);
 private:
 	int *****data;
-};
-
 };
 
 #endif

@@ -27,13 +27,8 @@
 #ifndef TABLE_H
 #define TABLE_H
 
-using namespace std;
-
-#include <config.h>
-#include <types.h>
-
-namespace gray
-{
+#include "config.h"
+#include "types.h"
 
 class table
 {
@@ -46,8 +41,6 @@ public:
 private:
 	bitboard_t entries;
 	entry_t **data;
-};
-
 };
 
 #endif

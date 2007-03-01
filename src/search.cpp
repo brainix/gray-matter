@@ -24,7 +24,8 @@
  |	Boston MA 02111-1307
  */
 
-#include <gray.h>
+#include "gray.h"
+#include "search.h"
 
 /* Global variables: */
 pthread_t thread;      /* The thread in which this...       */
