@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*\
- |	ffsll.cpp							      |
+ |	util.cpp							      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
  |		All rights reserved.					      |
@@ -29,9 +29,12 @@
  | version 2.5, originally written by Torbjorn Granlund <tege@sics.se>.
  */
 
+#include "gray.h"
+#include "util.h"
+
 /*----------------------------------------------------------------------------*\
 \*----------------------------------------------------------------------------*/
-static int gray_ffs(int i)
+static int first_bit_32(int i)
 {
 	static const unsigned char table[] =
 	{
@@ -52,12 +55,12 @@ static int gray_ffs(int i)
 
 /*----------------------------------------------------------------------------*\
 \*----------------------------------------------------------------------------*/
-int gray_ffsll(long long int i)
+int first_bit_64(long long int i)
 {
 	unsigned long long int x = i & -i;
 
 	if (x <= 0xffffffff)
-		return gray_ffs(i);
+		return first_bit_32(i);
 	else
-		return 32 + gray_ffs(i >> 32);
+		return 32 + first_bit_32(i >> 32);
 }
