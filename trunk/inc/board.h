@@ -37,7 +37,7 @@ using namespace std;
 #include "types.h"
 
 /* Extra Gray Matter stuff: */
-#include "ffsll.h"
+#include "util.h"
 
 /* These macros represent the colors on and off move. */
 #define ON_MOVE			(state.whose)
