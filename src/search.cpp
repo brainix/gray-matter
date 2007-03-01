@@ -28,10 +28,10 @@
 #include "search.h"
 
 /* Global variables: */
-pthread_t thread;      /* The thread in which this...       */
-pthread_mutex_t mutex; /* ...mutex protects this...         */
-pthread_cond_t cond;   /* ...condition which watches the... */
-int status;            /* ...search status!  :-D            */
+pthread_t thread;      // The thread in which this...
+pthread_mutex_t mutex; // ...mutex protects this...
+pthread_cond_t cond;   // ...condition which watches the...
+int status;            // ...search status!  :-D
 bool timeout;
 
 /*----------------------------------------------------------------------------*\
