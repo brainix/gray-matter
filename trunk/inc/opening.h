@@ -29,7 +29,10 @@
 
 using namespace std;
 
+/* C/C++ stuff: */
 #include <fstream>
+
+/* Gray Matter stuff: */
 #include "board.h"
 #include "table.h"
 

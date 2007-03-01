@@ -29,17 +29,20 @@
 
 using namespace std;
 
+/* C/C++ stuff: */
 #include <list>
 #include <pthread.h>
-#include "board.h"
-#include "table.h"
-#include "history.h"
-#include "xboard.h"
-#include "types.h"
 
-//
-// forward declare xboard to avoid recursive dependency
-//
+/* Gray Matter stuff: */
+#include "board.h"
+#include "history.h"
+#include "table.h"
+#include "types.h"
+#include "xboard.h"
+
+/*
+ | Forward declaration of xboard class to avoid recursive dependency:
+ */
 class xboard;
 
 class search
@@ -59,17 +62,17 @@ public:
 	static void *start(void *arg);
 	void change(int s, const board& now);
 private:
-	list<move_t> pv;      /* Principal variation.                        */
-	move_t hint;          /* Opponent's best move.                       */
-	int max_time;         /* Maximum search time.                        */
-	int max_depth;        /* Maximum search depth.                       */
-	int nodes;            /* Number of nodes searched.                   */
-	bool output;          /* Whether to print thinking output.           */
+	list<move_t> pv;      // Principal variation.
+	move_t hint;          // Opponent's best move.
+	int max_time;         // Maximum search time.
+	int max_depth;        // Maximum search depth.
+	int nodes;            // Number of nodes searched.
+	bool output;          // Whether to print thinking output.
 
-	board b;              /* Board representation object.                */
-	table *table_ptr;     /* Transposition table object.                 */
-	history *history_ptr; /* History table object.                       */
-	xboard *xboard_ptr;   /* Chess Engine Communication Protocol object. */
+	board b;              // Board representation object.
+	table *table_ptr;     // Transposition table object.
+	history *history_ptr; // History table object.
+	xboard *xboard_ptr;   // Chess Engine Communication Protocol object.
 
 	void iterate(int s);
 	move_t negascout(int depth, int alpha, int beta);

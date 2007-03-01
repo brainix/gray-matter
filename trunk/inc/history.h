@@ -27,6 +27,7 @@
 #ifndef HISTORY_H
 #define HISTORY_H
 
+/* Gray Matter stuff: */
 #include "config.h"
 #include "types.h"
 

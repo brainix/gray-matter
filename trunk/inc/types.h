@@ -27,8 +27,11 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+/* C/C++ stuff: */
+#include <limits.h> // For INT_MIN and INT_MAX.
 #include <stdint.h> // For uint64_t and uint8_t.
-#include <limits.h> // for INT_MIN, etc
+
+/* Gray Matter stuff: */
 #include "config.h" // For COLORS, SHAPES, and SIDES.
 
 /*
@@ -64,10 +67,10 @@ typedef uint8_t bitrow_t;
  */
 typedef struct state
 {
-	bitboard_t piece[COLORS][SHAPES]; /* Aforementioned 12 bitboards. */
-	int castle[COLORS][SIDES];        /* Castling statuses.           */
-	int en_passant;                   /* En passant vulnerability.    */
-	bool whose;                       /* Color on move.               */
+	bitboard_t piece[COLORS][SHAPES]; // Aforementioned 12 bitboards.
+	int castle[COLORS][SIDES];        // Castling statuses.
+	int en_passant;                   // En passant vulnerability.
+	bool whose;                       // Color on move.
 } state_t;
 
 /*
@@ -76,13 +79,13 @@ typedef struct state
  */
 typedef struct move
 {
-	unsigned old_x   :  3; /* From x coordinate.          */
-	unsigned old_y   :  3; /* From y coordinate.          */
-	unsigned new_x   :  3; /* To x coordinate.            */
-	unsigned new_y   :  3; /* To y coordinate.            */
-	unsigned promo   :  3; /* Pawn promotion information. */
-	unsigned padding :  1; /* Unused.                     */
-	  signed value   : 16; /* Negamax score.              */
+	unsigned old_x   :  3; // From x coordinate.
+	unsigned old_y   :  3; // From y coordinate.
+	unsigned new_x   :  3; // To x coordinate.
+	unsigned new_y   :  3; // To y coordinate.
+	unsigned promo   :  3; // Pawn promotion information.
+	unsigned padding :  1; // Unused.
+	  signed value   : 16; // Negamax score.
 } __attribute__((packed)) move_t;
 
 /*
@@ -90,10 +93,10 @@ typedef struct move
  */
 typedef struct entry
 {
-	bitboard_t hash;     /* Zobrist hash key.                            */
-	move_t move;         /* Best move.                                   */
-	unsigned depth : 16; /* Depth.                                       */
-	unsigned type  : 16; /* Type (useless, alpha, beta, or exact value). */
+	bitboard_t hash;     // Zobrist hash key.
+	move_t move;         // Best move.
+	unsigned depth : 16; // Depth.
+	unsigned type  : 16; // Type (useless, alpha, beta, or exact value).
 } __attribute__((packed)) entry_t;
 
 #endif

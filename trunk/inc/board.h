@@ -29,8 +29,11 @@
 
 using namespace std;
 
+/* C/C++ stuff: */
 #include <list>
 #include <pthread.h>
+
+/* Gray Matter stuff: */
 #include "config.h"
 #include "types.h"
 
