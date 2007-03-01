@@ -27,6 +27,7 @@
 #ifndef TABLE_H
 #define TABLE_H
 
+/* Gray Matter stuff: */
 #include "config.h"
 #include "types.h"
 

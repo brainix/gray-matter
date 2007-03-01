@@ -29,9 +29,13 @@
 
 using namespace std;
 
+/* C/C++ stuff: */
 #include <list>
+
+/* Gray Matter stuff: */
 #include "board.h"
 #include "search.h"
+#include "types.h"
 
 class xboard
 {
@@ -43,13 +47,13 @@ public:
 	void print_result(move_t m);
 	void print_move(move_t m) const;
 private:
-	char s[80];
-	bool ponder;
-	bool force;
-	bool draw;
+	char s[80];               // Input buffer.
+	bool ponder;              // Whether we're to ponder.
+	bool force;               // Whether we're in force mode.
+	bool draw;                // Whether our opponent has offered a draw.
 
-	board b;                  /* Board representation object. */
-	class search *search_ptr; /* Move search object.          */
+	board b;                  // Board representation object.
+	class search *search_ptr; // Move search object.
 
 	void do_xboard() const;
 	void do_protover() const;
