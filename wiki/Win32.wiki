@@ -20,4 +20,4 @@ I've given up on using MinGW to cross-compile from Linux to Win32.  This is main
 
 *SIGALRM*: There is a signal() and several SIGNAL defines, SIGALRM (search.cpp:49) is missing on win32.  Win32 has: SIGINT, SIGILL (sic), SIGFPE, SIGSEGV, SIGTERM, SIGBREAK, and SIGABRT...
 
-*setitimer()*: This is also missing.
+*setitimer()*: This is also missing. (search.cpp:269-274)
