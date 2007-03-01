@@ -27,12 +27,8 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-/* C/C++ stuff: */
-#include <limits.h> // For INT_MIN and INT_MAX.
-#include <stdint.h> // For uint64_t and uint8_t.
-
-/* Gray Matter stuff: */
-#include "config.h" // For COLORS, SHAPES, and SIDES.
+#include "config.h"
+#include "gray.h"
 
 /*
  | A bitboard is a brilliant data structure based on this observation: there
