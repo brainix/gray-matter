@@ -42,9 +42,7 @@ using namespace std;
 #include "table.h"
 #include "xboard.h"
 
-/*
- | Forward declaration of xboard class to avoid recursive dependency:
- */
+/* Forward declaration of xboard class to avoid recursive dependency: */
 class xboard;
 
 class search
