@@ -18,6 +18,7 @@ OBJS = bin/board.o   \
        bin/opening.o \
        bin/search.o  \
        bin/table.o   \
+       bin/types.o   \
        bin/xboard.o
 
 all : bin/gray
