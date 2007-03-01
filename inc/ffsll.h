@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*\
- |	ffsll.h - Find First Set bit						      |
+ |	ffsll.h								      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
  |		All rights reserved.					      |
@@ -42,4 +42,3 @@ int gray_ffsll(long long int i);
 #endif
 
 #endif
-

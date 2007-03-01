@@ -1,27 +1,36 @@
-/* Copyright (C) 1991, 1992, 1997, 1998 Free Software Foundation, Inc.
-   This file is part of the GNU C Library.
-   Contributed by Torbjorn Granlund (tege@sics.se).
+/*----------------------------------------------------------------------------*\
+ |	ffsll.cpp							      |
+ |									      |
+ |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
+ |		All rights reserved.					      |
+\*----------------------------------------------------------------------------*/
 
-   The GNU C Library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Lesser General Public
-   License as published by the Free Software Foundation; either
-   version 2.1 of the License, or (at your option) any later version.
+/*
+ | This program is Free Software; you can redistribute it and/or modify it under
+ | the terms of the GNU General Public License as published by the Free Software
+ | Foundation; either version 2 of the License, or (at your option) any later
+ | version.
+ |
+ | This program is distributed in the hope that it will be useful, but WITHOUT
+ | ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ | FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ | details.
+ |
+ | You should have received a copy of the GNU General Public License along with
+ | this program; if not, write to:
+ |
+ |	The Free Software Foundation, Inc.
+ |	59 Temple Place, Suite 330
+ |	Boston MA 02111-1307
+ */
 
-   The GNU C Library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Lesser General Public License for more details.
+/*
+ | The functions in this file were shamelessly yoinked from the GNU C Library,
+ | version 2.5, originally written by Torbjorn Granlund <tege@sics.se>.
+ */
 
-   You should have received a copy of the GNU Lesser General Public
-   License along with the GNU C Library; if not, write to the Free
-   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-   02111-1307 USA.  */
-
-//
-// These functions taken from glibc-2.5
-//
-
-// Find the first bit set in 'i'.
+/*----------------------------------------------------------------------------*\
+\*----------------------------------------------------------------------------*/
 static int gray_ffs(int i)
 {
 	static const unsigned char table[] =
@@ -35,14 +44,14 @@ static int gray_ffs(int i)
 		8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,
 		8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8
 	};
-	unsigned int a;
+
 	unsigned int x = i & -i;
-
-	a = x <= 0xffff ? (x <= 0xff ? 0 : 8) : (x <= 0xffffff ?  16 : 24);
-
+	unsigned int a = x <= 0xFFFF ? (x <= 0xFF ? 0 : 8) : (x <= 0xFFFFFF ?  16 : 24);
 	return table[x >> a] + a;
 }
 
+/*----------------------------------------------------------------------------*\
+\*----------------------------------------------------------------------------*/
 int gray_ffsll(long long int i)
 {
 	unsigned long long int x = i & -i;
@@ -52,4 +61,3 @@ int gray_ffsll(long long int i)
 	else
 		return 32 + gray_ffs(i >> 32);
 }
-
