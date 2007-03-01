@@ -32,64 +32,41 @@
 
 #include "types.h"
 
-static int gray_ffsb(uint8_t b)
+//
+// ripped from glibc-2.5 :)
+//
+static int gray_ffs(int i)
 {
-	const static uint8_t byte_masks[8] = {
-		0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80
+	static const unsigned char table[] =
+	{
+		0,1,2,2,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,
+		6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,
+		7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+		7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+		8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,
+		8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,
+		8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,
+		8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8
 	};
-	int i;
-	for(i = 0; i < 8; i++)
-		if(b & byte_masks[i])
-			return i+1; // LSB == 1
-	return 0; // no bits set
+	unsigned int a;
+	unsigned int x = i & -i;
+
+	a = x <= 0xffff ? (x <= 0xff ? 0 : 8) : (x <= 0xffffff ?  16 : 24);
+
+	return table[x >> a] + a;
 }
 
-//int ffsl (long int i);
-
+//
+// also ripped from glibc-2.5
+//
 int gray_ffsll(long long int i)
 {
-	const static uint64_t search_masks[8] = {
-		0xFFFFFFFFFFFFFFFFULL,
-		0x00000000FFFFFFFFULL,
-		0x000000000000FFFFULL,
-		0x00000000000000FFULL,
-		0x0000000000FF0000ULL,
-		0x0000FFFF00000000ULL,
-		0x000000FF00000000ULL,
-		0x00FF000000000000ULL,
-	};
-	if(!(i & search_masks[0]))
-		return 0; // no bits set
+	unsigned long long int x = i & -i;
 
-	if(i & search_masks[1])
-	{
-		if(i & search_masks[2])
-		{
-			if(i & search_masks[3])
-				return gray_ffsb((uint8_t)i);
-			else
-				return gray_ffsb((uint8_t)(i >> 8)) + 8;
-		}
-		else if(i & search_masks[4])
-			return gray_ffsb((uint8_t)(i >> 16)) + 16;
-		else
-			return gray_ffsb((uint8_t)(i >> 24)) + 24;
-	}
+	if (x <= 0xffffffff)
+		return gray_ffs(i);
 	else
-	{
-		if(i & search_masks[5])
-		{
-			if(i & search_masks[6])
-				return gray_ffsb((uint8_t)(i >> 32)) + 32;
-			else
-				return gray_ffsb((uint8_t)(i >> 40)) + 40;
-		}
-		else if(i & search_masks[7])
-			return gray_ffsb((uint8_t)(i >> 48)) + 48;
-		else
-			return gray_ffsb((uint8_t)(i >> 56)) + 56;
-	}
-	return 0; // satisfy the compiler, this should never occur
+		return 32 + gray_ffs(i >> 32);
 }
 
 #endif
