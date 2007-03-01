@@ -35,6 +35,8 @@ using namespace std;
 /* Default Gray Matter stuff: */
 #include "config.h"
 #include "types.h"
+
+/* Extra Gray Matter stuff: */
 #include "ffsll.h"
 
 /* These macros represent the colors on and off move. */
