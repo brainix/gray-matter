@@ -6,11 +6,11 @@ I've given up on using MinGW to cross-compile from Linux to Win32.  This is main
 
 = Details =
 
-~~*uint64_t*:  Win32 doesn't include this type by default, so we need an #ifdef in types.h, if uint64_t isn't defined, to #include <stdint.h>.~~
+~~*uint64_t*:  Win32 doesn't include this type by default, so we need an #ifdef in [http://gray-matter.googlecode.com/svn/trunk/inc/types.h types.h], if uint64_t isn't defined, to #include <stdint.h>.~~
 
-*Update*:  We've just included stdint.h no matter what.  Most likely, it's implicitly included under Linux, and that's why that type is defined under Linux, so explicitly including it shouldn't hurt anything.
+*Update*:  In [http://gray-matter.googlecode.com/svn/trunk/inc/gray.h gray.h], we've just included stdint.h.  Most likely, it's implicitly included under Linux, and that's why that type is defined there, so explicitly including it shouldn't hurt anything.
 
-~~*class search*:  There's a not-so-obvious recursive dependency with respect to 'class search' and 'class xboard' - each depends on the other's declaration.  I started with a simple forward declaration of 'class search' in xboard.h, but that didn't resolve the issue.  Then, instead of including everything in gray.h, I completely re-hauled the include system to be more "parallel," and this actually worked.  Before you get the tar and feathers, I decided I'd changed too much, so I'm back with the original layout and dependency problem.  Why on earth this doesn't occur on Linux is beyond me.  I think we need to put all the classes in a "namespace gray", because this might be caused by generic naming of classes.  "class search" isn't exactly unique.~~
+~~*class search*:  There's a not-so-obvious recursive dependency with respect to 'class search' and 'class xboard' - each depends on the other's declaration.  I started with a simple forward declaration of 'class search' in [http://gray-matter.googlecode.com/svn/trunk/inc/xboard.h xboard.h], but that didn't resolve the issue.  Then, instead of including everything in [http://gray-matter.googlecode.com/svn/trunk/inc/gray.h gray.h], I completely re-hauled the include system to be more "parallel," and this actually worked.  Before you get the tar and feathers, I decided I'd changed too much, so I'm back with the original layout and dependency problem.  Why on earth this doesn't occur on Linux is beyond me.  I think we need to put all the classes in a "namespace gray", because this might be caused by generic naming of classes.  "class search" isn't exactly unique.~~
 
 *Update*:  We've gone with Doug's re-haul but omitted the new namespace idea.  It seems to work beautifully.  Oh, we've also tarred and feathered Doug.
 
