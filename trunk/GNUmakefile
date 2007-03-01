@@ -13,12 +13,12 @@ LINK = -lpthread
 DIR  = -Iinc
 
 OBJS = bin/board.o   \
-       bin/ffsll.o   \
        bin/history.o \
        bin/main.o    \
        bin/opening.o \
        bin/search.o  \
        bin/table.o   \
+       bin/util.o    \
        bin/xboard.o
 
 all : bin/gray

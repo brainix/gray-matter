@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*\
- |	ffsll.h								      |
+ |	util.h								      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
  |		All rights reserved.					      |
@@ -24,8 +24,8 @@
  |	Boston MA 02111-1307
  */
 
-#ifndef _GRAY_FFSLL_H
-#define _GRAY_FFSLL_H
+#ifndef UTIL_H
+#define UTIL_H
 
 #include <string.h> // should declare ffsll on supported platforms
 
@@ -37,8 +37,8 @@
  | I'm disabling it for now.
  */
 #ifndef ffsll
-int gray_ffsll(long long int i);
-#define ffsll(i) gray_ffsll(i)
+int first_bit_64(long long int i);
+#define ffsll(i) first_bit_64(i)
 #endif
 
 #endif
