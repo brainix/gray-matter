@@ -24,9 +24,9 @@
  |	Boston MA 02111-1307
  */
 
-#include "gray.h"
 #include "board.h"
 #include "config.h"
+#include "gray.h"
 #include "history.h"
 #include "opening.h"
 #include "search.h"

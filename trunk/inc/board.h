@@ -29,12 +29,12 @@
 
 using namespace std;
 
-/* C/C++ stuff: */
+/* C++ stuff: */
 #include <list>
-#include <pthread.h>
 
-/* Gray Matter stuff: */
+/* Default Gray Matter stuff: */
 #include "config.h"
+#include "gray.h"
 #include "types.h"
 
 /* These macros represent the colors on and off move. */

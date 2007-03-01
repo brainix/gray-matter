@@ -27,8 +27,9 @@
 #ifndef TABLE_H
 #define TABLE_H
 
-/* Gray Matter stuff: */
+/* Default Gray Matter stuff: */
 #include "config.h"
+#include "gray.h"
 #include "types.h"
 
 class table

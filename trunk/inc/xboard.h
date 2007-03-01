@@ -29,13 +29,17 @@
 
 using namespace std;
 
-/* C/C++ stuff: */
+/* C++ stuff: */
 #include <list>
 
-/* Gray Matter stuff: */
+/* Default Gray Matter stuff: */
+#include "config.h"
+#include "gray.h"
+#include "types.h"
+
+/* Extra Gray Matter stuff: */
 #include "board.h"
 #include "search.h"
-#include "types.h"
 
 class xboard
 {

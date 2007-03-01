@@ -29,10 +29,15 @@
 
 using namespace std;
 
-/* C/C++ stuff: */
+/* C++ stuff: */
 #include <fstream>
 
-/* Gray Matter stuff: */
+/* Default Gray Matter stuff: */
+#include "config.h"
+#include "gray.h"
+#include "types.h"
+
+/* Extra Gray Matter stuff: */
 #include "board.h"
 #include "table.h"
 
