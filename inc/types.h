@@ -28,7 +28,6 @@
 #define TYPES_H
 
 #include <stdint.h>
-#include <string.h> // for ffsll
 
 #include "config.h"
 
@@ -96,18 +95,5 @@ typedef struct entry
 	unsigned depth : 16; // Depth.
 	unsigned type  : 16; // Type (useless, alpha, beta, or exact value).
 } __attribute__((packed)) entry_t;
-
-/*
- | WIN32 doesn't have ffsll, so we implement our own if the symbol isn't
- | defined at this point.  gray_ffsll is in types.cpp
- | 
- | I can't seem to keep gray_ffsll from being used on linux.. help?
- | I'm disabling it for now.
- *
-#ifndef ffsll
-int gray_ffsll(long long int i);
-#define ffsll(i) gray_ffsll(i)
-#endif
- */
 
 #endif
