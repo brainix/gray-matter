@@ -27,15 +27,7 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-#include <string.h> // should declare ffsll on supported platforms
-
-/*
- | WIN32 doesn't have ffsll, so we implement our own if the symbol isn't
- | defined at this point.  gray_ffsll is in types.cpp
- | 
- | I can't seem to keep gray_ffsll from being used on linux.. help?
- | I'm disabling it for now.
- */
+#include <string.h>
 #ifndef ffsll
 int first_bit_64(long long int i);
 #define ffsll(i) first_bit_64(i)
