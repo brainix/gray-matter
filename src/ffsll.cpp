@@ -22,7 +22,7 @@
 //
 
 // Find the first bit set in 'i'.
-int gray_ffs(int i)
+static int gray_ffs(int i)
 {
 	static const unsigned char table[] =
 	{
