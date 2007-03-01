@@ -29,7 +29,6 @@
 
 /* Default Gray Matter stuff: */
 #include "config.h"
-#include "gray.h"
 #include "types.h"
 
 class table
