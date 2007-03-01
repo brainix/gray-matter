@@ -12,6 +12,6 @@ I've given up on using MinGW to cross-compile from Linux to Win32.  This is main
 
 ~~*class search*:  There's a not-so-obvious recursive dependency problem with respect to 'class search' and 'class xboard' - each depends on the other's declaration.  I started with a simple forward declaration of 'class search' in [http://gray-matter.googlecode.com/svn/trunk/inc/xboard.h xboard.h], but that didn't resolve the issue.  Then, instead of including everything in [http://gray-matter.googlecode.com/svn/trunk/inc/gray.h gray.h], I completely re-hauled the include system to be more "parallel," and this actually worked.  Before you get the tar and feathers, I decided I'd changed too much, so I'm back with the original layout and dependency problem.  Why on earth this isn't an issue on Linux is beyond me.  We may need to put all the classes in a "namespace gray", because these generic class names may be causing this problem; "class search" isn't exactly unique.~~
 
-*Update*:  We've gone with Doug's re-haul but omitted the new namespace idea.  It seems to work beautifully.  Oh, we've also tarred and feathered Doug.
+*Update*:  We've gone with Doug's overhaul but omitted the new namespace idea.  It seems to work beautifully.  Oh, we've also tarred and feathered Doug.
 
 *More Issues*?  I haven't yet resolved the recursive dependency issue, so god only knows what else must be done to port to Windows?  ;-)
