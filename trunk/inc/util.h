@@ -29,7 +29,7 @@
 
 #include <string.h>
 #ifndef ffsll
-int first_bit_64(long long int i);
+int first_bit_64(int64_t i);
 #define ffsll(i) first_bit_64(i)
 #endif
 

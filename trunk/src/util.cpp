@@ -35,11 +35,29 @@
 #include "gray.h"
 #include "util.h"
 
+/* Function prototypes: */
+int first_bit_64(int64_t i);
+static int first_bit_32(int32_t i);
+
 /*----------------------------------------------------------------------------*\
+ |				 first_bit_64()				      |
 \*----------------------------------------------------------------------------*/
-static int first_bit_32(int i)
+int first_bit_64(int64_t i)
 {
-	static const unsigned char table[] =
+	uint64_t x = i & -i;
+
+	if (x <= 0xffffffff)
+		return first_bit_32(i);
+	else
+		return 32 + first_bit_32(i >> 32);
+}
+
+/*----------------------------------------------------------------------------*\
+ |				 first_bit_32()				      |
+\*----------------------------------------------------------------------------*/
+static int first_bit_32(int32_t i)
+{
+	static const uint8_t table[] =
 	{
 		0,1,2,2,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,
 		6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,
@@ -54,16 +72,4 @@ static int first_bit_32(int i)
 	unsigned int x = i & -i;
 	unsigned int a = x <= 0xFFFF ? (x <= 0xFF ? 0 : 8) : (x <= 0xFFFFFF ?  16 : 24);
 	return table[x >> a] + a;
-}
-
-/*----------------------------------------------------------------------------*\
-\*----------------------------------------------------------------------------*/
-int first_bit_64(long long int i)
-{
-	unsigned long long int x = i & -i;
-
-	if (x <= 0xffffffff)
-		return first_bit_32(i);
-	else
-		return 32 + first_bit_32(i >> 32);
 }
