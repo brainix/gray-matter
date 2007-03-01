@@ -27,9 +27,6 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-#include "config.h"
-#include "gray.h"
-
 /*
  | A bitboard is a brilliant data structure based on this observation: there
  | are 64 bits in an unsigned long long integer, there are 64 squares on a chess
