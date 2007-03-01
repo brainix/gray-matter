@@ -14,7 +14,7 @@ I've given up on using MinGW to cross-compile from Linux to Win32.  This is main
 
 *Update*:  We've gone with Doug's include overhaul but abandoned the namespace idea.  It seems to work beautifully.  Oh, we've also tarred and feathered Doug.
 
-~~*ffsll()*~~: sub-optimal implementation of this missing routine has been added to types.cpp
+~~*ffsll()*~~: Ripped Glibc-2.5's version of ffsll() and ffsl(), and put them in src/ffsll.cpp
 
 *search.h*: Win32 insists on using the existing search.h instead of gray matters.  Problem is resolved by using "inc/search.h" and -I..
 
