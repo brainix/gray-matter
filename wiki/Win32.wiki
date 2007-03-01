@@ -14,4 +14,4 @@ I've given up on using MinGW to cross-compile from Linux to Win32.  This is main
 
 *Update*:  We've gone with Doug's overhaul but omitted the new namespace idea.  It seems to work beautifully.  Oh, we've also tarred and feathered Doug.
 
-*More Issues*?  I haven't yet resolved the recursive dependency issue, so god only knows what else must be done to port to Windows?  ;-)
+*More Issues*?  I haven't yet resolved the recursive dependency issue, so god only knows what else must be done to port to Windows.  ;-)
