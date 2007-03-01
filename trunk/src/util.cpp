@@ -1,6 +1,9 @@
 /*----------------------------------------------------------------------------*\
  |	util.cpp							      |
  |									      |
+ |	Copyright © 1991-1998, Free Software Foundation, original authors.    |
+ |		All rights reserved.					      |
+ |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
  |		All rights reserved.					      |
 \*----------------------------------------------------------------------------*/
