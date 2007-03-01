@@ -144,13 +144,13 @@ board::board()
 
 	if (!precomputed)
 	{
-		precomp_king();   /* Pre-compute the king moves.          */
-		precomp_row();    /* Pre-compute the sliding piece moves. */
-		precomp_knight(); /* Pre-compute the knight moves.        */
-		precomp_key();    /* Pre-compute the Zobrist hash keys.   */
+		precomp_king();   // Pre-compute the king moves.
+		precomp_row();    // Pre-compute the sliding piece moves.
+		precomp_knight(); // Pre-compute the knight moves.
+		precomp_key();    // Pre-compute the Zobrist hash keys.
 		precomputed = true;
 	}
-	set_board(); /* Set the board. */
+	set_board(); // Set the board.
 
 	pthread_mutexattr_t attr;
 	assert(!pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE));
@@ -205,9 +205,9 @@ void board::set_board()
 
 /* Set the board. */
 
-	init_state();    /* Initialize the state.             */
-	init_rotation(); /* Initialize the rotated bitboards. */
-	init_hash();     /* Initialize the Zobrist hash.      */
+	init_state();    // Initialize the state.
+	init_rotation(); // Initialize the rotated bitboards.
+	init_hash();     // Initialize the Zobrist hash.
 }
 
 /*----------------------------------------------------------------------------*\
