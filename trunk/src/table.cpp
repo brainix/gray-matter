@@ -77,6 +77,7 @@ int table::probe(bitboard_t hash, move_t *move_ptr, int depth, int alpha, int be
 	bitboard_t index = hash % (entries / 2);
 	int type = USELESS;
 
+	move_ptr->value = move_ptr->probe = move_ptr->new_y = move_ptr->new_x = move_ptr->old_y = move_ptr->old_x = 0;
 	for (int policy = DEEP; policy <= FRESH; policy++)
 		if (data[policy][index].hash == hash && data[policy][index].depth >= (unsigned) depth)
 		{
