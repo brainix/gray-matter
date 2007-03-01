@@ -69,7 +69,7 @@ static int first_bit_32(int32_t i)
 		8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8
 	};
 
-	unsigned int x = i & -i;
-	unsigned int a = x <= 0xFFFF ? (x <= 0xFF ? 0 : 8) : (x <= 0xFFFFFF ?  16 : 24);
+	uint32_t x = i & -i;
+	uint32_t a = x <= 0xFFFF ? (x <= 0xFF ? 0 : 8) : (x <= 0xFFFFFF ?  16 : 24);
 	return table[x >> a] + a;
 }
