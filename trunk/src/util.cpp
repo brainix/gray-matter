@@ -37,7 +37,7 @@
 
 /* Function prototypes: */
 int first_bit_64(int64_t signed_num);
-static int first_bit_32(int32_t signed_num);
+int first_bit_32(int32_t signed_num);
 
 /*----------------------------------------------------------------------------*\
  |				 first_bit_64()				      |
@@ -45,7 +45,7 @@ static int first_bit_32(int32_t signed_num);
 int first_bit_64(int64_t signed_num)
 {
 
-/* Find the first set bit in a 64-bit integer. */
+/* Find the first (least significant) set bit in a 64-bit integer. */
 
 	uint64_t unsigned_num = signed_num & -signed_num;
 	int shift = unsigned_num <= 0xFFFFFFFF ? 0 : 32;
@@ -55,10 +55,10 @@ int first_bit_64(int64_t signed_num)
 /*----------------------------------------------------------------------------*\
  |				 first_bit_32()				      |
 \*----------------------------------------------------------------------------*/
-static int first_bit_32(int32_t signed_num)
+int first_bit_32(int32_t signed_num)
 {
 
-/* Find the first set bit in a 32-bit integer. */
+/* Find the first (least significant) set bit in a 32-bit integer. */
 
 	static const uint8_t table[] =
 	{
