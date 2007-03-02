@@ -37,10 +37,8 @@
 /*----------------------------------------------------------------------------*\
 \*----------------------------------------------------------------------------*/
 
-/* If you're compiling on a POSIX conformant operating system, set this to 1.
- * If you're compiling on a brain damaged operating system from Redmond, set
- * this to 0. */
-#define POSIX		1
+/* Set your operating system here.  This must be either POSIX or WIN32. */
+#define PLATFORM	POSIX
 
 /* In an excess of time, the maximum search depth (in plies): */
 #define DEPTH		16
@@ -179,6 +177,10 @@
 #define WHITE_SIDE	0x00000000FFFFFFFFULL // The 16 white side squares.
 #define BLACK_SIDE	0xFFFFFFFF00000000ULL // The 16 black side squares.
 #define CORNERS		0x8100000000000081ULL // The 4 corner squares.
+
+/* Platforms: */
+#define POSIX		0
+#define WIN32		1
 
 /* Memory units: */
 #define B		1           // Byte.

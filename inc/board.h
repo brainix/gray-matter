@@ -80,7 +80,7 @@ using namespace std;
 #define ALL(s, c)		((s).piece[c][PAWN] | (s).piece[c][KNIGHT] | (s).piece[c][BISHOP] | (s).piece[c][ROOK] | (s).piece[c][QUEEN] | (s).piece[c][KING])
 
 /* This macro finds the first set bit in a bitboard. */
-#if POSIX
+#if PLATFORM == POSIX
 #define FST(b)			(ffsll(b) - 1)
 #else
 #define FST(b)			(find_64(b) - 1)
