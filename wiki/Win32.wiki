@@ -22,4 +22,6 @@ I've given up on using MinGW to cross-compile from Linux to Win32.  This is main
 
 *Update*:  We've resolved the problem by including "inc/search.h" and passing the compiler -I..
 
-*SIGALRM* and *setitimer()*:  Steve Ballmer is too busy throwing chairs to implement this signal and function.  According to this Microsoft [http://www.microsoft.com/technet/interopMigration/taskstools/migrate/unix/ucamg/ch05uav3.mspx document], we're supposed to use !SetTimer() instead?  Fantastic work, Redmond monkeys.  It would've been easier to make Windows POSIX conformant than to author this document.
+~~*SIGALRM* and *setitimer()*~~:  Steve Ballmer is too busy throwing chairs to implement this signal and function.  According to this Microsoft [http://www.microsoft.com/technet/interopMigration/taskstools/migrate/unix/ucamg/ch05uav3.mspx document], we're supposed to use !SetTimer() instead?  Fantastic work, Redmond monkeys.  It would've been easier to make Windows POSIX conformant than to author this document.
+
+*Update*:  We've wrapped the POSIX-specific signal and timer stuff in preprocessor directives.  Make sure to set your platform in [http://gray-matter.googlecode.com/svn/trunk/inc/config.h config.h], and enjoy Gray Matter on Windows.  :-)
