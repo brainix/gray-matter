@@ -37,6 +37,11 @@
 /*----------------------------------------------------------------------------*\
 \*----------------------------------------------------------------------------*/
 
+/* If you're compiling on a POSIX conformant operating system, set this to 1.
+ * If you're compiling on a brain damaged operating system from Redmond, set
+ * this to 0. */
+#define POSIX		1
+
 /* In an excess of time, the maximum search depth (in plies): */
 #define DEPTH		16
 
