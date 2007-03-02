@@ -14,7 +14,7 @@ I've given up on using MinGW to cross-compile from Linux to Win32.  This is main
 
 *Update*:  We've gone with Doug's include overhaul but abandoned the namespace idea.  It seems to work beautifully.  Oh, we've also tarred and feathered Doug.
 
-~~*ffsll()*~~:  Win32 doesn't come with this function (needed all through the board class).
+~~*ffsll()*~~:  Win32 doesn't come with this function (needed throughout the board class).
 
 *Update*:  We've yoinked GNU's ffsll() and ffsl() and put them in the board class.
 
