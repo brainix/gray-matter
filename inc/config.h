@@ -38,7 +38,7 @@
 \*----------------------------------------------------------------------------*/
 
 /* Set your operating system here.  This must be either POSIX or WIN32. */
-#define PLATFORM	POSIX
+#define PLATFORM	WIN32
 
 /* In an excess of time, the maximum search depth (in plies): */
 #define DEPTH		16
