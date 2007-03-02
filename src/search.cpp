@@ -196,9 +196,7 @@ void *search::start(void *arg)
 		if (status == THINKING || status == PONDERING)
 		{
 			timeout = false;
-			search_ptr->b.lock();
 			search_ptr->iterate(status);
-			search_ptr->b.unlock();
 		}
 	} while (status != QUITTING);
 
@@ -282,6 +280,7 @@ void search::iterate(int s)
 	/* Perform iterative deepening until the alarm has sounded (if we're
 	 * thinking), our opponent has moved (if we're pondering), or we've
 	 * reached the maximum depth (either way). */
+	search_ptr->b.lock();
 	for (int depth = 0; depth <= max_depth; depth++)
 	{
 		negascout(depth, -WEIGHT_KING, WEIGHT_KING);
@@ -298,6 +297,7 @@ void search::iterate(int s)
 			 * no point in searching deeper. */
 			break;
 	}
+	search_ptr->b.unlock();
 
 	/* If we've just finished thinking, clear the alarm and inform XBoard of
 	 * our favorite move. */
