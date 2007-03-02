@@ -46,7 +46,10 @@ search::search()
 	max_depth = DEPTH;
 	output = false;
 
+#if PLATFORM == POSIX
 	signal(SIGALRM, handle);
+#endif
+
 	assert(!pthread_mutex_init(&mutex, NULL));
 	assert(!pthread_cond_init(&cond, NULL));
 	assert(!pthread_create(&thread, NULL, start, this));
@@ -266,12 +269,14 @@ void search::iterate(int s)
 	/* If we're to think, set the alarm. */
 	if (s == THINKING)
 	{
+#if PLATFORM == POSIX
 		struct itimerval itimerval;
 		itimerval.it_interval.tv_sec = 0;
 		itimerval.it_interval.tv_usec = 0;
 		itimerval.it_value.tv_sec = max_time;
 		itimerval.it_value.tv_usec = 0;
 		setitimer(ITIMER_REAL, &itimerval, NULL);
+#endif
 	}
 
 	/* Perform iterative deepening until the alarm has sounded (if we're
@@ -298,12 +303,14 @@ void search::iterate(int s)
 	 * our favorite move. */
 	if (s == THINKING)
 	{
+#if PLATFORM == POSIX
 		struct itimerval itimerval;
 		itimerval.it_interval.tv_sec = 0;
 		itimerval.it_interval.tv_usec = 0;
 		itimerval.it_value.tv_sec = 0;
 		itimerval.it_value.tv_usec = 0;
 		setitimer(ITIMER_REAL, &itimerval, NULL);
+#endif
 		if (status != QUITTING)
 			xboard_ptr->print_result(pv.front());
 	}
