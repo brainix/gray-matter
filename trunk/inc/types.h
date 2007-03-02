@@ -89,10 +89,10 @@ typedef struct move
  */
 typedef struct entry
 {
-	bitboard_t hash;     // Zobrist hash key.
-	move_t move;         // Best move.
-	unsigned depth : 16; // Depth.
-	unsigned type  : 16; // Type (useless, alpha, beta, or exact value).
+	bitboard_t hash; // Zobrist hash key.
+	move_t move;     // Best move.
+	uint16_t depth;  // Depth.
+	uint16_t type;   // Type (useless, alpha, beta, or exact value).
 } __attribute__((packed)) entry_t;
 
 #endif
