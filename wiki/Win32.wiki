@@ -14,7 +14,7 @@ I've given up on using MinGW to cross-compile from Linux to Win32.  This is main
 
 *Update*:  We've gone with Doug's include overhaul but abandoned the namespace idea.  It seems to work beautifully.  Oh, we've also tarred and feathered Doug.
 
-~~*ffsll()*~~:  Brain damanged Win32 doesn't come with this function.
+~~*ffsll()*~~:  Win32 doesn't come with this function (needed all through the board class).
 
 *Update*:  We've yoinked GNU's ffsll() and ffsl() and put them in src/util.cpp.  We don't need these functions outside of the board class.  Why not make them member functions?
 
@@ -22,6 +22,6 @@ I've given up on using MinGW to cross-compile from Linux to Win32.  This is main
 
 *Update*:  We've resolved the problem by including "inc/search.h" and passing the compiler -I..
 
-*SIGALRM*:  SIGALRM (search.cpp:49) is missing on win32.  Win32 has: SIGINT, SIGILL, SIGFPE, SIGSEGV, SIGTERM, SIGBREAK, and SIGABRT...
+*SIGALRM*:  Win32 doesn't come with this signal (needed in search.cpp:49).  Win32 has: SIGINT, SIGILL, SIGFPE, SIGSEGV, SIGTERM, SIGBREAK, and SIGABRT...  What can we use instead?
 
-*setitimer()*:  Bill Gates also forgot this function.  (search.cpp:269-274)  What can we use instead?
+*setitimer()*:  Steve Ballmer was too busy throwing chairs to implement this function.  (search.cpp:269-274)  What can we use instead?
