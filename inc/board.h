@@ -36,9 +36,6 @@ using namespace std;
 #include "config.h"
 #include "types.h"
 
-/* Extra Gray Matter stuff: */
-#include "util.h"
-
 /* These macros represent the colors on and off move. */
 #define ON_MOVE			(state.whose)
 #define OFF_MOVE		(!state.whose)
@@ -83,7 +80,8 @@ using namespace std;
 #define ALL(s, c)		((s).piece[c][PAWN] | (s).piece[c][KNIGHT] | (s).piece[c][BISHOP] | (s).piece[c][ROOK] | (s).piece[c][QUEEN] | (s).piece[c][KING])
 
 /* This macro finds the first set bit in a bitboard. */
-#define FST(b)			(ffsll(b) - 1)
+//#define FST(b)			(ffsll(b) - 1)
+#define FST(b)			(find_64(b) - 1)
 
 /* This macro generates a 64-bit random number. */
 #define RAND()			((bitboard_t) rand() << 32 | rand())
@@ -148,6 +146,8 @@ private:
 	bitboard_t rotate(bitboard_t b1, int map, int angle) const;
 	int count(bitboard_t b) const;
 	void insert(int x, int y, bitboard_t b, int angle, list<move_t> &l, bool pos) const;
+	int find_64(int64_t signed_num) const;
+	int find_32(int32_t signed_num) const;
 };
 
 #endif

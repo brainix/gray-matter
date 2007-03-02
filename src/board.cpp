@@ -1281,3 +1281,47 @@ void board::insert(int x, int y, bitboard_t b, int angle, list<move_t> &l, bool 
 			l.push_back(m);
 	}
 }
+
+/*
+ | These next two methods, we shamelessly yoinked from the GNU C Library,
+ | version 2.5, copyright © 1991-1998, the Free Software Foundation, originally
+ | written by Torbjorn Granlund <tege@sics.se>.
+ */
+
+/*----------------------------------------------------------------------------*\
+ |				   find_64()				      |
+\*----------------------------------------------------------------------------*/
+int board::find_64(int64_t signed_num) const
+{
+
+/* Find the first (least significant) set bit in a 64-bit integer. */
+
+	uint64_t unsigned_num = signed_num & -signed_num;
+	int shift = unsigned_num <= 0xFFFFFFFF ? 0 : 32;
+	return find_32(signed_num >> shift) + shift;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   find_32()				      |
+\*----------------------------------------------------------------------------*/
+int board::find_32(int32_t signed_num) const
+{
+
+/* Find the first (least significant) set bit in a 32-bit integer. */
+
+	static const uint8_t table[] =
+	{
+		0,1,2,2,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,
+		6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,
+		7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+		7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+		8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,
+		8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,
+		8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,
+		8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8
+	};
+
+	uint32_t unsigned_num = signed_num & -signed_num;
+	int shift = unsigned_num <= 0xFFFF ? (unsigned_num <= 0xFF ? 0 : 8) : (unsigned_num <= 0xFFFFFF ?  16 : 24);
+	return table[unsigned_num >> shift] + shift;
+}
