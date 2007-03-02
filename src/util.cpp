@@ -36,27 +36,30 @@
 #include "util.h"
 
 /* Function prototypes: */
-int first_bit_64(int64_t i);
-static int first_bit_32(int32_t i);
+int first_bit_64(int64_t signed_num);
+static int first_bit_32(int32_t signed_num);
 
 /*----------------------------------------------------------------------------*\
  |				 first_bit_64()				      |
 \*----------------------------------------------------------------------------*/
-int first_bit_64(int64_t i)
+int first_bit_64(int64_t signed_num)
 {
-	uint64_t x = i & -i;
 
-	if (x <= 0xffffffff)
-		return first_bit_32(i);
-	else
-		return 32 + first_bit_32(i >> 32);
+/* Find the first set bit in a 64-bit integer. */
+
+	uint64_t unsigned_num = signed_num & -signed_num;
+	int shift = unsigned_num <= 0xFFFFFFFF ? 0 : 32;
+	return first_bit_32(signed_num >> shift) + shift;
 }
 
 /*----------------------------------------------------------------------------*\
  |				 first_bit_32()				      |
 \*----------------------------------------------------------------------------*/
-static int first_bit_32(int32_t i)
+static int first_bit_32(int32_t signed_num)
 {
+
+/* Find the first set bit in a 32-bit integer. */
+
 	static const uint8_t table[] =
 	{
 		0,1,2,2,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,
@@ -69,7 +72,7 @@ static int first_bit_32(int32_t i)
 		8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8
 	};
 
-	uint32_t x = i & -i;
-	uint32_t a = x <= 0xFFFF ? (x <= 0xFF ? 0 : 8) : (x <= 0xFFFFFF ?  16 : 24);
-	return table[x >> a] + a;
+	uint32_t unsigned_num = signed_num & -signed_num;
+	int shift = unsigned_num <= 0xFFFF ? (unsigned_num <= 0xFF ? 0 : 8) : (unsigned_num <= 0xFFFFFF ?  16 : 24);
+	return table[unsigned_num >> shift] + shift;
 }
