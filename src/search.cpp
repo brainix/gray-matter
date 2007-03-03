@@ -46,7 +46,7 @@ search::search()
 	max_depth = DEPTH;
 	output = false;
 
-#if PLATFORM == POSIX
+#if PLATFORM == LINUX || PLATFORM == OS_X
 	signal(SIGALRM, handle);
 #endif
 
@@ -267,7 +267,7 @@ void search::iterate(int s)
 	/* If we're to think, set the alarm. */
 	if (s == THINKING)
 	{
-#if PLATFORM == POSIX
+#if PLATFORM == LINUX || PLATFORM == OS_X
 		struct itimerval itimerval;
 		itimerval.it_interval.tv_sec = 0;
 		itimerval.it_interval.tv_usec = 0;
@@ -303,7 +303,7 @@ void search::iterate(int s)
 	 * our favorite move. */
 	if (s == THINKING)
 	{
-#if PLATFORM == POSIX
+#if PLATFORM == LINUX || PLATFORM == OS_X
 		struct itimerval itimerval;
 		itimerval.it_interval.tv_sec = 0;
 		itimerval.it_interval.tv_usec = 0;

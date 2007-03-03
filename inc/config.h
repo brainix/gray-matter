@@ -37,8 +37,9 @@
 /*----------------------------------------------------------------------------*\
 \*----------------------------------------------------------------------------*/
 
-/* Set your operating system here.  This must be either POSIX or WIN32. */
-#define PLATFORM	POSIX
+/* Set your operating system here.  This must be either LINUX, OS_X, or
+ * WINDOWS. */
+#define PLATFORM	LINUX
 
 /* In an excess of time, the maximum search depth (in plies): */
 #define DEPTH		16
@@ -179,8 +180,9 @@
 #define CORNERS		0x8100000000000081ULL // The 4 corner squares.
 
 /* Platforms: */
-#define POSIX		0
-#define WIN32		1
+#define LINUX		0
+#define OS_X		1
+#define WINDOWS		2
 
 /* Memory units: */
 #define B		1           // Byte.
