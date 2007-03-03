@@ -48,6 +48,7 @@ search::search()
 
 #if PLATFORM == LINUX || PLATFORM == OS_X
 	signal(SIGALRM, handle);
+#elif PLATFORM == WINDOWS
 #endif
 
 	assert(!pthread_mutex_init(&mutex, NULL));
@@ -274,6 +275,7 @@ void search::iterate(int s)
 		itimerval.it_value.tv_sec = max_time;
 		itimerval.it_value.tv_usec = 0;
 		setitimer(ITIMER_REAL, &itimerval, NULL);
+#elif PLATFORM == WINDOWS
 #endif
 	}
 
@@ -310,6 +312,7 @@ void search::iterate(int s)
 		itimerval.it_value.tv_sec = 0;
 		itimerval.it_value.tv_usec = 0;
 		setitimer(ITIMER_REAL, &itimerval, NULL);
+#elif PLATFORM == WINDOWS
 #endif
 		if (status != QUITTING)
 			xboard_ptr->print_result(pv.front());
