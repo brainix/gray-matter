@@ -37,16 +37,16 @@
 /*----------------------------------------------------------------------------*\
 \*----------------------------------------------------------------------------*/
 
-/* Set your operating system here.  This must be either LINUX, OS_X, or
- * WINDOWS. */
+/* Set your operating system here.  This must be LINUX, OS_X, or WINDOWS. */
 #define PLATFORM	LINUX
 
 /* In an excess of time, the maximum search depth (in plies): */
 #define DEPTH		16
 
 /*
- | The default transposition table size (in megabytes).  This is only the
- | default and can be overridden at run-time by issuing the command like so:
+ | The default transposition table size (in megabytes).  This must be >= 1.
+ | This is only the default and can be overridden at run-time by issuing the
+ | command like so:
  | 	xboard -fcp "gray --mb=512"
  */
 #define TABLE_MB	256

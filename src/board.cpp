@@ -662,18 +662,18 @@ void board::precomp_key() const
 		for (int shape = PAWN; shape <= KING; shape++)
 			for (int y = 0; y <= 7; y++)
 				for (int x = 0; x <= 7; x++)
-					key_piece[color][shape][x][y] = RAND();
+					key_piece[color][shape][x][y] = randomize();
 
 		for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
 			for (int stat = CAN_CASTLE; stat <= HAS_CASTLED; stat++)
-				key_castle[color][side][stat] = RAND();
+				key_castle[color][side][stat] = randomize();
 	}
 
-	key_no_en_passant = RAND();
+	key_no_en_passant = randomize();
 	for (int x = 0; x <= 8; x++)
-		key_en_passant[x] = RAND();
+		key_en_passant[x] = randomize();
 
-	key_whose = RAND();
+	key_whose = randomize();
 }
 
 /*----------------------------------------------------------------------------*\
@@ -1293,16 +1293,14 @@ int board::find_64(int64_t signed_num) const
 
 /* Find the first (least significant) set bit in a 64-bit integer. */
 
-#if PLATFORM == LINUX
-	return ffsll(signed_num);
-#endif
-
 #if PLATFORM == OS_X || PLATFORM == WINDOWS
 	uint64_t unsigned_num = signed_num & -signed_num;
 	int shift = unsigned_num <= 0xFFFFFFFF ? 0 : 32;
 #endif
 
-#if PLATFORM == OS_X
+#if PLATFORM == LINUX
+	return ffsll(signed_num);
+#elif PLATFORM == OS_X
 	return ffs(signed_num >> shift) + shift;
 #elif PLATFORM == WINDOWS
 	return find_32(signed_num >> shift) + shift;
@@ -1334,5 +1332,19 @@ int board::find_32(int32_t signed_num) const
 	uint32_t unsigned_num = signed_num & -signed_num;
 	int shift = unsigned_num <= 0xFFFF ? (unsigned_num <= 0xFF ? 0 : 8) : (unsigned_num <= 0xFFFFFF ?  16 : 24);
 	return table[unsigned_num >> shift] + shift;
+#endif
+}
+
+/*----------------------------------------------------------------------------*\
+ |				  randomize()				      |
+\*----------------------------------------------------------------------------*/
+uint64_t board::randomize() const
+{
+#if PLATFORM == LINUX
+	return (uint64_t) rand() << 32 | rand();
+#elif PLATFORM == OS_X
+	return (uint64_t) arc4random() << 32 | arc4random();
+#elif PLATFORM == WINDOWS
+	return (uint64_t) rand() << 32 | rand();
 #endif
 }
