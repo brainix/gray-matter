@@ -32,7 +32,7 @@ pthread_t thread;      // The thread in which this...
 pthread_mutex_t mutex; // ...mutex protects this...
 pthread_cond_t cond;   // ...condition which watches the...
 int status;            // ...search status!  :-D
-bool timeout;
+bool timeout;          // Whether to stop thinking or pondering.
 
 /*----------------------------------------------------------------------------*\
  |				    search()				      |
@@ -48,7 +48,6 @@ search::search()
 
 #if PLATFORM == LINUX || PLATFORM == OS_X
 	signal(SIGALRM, handle);
-#elif PLATFORM == WINDOWS
 #endif
 
 	assert(!pthread_mutex_init(&mutex, NULL));
