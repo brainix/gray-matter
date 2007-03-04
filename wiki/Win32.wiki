@@ -6,7 +6,7 @@ I've given up on using MinGW to cross-compile from Linux to Win32.  This is main
 
 ^1^  Are you sure MinGW doesn't support Pthreads?  [http://sources.redhat.com/pthreads-win32/faq.html I'm not.]  See questions 6 and 10.
 
-^2^  Doesn't Dev-C++ use MinGW?
+^2^  Which compiler do you use with Dev-C++?
 
 = Details =
 
