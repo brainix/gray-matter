@@ -180,7 +180,7 @@ void xboard::vomit(char *message) const
 
 /* Houston, we have a problem... */
 
-	printf("telluser %s\n", message);
+	printf("tellusererror %s\n", message);
 	exit(EXIT_FAILURE);
 }
 
