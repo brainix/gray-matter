@@ -16,7 +16,7 @@ I've given up on using MinGW to cross-compile from Linux to Win32.  This is main
 
 ~~*ffsll()*~~:  Win32 doesn't come with this function (needed throughout the board class).
 
-*Update*:  We've yoinked GNU's ffsll() and ffsl() and put them in the board class.
+*Update*:  We've yoinked GNU's ffsll() and ffs() and put them in the board class.
 
 ~~*search.h*~~:  Win32 insists on using the system's search.h instead of Gray Matter's.
 
