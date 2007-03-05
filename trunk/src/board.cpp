@@ -909,14 +909,18 @@ void board::generate_pawn(list<move_t> &l, int type) const
 	{
 		m.old_x = m.new_x = n % 8;
 		m.old_y = (m.new_y = n / 8) + (ON_MOVE ? 1 : -1);
-		if (type == MOVES && m.new_y != (ON_MOVE ? 0 : 7))
+		if (m.new_y != (ON_MOVE ? 0 : 7))
 		{
-			l.push_back(m);
+			if (type == MOVES)
+				l.push_back(m);
 			continue;
 		}
-		for (m.promo = KNIGHT; m.promo <= QUEEN; m.promo++)
-			l.push_front(m);
-		m.promo = 0;
+		else
+		{
+			for (m.promo = KNIGHT; m.promo <= QUEEN; m.promo++)
+				l.push_front(m);
+			m.promo = 0;
+		}
 	}
 
 	/* A pawn can capture diagonally. */
