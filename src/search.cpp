@@ -368,7 +368,7 @@ move_t search::negascout(int depth, int alpha, int beta)
 
 	/* Generate and re-order the move list. */
 	nodes++;
-	b.generate(l);
+	b.generate(l, MOVES);
 	for (it = l.begin(); it != l.end(); it++)
 		it->value = history_ptr->probe(whose, *it);
 	l.sort(compare);

@@ -529,7 +529,7 @@ bool xboard::test_move(move_t m) const
 
 	list<move_t> l;
 
-	b.generate(l);
+	b.generate(l, MOVES);
 	for (list<move_t>::iterator it = l.begin(); it != l.end(); it++)
 		if (it->old_x == m.old_x && it->old_y == m.old_y &&
 		    it->new_x == m.new_x && it->new_y == m.new_y &&
