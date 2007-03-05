@@ -40,7 +40,8 @@ public:
 	int probe(bitboard_t hash, move_t *move_ptr, int depth, int alpha = INT_MIN, int beta = INT_MAX);
 	void store(bitboard_t hash, move_t move, int depth, int type);
 private:
-	bitboard_t entries;
+	xboard *xboard_ptr;
+	uint64_t entries;
 	entry_t **data;
 };
 

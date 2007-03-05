@@ -40,6 +40,7 @@ public:
 	int probe(bool color, move_t move);
 	void store(bool color, move_t move, int depth);
 private:
+	xboard *xboard_ptr;
 	int *****data;
 };
 
