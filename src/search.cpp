@@ -346,6 +346,7 @@ move_t search::negascout(int depth, int alpha, int beta)
 	int type = ALPHA;
 	bool whose = b.get_whose();
 	bitboard_t hash = b.get_hash();
+	bool recommended_move = false;
 
 	/* Before anything else, do some Research Re: search & Research.  ;-)
 	 * (Apologies to Aske Plaat.)  If we've already sufficiently examined
@@ -357,27 +358,46 @@ move_t search::negascout(int depth, int alpha, int beta)
 	 * move.  All we have to do is determine if the game is drawn or lost.
 	 * Check for this case.  Subtle!  We couldn't have just won because our
 	 * opponent moved last. */
-	m.promo = m.new_y = m.new_x = m.old_y = m.old_x = 0;
 	switch (b.get_status(false))
 	{
-		case IN_PROGRESS :                         break;
-		default          : m.value =  CONTEMPT;    return m;
-		case CHECKMATE   :
-		case ILLEGAL     : m.value = -WEIGHT_KING; return m;
+		case IN_PROGRESS:
+			break;
+		default:
+			m.value =  CONTEMPT;
+			m.promo = m.new_y = m.new_x = m.old_y = m.old_x = 0;
+			return m;
+		case CHECKMATE:
+		case ILLEGAL:
+			m.value = -WEIGHT_KING;
+			m.promo = m.new_y = m.new_x = m.old_y = m.old_x = 0;
+			return m;
 	}
 
 	/* Generate and re-order the move list. */
 	nodes++;
 	b.generate(l);
-	for (it = l.begin(); it != l.end(); it++)
-		it->value = history_ptr->probe(whose, *it);
+	for (it = l.begin(); it != l.end();)
+		if (it->old_x == m.old_x && it->old_y == m.old_y &&
+		    it->new_x == m.new_x && it->new_y == m.new_y &&
+		    it->promo == m.promo)
+		{
+			recommended_move = true;
+			it = l.erase(it);
+		}
+		else
+		{
+			it->value = history_ptr->probe(whose, *it);
+			it++;
+		}
 	l.sort(compare);
+	if (recommended_move)
+		l.push_front(m);
 
 	/* Score each move in the list. */
 	for (it = l.begin(); !timeout && it != l.end(); it++)
 	{
 		b.make(*it);
-		if (!depth)
+		if (depth <= 0)
 			/* Base case. */
 			it->value = b.evaluate();
 		else
