@@ -1291,11 +1291,13 @@ void board::insert(int x, int y, bitboard_t b, int angle, list<move_t> &l, bool 
 int board::find_64(int64_t signed_num) const
 {
 
-/* Find the first (least significant) set bit in a 64-bit integer. */
+/* Find the first (least significant) set bit in a 64-bit integer.  The return
+ * value ranges from 0 (for no bits set) to 64 (for only the most significant
+ * bit set). */
 
 #if PLATFORM == OS_X || PLATFORM == WINDOWS
 	uint64_t unsigned_num = signed_num & -signed_num;
-	int shift = unsigned_num <= 0xFFFFFFFF ? 0 : 32;
+	int shift = unsigned_num <= 0x00000000FFFFFFFFULL ? 0 : 32;
 #endif
 
 #if PLATFORM == LINUX
@@ -1313,7 +1315,9 @@ int board::find_64(int64_t signed_num) const
 int board::find_32(int32_t signed_num) const
 {
 
-/* Find the first (least significant) set bit in a 32-bit integer. */
+/* Find the first (least significant) set bit in a 32-bit integer.  The return
+ * value ranges from 0 (for no bits set) to 32 (for only the most significant
+ * bit set). */
 
 #if PLATFORM == LINUX || PLATFORM == OS_X
 	return ffs(signed_num);
