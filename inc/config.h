@@ -37,7 +37,11 @@
 /*----------------------------------------------------------------------------*\
 \*----------------------------------------------------------------------------*/
 
-/* Set your operating system here.  This must be LINUX, OS_X, or WINDOWS. */
+/*
+ | Your operating system.  This must be LINUX, OS_X, or WINDOWS.
+ |
+ | BSD is based on OS X.  If you insist on running BSD, set this to OS_X.  ;-)
+ */
 #define PLATFORM	LINUX
 
 /* In an excess of time, the maximum search depth (in plies): */
