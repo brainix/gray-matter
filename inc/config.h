@@ -147,11 +147,6 @@
 #define Y		1 // y-coordinate (rank).
 #define COORDS		2
 
-/* Move types: */
-#define MOVES		0 // Captures and non-captures both.
-#define TAKES		1 // Captures only.
-#define MOVE_TYPES	2
-
 /* List positions: */
 #define FRONT		0
 #define BACK		1
