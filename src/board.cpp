@@ -913,7 +913,6 @@ void board::generate_pawn(list<move_t> &l, int type) const
 		{
 			if (type == MOVES)
 				l.push_back(m);
-			continue;
 		}
 		else
 		{
