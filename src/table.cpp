@@ -43,7 +43,8 @@ table::table(int mb)
 			data[policy] = new entry_t [entries / 2];
 	}
 	catch (...)
-		;
+	{
+	}
 	clear();
 }
 
