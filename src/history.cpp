@@ -37,18 +37,18 @@ history::history()
 
 	try
 	{
-		data = new int **** [COLORS];
+		data = new int ****[COLORS];
 		for (int color = WHITE; color <= BLACK; color++)
 		{
-			data[color] = new int *** [8];
+			data[color] = new int ***[8];
 			for (int old_x = 0; old_x <= 7; old_x++)
 			{
-				data[color][old_x] = new int ** [8];
+				data[color][old_x] = new int **[8];
 				for (int old_y = 0; old_y <= 7; old_y++)
 				{
-					data[color][old_x][old_y] = new int * [8];
+					data[color][old_x][old_y] = new int *[8];
 					for (int new_x = 0; new_x <= 7; new_x++)
-						data[color][old_x][old_y][new_x] = new int [8];
+						data[color][old_x][old_y][new_x] = new int[8];
 				}
 			}
 		}
@@ -74,14 +74,14 @@ history::~history()
 			for (int old_y = 0; old_y <= 7; old_y++)
 			{
 				for (int new_x = 0; new_x <= 7; new_x++)
-					delete [] data[color][old_x][old_y][new_x];
-				delete [] data[color][old_x][old_y];
+					delete[] data[color][old_x][old_y][new_x];
+				delete[] data[color][old_x][old_y];
 			}
-			delete [] data[color][old_x];
+			delete[] data[color][old_x];
 		}
-		delete [] data[color];
+		delete[] data[color];
 	}
-	delete [] data;
+	delete[] data;
 }
 
 /*----------------------------------------------------------------------------*\

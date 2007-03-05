@@ -38,9 +38,9 @@ table::table(int mb)
 	assert(entries = mb * MB / sizeof(entry_t));
 	try
 	{
-		data = new entry_t * [POLICIES];
+		data = new entry_t *[POLICIES];
 		for (int policy = DEEP; policy <= FRESH; policy++)
-			data[policy] = new entry_t [entries / 2];
+			data[policy] = new entry_t[entries / 2];
 	}
 	catch (...)
 	{
@@ -57,8 +57,8 @@ table::~table()
 /* Destructor. */
 
 	for (int policy = DEEP; policy <= FRESH; policy++)
-		delete [] data[policy];
-	delete [] data;
+		delete[] data[policy];
+	delete[] data;
 }
 
 /*----------------------------------------------------------------------------*\
