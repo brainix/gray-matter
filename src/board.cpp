@@ -870,18 +870,21 @@ void board::generate_pawn(list<move_t> &l, int type) const
 	m.value = m.promo = 0;
 
 	/* For its first move, a pawn can advance two squares. */
-	bitboard_t b = state.piece[ON_MOVE][PAWN] & ROW_MSK(ON_MOVE ? 6 : 1);
-	for (int y = 1; y <= 2; y++)
+	if (type == MOVES)
 	{
-		b <<= ON_MOVE ? 0 : 8;
-		b >>= ON_MOVE ? 8 : 0;
-		b &= ~rotation[ZERO][COLORS];
-	}
-	for (int n; (n = FST(b)) != -1; BIT_CLR(b, m.new_x, m.new_y))
-	{
-		m.old_x = m.new_x = n % 8;
-		m.old_y = (m.new_y = n / 8) + (ON_MOVE ? 2 : -2);
-		l.push_back(m);
+		bitboard_t b = state.piece[ON_MOVE][PAWN] & ROW_MSK(ON_MOVE ? 6 : 1);
+		for (int y = 1; y <= 2; y++)
+		{
+			b <<= ON_MOVE ? 0 : 8;
+			b >>= ON_MOVE ? 8 : 0;
+			b &= ~rotation[ZERO][COLORS];
+		}
+		for (int n; (n = FST(b)) != -1; BIT_CLR(b, m.new_x, m.new_y))
+		{
+			m.old_x = m.new_x = n % 8;
+			m.old_y = (m.new_y = n / 8) + (ON_MOVE ? 2 : -2);
+			l.push_back(m);
+		}
 	}
 
 	/* If our pawn is on our fifth row, and our opponent's pawn is beside
@@ -905,7 +908,7 @@ void board::generate_pawn(list<move_t> &l, int type) const
 	{
 		m.old_x = m.new_x = n % 8;
 		m.old_y = (m.new_y = n / 8) + (ON_MOVE ? 1 : -1);
-		if (m.new_y != (ON_MOVE ? 0 : 7))
+		if (type == MOVES && m.new_y != (ON_MOVE ? 0 : 7))
 		{
 			l.push_back(m);
 			continue;

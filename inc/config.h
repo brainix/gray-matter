@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*\
- |	config.h							      |
+ |	config.h - user-tunable settings				      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
  |		All rights reserved.					      |
@@ -148,8 +148,8 @@
 #define COORDS		2
 
 /* Move types: */
-#define TAKES		0 // Captures only.
-#define MOVES		1 // Captures and non-captures both.
+#define MOVES		0 // Captures and non-captures both.
+#define TAKES		1 // Captures only.
 #define MOVE_TYPES	2
 
 /* List positions: */
