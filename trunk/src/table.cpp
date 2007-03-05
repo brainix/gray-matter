@@ -36,9 +36,9 @@ table::table(int mb)
 /* Constructor. */
 
 	assert(entries = mb * MB / sizeof(entry_t));
-	data = new entry_t * [POLICIES]
+	data = new entry_t * [POLICIES];
 	for (int policy = DEEP; policy <= FRESH; policy++)
-		data[policy] = new entry_t [entries / 2]
+		data[policy] = new entry_t [entries / 2];
 	clear();
 }
 
