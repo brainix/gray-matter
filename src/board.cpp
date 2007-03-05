@@ -686,8 +686,8 @@ void board::generate_king(list<move_t> &l) const
 
 	int n = FST(state.piece[ON_MOVE][KING]), x = n % 8, y = n / 8;
 	bitboard_t takes = squares_king[x][y] & rotation[ZERO][OFF_MOVE];
-	bitboard_t moves = squares_king[x][y] & ~rotation[ZERO][COLORS];
 	insert(x, y, takes, ZERO, l, FRONT);
+	bitboard_t moves = squares_king[x][y] & ~rotation[ZERO][COLORS];
 	insert(x, y, moves, ZERO, l, BACK);
 
 	for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
@@ -735,8 +735,8 @@ void board::generate_queen(list<move_t> &l) const
 			bitboard_t b = 0;
 			ROW_SET(b, num, r);
 			bitboard_t takes = b & rotation[angle][OFF_MOVE];
-			bitboard_t moves = b & ~rotation[angle][COLORS];
 			insert(x, y, takes, angle, l, FRONT);
+			bitboard_t moves = b & ~rotation[angle][COLORS];
 			insert(x, y, moves, angle, l, BACK);
 		}
 
@@ -751,8 +751,8 @@ void board::generate_queen(list<move_t> &l) const
 			bitboard_t b = 0;
 			DIAG_SET(b, num, d);
 			bitboard_t takes = b & rotation[angle][OFF_MOVE];
-			bitboard_t moves = b & ~rotation[angle][COLORS];
 			insert(x, y, takes, angle, l, FRONT);
+			bitboard_t moves = b & ~rotation[angle][COLORS];
 			insert(x, y, moves, angle, l, BACK);
 		}
 	}
@@ -781,8 +781,8 @@ void board::generate_rook(list<move_t> &l) const
 			bitboard_t b = 0;
 			ROW_SET(b, num, r);
 			bitboard_t takes = b & rotation[angle][OFF_MOVE];
-			bitboard_t moves = b & ~rotation[angle][COLORS];
 			insert(x, y, takes, angle, l, FRONT);
+			bitboard_t moves = b & ~rotation[angle][COLORS];
 			insert(x, y, moves, angle, l, BACK);
 		}
 	}
@@ -812,8 +812,8 @@ void board::generate_bishop(list<move_t> &l) const
 			bitboard_t b = 0;
 			DIAG_SET(b, num, d);
 			bitboard_t takes = b & rotation[angle][OFF_MOVE];
-			bitboard_t moves = b & ~rotation[angle][COLORS];
 			insert(x, y, takes, angle, l, FRONT);
+			bitboard_t moves = b & ~rotation[angle][COLORS];
 			insert(x, y, moves, angle, l, BACK);
 		}
 	}
@@ -834,8 +834,8 @@ void board::generate_knight(list<move_t> &l) const
 		x = n % 8;
 		y = n / 8;
 		bitboard_t takes = squares_knight[x][y] & rotation[ZERO][OFF_MOVE];
-		bitboard_t moves = squares_knight[x][y] & ~rotation[ZERO][COLORS];
 		insert(x, y, takes, ZERO, l, FRONT);
+		bitboard_t moves = squares_knight[x][y] & ~rotation[ZERO][COLORS];
 		insert(x, y, moves, ZERO, l, BACK);
 	}
 }
