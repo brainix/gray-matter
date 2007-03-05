@@ -54,7 +54,8 @@ history::history()
 		}
 	}
 	catch (...)
-		;
+	{
+	}
 	clear();
 }
 
