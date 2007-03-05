@@ -866,13 +866,14 @@ void board::generate_pawn(list<move_t> &l, int type) const
 
 /* Generate the pawn moves. */
 
+	bitboard_t b;
 	move_t m;
 	m.value = m.promo = 0;
 
 	/* For its first move, a pawn can advance two squares. */
 	if (type == MOVES)
 	{
-		bitboard_t b = state.piece[ON_MOVE][PAWN] & ROW_MSK(ON_MOVE ? 6 : 1);
+		b = state.piece[ON_MOVE][PAWN] & ROW_MSK(ON_MOVE ? 6 : 1);
 		for (int y = 1; y <= 2; y++)
 		{
 			b <<= ON_MOVE ? 0 : 8;
