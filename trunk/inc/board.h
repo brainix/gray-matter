@@ -100,7 +100,7 @@ public:
 	int evaluate() const;
 
 	/* These methods generate, make, and take back moves. */
-	void generate(list<move_t> &l) const;
+	void generate(list<move_t> &l, int type = MOVES) const;
 	void make(move_t m);
 	void unmake();
 	void make(char *p);
@@ -121,12 +121,12 @@ private:
 	void precomp_key() const;
 
 	/* These methods generate moves. */
-	void generate_king(list<move_t> &l) const;
-	void generate_queen(list<move_t> &l) const;
-	void generate_rook(list<move_t> &l) const;
-	void generate_bishop(list<move_t> &l) const;
-	void generate_knight(list<move_t> &l) const;
-	void generate_pawn(list<move_t> &l) const;
+	void generate_king(list<move_t> &l, int type = MOVES) const;
+	void generate_queen(list<move_t> &l, int type = MOVES) const;
+	void generate_rook(list<move_t> &l, int type = MOVES) const;
+	void generate_bishop(list<move_t> &l, int type = MOVES) const;
+	void generate_knight(list<move_t> &l, int type = MOVES) const;
+	void generate_pawn(list<move_t> &l, int type = MOVES) const;
 	void precomp_king() const;
 	void precomp_row() const;
 	void precomp_knight() const;

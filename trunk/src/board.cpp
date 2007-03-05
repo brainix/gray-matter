@@ -296,14 +296,14 @@ int board::evaluate() const
 /*----------------------------------------------------------------------------*\
  |				   generate()				      |
 \*----------------------------------------------------------------------------*/
-void board::generate(list<move_t> &l) const
+void board::generate(list<move_t> &l, int type) const
 {
-	generate_king(l);
-	generate_queen(l);
-	generate_rook(l);
-	generate_bishop(l);
-	generate_knight(l);
-	generate_pawn(l);
+	generate_king(l, type);
+	generate_queen(l, type);
+	generate_rook(l, type);
+	generate_bishop(l, type);
+	generate_knight(l, type);
+	generate_pawn(l, type);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -533,12 +533,12 @@ void board::make(char *p)
 		list<move_t> l;
 		switch (shape)
 		{
-			case KING   : generate_king(l);   break;
-			case QUEEN  : generate_queen(l);  break;
-			case ROOK   : generate_rook(l);   break;
-			case BISHOP : generate_bishop(l); break;
-			case KNIGHT : generate_knight(l); break;
-			case PAWN   : generate_pawn(l);   break;
+			case KING   : generate_king(l, MOVES);   break;
+			case QUEEN  : generate_queen(l, MOVES);  break;
+			case ROOK   : generate_rook(l, MOVES);   break;
+			case BISHOP : generate_bishop(l, MOVES); break;
+			case KNIGHT : generate_knight(l, MOVES); break;
+			case PAWN   : generate_pawn(l, MOVES);   break;
 		}
 		for (list<move_t>::iterator it = l.begin(); it != l.end(); it++)
 			if ((old_x == -1 || old_x == (int) it->old_x) && (old_y == -1 || old_y == (int) it->old_y) && new_x == (int) it->new_x && new_y == (int) it->new_y)
@@ -679,7 +679,7 @@ void board::precomp_key() const
 /*----------------------------------------------------------------------------*\
  |				generate_king()				      |
 \*----------------------------------------------------------------------------*/
-void board::generate_king(list<move_t> &l) const
+void board::generate_king(list<move_t> &l, int type) const
 {
 
 /* Generate the king moves. */
@@ -687,8 +687,11 @@ void board::generate_king(list<move_t> &l) const
 	int n = FST(state.piece[ON_MOVE][KING]), x = n % 8, y = n / 8;
 	bitboard_t takes = squares_king[x][y] & rotation[ZERO][OFF_MOVE];
 	insert(x, y, takes, ZERO, l, FRONT);
-	bitboard_t moves = squares_king[x][y] & ~rotation[ZERO][COLORS];
-	insert(x, y, moves, ZERO, l, BACK);
+	if (type == MOVES)
+	{
+		bitboard_t moves = squares_king[x][y] & ~rotation[ZERO][COLORS];
+		insert(x, y, moves, ZERO, l, BACK);
+	}
 
 	for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
 	{
@@ -713,7 +716,7 @@ void board::generate_king(list<move_t> &l) const
 /*----------------------------------------------------------------------------*\
  |				generate_queen()			      |
 \*----------------------------------------------------------------------------*/
-void board::generate_queen(list<move_t> &l) const
+void board::generate_queen(list<move_t> &l, int type) const
 {
 
 /* Generate the queen moves. */
@@ -736,8 +739,11 @@ void board::generate_queen(list<move_t> &l) const
 			ROW_SET(b, num, r);
 			bitboard_t takes = b & rotation[angle][OFF_MOVE];
 			insert(x, y, takes, angle, l, FRONT);
-			bitboard_t moves = b & ~rotation[angle][COLORS];
-			insert(x, y, moves, angle, l, BACK);
+			if (type == MOVES)
+			{
+				bitboard_t moves = b & ~rotation[angle][COLORS];
+				insert(x, y, moves, angle, l, BACK);
+			}
 		}
 
 		/* Generate the diagonal moves. */
@@ -752,8 +758,11 @@ void board::generate_queen(list<move_t> &l) const
 			DIAG_SET(b, num, d);
 			bitboard_t takes = b & rotation[angle][OFF_MOVE];
 			insert(x, y, takes, angle, l, FRONT);
-			bitboard_t moves = b & ~rotation[angle][COLORS];
-			insert(x, y, moves, angle, l, BACK);
+			if (type == MOVES)
+			{
+				bitboard_t moves = b & ~rotation[angle][COLORS];
+				insert(x, y, moves, angle, l, BACK);
+			}
 		}
 	}
 }
@@ -761,7 +770,7 @@ void board::generate_queen(list<move_t> &l) const
 /*----------------------------------------------------------------------------*\
  |				generate_rook()				      |
 \*----------------------------------------------------------------------------*/
-void board::generate_rook(list<move_t> &l) const
+void board::generate_rook(list<move_t> &l, int type) const
 {
 
 /* Generate the rook moves. */
@@ -782,8 +791,11 @@ void board::generate_rook(list<move_t> &l) const
 			ROW_SET(b, num, r);
 			bitboard_t takes = b & rotation[angle][OFF_MOVE];
 			insert(x, y, takes, angle, l, FRONT);
-			bitboard_t moves = b & ~rotation[angle][COLORS];
-			insert(x, y, moves, angle, l, BACK);
+			if (type == MOVES)
+			{
+				bitboard_t moves = b & ~rotation[angle][COLORS];
+				insert(x, y, moves, angle, l, BACK);
+			}
 		}
 	}
 }
@@ -791,7 +803,7 @@ void board::generate_rook(list<move_t> &l) const
 /*----------------------------------------------------------------------------*\
  |			       generate_bishop()			      |
 \*----------------------------------------------------------------------------*/
-void board::generate_bishop(list<move_t> &l) const
+void board::generate_bishop(list<move_t> &l, int type) const
 {
 
 /* Generate the bishop moves. */
@@ -813,8 +825,11 @@ void board::generate_bishop(list<move_t> &l) const
 			DIAG_SET(b, num, d);
 			bitboard_t takes = b & rotation[angle][OFF_MOVE];
 			insert(x, y, takes, angle, l, FRONT);
-			bitboard_t moves = b & ~rotation[angle][COLORS];
-			insert(x, y, moves, angle, l, BACK);
+			if (type == MOVES)
+			{
+				bitboard_t moves = b & ~rotation[angle][COLORS];
+				insert(x, y, moves, angle, l, BACK);
+			}
 		}
 	}
 }
@@ -822,7 +837,7 @@ void board::generate_bishop(list<move_t> &l) const
 /*----------------------------------------------------------------------------*\
  |			       generate_knight()			      |
 \*----------------------------------------------------------------------------*/
-void board::generate_knight(list<move_t> &l) const
+void board::generate_knight(list<move_t> &l, int type) const
 {
 
 /* Generate the knight moves. */
@@ -835,15 +850,18 @@ void board::generate_knight(list<move_t> &l) const
 		y = n / 8;
 		bitboard_t takes = squares_knight[x][y] & rotation[ZERO][OFF_MOVE];
 		insert(x, y, takes, ZERO, l, FRONT);
-		bitboard_t moves = squares_knight[x][y] & ~rotation[ZERO][COLORS];
-		insert(x, y, moves, ZERO, l, BACK);
+		if (type == MOVES)
+		{
+			bitboard_t moves = squares_knight[x][y] & ~rotation[ZERO][COLORS];
+			insert(x, y, moves, ZERO, l, BACK);
+		}
 	}
 }
 
 /*----------------------------------------------------------------------------*\
  |				generate_pawn()				      |
 \*----------------------------------------------------------------------------*/
-void board::generate_pawn(list<move_t> &l) const
+void board::generate_pawn(list<move_t> &l, int type) const
 {
 
 /* Generate the pawn moves. */
