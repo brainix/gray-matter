@@ -379,7 +379,8 @@ move_t search::negascout(int depth, int alpha, int beta)
 		b.make(*it);
 		if (!depth)
 			/* Base case. */
-			it->value = b.evaluate();
+//			it->value = b.evaluate();
+			it->value = quiesce(alpha, beta);
 		else
 		{
 			/* Recursive case: null window. */
@@ -409,6 +410,35 @@ move_t search::negascout(int depth, int alpha, int beta)
 	table_ptr->store(hash, m, depth, type);
 	history_ptr->store(whose, m, depth);
 	return m;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   quiesce()				      |
+\*----------------------------------------------------------------------------*/
+int search::quiesce(int alpha, int beta)
+{
+	list<move_t> l;
+	list<move_t>::iterator it;
+	int value = b.evaluate();
+
+	if (value >= beta)
+		return value;
+
+	b.generate(l, TAKES);
+	for (it = l.begin(); !timeout && it != l.end(); it++)
+	{
+		nodes++;
+
+		b.make(*it);
+		value = -quiesce(-beta, -alpha);
+		b.unmake();
+
+		if (value >= beta)
+			break;
+		if (value > alpha)
+			alpha = value;
+	}
+	return value;
 }
 
 /*----------------------------------------------------------------------------*\
