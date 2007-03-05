@@ -47,11 +47,6 @@
 #include <time.h>
 #include <unistd.h>
 
-/* Platform-specific stuff: */
-#if PLATFORM == WINDOWS
-#include <windows.h>
-#endif
-
 /* Convenience macros: */
 #define LESSER(j, k)	((j) < (k) ? (j) : (k))
 #define GREATER(j, k)	((j) > (k) ? (j) : (k))
