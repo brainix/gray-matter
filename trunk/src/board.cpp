@@ -1073,7 +1073,7 @@ int board::mate()
 	bool escape = false;
 
 	/* Look for a legal move. */
-	generate(l);
+	generate(l, MOVES);
 	for (list<move_t>::iterator it = l.begin(); it != l.end() && !escape; it++)
 	{
 		make(*it);
