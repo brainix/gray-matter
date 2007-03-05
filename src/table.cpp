@@ -36,9 +36,9 @@ table::table(int mb)
 /* Constructor. */
 
 	assert(entries = mb * MB / sizeof(entry_t));
-	assert(data = (entry_t **) malloc(POLICIES * sizeof(entry_t *)));
+	data = new entry_t * [POLICIES]
 	for (int policy = DEEP; policy <= FRESH; policy++)
-		assert(data[policy] = (entry_t *) malloc(entries / 2 * sizeof(entry_t)));
+		data[policy] = new entry_t [entries / 2]
 	clear();
 }
 
@@ -51,8 +51,8 @@ table::~table()
 /* Destructor. */
 
 	for (int policy = DEEP; policy <= FRESH; policy++)
-		free(data[policy]);
-	free(data);
+		delete [] data[policy];
+	delete [] data;
 }
 
 /*----------------------------------------------------------------------------*\
