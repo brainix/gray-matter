@@ -319,7 +319,7 @@ void xboard::do_usermove()
 {
 
 /* Our opponent has moved.  If the move was legal, we're not in force mode, and
- * the last move didn't just end the game: formulate a response. */
+ * the move didn't just end the game: formulate a response. */
 
 	move_t m;
 
@@ -341,8 +341,7 @@ void xboard::do_usermove()
 	/* Alright, so the move was legal.  Are we in force mode, or did the
 	 * move just end the game? */
 	if (force || game_over())
-		/* Yes, either we're in force mode, or the move just ended the
-		 * game.  Either way, we're not to respond. */
+		/* Yes.  Either way, we're not to respond. */
 		return;
 
 	/* Alright, so the move was legal, we're not in force mode, and the move
