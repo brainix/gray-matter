@@ -244,15 +244,7 @@ void xboard::do_new()
 void xboard::do_quit() const
 {
 	search_ptr->change(QUITTING, b);
-	try
-	{
-		if (!pthread_join(search_ptr->get_thread(), NULL))
-			throw;
-	}
-	catch (...)
-	{
-		vomit("!");
-	}
+	pthread_join(search_ptr->get_thread(), NULL);
 }
 
 /*----------------------------------------------------------------------------*\

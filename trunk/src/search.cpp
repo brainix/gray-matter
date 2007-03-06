@@ -50,16 +50,9 @@ search::search()
 	signal(SIGALRM, handle);
 #endif
 
-	try
-	{
-		if (pthread_mutex_init(&mutex, NULL)           == 0 ||
-		    pthread_cond_init(&cond, NULL)             == 0 ||
-		    pthread_create(&thread, NULL, start, this) == 0)
-			throw;
-	}
-	catch (...)
-	{
-	}
+	pthread_mutex_init(&mutex, NULL);
+	pthread_cond_init(&cond, NULL);
+	pthread_create(&thread, NULL, start, this);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -70,15 +63,8 @@ search::~search()
 
 /* Destructor. */
 
-	try
-	{
-		if (pthread_cond_destroy(&cond)   == 0 ||
-		    pthread_mutex_destroy(&mutex) == 0)
-			throw;
-	}
-	catch (...)
-	{
-	}
+	pthread_cond_destroy(&cond);
+	pthread_mutex_destroy(&mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -200,20 +186,11 @@ void *search::start(void *arg)
 	do
 	{
 		/* Wait for the status to change. */
-		try
-		{
-			if (pthread_mutex_lock(&mutex) == 0)
-				throw;
-			while (tmp == status)
-				if (pthread_cond_wait(&cond, &mutex) == 0)
-					throw;
-			tmp = status;
-			if (pthread_mutex_unlock(&mutex) == 0)
-				throw;
-		}
-		catch (...)
-		{
-		}
+		pthread_mutex_lock(&mutex);
+		while (tmp == status)
+			pthread_cond_wait(&cond, &mutex);
+		tmp = status;
+		pthread_mutex_unlock(&mutex);
 
 		/* Do the requested work - idle, think, ponder, or quit. */
 		if (status == THINKING || status == PONDERING)
@@ -269,18 +246,10 @@ void search::change(int s, const board& now)
 		b.unlock();
 	}
 
-	try
-	{
-		if (pthread_mutex_lock(&mutex) == 0)
-			throw;
-		status = s;
-		if (pthread_cond_signal(&cond)   == 0 ||
-		    pthread_mutex_unlock(&mutex) == 0)
-			throw;
-	}
-	catch (...)
-	{
-	}
+	pthread_mutex_lock(&mutex);
+	status = s;
+	pthread_cond_signal(&cond);
+	pthread_mutex_unlock(&mutex);
 }
 
 /*----------------------------------------------------------------------------*\
