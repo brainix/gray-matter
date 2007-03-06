@@ -30,9 +30,7 @@
 #define _REENTRANT
 
 /* C stuff: */
-#include <assert.h>
 #include <ctype.h>
-#include <getopt.h>
 #include <inttypes.h>
 #include <limits.h>
 #include <pthread.h>

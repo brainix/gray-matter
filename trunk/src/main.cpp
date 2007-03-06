@@ -45,26 +45,6 @@ int main(int argc, char **argv);
 \*----------------------------------------------------------------------------*/
 int main(int argc, char **argv)
 {
-	/* Define the command-line arguments. */
-	static struct option options[] =
-	{
-		{"mb",	required_argument,	0,	'm'},
-		{0,	0,			0,	0}
-	};
-	int index = 0, c;
-
-	/* Parse the command-line arguments. */
-	while ((c = getopt_long(argc, argv, "m", options, &index)) != -1)
-		switch (c)
-		{
-			case 'm':
-				assert(mb = atoi(optarg));
-				break;
-			default:
-				exit(EXIT_FAILURE);
-				break;
-		}
-
 	/* Seed the random number generator. */
 	srand(time(NULL));
 

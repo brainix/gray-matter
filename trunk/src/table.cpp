@@ -46,6 +46,7 @@ table::table(int mb)
 	catch (...)
 	{
 	}
+
 	clear();
 }
 
