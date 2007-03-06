@@ -1264,10 +1264,6 @@ int board::count(bitboard_t b) const
 
 	int sum = 0;
 
-//	for (int n; (n = FST(b)) != -1; BIT_CLR(b, n % 8, n / 8))
-//		sum++;
-//	return sum;
-
 	for (; b; b >>= 4)
 		switch (b & 0xF)
 		{
