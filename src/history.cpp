@@ -56,6 +56,7 @@ history::history()
 	catch (...)
 	{
 	}
+
 	clear();
 }
 

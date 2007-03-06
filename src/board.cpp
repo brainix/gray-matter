@@ -151,7 +151,15 @@ board::board()
 		precomputed = true;
 	}
 	set_board(); // Set the board.
-	assert(!pthread_mutex_init(&mutex, NULL));
+
+	try
+	{
+		if (pthread_mutex_init(&mutex, NULL) != 0)
+			throw;
+	}
+	catch (...)
+	{
+	}
 }
 
 /*----------------------------------------------------------------------------*\
@@ -159,7 +167,14 @@ board::board()
 \*----------------------------------------------------------------------------*/
 board::~board()
 {
-	assert(!pthread_mutex_destroy(&mutex));
+	try
+	{
+		if (pthread_mutex_destroy(&mutex) != 0)
+			throw;
+	}
+	catch (...)
+	{
+	}
 }
 
 /*----------------------------------------------------------------------------*\
@@ -212,7 +227,14 @@ void board::set_board()
 \*----------------------------------------------------------------------------*/
 void board::lock()
 {
-	assert(!pthread_mutex_lock(&mutex));
+	try
+	{
+		if (pthread_mutex_lock(&mutex) != 0)
+			throw;
+	}
+	catch (...)
+	{
+	}
 }
 
 /*----------------------------------------------------------------------------*\
@@ -220,7 +242,14 @@ void board::lock()
 \*----------------------------------------------------------------------------*/
 void board::unlock()
 {
-	assert(!pthread_mutex_unlock(&mutex));
+	try
+	{
+		if (pthread_mutex_unlock(&mutex) != 0)
+			throw;
+	}
+	catch (...)
+	{
+	}
 }
 
 /*----------------------------------------------------------------------------*\
@@ -549,7 +578,15 @@ void board::make(char *p)
 			}
 	}
 
-	assert(old_x != -1 && old_y != -1 && new_x != -1 && new_y != -1 && promo != -1);
+	try
+	{
+		if (old_x == -1 || old_y == -1 || new_x == -1 || new_y == -1 || promo == -1)
+			throw;
+	}
+	catch (...)
+	{
+	}
+
 	m.old_x = old_x;
 	m.old_y = old_y;
 	m.new_x = new_x;
