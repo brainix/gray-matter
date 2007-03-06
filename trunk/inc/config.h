@@ -47,12 +47,7 @@
 /* In an excess of time, the maximum search depth (in plies): */
 #define DEPTH		16
 
-/*
- | The default transposition table size (in megabytes).  This must be >= 1.
- | This is only the default and can be overridden at run-time by issuing the
- | command like so:
- | 	xboard -fcp "gray --mb=512"
- */
+/* The transposition table size (in megabytes).  This must be >= 1. */
 #define TABLE_MB	256
 
 /* The opening book file name: */
