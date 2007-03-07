@@ -1,41 +1,35 @@
+/*----------------------------------------------------------------------------*\
+ |	thread.cpp - cross-platform multithreading library implementation     |
+ |									      |
+ |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
+\*----------------------------------------------------------------------------*/
 
 /*
- * Library for handling process threads.
- *
- * Copyright (c) 2001-2007,  James D. Taylor.
- * All Rights Reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. The name of the author may not be used to endorse or promote products
- *    derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
- * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- * 
- * contact James D. Taylor:  <james.d.taylor@gmail.com>
+ | This program is Free Software; you can redistribute it and/or modify it under
+ | the terms of the GNU General Public License as published by the Free Software
+ | Foundation; either version 2 of the License, or (at your option) any later
+ | version.
+ |
+ | This program is distributed in the hope that it will be useful, but WITHOUT
+ | ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ | FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ | details.
+ |
+ | You should have received a copy of the GNU General Public License along with
+ | this program; if not, write to:
+ |
+ |	The Free Software Foundation, Inc.
+ |	59 Temple Place, Suite 330
+ |	Boston MA 02111-1307
  */
 
 #include "thread.h"
 
-
 #ifndef WIN32
 
+/*----------------------------------------------------------------------------*\
+ |				thread_create()				      |
+\*----------------------------------------------------------------------------*/
 int thread_create(tid_t *tid, thread_entry fnEntry, void *arg)
 {
 	int i = pthread_create(tid, NULL, fnEntry, arg);
@@ -46,11 +40,17 @@ int thread_create(tid_t *tid, thread_entry fnEntry, void *arg)
 	return 1;
 }
 
+/*----------------------------------------------------------------------------*\
+ |				 thread_exit()				      |
+\*----------------------------------------------------------------------------*/
 void thread_exit()
 {
 	pthread_exit(NULL);
 }
 
+/*----------------------------------------------------------------------------*\
+ |				 thread_wait()				      |
+\*----------------------------------------------------------------------------*/
 int thread_wait(tid_t *tid)
 {
 	if(pthread_join(*tid, NULL) != 0)
@@ -58,18 +58,27 @@ int thread_wait(tid_t *tid)
 	return 1;
 }
 
+/*----------------------------------------------------------------------------*\
+ |				  mutex_init()				      |
+\*----------------------------------------------------------------------------*/
 int mutex_init(mutex_t *m)
 {
 	pthread_mutex_init(m, NULL);
 	return 1;
 }
 
+/*----------------------------------------------------------------------------*\
+ |				  mutex_lock()				      |
+\*----------------------------------------------------------------------------*/
 int mutex_lock(mutex_t *m)
 {
 	pthread_mutex_lock(m);
 	return 1;
 }
 
+/*----------------------------------------------------------------------------*\
+ |				mutex_try_lock()			      |
+\*----------------------------------------------------------------------------*/
 int mutex_try_lock(mutex_t *m)
 {
 	int result = pthread_mutex_trylock(m);
@@ -78,12 +87,18 @@ int mutex_try_lock(mutex_t *m)
 	return 1;
 }
 
+/*----------------------------------------------------------------------------*\
+ |				 mutex_unlock()				      |
+\*----------------------------------------------------------------------------*/
 int mutex_unlock(mutex_t *m)
 {
 	pthread_mutex_unlock(m);
 	return 1;
 }
 
+/*----------------------------------------------------------------------------*\
+ |				mutex_destroy()				      |
+\*----------------------------------------------------------------------------*/
 int mutex_destroy(mutex_t *m)
 {
 	pthread_mutex_destroy(m);
@@ -154,7 +169,7 @@ int mutex_destroy(mutex_t *m)
 	return 1;
 }
 
-int thread_cond_init(pthread_cond_t *cv, void *attrs)
+int cond_init(pthread_cond_t *cv, void *attrs)
 {
 	cv->waiters_count = 0;
 	cv->was_broadcast = 0;
@@ -170,7 +185,7 @@ int thread_cond_init(pthread_cond_t *cv, void *attrs)
 	return 1;
 }
 
-int thread_cond_destroy(pthread_cond_t *cv)
+int cond_destroy(pthread_cond_t *cv)
 {
 	// 
 	// TODO
@@ -178,7 +193,7 @@ int thread_cond_destroy(pthread_cond_t *cv)
 	return 1;
 }
 
-int thread_cond_wait(thread_cond_t *cv, mutex_t *external_mutex)
+int cond_wait(thread_cond_t *cv, mutex_t *m)
 {
 	// Avoid race conditions.
 	EnterCriticalSection(&cv->waiters_count_lock);
@@ -188,7 +203,7 @@ int thread_cond_wait(thread_cond_t *cv, mutex_t *external_mutex)
 	// This call atomically releases the mutex and waits on the
 	// semaphore until <pthread_cond_signal> or <pthread_cond_broadcast>
 	// are called by another thread.
-	SignalObjectAndWait(*external_mutex, cv->sema, INFINITE, FALSE);
+	SignalObjectAndWait(*m, cv->sema, INFINITE, FALSE);
 
 	// Reacquire lock to avoid race conditions.
 	EnterCriticalSection(&cv->waiters_count_lock);
@@ -207,16 +222,16 @@ int thread_cond_wait(thread_cond_t *cv, mutex_t *external_mutex)
 	{
 		// Call atomically signals the <waiters_done> event and waits until
 		// it can acquire the <external_mutex>.  Required to ensure fairness. 
-		SignalObjectAndWait (cv->waiters_done, *external_mutex, INFINITE,FALSE);
+		SignalObjectAndWait (cv->waiters_done, *m, INFINITE, FALSE);
 	} else {
 		// Always regain the external mutex since that's the guarantee we
 		// give to our callers. 
-		WaitForSingleObject(*external_mutex);
+		WaitForSingleObject(*m);
 	}
 	return 1;
 }
 
-int thread_cond_signal(thread_cond_t *cv)
+int cond_signal(thread_cond_t *cv)
 {
 	EnterCriticalSection(&cv->waiters_count_lock);
 	int have_waiters = cv->waiters_count > 0;
@@ -227,7 +242,7 @@ int thread_cond_signal(thread_cond_t *cv)
 		ReleaseSemaphore(cv->sema, 1, 0);
 }
 
-int thread_cond_broadcast(thread_cond_t *cv)
+int cond_broadcast(thread_cond_t *cv)
 {
 	// This is needed to ensure that <waiters_count_> and <was_broadcast_> are
 	// consistent relative to each other.
@@ -262,5 +277,3 @@ int thread_cond_broadcast(thread_cond_t *cv)
 }
 
 #endif
-
-
