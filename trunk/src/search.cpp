@@ -27,7 +27,7 @@
 #include "search.h"
 
 /* Global variables: */
-tid_t thread;  // The thread in which this...
+thread_t thread;  // The thread in which this...
 mutex_t mutex; // ...mutex protects this...
 cond_t cond;   // ...condition which watches the...
 int status;    // ...search status!  :-D
@@ -55,7 +55,7 @@ search::search(xboard *x, table *t, history *h)
 
 	mutex_init(&mutex);
 	cond_init(&cond, NULL);
-	thread_create(&thread, (thread_entry)start, this);
+	thread_create(&thread, (thread_entry) start, this);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -127,7 +127,7 @@ move_t search::get_hint() const
 /*----------------------------------------------------------------------------*\
  |				  get_thread()				      |
 \*----------------------------------------------------------------------------*/
-tid_t search::get_thread() const
+thread_t search::get_thread() const
 {
 	return thread;
 }

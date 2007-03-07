@@ -57,7 +57,7 @@ public:
 	static void handle(int num);
 	void clear() const;
 	move_t get_hint() const;
-	tid_t get_thread() const;
+	thread_t get_thread() const;
 	void set_time(int t);
 	void set_depth(int d);
 	void set_output(bool o);
