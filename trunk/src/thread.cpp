@@ -166,12 +166,12 @@ int cond_wait(cond_t *cond, mutex_t *mutex)
 		return -1;
 
 	EnterCriticalSection(&cond->lock);
-	BOOL waiters = --cond->count || !cond->bcast;
+	BOOL waiter = --cond->count || !cond->bcast;
 	LeaveCriticalSection(&cond->lock);
 
-	if (!waiters && SignalObjectAndWait(cond->done, *mutex, INFINITE, FALSE) == WAIT_FAILED)
+	if (!waiter && SignalObjectAndWait(cond->done, *mutex, INFINITE, FALSE) == WAIT_FAILED)
 		return -1;
-	if (waiters && WaitForSingleObject(*mutex) == WAIT_FAILED)
+	if (waiter && WaitForSingleObject(*mutex) == WAIT_FAILED)
 		return -1;
 	return 1;
 #endif
@@ -186,10 +186,10 @@ int cond_signal(cond_t *cond)
 	return pthread_cond_signal(cond) ? -1 : 1;
 #elif defined(WINDOWS)
 	EnterCriticalSection(&cond->lock);
-	BOOL waiters = cond->count;
+	BOOL waiter = cond->count;
 	LeaveCriticalSection(&cond->lock);
 
-	if (waiters && !ReleaseSemaphore(cond->sema, 1, 0))
+	if (waiter && !ReleaseSemaphore(cond->sema, 1, 0))
 		return -1;
 	return 1;
 #endif
@@ -203,7 +203,7 @@ int cond_broadcast(cond_t *cond)
 #if defined(LINUX) || defined(OS_X)
 	return pthread_cond_broadcast(cond) ? -1 : 1;
 #elif defined(WINDOWS)
-	BOOL waiters = FALSE;
+	BOOL waiter = FALSE;
 
 	EnterCriticalSection(&cond->lock);
 	if (cond->count)
@@ -211,11 +211,11 @@ int cond_broadcast(cond_t *cond)
 		if (!ReleaseSemaphore(cond->sema, cond->count, 0))
 			return -1;
 		cond->bcast = TRUE;
-		waiters = TRUE;
+		waiter = TRUE;
 	}
 	LeaveCriticalSection(&cond->lock);
 
-	if (waiters)
+	if (waiter)
 	{
 		if (WaitForSingleObject(cond->done, INFINITE) == WAIT_FAILED)
 			return -1;
@@ -234,6 +234,8 @@ int cond_destroy(cond_t *cond)
 	return pthread_cond_destroy(cond) ? -1 : 1;
 #elif defined(WINDOWS)
 	if (!CloseHandle(cond->done))
+		return -1;
+	if (!CloseHandle(cond->sema))
 		return -1;
 	DeleteCriticalSection(&cond->lock);
 	return 1;

@@ -31,6 +31,7 @@
 #include <errno.h>
 #include <pthread.h>
 
+/* Data types: */
 typedef pthread_t thread_t;
 typedef void *(*entry_t)(void *arg);
 typedef pthread_mutex_t mutex_t;
@@ -40,30 +41,34 @@ typedef pthread_cond_t cond_t;
 
 #include <windows.h>
 
+/* Data types: */
 typedef HANDLE thread_t;
 typedef DWORD (*entry_t)(LPVOID arg);
 typedef CRITICAL_SECTION mutex_t;
 typedef struct
 {
-	CRITICAL_SECTION lock; // Serializes access to <waiters_count_>.
+	CRITICAL_SECTION lock; // Lock to protect count, bcast.
 	int count;             // Number of waiting threads.
-	HANDLE sema;           // Semaphore used to queue up threads waiting for the condition to become signaled.
-	HANDLE done;           // An auto-reset event used by the broadcast/signal thread to wait for all the waiting threads to wake up and be released from the semaphore.
-	BOOL bcast;            // Keeps track of whether we were broadcasting or signaling.  This allows us to optimize the code if we're just signaling.
+	HANDLE sema;           // Queue of waiting threads.
+	HANDLE done;           // Whether all waiting threads have woken up.
+	BOOL bcast;            // Whether we were broadcasting or signaling.
 } cond_t;
 
 #endif
 
+/* Function prototypes related to threads: */
 int thread_create(thread_t *thread, entry_t entry, void *arg);
 int thread_exit();
 int thread_wait(thread_t *thread);
 
+/* Function prototypes related to mutexes: */
 int mutex_init(mutex_t *mutex);
 int mutex_try_lock(mutex_t *mutex);
 int mutex_lock(mutex_t *mutex);
 int mutex_unlock(mutex_t *mutex);
 int mutex_destroy(mutex_t *mutex);
 
+/* Function prototypes related to condition variables: */
 int cond_init(cond_t *cond, void *attr);
 int cond_wait(cond_t *cond, mutex_t *mutex);
 int cond_signal(cond_t *cond);
