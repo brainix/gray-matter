@@ -2,7 +2,6 @@
  |	table.h - transposition table interface				      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
- |		All rights reserved.					      |
 \*----------------------------------------------------------------------------*/
 
 /*
@@ -34,14 +33,15 @@
 class table
 {
 public:
-	table(int mb = TABLE_MB);
+	table(xboard *x, int mb = TABLE_MB);
 	~table();
 	void clear();
 	int probe(bitboard_t hash, move_t *move_ptr, int depth, int alpha = INT_MIN, int beta = INT_MAX);
 	void store(bitboard_t hash, move_t move, int depth, int type);
 private:
-	uint64_t entries;
-	entry_t **data;
+	xboard *xboard_ptr; // Chess Engine Communication Protocol object.
+	uint64_t entries;   //
+	entry_t **data;     //
 };
 
 #endif

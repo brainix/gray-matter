@@ -2,7 +2,6 @@
  |	table.cpp - transposition table implementation			      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
- |		All rights reserved.					      |
 \*----------------------------------------------------------------------------*/
 
 /*
@@ -30,10 +29,12 @@
 /*----------------------------------------------------------------------------*\
  |				    table()				      |
 \*----------------------------------------------------------------------------*/
-table::table(int mb)
+table::table(xboard *x, int mb)
 {
 
 /* Constructor. */
+
+	xboard_ptr = x;
 
 	try
 	{
@@ -45,6 +46,7 @@ table::table(int mb)
 	}
 	catch (...)
 	{
+		xboard_ptr->vomit("Couldn't allocate transposition table.");
 	}
 
 	clear();

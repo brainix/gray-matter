@@ -2,7 +2,6 @@
  |	xboard.h - Chess Engine Communication Protocol interface	      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
- |		All rights reserved.					      |
 \*----------------------------------------------------------------------------*/
 
 /*
@@ -44,12 +43,10 @@ class xboard
 {
 public:
 	xboard();
-	void bind(class search *s);
-	void loop();
+	void vomit(char *message) const;
+	void loop(class search *s);
 	void print_output(int ply, int value, int time, int nodes, list<move_t> &pv) const;
 	void print_result(move_t m);
-	void print_move(move_t m) const;
-	void vomit(char *message) const;
 private:
 	char s[80];               // Input buffer.
 	bool ponder;              // Whether we're to ponder.
@@ -59,6 +56,7 @@ private:
 	board b;                  // Board representation object.
 	class search *search_ptr; // Move search object.
 
+	void print_move(move_t m) const;
 	void do_xboard() const;
 	void do_protover() const;
 	void do_accepted() const;

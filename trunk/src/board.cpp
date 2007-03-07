@@ -2,7 +2,6 @@
  |	board.cpp - board representation implementation			      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
- |		All rights reserved.					      |
 \*----------------------------------------------------------------------------*/
 
 /*
@@ -151,15 +150,7 @@ board::board()
 		precomputed = true;
 	}
 	set_board(); // Set the board.
-
-	try
-	{
-		if (pthread_mutex_init(&mutex, NULL) != 0)
-			throw;
-	}
-	catch (...)
-	{
-	}
+	pthread_mutex_init(&mutex, NULL);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -167,14 +158,7 @@ board::board()
 \*----------------------------------------------------------------------------*/
 board::~board()
 {
-	try
-	{
-		if (pthread_mutex_destroy(&mutex) != 0)
-			throw;
-	}
-	catch (...)
-	{
-	}
+	pthread_mutex_destroy(&mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -227,14 +211,7 @@ void board::set_board()
 \*----------------------------------------------------------------------------*/
 void board::lock()
 {
-	try
-	{
-		if (pthread_mutex_lock(&mutex) != 0)
-			throw;
-	}
-	catch (...)
-	{
-	}
+	pthread_mutex_lock(&mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -242,14 +219,7 @@ void board::lock()
 \*----------------------------------------------------------------------------*/
 void board::unlock()
 {
-	try
-	{
-		if (pthread_mutex_unlock(&mutex) != 0)
-			throw;
-	}
-	catch (...)
-	{
-	}
+	pthread_mutex_unlock(&mutex);
 }
 
 /*----------------------------------------------------------------------------*\

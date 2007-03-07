@@ -2,7 +2,6 @@
  |	history.h - history table interface				      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
- |		All rights reserved.					      |
 \*----------------------------------------------------------------------------*/
 
 /*
@@ -34,13 +33,14 @@
 class history
 {
 public:
-	history();
+	history(xboard *x);
 	~history();
 	void clear();
 	int probe(bool color, move_t move);
 	void store(bool color, move_t move, int depth);
 private:
-	int *****data;
+	xboard *xboard_ptr; // Chess Engine Communication Protocol object.
+	int *****data;      //
 };
 
 #endif

@@ -2,7 +2,6 @@
  |	history.cpp - history table implementation			      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
- |		All rights reserved.					      |
 \*----------------------------------------------------------------------------*/
 
 /*
@@ -30,10 +29,12 @@
 /*----------------------------------------------------------------------------*\
  |				   history()				      |
 \*----------------------------------------------------------------------------*/
-history::history()
+history::history(xboard *x)
 {
 
 /* Constructor. */
+
+	xboard_ptr = x;
 
 	try
 	{
@@ -55,6 +56,7 @@ history::history()
 	}
 	catch (...)
 	{
+		xboard_ptr->vomit("Couldn't allocate history table.");
 	}
 
 	clear();

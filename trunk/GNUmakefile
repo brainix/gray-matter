@@ -2,7 +2,6 @@
 #	GNUmakefile							       #
 #									       #
 #	Copyright © 2005-2007, The Gray Matter Team, original authors.	       #
-#		All rights reserved.					       #
 #==============================================================================#
 
 CC   = g++
@@ -15,7 +14,6 @@ DIR  = -Iinc
 OBJS = bin/board.o   \
        bin/history.o \
        bin/main.o    \
-       bin/opening.o \
        bin/search.o  \
        bin/table.o   \
        bin/xboard.o

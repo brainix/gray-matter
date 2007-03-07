@@ -2,7 +2,6 @@
  |	search.h - move search interface				      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
- |		All rights reserved.					      |
 \*----------------------------------------------------------------------------*/
 
 /*
@@ -48,11 +47,10 @@ class xboard;
 class search
 {
 public:
-	search();
+	search(xboard *x, table *t, history *h);
 	~search();
 	search& operator=(const search& that);
 	static void handle(int num);
-	void bind(table *t, history *h, xboard *x);
 	void clear() const;
 	move_t get_hint() const;
 	pthread_t get_thread() const;
@@ -70,9 +68,9 @@ private:
 	bool output;          // Whether to print thinking output.
 
 	board b;              // Board representation object.
+	xboard *xboard_ptr;   // Chess Engine Communication Protocol object.
 	table *table_ptr;     // Transposition table object.
 	history *history_ptr; // History table object.
-	xboard *xboard_ptr;   // Chess Engine Communication Protocol object.
 
 	void iterate(int s);
 	move_t negascout(int depth, int alpha, int beta);
