@@ -26,18 +26,19 @@
 /*
  | This is our cross-platform multithreading library.  All of these data types
  | and functions are defined twice: once for POSIX, again for Win32.
+ |
+ | I wish that knucklehead Steve Ballmer could stop throwing chairs long enough
+ | to make his thrice-damned operating system POSIX conformant like every other
+ | operating system on this planet.
  */
 
 #ifndef THREAD_H
 #define THREAD_H
 
-/*
- | As a standard, these functions return -1 to indicate critical error, 0 to
- | indicate non-critical error, and 1 to indicate success.
- */
-#define CRITICAL	-1
-#define NON_CRITICAL	 0
-#define SUCCESSFUL	 1
+/* For the functions defined here, these are the standard return values: */
+#define CRITICAL	-1 // Critical error.      :-(
+#define NON_CRITICAL	 0 // Non-critical error.  :-|
+#define SUCCESSFUL	 1 // Success.             :-)
 
 #if defined(LINUX) || defined(OS_X)
 
