@@ -45,6 +45,7 @@ using namespace std;
 class xboard;
 class table;
 class history;
+class board;
 
 class search
 {
@@ -69,10 +70,10 @@ private:
 	int nodes;            // Number of nodes searched.
 	bool output;          // Whether to print thinking output.
 
-	board b;              // Board representation object.
 	xboard *xboard_ptr;   // Chess Engine Communication Protocol object.
 	table *table_ptr;     // Transposition table object.
 	history *history_ptr; // History table object.
+	board b;              // Board representation object.
 
 	void iterate(int s);
 	move_t negascout(int depth, int alpha, int beta);
