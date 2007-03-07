@@ -47,7 +47,7 @@ public:
 private:
 	xboard *xboard_ptr; // Chess Engine Communication Protocol object.
 	uint64_t entries;   //
-	entry_t **data;     //
+	slot_t **data;      //
 };
 
 #endif

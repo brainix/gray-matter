@@ -84,14 +84,14 @@ typedef struct move
 } __attribute__((packed)) move_t;
 
 /*
- | This structure describes a transposition table entry.
+ | This structure describes a transposition table slot.
  */
-typedef struct entry
+typedef struct slot
 {
 	bitboard_t hash; // Zobrist hash key.
 	move_t move;     // Best move.
 	uint16_t depth;  // Depth.
 	uint16_t type;   // Type (useless, alpha, beta, or exact value).
-} __attribute__((packed)) entry_t;
+} __attribute__((packed)) slot_t;
 
 #endif

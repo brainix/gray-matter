@@ -238,8 +238,8 @@ void xboard::do_new()
 void xboard::do_quit() const
 {
 	search_ptr->change(QUITTING, b);
-	tid_t tid = search_ptr->get_thread(); 
-	thread_wait(&tid);
+	thread_t thread = search_ptr->get_thread(); 
+	thread_wait(&thread);
 }
 
 /*----------------------------------------------------------------------------*\
