@@ -4,10 +4,16 @@
 #	Copyright © 2005-2007, The Gray Matter Team, original authors.	       #
 #==============================================================================#
 
+
+# Platforms:
+PLATFORM=LINUX
+#PLATFORM=OS_X
+#PLATFORM=WINDOWS
+
 CC   = g++
 LANG = -ansi
 WARN = -Wall -Werror
-OPTI = -O3 -fomit-frame-pointer
+OPTI = -O3 -fomit-frame-pointer -D$(PLATFORM)
 LINK = -lpthread
 DIR  = -Iinc
 
