@@ -27,11 +27,11 @@
 #include "search.h"
 
 /* Global variables: */
-tid_t thread;      // The thread in which this...
+tid_t thread;  // The thread in which this...
 mutex_t mutex; // ...mutex protects this...
-thread_cond_t cond;   // ...condition which watches the...
-int status;            // ...search status!  :-D
-bool timeout;          // Whether to stop thinking or pondering.
+cond_t cond;   // ...condition which watches the...
+int status;    // ...search status!  :-D
+bool timeout;  // Whether to stop thinking or pondering.
 
 /*----------------------------------------------------------------------------*\
  |				    search()				      |
@@ -54,7 +54,7 @@ search::search(xboard *x, table *t, history *h)
 #endif
 
 	mutex_init(&mutex);
-	thread_cond_init(&cond, NULL);
+	cond_init(&cond, NULL);
 	thread_create(&thread, (thread_entry)start, this);
 }
 
@@ -66,7 +66,7 @@ search::~search()
 
 /* Destructor. */
 
-	thread_cond_destroy(&cond);
+	cond_destroy(&cond);
 	mutex_destroy(&mutex);
 }
 
@@ -181,7 +181,7 @@ void *search::start(void *arg)
 		/* Wait for the status to change. */
 		mutex_lock(&mutex);
 		while (tmp == status)
-			thread_cond_wait(&cond, &mutex);
+			cond_wait(&cond, &mutex);
 		tmp = status;
 		mutex_unlock(&mutex);
 
@@ -242,7 +242,7 @@ void search::change(int s, const board& now)
 
 	mutex_lock(&mutex);
 	status = s;
-	thread_cond_signal(&cond);
+	cond_signal(&cond);
 	mutex_unlock(&mutex);
 }
 
