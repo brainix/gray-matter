@@ -31,9 +31,9 @@
 int thread_create(thread_t *thread, entry_t entry, void *arg)
 {
 #if defined(LINUX) || defined(OS_X)
-	return pthread_create(thread, NULL, entry, arg) ? -1 : 1;
+	return pthread_create(thread, NULL, entry, arg) ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
-	return (*thread = CreateThread(NULL, 0, entry, 0, NULL)) == NULL ? -1 : 1;
+	return (*thread = CreateThread(NULL, 0, entry, 0, NULL)) == NULL ? CRITICAL : SUCCESSFUL;
 #endif
 }
 
@@ -47,7 +47,7 @@ int thread_exit()
 #elif defined(WINDOWS) && !defined(__cplusplus)
 	ExitThread(0);
 #endif
-	return -1;
+	return CRITICAL;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -56,9 +56,9 @@ int thread_exit()
 int thread_wait(thread_t *thread)
 {
 #if defined(LINUX) || defined(OS_X)
-	return pthread_join(*thread, NULL) ? -1 : 1;
+	return pthread_join(*thread, NULL) ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
-	return WaitForSingleObject(*thread, INFINITE) == WAIT_FAILED ? -1 : 1;
+	return WaitForSingleObject(*thread, INFINITE) == WAIT_FAILED ? CRITICAL : SUCCESSFUL;
 #endif
 }
 
@@ -68,10 +68,10 @@ int thread_wait(thread_t *thread)
 int mutex_init(mutex_t *mutex)
 {
 #if defined(LINUX) || defined(OS_X)
-	return pthread_mutex_init(mutex, NULL) ? -1 : 1;
+	return pthread_mutex_init(mutex, NULL) ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
 	InitializeCriticalSection(mutex);
-	return 1;
+	return SUCCESSFUL;
 #endif
 }
 
@@ -83,12 +83,12 @@ int mutex_try_lock(mutex_t *mutex)
 #if defined(LINUX) || defined(OS_X)
 	switch (pthread_mutex_trylock(mutex))
 	{
-		default    : return -1;
-		case EBUSY : return  0;
-		case 0     : return  1;
+		default    : return CRITICAL;
+		case EBUSY : return NON_CRITICAL;
+		case 0     : return SUCCESSFUL;
 	}
 #elif defined(WINDOWS)
-	return !TryEnterCriticalSection(mutex) ? 0 : 1;
+	return !TryEnterCriticalSection(mutex) ? NON_CRITICAL : SUCCESSFUL;
 #endif
 }
 
@@ -98,10 +98,10 @@ int mutex_try_lock(mutex_t *mutex)
 int mutex_lock(mutex_t *mutex)
 {
 #if defined(LINUX) || defined(OS_X)
-	return pthread_mutex_lock(mutex) ? -1 : 1;
+	return pthread_mutex_lock(mutex) ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
 	EnterCriticalSection(mutex);
-	return 1;
+	return SUCCESSFUL;
 #endif
 }
 
@@ -111,10 +111,10 @@ int mutex_lock(mutex_t *mutex)
 int mutex_unlock(mutex_t *mutex)
 {
 #if defined(LINUX) || defined(OS_X)
-	return pthread_mutex_unlock(mutex) ? -1 : 1;
+	return pthread_mutex_unlock(mutex) ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
 	LeaveCriticalSection(mutex);
-	return 1;
+	return SUCCESSFUL;
 #endif
 }
 
@@ -124,10 +124,10 @@ int mutex_unlock(mutex_t *mutex)
 int mutex_destroy(mutex_t *mutex)
 {
 #if defined(LINUX) || defined(OS_X)
-	return pthread_mutex_destroy(mutex) ? -1 : 1;
+	return pthread_mutex_destroy(mutex) ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
 	DeleteCriticalSection(mutex);
-	return 1;
+	return SUCCESSFUL;
 #endif
 }
 
@@ -137,14 +137,14 @@ int mutex_destroy(mutex_t *mutex)
 int cond_init(cond_t *cond, void *attr)
 {
 #if defined(LINUX) || defined(OS_X)
-	return pthread_cond_init(cond, (pthread_condattr_t *) attr) ? -1 : 1;
+	return pthread_cond_init(cond, (pthread_condattr_t *) attr) ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
 	InitializeCriticalSection(&cond->lock);
 	cond->count = 0;
 	if ((cond->sema = CreateSemaphore(NULL, 0, 0x7FFFFFFF, NULL)) == NULL)
-		return -1;
+		return CRITICAL;
 	if ((cond->done = CreateEvent(NULL, FALSE, FALSE, NULL)) == NULL)
-		return -1;
+		return CRITICAL;
 	cond->bcast = FALSE;
 	return 1;
 #endif
@@ -156,24 +156,24 @@ int cond_init(cond_t *cond, void *attr)
 int cond_wait(cond_t *cond, mutex_t *mutex)
 {
 #if defined(LINUX) || defined(OS_X)
-	return pthread_cond_wait(cond, mutex) ? -1 : 1;
+	return pthread_cond_wait(cond, mutex) ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
 	EnterCriticalSection(&cond->lock);
 	cond->count++;
 	LeaveCriticalSection(&cond->lock);
 
 	if (SignalObjectAndWait(*mutex, cond->sema, INFINITE, FALSE) == WAIT_FAILED)
-		return -1;
+		return CRITICAL;
 
 	EnterCriticalSection(&cond->lock);
 	BOOL waiter = --cond->count || !cond->bcast;
 	LeaveCriticalSection(&cond->lock);
 
 	if (!waiter && SignalObjectAndWait(cond->done, *mutex, INFINITE, FALSE) == WAIT_FAILED)
-		return -1;
+		return CRITICAL;
 	if (waiter && WaitForSingleObject(*mutex) == WAIT_FAILED)
-		return -1;
-	return 1;
+		return CRITICAL;
+	return SUCCESSFUL;
 #endif
 }
 
@@ -183,15 +183,15 @@ int cond_wait(cond_t *cond, mutex_t *mutex)
 int cond_signal(cond_t *cond)
 {
 #if defined(LINUX) || defined(OS_X)
-	return pthread_cond_signal(cond) ? -1 : 1;
+	return pthread_cond_signal(cond) ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
 	EnterCriticalSection(&cond->lock);
 	BOOL waiter = cond->count;
 	LeaveCriticalSection(&cond->lock);
 
 	if (waiter && !ReleaseSemaphore(cond->sema, 1, 0))
-		return -1;
-	return 1;
+		return CRITICAL;
+	return SUCCESSFUL;
 #endif
 }
 
@@ -201,7 +201,7 @@ int cond_signal(cond_t *cond)
 int cond_broadcast(cond_t *cond)
 {
 #if defined(LINUX) || defined(OS_X)
-	return pthread_cond_broadcast(cond) ? -1 : 1;
+	return pthread_cond_broadcast(cond) ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
 	BOOL waiter = FALSE;
 
@@ -209,7 +209,7 @@ int cond_broadcast(cond_t *cond)
 	if (cond->count)
 	{
 		if (!ReleaseSemaphore(cond->sema, cond->count, 0))
-			return -1;
+			return CRITICAL;
 		cond->bcast = TRUE;
 		waiter = TRUE;
 	}
@@ -218,10 +218,10 @@ int cond_broadcast(cond_t *cond)
 	if (waiter)
 	{
 		if (WaitForSingleObject(cond->done, INFINITE) == WAIT_FAILED)
-			return -1;
+			return CRITICAL;
 		cond->bcast = FALSE;
 	}
-	return 1;
+	return SUCCESSFUL;
 #endif
 }
 
@@ -231,13 +231,13 @@ int cond_broadcast(cond_t *cond)
 int cond_destroy(cond_t *cond)
 {
 #if defined(LINUX) || defined(OS_X)
-	return pthread_cond_destroy(cond) ? -1 : 1;
+	return pthread_cond_destroy(cond) ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
 	if (!CloseHandle(cond->done))
-		return -1;
+		return CRITICAL;
 	if (!CloseHandle(cond->sema))
-		return -1;
+		return CRITICAL;
 	DeleteCriticalSection(&cond->lock);
-	return 1;
+	return SUCCESSFUL;
 #endif
 }
