@@ -25,19 +25,16 @@
 
 #include "thread.h"
 
-#ifndef WIN32
-
 /*----------------------------------------------------------------------------*\
  |				thread_create()				      |
 \*----------------------------------------------------------------------------*/
-int thread_create(tid_t *tid, thread_entry fnEntry, void *arg)
+int thread_create(tid_t *tid, thread_entry entry, void *arg)
 {
-	int i = pthread_create(tid, NULL, fnEntry, arg);
-	if(i != 0) {
-		//VLOG_MSG(LOG_LOW,"thread_create - pthread_create failed with: %d", i);
-		return -1;
-	}
-	return 1;
+#if defined(LINUX) || defined(OS_X)
+	return pthread_create(tid, NULL, entry, arg) != 0 ? -1 : 1;
+#elif defined(WINDOWS)
+	return (*tid = CreateThread(NULL, 0, entry, 0, NULL)) == NULL ? -1 : 1;
+#endif
 }
 
 /*----------------------------------------------------------------------------*\
@@ -45,7 +42,11 @@ int thread_create(tid_t *tid, thread_entry fnEntry, void *arg)
 \*----------------------------------------------------------------------------*/
 void thread_exit()
 {
+#if defined(LINUX) || defined(OS_X)
 	pthread_exit(NULL);
+#elif defined(WINDOWS)
+	ExitThread(0);
+#endif
 }
 
 /*----------------------------------------------------------------------------*\
@@ -53,9 +54,11 @@ void thread_exit()
 \*----------------------------------------------------------------------------*/
 int thread_wait(tid_t *tid)
 {
-	if(pthread_join(*tid, NULL) != 0)
-		return -1;
-	return 1;
+#if defined(LINUX) || defined(OS_X)
+	return pthread_join(*tid, NULL) != 0 ? -1 : 1;
+#elif defined(WINDOWS)
+	return WaitForSingleObject(*tid, INFINITE) == WAIT_FAILED ? -1 : 1;
+#endif
 }
 
 /*----------------------------------------------------------------------------*\
@@ -63,7 +66,11 @@ int thread_wait(tid_t *tid)
 \*----------------------------------------------------------------------------*/
 int mutex_init(mutex_t *m)
 {
+#if defined(LINUX) || defined(OS_X)
 	pthread_mutex_init(m, NULL);
+#elif defined(WINDOWS)
+	InitializeCriticalSection(m);
+#endif
 	return 1;
 }
 
@@ -72,18 +79,11 @@ int mutex_init(mutex_t *m)
 \*----------------------------------------------------------------------------*/
 int mutex_lock(mutex_t *m)
 {
+#if defined(LINUX) || defined(OS_X)
 	pthread_mutex_lock(m);
-	return 1;
-}
-
-/*----------------------------------------------------------------------------*\
- |				mutex_try_lock()			      |
-\*----------------------------------------------------------------------------*/
-int mutex_try_lock(mutex_t *m)
-{
-	int result = pthread_mutex_trylock(m);
-	if(result == EBUSY)
-		return 0; // mutex is locked
+#elif defined(WINDOWS)
+	EnterCriticalSection(m);
+#endif
 	return 1;
 }
 
@@ -92,8 +92,24 @@ int mutex_try_lock(mutex_t *m)
 \*----------------------------------------------------------------------------*/
 int mutex_unlock(mutex_t *m)
 {
+#if defined(LINUX) || defined(OS_X)
 	pthread_mutex_unlock(m);
+#elif defined(WINDOWS)
+	LeaveCriticalSection(m);
+#endif
 	return 1;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				mutex_try_lock()			      |
+\*----------------------------------------------------------------------------*/
+int mutex_try_lock(mutex_t *m)
+{
+#if defined(LINUX) || defined(OS_X)
+	return pthread_mutex_trylock(m) == EBUSY ? 0 : 1;
+#elif defined(WINDOWS)
+	return !TryEnterCriticalSection(m) ? 0 : 1;
+#endif
 }
 
 /*----------------------------------------------------------------------------*\
@@ -101,100 +117,39 @@ int mutex_unlock(mutex_t *m)
 \*----------------------------------------------------------------------------*/
 int mutex_destroy(mutex_t *m)
 {
+#if defined(LINUX) || defined(OS_X)
 	pthread_mutex_destroy(m);
-	return 1;
-}
-
-#else
-
-int thread_create(tid_t *tid, thread_entry fnEntry, void *arg)
-{
-	*tid = CreateThread(NULL, 0, fnEntry, 0, NULL);
-	if(*tid == NULL) {
-		//VLOG_MSG(LOG_LOW,"thread_create - pthread_create failed with: %d", i);
-		// TODO: see GetLastError()
-		return -1;
-	}
-	return 1;
-}
-
-void thread_exit()
-{
-	ExitThread(0);
-}
-
-int thread_wait(tid_t *tid)
-{
-	//
-	// wait, indefinitely for the thread to quit
-	//
-	DWORD result = WaitForSingleObject(*tid, INFINITE);
-	if(result == WAIT_FAILED) {
-		// TODO: see GetLastError
-		return -1;
-	}
-	return 1;
-}
-
-int mutex_init(mutex_t *m)
-{
-	InitializeCriticalSection(m);
-	return 1;
-}
-
-int mutex_lock(mutex_t *m)
-{
-	EnterCriticalSection(m);
-	return 1;
-}
-
-int mutex_try_lock(mutex_t *m)
-{
-	// returns 0 if another thread is in this critical section
-	BOOL b = TryEnterCriticalSection(m);
-	if(!b)
-		return 0; // mutex is locked
-	return 1;
-}
-
-int mutex_unlock(mutex_t *m)
-{
-	LeaveCriticalSection(m);
-	return 1;
-}
-
-int mutex_destroy(mutex_t *m)
-{
+#elif defined(WINDOWS)
 	DeleteCriticalSection(m);
+#endif
 	return 1;
 }
 
-int cond_init(pthread_cond_t *cv, void *attrs)
+/*----------------------------------------------------------------------------*\
+ |				  cond_init()				      |
+\*----------------------------------------------------------------------------*/
+int cond_init(pthread_cond_t *cv, void *attr)
 {
+#if defined(LINUX) || defined(OS_X)
+	pthread_cond_init(cv, attr);
+#elif defined(WINDOWS)
 	cv->waiters_count = 0;
 	cv->was_broadcast = 0;
-	cv->sema = CreatedSemaphore(NULL,       // no security
-								0,          // initially 0
-								0x7fffffff, // max count
-								NULL);      // unnamed 
+	cv->sem = CreatedSemaphore(NULL, 0, 0x7fffffff, NULL);
 	InitializeCriticalSection(&cv->waiters_count_lock);
-	cv->waiters_done = CreateEvent(NULL,  // no security
-									FALSE, // auto-reset
-									FALSE, // non-signaled initially
-									NULL); // unnamed
+	cv->waiters_done = CreateEvent(NULL, FALSE, FALSE, NULL);
+#endif
 	return 1;
 }
 
-int cond_destroy(pthread_cond_t *cv)
+/*----------------------------------------------------------------------------*\
+ |				  cond_wait()				      |
+\*----------------------------------------------------------------------------*/
+int cond_wait(cond_t *cv, mutex_t *m)
 {
-	// 
-	// TODO
-	// 
-	return 1;
-}
-
-int cond_wait(thread_cond_t *cv, mutex_t *m)
-{
+#if defined(LINUX) || defined(OS_X)
+	pthread_cond_wait(cv, m);
+#elif defined(WINDOWS)
 	// Avoid race conditions.
 	EnterCriticalSection(&cv->waiters_count_lock);
 	cv->waiters_count++;
@@ -203,7 +158,7 @@ int cond_wait(thread_cond_t *cv, mutex_t *m)
 	// This call atomically releases the mutex and waits on the
 	// semaphore until <pthread_cond_signal> or <pthread_cond_broadcast>
 	// are called by another thread.
-	SignalObjectAndWait(*m, cv->sema, INFINITE, FALSE);
+	SignalObjectAndWait(*m, cv->sem, INFINITE, FALSE);
 
 	// Reacquire lock to avoid race conditions.
 	EnterCriticalSection(&cv->waiters_count_lock);
@@ -223,33 +178,48 @@ int cond_wait(thread_cond_t *cv, mutex_t *m)
 		// Call atomically signals the <waiters_done> event and waits until
 		// it can acquire the <external_mutex>.  Required to ensure fairness. 
 		SignalObjectAndWait (cv->waiters_done, *m, INFINITE, FALSE);
-	} else {
+	}
+	else
+	{
 		// Always regain the external mutex since that's the guarantee we
 		// give to our callers. 
 		WaitForSingleObject(*m);
 	}
+#endif
 	return 1;
 }
 
-int cond_signal(thread_cond_t *cv)
+/*----------------------------------------------------------------------------*\
+ |				 cond_signal()				      |
+\*----------------------------------------------------------------------------*/
+int cond_signal(cond_t *cv)
 {
+#if defined(LINUX) || defined(OS_X)
+	pthread_cond_signal(cv);
+#elif defined(WINDOWS)
 	EnterCriticalSection(&cv->waiters_count_lock);
 	int have_waiters = cv->waiters_count > 0;
 	LeaveCriticalSection(&cv->waiters_count_lock);
-
-	// If there aren't any waiters, then this is a no-op.  
-	if(have_waiters)
-		ReleaseSemaphore(cv->sema, 1, 0);
+	if (have_waiters)
+		ReleaseSemaphore(cv->sem, 1, 0);
+#endif
+	return 1;
 }
 
-int cond_broadcast(thread_cond_t *cv)
+/*----------------------------------------------------------------------------*\
+ |				cond_broadcast()			      |
+\*----------------------------------------------------------------------------*/
+int cond_broadcast(cond_t *cv)
 {
+#if defined(LINUX) || defined(OS_X)
+	pthread_cond_broadcast(cv);
+#elif defined(WINDOWS)
 	// This is needed to ensure that <waiters_count_> and <was_broadcast_> are
 	// consistent relative to each other.
 	EnterCriticalSection(&cv->waiters_count_lock);
 	int have_waiters = 0;
 
-	if(cv->waiters_count > 0)
+	if (cv->waiters_count > 0)
 	{
 		// We are broadcasting, even if there is just one waiter...
 		// Record that we are broadcasting, which helps optimize
@@ -258,10 +228,10 @@ int cond_broadcast(thread_cond_t *cv)
 		have_waiters = 1;
 	}
 
-	if(have_waiters)
+	if (have_waiters)
 	{
 		// Wake up all the waiters atomically.
-		ReleaseSemaphore(cv->sema, cv->waiters_count, 0);
+		ReleaseSemaphore(cv->sem, cv->waiters_count, 0);
 
 		LeaveCriticalSection(&cv->waiters_count_lock);
 
@@ -274,6 +244,18 @@ int cond_broadcast(thread_cond_t *cv)
 	}
 	else
 		LeaveCriticalSection(&cv->waiters_count_lock);
+#endif
+	return 1;
 }
 
+/*----------------------------------------------------------------------------*\
+ |				 cond_destroy()				      |
+\*----------------------------------------------------------------------------*/
+int cond_destroy(pthread_cond_t *cv)
+{
+#if defined(LINUX) || defined(OS_X)
+	pthread_cond_destroy(cv);
+#elif defined(WINDOWS)
 #endif
+	return 1;
+}
