@@ -34,6 +34,7 @@ using namespace std;
 /* Default Gray Matter stuff: */
 #include "config.h"
 #include "types.h"
+#include "thread.h"
 
 /* Extra Gray Matter stuff: */
 #include "board.h"
