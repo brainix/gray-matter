@@ -27,9 +27,9 @@
 #include "search.h"
 
 /* Global variables: */
-pthread_t thread;      // The thread in which this...
-pthread_mutex_t mutex; // ...mutex protects this...
-pthread_cond_t cond;   // ...condition which watches the...
+tid_t thread;      // The thread in which this...
+mutex_t mutex; // ...mutex protects this...
+thread_cond_t cond;   // ...condition which watches the...
 int status;            // ...search status!  :-D
 bool timeout;          // Whether to stop thinking or pondering.
 
@@ -53,9 +53,9 @@ search::search(xboard *x, table *t, history *h)
 	signal(SIGALRM, handle);
 #endif
 
-	pthread_mutex_init(&mutex, NULL);
-	pthread_cond_init(&cond, NULL);
-	pthread_create(&thread, NULL, start, this);
+	mutex_init(&mutex);
+	thread_cond_init(&cond, NULL);
+	thread_create(&thread, (thread_entry)start, this);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -66,8 +66,8 @@ search::~search()
 
 /* Destructor. */
 
-	pthread_cond_destroy(&cond);
-	pthread_mutex_destroy(&mutex);
+	thread_cond_destroy(&cond);
+	mutex_destroy(&mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -127,7 +127,7 @@ move_t search::get_hint() const
 /*----------------------------------------------------------------------------*\
  |				  get_thread()				      |
 \*----------------------------------------------------------------------------*/
-pthread_t search::get_thread() const
+tid_t search::get_thread() const
 {
 	return thread;
 }
@@ -179,11 +179,11 @@ void *search::start(void *arg)
 	do
 	{
 		/* Wait for the status to change. */
-		pthread_mutex_lock(&mutex);
+		mutex_lock(&mutex);
 		while (tmp == status)
-			pthread_cond_wait(&cond, &mutex);
+			thread_cond_wait(&cond, &mutex);
 		tmp = status;
-		pthread_mutex_unlock(&mutex);
+		mutex_unlock(&mutex);
 
 		/* Do the requested work - idle, think, ponder, or quit. */
 		if (status == THINKING || status == PONDERING)
@@ -193,7 +193,8 @@ void *search::start(void *arg)
 		}
 	} while (status != QUITTING);
 
-	pthread_exit(NULL);
+	thread_exit();
+	return NULL;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -239,10 +240,10 @@ void search::change(int s, const board& now)
 		b.unlock();
 	}
 
-	pthread_mutex_lock(&mutex);
+	mutex_lock(&mutex);
 	status = s;
-	pthread_cond_signal(&cond);
-	pthread_mutex_unlock(&mutex);
+	thread_cond_signal(&cond);
+	mutex_unlock(&mutex);
 }
 
 /*----------------------------------------------------------------------------*\

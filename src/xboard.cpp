@@ -25,6 +25,7 @@
 
 #include "gray.h"
 #include "xboard.h"
+#include "thread.h"
 
 /*----------------------------------------------------------------------------*\
  |				    xboard()				      |
@@ -237,7 +238,8 @@ void xboard::do_new()
 void xboard::do_quit() const
 {
 	search_ptr->change(QUITTING, b);
-	pthread_join(search_ptr->get_thread(), NULL);
+	tid_t tid = search_ptr->get_thread(); 
+	thread_wait(&tid);
 }
 
 /*----------------------------------------------------------------------------*\

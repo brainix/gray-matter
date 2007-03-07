@@ -34,6 +34,7 @@ using namespace std;
 /* Default Gray Matter stuff: */
 #include "config.h"
 #include "types.h"
+#include "thread.h"
 
 /* These macros represent the colors on and off move. */
 #define ON_MOVE			(state.whose)
@@ -111,7 +112,7 @@ private:
 	bitboard_t rotation[ANGLES][COLORS + 1];        /* Current rotated bitboard.   */
 	list<bitboard_t> hashes;                        /* Previous Zobrist hash keys. */
 	bitboard_t hash;                                /* Current Zobrist hash key.   */
-	pthread_mutex_t mutex;				/* ?                           */
+	mutex_t mutex;				/* ?                           */
 
 	/* These methods start up games. */
 	void init_state();

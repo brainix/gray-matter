@@ -32,7 +32,6 @@
 #include <ctype.h>
 #include <inttypes.h>
 #include <limits.h>
-#include <pthread.h>
 #include <signal.h>
 #include <stddef.h>
 #include <stdint.h>
