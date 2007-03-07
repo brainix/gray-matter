@@ -38,11 +38,11 @@ table::table(xboard *x, int mb)
 
 	try
 	{
-		if ((entries = mb * MB / sizeof(slot_t)) == 0)
+		if ((slots = mb * MB / sizeof(slot_t)) == 0)
 			throw;
 		data = new slot_t *[POLICIES];
 		for (int policy = DEEP; policy <= FRESH; policy++)
-			data[policy] = new slot_t[entries / 2];
+			data[policy] = new slot_t[slots / 2];
 	}
 	catch (...)
 	{
@@ -71,7 +71,7 @@ table::~table()
 void table::clear()
 {
 	for (int policy = DEEP; policy <= FRESH; policy++)
-		for (uint64_t index = 0; index < entries / 2; index++)
+		for (uint64_t index = 0; index < slots / 2; index++)
 		{
 			data[policy][index].hash = 0;
 			data[policy][index].depth = 0;
@@ -84,7 +84,7 @@ void table::clear()
 \*----------------------------------------------------------------------------*/
 int table::probe(bitboard_t hash, move_t *move_ptr, int depth, int alpha, int beta)
 {
-	uint64_t index = hash % (entries / 2);
+	uint64_t index = hash % (slots / 2);
 	int type = USELESS;
 
 	move_ptr->value = move_ptr->promo = move_ptr->new_y = move_ptr->new_x = move_ptr->old_y = move_ptr->old_x = 0;
@@ -113,7 +113,7 @@ int table::probe(bitboard_t hash, move_t *move_ptr, int depth, int alpha, int be
 \*----------------------------------------------------------------------------*/
 void table::store(bitboard_t hash, move_t move, int depth, int type)
 {
-	uint64_t index = hash % (entries / 2);
+	uint64_t index = hash % (slots / 2);
 
 	for (int policy = DEEP; policy <= FRESH; policy++)
 		if (policy == FRESH || (unsigned) depth >= data[DEEP][index].depth)
