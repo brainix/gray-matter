@@ -49,7 +49,7 @@ typedef struct
 	int count;             // Number of waiting threads.
 	HANDLE sema;           // Semaphore used to queue up threads waiting for the condition to become signaled.
 	HANDLE done;           // An auto-reset event used by the broadcast/signal thread to wait for all the waiting threads to wake up and be released from the semaphore.
-	int bcast;             // Keeps track of whether we were broadcasting or signaling.  This allows us to optimize the code if we're just signaling.
+	BOOL bcast;            // Keeps track of whether we were broadcasting or signaling.  This allows us to optimize the code if we're just signaling.
 } cond_t;
 
 #endif
