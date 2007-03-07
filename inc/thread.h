@@ -31,8 +31,8 @@
 #include <errno.h>
 #include <pthread.h>
 
-typedef pthread_t tid_t;
-typedef void *(*thread_entry)(void *arg);
+typedef pthread_t thread_t;
+typedef void *(*entry_t)(void *arg);
 typedef pthread_mutex_t mutex_t;
 typedef pthread_cond_t cond_t;
 
@@ -40,8 +40,8 @@ typedef pthread_cond_t cond_t;
 
 #include <windows.h>
 
-typedef HANDLE tid_t;
-typedef DWORD (*thread_entry)(LPVOID arg);
+typedef HANDLE thread_t;
+typedef DWORD (*entry_t)(LPVOID arg);
 typedef CRITICAL_SECTION mutex_t;
 
 typedef struct
@@ -73,9 +73,9 @@ extern "C"
 {
 #endif
 
-int thread_create(tid_t *tid, thread_entry entry, void *arg);
+int thread_create(thread_t *thread, entry_t entry, void *arg);
 void thread_exit();
-int thread_wait(tid_t *tid);
+int thread_wait(thread_t *thread);
 
 int mutex_init(mutex_t *m);
 int mutex_lock(mutex_t *m);
