@@ -55,7 +55,7 @@ typedef struct
 #endif
 
 int thread_create(thread_t *thread, entry_t entry, void *arg);
-void thread_exit();
+int thread_exit();
 int thread_wait(thread_t *thread);
 
 int mutex_init(mutex_t *m);
