@@ -4,18 +4,18 @@
 #	Copyright © 2005-2007, The Gray Matter Team, original authors.	       #
 #==============================================================================#
 
-
 # Platforms:
-PLATFORM=LINUX
-#PLATFORM=OS_X
-#PLATFORM=WINDOWS
+PLATFORM  = LINUX
+#PLATFORM = OS_X
+#PLATFORM = WINDOWS
 
-CC   = g++
-LANG = -ansi
-WARN = -Wall -Werror
-OPTI = -O3 -fomit-frame-pointer -D$(PLATFORM)
-LINK = -lpthread
-DIR  = -Iinc
+CXX  = g++                      # C++ compiler
+LANG = -ansi                    # Language options
+WARN = -Wall -Werror            # Warning options
+OPTI = -O3 -fomit-frame-pointer # Optimization options
+PREP = -D$(PLATFORM)            # Preprocessor options
+LINK = -lpthread                # Linker options
+DIR  = -Iinc                    # Directory options
 
 OBJS = bin/board.o   \
        bin/history.o \
@@ -30,7 +30,7 @@ clean :
 	rm -f $(OBJS) bin/gray
 
 bin/%.o : src/%.cpp
-	$(CC) -c -o $@ $< $(LANG) $(WARN) $(OPTI) $(DIR)
+	$(CXX) -c -o $@ $< $(LANG) $(WARN) $(OPTI) $(PREP) $(DIR)
 
 bin/gray : $(OBJS)
-	$(CC) -o $@ $(LANG) $(WARN) $(OPTI) $(LINK) $(DIR) $(OBJS)
+	$(CXX) -o $@ $(LANG) $(WARN) $(OPTI) $(PREP) $(LINK) $(DIR) $(OBJS)
