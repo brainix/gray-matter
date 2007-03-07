@@ -45,11 +45,11 @@ typedef DWORD (*entry_t)(LPVOID arg);
 typedef CRITICAL_SECTION mutex_t;
 typedef struct
 {
-	CRITICAL_SECTION waiters_count_lock; // Serializes access to <waiters_count_>.
-	int waiters_count;                   // Number of waiting threads.
-	HANDLE sem;                          // Semaphore used to queue up threads waiting for the condition to become signaled. 
-	HANDLE waiters_done;                 // An auto-reset event used by the broadcast/signal thread to wait for all the waiting threads to wake up and be released from the semaphore. 
-	size_t was_broadcast;                // Keeps track of whether we were broadcasting or signaling.  This allows us to optimize the code if we're just signaling.
+	CRITICAL_SECTION lock; // Serializes access to <waiters_count_>.
+	int count;             // Number of waiting threads.
+	HANDLE sema;           // Semaphore used to queue up threads waiting for the condition to become signaled.
+	HANDLE done;           // An auto-reset event used by the broadcast/signal thread to wait for all the waiting threads to wake up and be released from the semaphore.
+	int bcast;             // Keeps track of whether we were broadcasting or signaling.  This allows us to optimize the code if we're just signaling.
 } cond_t;
 
 #endif
@@ -58,16 +58,16 @@ int thread_create(thread_t *thread, entry_t entry, void *arg);
 int thread_exit();
 int thread_wait(thread_t *thread);
 
-int mutex_init(mutex_t *m);
-int mutex_lock(mutex_t *m);
-int mutex_unlock(mutex_t *m);
-int mutex_try_lock(mutex_t *m);
-int mutex_destroy(mutex_t *m);
+int mutex_init(mutex_t *mutex);
+int mutex_try_lock(mutex_t *mutex);
+int mutex_lock(mutex_t *mutex);
+int mutex_unlock(mutex_t *mutex);
+int mutex_destroy(mutex_t *mutex);
 
-int cond_init(cond_t *cv, void *attr);
-int cond_wait(cond_t *cv, mutex_t *m);
-int cond_signal(cond_t *cv);
-int cond_broadcast(cond_t *cv);
-int cond_destroy(cond_t *cv);
+int cond_init(cond_t *cond, void *attr);
+int cond_wait(cond_t *cond, mutex_t *mutex);
+int cond_signal(cond_t *cond);
+int cond_broadcast(cond_t *cond);
+int cond_destroy(cond_t *cond);
 
 #endif
