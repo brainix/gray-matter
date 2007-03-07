@@ -31,7 +31,7 @@
 int thread_create(thread_t *thread, entry_t entry, void *arg)
 {
 #if defined(LINUX) || defined(OS_X)
-	return pthread_create(thread, NULL, entry, arg) != 0 ? -1 : 1;
+	return pthread_create(thread, NULL, entry, arg) ? -1 : 1;
 #elif defined(WINDOWS)
 	return (*thread = CreateThread(NULL, 0, entry, 0, NULL)) == NULL ? -1 : 1;
 #endif
@@ -40,13 +40,14 @@ int thread_create(thread_t *thread, entry_t entry, void *arg)
 /*----------------------------------------------------------------------------*\
  |				 thread_exit()				      |
 \*----------------------------------------------------------------------------*/
-void thread_exit()
+int thread_exit()
 {
 #if defined(LINUX) || defined(OS_X)
 	pthread_exit(NULL);
 #elif defined(WINDOWS)
 	ExitThread(0);
 #endif
+	return -1;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -55,7 +56,7 @@ void thread_exit()
 int thread_wait(thread_t *thread)
 {
 #if defined(LINUX) || defined(OS_X)
-	return pthread_join(*thread, NULL) != 0 ? -1 : 1;
+	return pthread_join(*thread, NULL) ? -1 : 1;
 #elif defined(WINDOWS)
 	return WaitForSingleObject(*thread, INFINITE) == WAIT_FAILED ? -1 : 1;
 #endif
@@ -106,7 +107,12 @@ int mutex_unlock(mutex_t *m)
 int mutex_try_lock(mutex_t *m)
 {
 #if defined(LINUX) || defined(OS_X)
-	return pthread_mutex_trylock(m) == EBUSY ? 0 : 1;
+	switch (pthread_mutex_trylock(m))
+	{
+		default    : return -1;
+		case EBUSY : return  0;
+		case 0     : return  1;
+	}
 #elif defined(WINDOWS)
 	return !TryEnterCriticalSection(m) ? 0 : 1;
 #endif
