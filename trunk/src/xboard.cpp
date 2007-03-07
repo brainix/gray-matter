@@ -63,54 +63,54 @@ void xboard::loop(class search *s)
 {
 	search_ptr = s;
 
-	for (fgets(s, 80, stdin); strncmp(s, "quit", 4); fgets(s, 80, stdin))
+	for (fgets(buffer, 80, stdin); strncmp(buffer, "quit", 4); fgets(buffer, 80, stdin))
 	{
-		if (!strncmp(s, "xboard", 6))
+		if (!strncmp(buffer, "xboard", 6))
 			do_xboard();
-		else if (!strncmp(s, "protover", 8))
+		else if (!strncmp(buffer, "protover", 8))
 			do_protover();
-		else if (!strncmp(s, "accepted", 8))
+		else if (!strncmp(buffer, "accepted", 8))
 			do_accepted();
-		else if (!strncmp(s, "rejected", 8))
+		else if (!strncmp(buffer, "rejected", 8))
 			do_rejected();
-		else if (!strncmp(s, "new", 3))
+		else if (!strncmp(buffer, "new", 3))
 			do_new();
-		else if (!strncmp(s, "force", 5))
+		else if (!strncmp(buffer, "force", 5))
 			do_force();
-		else if (!strncmp(s, "go", 2))
+		else if (!strncmp(buffer, "go", 2))
 			do_go();
-		else if (!strncmp(s, "playother", 9))
+		else if (!strncmp(buffer, "playother", 9))
 			do_playother();
-		else if (!strncmp(s, "level", 5))
+		else if (!strncmp(buffer, "level", 5))
 			do_level();
-		else if (!strncmp(s, "st", 2))
+		else if (!strncmp(buffer, "st", 2))
 			do_st();
-		else if (!strncmp(s, "sd", 2))
+		else if (!strncmp(buffer, "sd", 2))
 			do_sd();
-		else if (!strncmp(s, "usermove", 8))
+		else if (!strncmp(buffer, "usermove", 8))
 			do_usermove();
-		else if (!strncmp(s, "?", 1))
+		else if (!strncmp(buffer, "?", 1))
 			do_question();
-		else if (!strncmp(s, "ping", 4))
+		else if (!strncmp(buffer, "ping", 4))
 			do_ping();
-		else if (!strncmp(s, "draw", 4))
+		else if (!strncmp(buffer, "draw", 4))
 			do_draw();
-		else if (!strncmp(s, "hint", 4))
+		else if (!strncmp(buffer, "hint", 4))
 			do_hint();
-		else if (!strncmp(s, "undo", 4))
+		else if (!strncmp(buffer, "undo", 4))
 			do_undo();
-		else if (!strncmp(s, "remove", 6))
+		else if (!strncmp(buffer, "remove", 6))
 			do_remove();
-		else if (!strncmp(s, "hard", 4))
+		else if (!strncmp(buffer, "hard", 4))
 			do_hard();
-		else if (!strncmp(s, "easy", 4))
+		else if (!strncmp(buffer, "easy", 4))
 			do_easy();
-		else if (!strncmp(s, "post", 4))
+		else if (!strncmp(buffer, "post", 4))
 			do_post();
-		else if (!strncmp(s, "nopost", 6))
+		else if (!strncmp(buffer, "nopost", 6))
 			do_nopost();
 		else
-			printf("Error (unknown command): %s\n", s);
+			printf("Error (unknown command): %s\n", buffer);
 	}
 	do_quit();
 }
@@ -272,7 +272,7 @@ void xboard::do_playother()
 \*----------------------------------------------------------------------------*/
 void xboard::do_level() const
 {
-	const char *p = &s[6];
+	const char *p = &buffer[6];
 	int moves = str_to_num(p);
 	while (*p++ != ' ')
 		;
@@ -291,7 +291,7 @@ void xboard::do_st() const
 
 /* Set the maximum search time. */
 
-	search_ptr->set_time(str_to_num(&s[3]));
+	search_ptr->set_time(str_to_num(&buffer[3]));
 }
 
 /*----------------------------------------------------------------------------*\
@@ -302,7 +302,7 @@ void xboard::do_sd() const
 
 /* Set the maximum search depth. */
 
-	search_ptr->set_depth(str_to_num(&s[3]));
+	search_ptr->set_depth(str_to_num(&buffer[3]));
 }
 
 /*----------------------------------------------------------------------------*\
@@ -317,9 +317,9 @@ void xboard::do_usermove()
 	move_t m;
 
 	/* Was the move legal? */
-	m.old_x = s[ 9] - 'a'; m.old_y = s[10] - '1';
-	m.new_x = s[11] - 'a'; m.new_y = s[12] - '1';
-	m.promo = char_to_shape(s[13]);
+	m.old_x = buffer[ 9] - 'a'; m.old_y = buffer[10] - '1';
+	m.new_x = buffer[11] - 'a'; m.new_y = buffer[12] - '1';
+	m.promo = char_to_shape(buffer[13]);
 	if (!test_move(m))
 	{
 		/* No!  The gypsy was trying to pull a fast one on us! */
@@ -359,8 +359,8 @@ void xboard::do_ping()
 /* XBoard has sent a ping request (to make sure we're not on drugs).  Send a
  * pong reply. */
 
-	s[1] = 'o';
-	printf("%s\n", s);
+	buffer[1] = 'o';
+	printf("%s\n", buffer);
 }
 
 /*----------------------------------------------------------------------------*\

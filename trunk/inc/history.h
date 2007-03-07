@@ -30,6 +30,12 @@
 #include "config.h"
 #include "types.h"
 
+/* Extra Gray Matter stuff: */
+#include "xboard.h"
+
+/* Forward declarations: */
+class xboard;
+
 class history
 {
 public:

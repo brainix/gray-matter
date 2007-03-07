@@ -48,7 +48,7 @@ public:
 	void print_output(int ply, int value, int time, int nodes, list<move_t> &pv) const;
 	void print_result(move_t m);
 private:
-	char s[80];               // Input buffer.
+	char buffer[80];          // Input buffer.
 	bool ponder;              // Whether we're to ponder.
 	bool force;               // Whether we're in force mode.
 	bool draw;                // Whether our opponent has offered a draw.
