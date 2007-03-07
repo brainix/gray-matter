@@ -1299,16 +1299,16 @@ int board::find_64(int64_t signed_num) const
  * value ranges from 0 (for no bits set) to 64 (for only the most significant
  * bit set). */
 
-#if PLATFORM == OS_X || PLATFORM == WINDOWS
+#if defined(OS_X) || defined(WINDOWS)
 	uint64_t unsigned_num = signed_num & -signed_num;
 	int shift = unsigned_num <= 0x00000000FFFFFFFFULL ? 0 : 32;
 #endif
 
-#if PLATFORM == LINUX
+#if defined(LINUX)
 	return ffsll(signed_num);
-#elif PLATFORM == OS_X
+#elif defined(OS_X)
 	return ffs(signed_num >> shift) + shift;
-#elif PLATFORM == WINDOWS
+#elif defined(WINDOWS)
 	return find_32(signed_num >> shift) + shift;
 #endif
 }
@@ -1323,9 +1323,9 @@ int board::find_32(int32_t signed_num) const
  * value ranges from 0 (for no bits set) to 32 (for only the most significant
  * bit set). */
 
-#if PLATFORM == LINUX || PLATFORM == OS_X
+#if defined(LINUX) || defined(OS_X)
 	return ffs(signed_num);
-#elif PLATFORM == WINDOWS
+#elif defined(WINDOWS)
 	static const uint8_t table[] =
 	{
 		0,1,2,2,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,
@@ -1348,11 +1348,11 @@ int board::find_32(int32_t signed_num) const
 \*----------------------------------------------------------------------------*/
 uint64_t board::randomize() const
 {
-#if PLATFORM == LINUX
+#if defined(LINUX)
 	return (uint64_t) rand() << 32 | rand();
-#elif PLATFORM == OS_X
+#elif defined(OS_X)
 	return (uint64_t) arc4random() << 32 | arc4random();
-#elif PLATFORM == WINDOWS
+#elif defined(WINDOWS)
 	return (uint64_t) rand() << 32 | rand();
 #endif
 }
