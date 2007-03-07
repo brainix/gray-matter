@@ -43,34 +43,15 @@ typedef pthread_cond_t cond_t;
 typedef HANDLE thread_t;
 typedef DWORD (*entry_t)(LPVOID arg);
 typedef CRITICAL_SECTION mutex_t;
-
 typedef struct
 {
-	// Number of waiting threads.
-	int waiters_count;
-
-	// Serialize access to <waiters_count_>.
-	CRITICAL_SECTION waiters_count_lock;
-
-	// Semaphore used to queue up threads waiting for the condition to
-	// become signaled. 
-	HANDLE sem;
-
-	// An auto-reset event used by the broadcast/signal thread to wait
-	// for all the waiting thread(s) to wake up and be released from the
-	// semaphore. 
-	HANDLE waiters_done;
-
-	// Keeps track of whether we were broadcasting or signaling.  This
-	// allows us to optimize the code if we're just signaling.
-	size_t was_broadcast;
+	CRITICAL_SECTION waiters_count_lock; // Serializes access to <waiters_count_>.
+	int waiters_count;                   // Number of waiting threads.
+	HANDLE sem;                          // Semaphore used to queue up threads waiting for the condition to become signaled. 
+	HANDLE waiters_done;                 // An auto-reset event used by the broadcast/signal thread to wait for all the waiting threads to wake up and be released from the semaphore. 
+	size_t was_broadcast;                // Keeps track of whether we were broadcasting or signaling.  This allows us to optimize the code if we're just signaling.
 } cond_t;
 
-#endif
-
-#ifdef __cplusplus
-extern "C"
-{
 #endif
 
 int thread_create(thread_t *thread, entry_t entry, void *arg);
@@ -88,9 +69,5 @@ int cond_wait(cond_t *cv, mutex_t *m);
 int cond_signal(cond_t *cv);
 int cond_broadcast(cond_t *cv);
 int cond_destroy(cond_t *cv);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

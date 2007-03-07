@@ -135,7 +135,7 @@ int cond_init(pthread_cond_t *cv, void *attr)
 #elif defined(WINDOWS)
 	cv->waiters_count = 0;
 	cv->was_broadcast = 0;
-	cv->sem = CreatedSemaphore(NULL, 0, 0x7fffffff, NULL);
+	cv->sem = CreatedSemaphore(NULL, 0, 0x7FFFFFFF, NULL);
 	InitializeCriticalSection(&cv->waiters_count_lock);
 	cv->waiters_done = CreateEvent(NULL, FALSE, FALSE, NULL);
 #endif
@@ -256,6 +256,8 @@ int cond_destroy(pthread_cond_t *cv)
 #if defined(LINUX) || defined(OS_X)
 	pthread_cond_destroy(cv);
 #elif defined(WINDOWS)
+	CloseHandle(cv->waiters_done);
+	DeleteCriticalSection(&cv->waiters_count_lock);
 #endif
 	return 1;
 }
