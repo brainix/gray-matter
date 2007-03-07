@@ -46,7 +46,7 @@ public:
 	void store(bitboard_t hash, move_t move, int depth, int type);
 private:
 	xboard *xboard_ptr; // Chess Engine Communication Protocol object.
-	uint64_t entries;   //
+	uint64_t slots;     //
 	slot_t **data;      //
 };
 
