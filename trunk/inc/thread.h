@@ -23,8 +23,21 @@
  |	Boston MA 02111-1307
  */
 
+/*
+ | This is our cross-platform multithreading library.  All of these data types
+ | and functions are defined twice: once for POSIX, again for Win32.
+ */
+
 #ifndef THREAD_H
 #define THREAD_H
+
+/*
+ | As a standard, these functions return -1 to indicate critical error, 0 to
+ | indicate non-critical error, and 1 to indicate success.
+ */
+#define CRITICAL	-1
+#define NON_CRITICAL	 0
+#define SUCCESSFUL	 1
 
 #if defined(LINUX) || defined(OS_X)
 
