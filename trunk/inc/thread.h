@@ -27,9 +27,12 @@
  | This is our cross-platform multithreading library.  All of these data types
  | and functions are defined twice: once for POSIX, again for Win32.
  |
- | I wish that knucklehead Steve Ballmer could stop throwing chairs long enough
- | to make his thrice-damned operating system POSIX conformant like every other
- | operating system on this planet.
+ | Throughout this endeavor, I've learned that writing a multithreaded program
+ | for Windows is akin to building a Ferrari out of Duplo.  Sadly, the world is
+ | populated with toddlers with stubby fingers that are too clumsy to manipulate
+ | Lego.  I just wish that that knucklehead Steve Ballmer could stop throwing
+ | chairs long enough to make his thrice-damned operating system POSIX
+ | conformant like every other operating system on this planet.  I hate myself.
  */
 
 #ifndef THREAD_H
@@ -65,7 +68,7 @@ typedef struct
 	int count;             // Number of waiting threads.
 	HANDLE sema;           // Queue of waiting threads.
 	HANDLE done;           // Whether all waiting threads have woken up.
-	BOOL bcast;            // Whether we were broadcasting or signaling.
+	BOOL bcast;            // TRUE if broadcasting, FALSE if signaling.
 } cond_t;
 
 #endif
