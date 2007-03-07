@@ -28,19 +28,13 @@
 
 #if defined(LINUX) || defined(OS_X)
 
-#include <pthread.h>
 #include <errno.h>
+#include <pthread.h>
 
 typedef pthread_t tid_t;
 typedef void *(*thread_entry)(void *arg);
 typedef pthread_mutex_t mutex_t;
-
-#define cond_t pthread_cond_t
-#define cond_init pthread_cond_init
-#define cond_destroy pthread_cond_destroy
-#define cond_wait pthread_cond_wait
-#define cond_signal pthread_cond_signal
-#define cond_broadcast pthread_cond_broadcast
+typedef pthread_cond_t cond_t
 
 #elif defined(WINDOWS)
 
@@ -60,7 +54,7 @@ typedef struct
 
 	// Semaphore used to queue up threads waiting for the condition to
 	// become signaled. 
-	HANDLE sema;
+	HANDLE sem;
 
 	// An auto-reset event used by the broadcast/signal thread to wait
 	// for all the waiting thread(s) to wake up and be released from the
@@ -79,23 +73,21 @@ extern "C"
 {
 #endif
 
-int thread_create(tid_t *tid, thread_entry fnEntry, void *arg);
+int thread_create(tid_t *tid, thread_entry entry, void *arg);
 void thread_exit();
 int thread_wait(tid_t *tid);
 
 int mutex_init(mutex_t *m);
 int mutex_lock(mutex_t *m);
-int mutex_try_lock(mutex_t *m);
 int mutex_unlock(mutex_t *m);
+int mutex_try_lock(mutex_t *m);
 int mutex_destroy(mutex_t *m);
 
-#if defined(WINDOWS)
 int cond_init(cond_t *cv, void *attr);
-int cond_destroy(cond_t *cv);
 int cond_wait(cond_t *cv, mutex_t *m);
 int cond_signal(cond_t *cv);
 int cond_broadcast(cond_t *cv);
-#endif
+int cond_destroy(cond_t *cv);
 
 #ifdef __cplusplus
 }
