@@ -139,10 +139,13 @@ void xboard::print_result(move_t m)
 {
 	if (m.value == -WEIGHT_KING)
 	{
-		/* Bloody hell.  At this point, even our best response leads to
-		 * a loss; there's no hope.  We might as well take it like
-		 * samurais and eviscerate ourselves.  If our opponent has
-		 * offered a draw, accept it.  Otherwise, resign. */
+		/*
+		 | Bloody hell.  At this point, even our best response leads to
+		 | a loss; there's no hope.  We might as well take it like
+		 | samurais and eviscerate ourselves.  If our opponent has
+		 | offered a draw, accept it.  Otherwise, resign.  I hate
+		 | myself.
+		 */
 		if (draw)
 			printf("offer draw\n");
 		else
@@ -189,17 +192,17 @@ void xboard::do_xboard() const
 \*----------------------------------------------------------------------------*/
 void xboard::do_protover() const
 {
-	printf("feature ping=1\n");
-	printf("feature playother=1\n");
-	printf("feature usermove=1\n");
-	printf("feature time=0\n");
-	printf("feature draw=1\n");
-	printf("feature sigint=0\n");
-	printf("feature analyze=0\n");
-	printf("feature myname=\"Gray Matter\"\n");
-	printf("feature variants=\"normal\"\n");
-	printf("feature colors=0\n");
-	printf("feature done=1\n");
+	printf("feature ping=1\n");                 //
+	printf("feature playother=1\n");            //
+	printf("feature usermove=1\n");             //
+	printf("feature time=0\n");                 //
+	printf("feature draw=1\n");                 //
+	printf("feature sigint=0\n");               //
+	printf("feature analyze=0\n");              //
+	printf("feature myname=\"Gray Matter\"\n"); //
+	printf("feature variants=\"normal\"\n");    //
+	printf("feature colors=0\n");               //
+	printf("feature done=1\n");                 //
 }
 
 /*----------------------------------------------------------------------------*\
