@@ -4,6 +4,8 @@
 #	Copyright © 2005-2007, The Gray Matter Team, original authors.	       #
 #==============================================================================#
 
+# Your operating system.  This must be LINUX, OS_X, or WINDOWS.
+# BSD is based on OS X.  If you insist on running BSD, set this to OS_X.  ;-)
 PLAT = LINUX
 
 CXX  = g++
