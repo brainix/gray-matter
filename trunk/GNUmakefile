@@ -22,6 +22,7 @@ OBJS = bin/board.o   \
        bin/main.o    \
        bin/search.o  \
        bin/table.o   \
+       bin/thread.o   \
        bin/xboard.o
 
 all : bin/gray

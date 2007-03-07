@@ -34,6 +34,7 @@ using namespace std;
 /* Default Gray Matter stuff: */
 #include "config.h"
 #include "types.h"
+#include "thread.h"
 
 /* Extra Gray Matter stuff: */
 #include "xboard.h"
@@ -56,7 +57,7 @@ public:
 	static void handle(int num);
 	void clear() const;
 	move_t get_hint() const;
-	pthread_t get_thread() const;
+	tid_t get_thread() const;
 	void set_time(int t);
 	void set_depth(int d);
 	void set_output(bool o);
