@@ -5,17 +5,17 @@
 #==============================================================================#
 
 # Platforms:
-PLATFORM  = LINUX
-#PLATFORM = OS_X
-#PLATFORM = WINDOWS
+PLAT = LINUX
+PLAT = OS_X
+PLAT = WINDOWS
 
-CXX  = g++                      # C++ compiler
-LANG = -ansi                    # Language options
-WARN = -Wall -Werror            # Warning options
-OPTI = -O3 -fomit-frame-pointer # Optimization options
-PREP = -D$(PLATFORM)            # Preprocessor options
-LINK = -lpthread                # Linker options
-DIR  = -Iinc                    # Directory options
+CXX  = g++
+LANG = -ansi
+WARN = -Wall -Werror
+OPTI = -O3 -fomit-frame-pointer
+PREP = -D$(PLAT)
+LINK = -lpthread
+DIR  = -Iinc
 
 OBJS = bin/board.o   \
        bin/history.o \
