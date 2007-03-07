@@ -131,7 +131,7 @@ int mutex_destroy(mutex_t *m)
 int cond_init(pthread_cond_t *cv, void *attr)
 {
 #if defined(LINUX) || defined(OS_X)
-	pthread_cond_init(cv, attr);
+	pthread_cond_init(cv, (pthread_condattr_t *) attr);
 #elif defined(WINDOWS)
 	cv->waiters_count = 0;
 	cv->was_broadcast = 0;
