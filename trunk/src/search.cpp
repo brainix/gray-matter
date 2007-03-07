@@ -55,7 +55,7 @@ search::search(xboard *x, table *t, history *h)
 
 	mutex_init(&mutex);
 	cond_init(&cond, NULL);
-	thread_create(&thread, (thread_entry) start, this);
+	thread_create(&thread, (entry_t) start, this);
 }
 
 /*----------------------------------------------------------------------------*\

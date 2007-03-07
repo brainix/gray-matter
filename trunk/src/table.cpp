@@ -38,11 +38,11 @@ table::table(xboard *x, int mb)
 
 	try
 	{
-		if ((entries = mb * MB / sizeof(entry_t)) == 0)
+		if ((entries = mb * MB / sizeof(slot_t)) == 0)
 			throw;
-		data = new entry_t *[POLICIES];
+		data = new slot_t *[POLICIES];
 		for (int policy = DEEP; policy <= FRESH; policy++)
-			data[policy] = new entry_t[entries / 2];
+			data[policy] = new slot_t[entries / 2];
 	}
 	catch (...)
 	{
