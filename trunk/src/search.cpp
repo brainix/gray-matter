@@ -401,7 +401,8 @@ move_t search::negascout(int depth, int alpha, int beta)
 			 | search from this position determined this move to be
 			 | best.  In this search, this move could be good too.
 			 | Give it a high score to force it to the front of the
-			 | list to score it first.
+			 | list to score it first to (hopefully) cause an
+			 | earlier cutoff.
 			 */
 			it->value = WEIGHT_KING;
 		else
