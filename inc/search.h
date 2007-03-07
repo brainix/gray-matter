@@ -36,13 +36,15 @@ using namespace std;
 #include "types.h"
 
 /* Extra Gray Matter stuff: */
-#include "board.h"
-#include "history.h"
-#include "table.h"
 #include "xboard.h"
+#include "table.h"
+#include "history.h"
+#include "board.h"
 
-/* Forward declaration of xboard class to avoid recursive dependency: */
+/* Forward declarations: */
 class xboard;
+class table;
+class history;
 
 class search
 {
