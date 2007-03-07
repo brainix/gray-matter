@@ -2,7 +2,6 @@
  |	search.cpp - move search implementation				      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
- |		All rights reserved.					      |
 \*----------------------------------------------------------------------------*/
 
 /*
@@ -37,7 +36,7 @@ bool timeout;          // Whether to stop thinking or pondering.
 /*----------------------------------------------------------------------------*\
  |				    search()				      |
 \*----------------------------------------------------------------------------*/
-search::search()
+search::search(xboard *x, table *t, history *h)
 {
 
 /* Constructor. */
@@ -45,6 +44,10 @@ search::search()
 	max_time = INT_MAX;
 	max_depth = DEPTH;
 	output = false;
+
+	xboard_ptr = x;
+	table_ptr = t;
+	history_ptr = h;
 
 #if PLATFORM == LINUX || PLATFORM == OS_X
 	signal(SIGALRM, handle);
@@ -102,16 +105,6 @@ void search::handle(int num)
 /* The alarm has sounded.  Handle it. */
 
 	timeout = true;
-}
-
-/*----------------------------------------------------------------------------*\
- |				     bind()				      |
-\*----------------------------------------------------------------------------*/
-void search::bind(table *t, history *h, xboard *x)
-{
-	table_ptr = t;
-	history_ptr = h;
-	xboard_ptr = x;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -258,14 +251,17 @@ void search::change(int s, const board& now)
 void search::iterate(int s)
 {
 
-/* Perform iterative deepening.  This method handles both thinking (on our own
- * time) and pondering (on our opponent's time) since they're so similar. */
+/*
+ | Perform iterative deepening.  This method handles both thinking (on our own
+ | time) and pondering (on our opponent's time) since they're so similar.
+ */
 
-	/* Initialize the number of nodes searched and note the start time. */
+	/*
+	 | Initialize the number of nodes searched and note the start time.  If
+	 | we're to think, set the alarm.
+	 */
 	nodes = 0;
 	clock_t start = clock();
-
-	/* If we're to think, set the alarm. */
 	if (s == THINKING)
 	{
 #if PLATFORM == LINUX || PLATFORM == OS_X
@@ -279,30 +275,38 @@ void search::iterate(int s)
 #endif
 	}
 
-	/* Perform iterative deepening until the alarm has sounded (if we're
-	 * thinking), our opponent has moved (if we're pondering), or we've
-	 * reached the maximum depth (either way). */
+	/*
+	 | Perform iterative deepening until the alarm has sounded (if we're
+	 | thinking), our opponent has moved (if we're pondering), or we've
+	 | reached the maximum depth (either way).
+	 */
 	b.lock();
 	for (int depth = 0; depth <= max_depth; depth++)
 	{
 		negascout(depth, -WEIGHT_KING, WEIGHT_KING);
 		if (timeout && depth)
-			/* Oops.  The alarm has interrupted this iteration; the
-			 * current results are incomplete and unreliable.  Go
-			 * with the last iteration's results. */
+			/*
+			 | Oops.  The alarm has interrupted this iteration; the
+			 | current results are incomplete and unreliable.  Go
+			 | with the last iteration's results.
+			 */
 			break;
 		extract(s);
 		if (output)
 			xboard_ptr->print_output(depth + 1, pv.front().value, (clock() - start) / CLOCKS_PER_SEC, nodes, pv);
 		if (pv.front().value == WEIGHT_KING || pv.front().value == -WEIGHT_KING)
-			/* Oops.  The game will be over at this depth.  There's
-			 * no point in searching deeper. */
+			/*
+			 | Oops.  The game will be over at this depth.  There's
+			 | no point in searching deeper.
+			 */
 			break;
 	}
 	b.unlock();
 
-	/* If we've just finished thinking, clear the alarm and inform XBoard of
-	 * our favorite move. */
+	/*
+	 | If we've just finished thinking, clear the alarm and inform XBoard of
+	 | our favorite move.
+	 */
 	if (s == THINKING)
 	{
 #if PLATFORM == LINUX || PLATFORM == OS_X
@@ -335,10 +339,10 @@ move_t search::negascout(int depth, int alpha, int beta)
  | On top of NegaMax, this method implements the NegaScout algorithm.  NegaScout
  | assumes the first node is in the principal variation and searches this node
  | with a full alpha-beta window.  NegaScout tests its assumption by searching
- | the rest of the nodes with a null window where alpha and beta are equal.  If
- | the test fails, NegaScout assumes the node at which it failed is in the
- | principal variation and so on.  NegaScout works best when there is good move
- | re-ordering and typically yields a 10% performance increase.
+ | the rest of the nodes with a minimal (scout) window where alpha and beta are
+ | close in value.  If the test fails, NegaScout assumes the node at which it
+ | failed is in the principal variation and so on.  NegaScout works best when
+ | there is good move ordering and typically yields a 10% performance increase.
  */
 
 	list<move_t> l;
@@ -348,16 +352,20 @@ move_t search::negascout(int depth, int alpha, int beta)
 	bool whose = b.get_whose();
 	bitboard_t hash = b.get_hash();
 
-	/* Before anything else, do some Research Re: search & Research.  ;-)
-	 * (Apologies to Aske Plaat.)  If we've already sufficiently examined
-	 * this position, return the best move from our previous search. */
+	/*
+	 | Before anything else, do some Research Re: search & Research.  ;-)
+	 | (Apologies to Aske Plaat.)  If we've already sufficiently examined
+	 | this position, return the best move from our previous search.
+	 */
 	if (table_ptr->probe(hash, &m, depth, alpha, beta) != USELESS)
 		return m;
 
-	/* If this position is terminal (the end of the game), there's no legal
-	 * move.  All we have to do is determine if the game is drawn or lost.
-	 * Check for this case.  Subtle!  We couldn't have just won because our
-	 * opponent moved last. */
+	/*
+	 | If this position is terminal (the end of the game), there's no legal
+	 | move.  All we have to do is determine if the game is drawn or lost.
+	 | Check for this case.  Subtle!  We couldn't have just won because our
+	 | opponent moved last.
+	 */
 	switch (b.get_status(false))
 	{
 		case IN_PROGRESS:
@@ -373,13 +381,28 @@ move_t search::negascout(int depth, int alpha, int beta)
 			return m;
 	}
 
-	/* Generate and re-order the move list. */
+	/*
+	 | Generate and re-order the move list.  The board class already
+	 | generates the list in an order: pawn captures and promotions, knight
+	 | captures, bishop captures, rook captures, queen captures, king
+	 | captures, king moves, queen moves, rook moves, bishop moves, knight
+	 | moves, and pawn moves.  Here, we assign preliminary scores to the
+	 | moves, sort by those scores, and hope the STL's sort algorithm is
+	 | stable (so as not to disturb the board class' move ordering).  ;-)
+	 */
 	nodes++;
 	b.generate(l);
 	for (it = l.begin(); it != l.end(); it++)
 		if (it->old_x == m.old_x && it->old_y == m.old_y &&
 		    it->new_x == m.new_x && it->new_y == m.new_y &&
 		    it->promo == m.promo)
+			/*
+			 | According to the transposition table, a previous
+			 | search from this position determined this move to be
+			 | best.  In this search, this move could be good too.
+			 | Give it a high score to force it to the front of the
+			 | list to search it first.
+			 */
 			it->value = WEIGHT_KING;
 		else
 			it->value = history_ptr->probe(whose, *it);
@@ -394,7 +417,7 @@ move_t search::negascout(int depth, int alpha, int beta)
 			it->value = b.evaluate();
 		else
 		{
-			/* Recursive case: null window. */
+			/* Recursive case: minimal (scout) window. */
 			if (type == EXACT)
 				it->value = -negascout(depth - 1, -alpha - WEIGHT_PAWN, -alpha).value;
 			/* Recursive case: full alpha-beta window. */

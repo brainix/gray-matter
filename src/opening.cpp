@@ -2,7 +2,6 @@
  |	opening.cpp - opening book implementation			      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
- |		All rights reserved.					      |
 \*----------------------------------------------------------------------------*/
 
 /*
@@ -28,10 +27,11 @@
 #include "opening.h"
 
 /*----------------------------------------------------------------------------*\
- |				     bind()				      |
+ |				   opening()				      |
 \*----------------------------------------------------------------------------*/
-void opening::bind(table *t)
+opening::opening(xboard *x, table *t)
 {
+	xboard_ptr = x;
 	table_ptr = t;
 }
 
@@ -42,7 +42,7 @@ void opening::read()
 {
 	file.open(BOOK);
 	if (file.fail())
-		return;
+		xboard_ptr->vomit("Couldn't find opening book.");
 
 	file.close();
 }

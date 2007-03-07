@@ -2,7 +2,6 @@
  |	board.h - board representation interface			      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
- |		All rights reserved.					      |
 \*----------------------------------------------------------------------------*/
 
 /*

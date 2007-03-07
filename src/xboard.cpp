@@ -2,7 +2,6 @@
  |	xboard.cpp - Chess Engine Communication Protocol implementation	      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
- |		All rights reserved.					      |
 \*----------------------------------------------------------------------------*/
 
 /*
@@ -46,18 +45,24 @@ xboard::xboard()
 }
 
 /*----------------------------------------------------------------------------*\
- |				     bind()				      |
+ |				    vomit()				      |
 \*----------------------------------------------------------------------------*/
-void xboard::bind(class search *s)
+void xboard::vomit(char *message) const
 {
-	search_ptr = s;
+
+/* Houston, we have a problem... */
+
+	printf("tellusererror %s\n", message);
+	exit(EXIT_FAILURE);
 }
 
 /*----------------------------------------------------------------------------*\
  |				     loop()				      |
 \*----------------------------------------------------------------------------*/
-void xboard::loop()
+void xboard::loop(class search *s)
 {
+	search_ptr = s;
+
 	for (fgets(s, 80, stdin); strncmp(s, "quit", 4); fgets(s, 80, stdin))
 	{
 		if (!strncmp(s, "xboard", 6))
@@ -170,18 +175,6 @@ void xboard::print_move(move_t m) const
 		case ROOK   : printf("r"); break;
 		case QUEEN  : printf("q"); break;
 	}
-}
-
-/*----------------------------------------------------------------------------*\
- |				    vomit()				      |
-\*----------------------------------------------------------------------------*/
-void xboard::vomit(char *message) const
-{
-
-/* Houston, we have a problem... */
-
-	printf("tellusererror %s\n", message);
-	exit(EXIT_FAILURE);
 }
 
 /*----------------------------------------------------------------------------*\

@@ -2,7 +2,6 @@
  |	opening.h - opening book interface				      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
- |		All rights reserved.					      |
 \*----------------------------------------------------------------------------*/
 
 /*
@@ -43,13 +42,14 @@ using namespace std;
 class opening
 {
 public:
-	void bind(table *t);
+	opening(xboard *x, table *t);
 	void read();
 private:
 	ifstream file;
 
-	board b;          // Board representation object.
-	table *table_ptr; // Transposition table object.
+	board b;            // Board representation object.
+	xboard *xboard_ptr; // Chess Engine Communication Protocol object.
+	table *table_ptr;   // Transposition table object.
 };
 
 #endif
