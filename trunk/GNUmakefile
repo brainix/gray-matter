@@ -6,8 +6,8 @@
 
 # Platforms:
 PLAT = LINUX
-PLAT = OS_X
-PLAT = WINDOWS
+#PLAT = OS_X
+#PLAT = WINDOWS
 
 CXX  = g++
 LANG = -ansi
