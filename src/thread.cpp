@@ -139,13 +139,13 @@ int cond_init(cond_t *cond, void *attr)
 #if defined(LINUX) || defined(OS_X)
 	return pthread_cond_init(cond, (pthread_condattr_t *) attr) ? -1 : 1;
 #elif defined(WINDOWS)
+	InitializeCriticalSection(&cond->lock);
 	cond->count = 0;
-	cond->bcast = 0;
 	if ((cond->sema = CreateSemaphore(NULL, 0, 0x7FFFFFFF, NULL)) == NULL)
 		return -1;
-	InitializeCriticalSection(&cond->lock);
 	if ((cond->done = CreateEvent(NULL, FALSE, FALSE, NULL)) == NULL)
 		return -1;
+	cond->bcast = FALSE;
 	return 1;
 #endif
 }
@@ -158,42 +158,21 @@ int cond_wait(cond_t *cond, mutex_t *mutex)
 #if defined(LINUX) || defined(OS_X)
 	return pthread_cond_wait(cond, mutex) ? -1 : 1;
 #elif defined(WINDOWS)
-	// Avoid race conditions.
 	EnterCriticalSection(&cond->lock);
 	cond->count++;
 	LeaveCriticalSection(&cond->lock);
 
-	// This call atomically releases the mutex and waits on the
-	// semaphore until <pthread_cond_signal> or <pthread_cond_broadcast>
-	// are called by another thread.
 	if (SignalObjectAndWait(*mutex, cond->sema, INFINITE, FALSE) == WAIT_FAILED)
 		return -1;
 
-	// Reacquire lock to avoid race conditions.
 	EnterCriticalSection(&cond->lock);
-
-	// We're no longer waiting...
-	cond->count--;
-
-	// Check to see if we're the last waiter after <pthread_cond_broadcast>.
-	int last_waiter = cond->bcast && cond->count == 0;
-
+	BOOL waiters = --cond->count || !cond->bcast;
 	LeaveCriticalSection(&cond->lock);
 
-	// If we're the last waiter thread during this particular broadcast
-	// then let all the other threads proceed.
-	if (last_waiter)
-	{
-		// Call atomically signals the <waiters_done> event and waits until
-		// it can acquire the <external_mutex>.  Required to ensure fairness. 
-		if (SignalObjectAndWait (cond->done, *mutex, INFINITE, FALSE) == WAIT_FAILED)
-			return -1;
-	}
-	else
-		// Always regain the external mutex since that's the guarantee we
-		// give to our callers. 
-		if (WaitForSingleObject(*mutex) == WAIT_FAILED)
-			return -1;
+	if (!waiters && SignalObjectAndWait(cond->done, *mutex, INFINITE, FALSE) == WAIT_FAILED)
+		return -1;
+	if (waiters && WaitForSingleObject(*mutex) == WAIT_FAILED)
+		return -1;
 	return 1;
 #endif
 }
@@ -207,11 +186,11 @@ int cond_signal(cond_t *cond)
 	return pthread_cond_signal(cond) ? -1 : 1;
 #elif defined(WINDOWS)
 	EnterCriticalSection(&cond->lock);
-	int have_waiters = cond->count > 0;
+	BOOL waiters = cond->count;
 	LeaveCriticalSection(&cond->lock);
-	if (have_waiters)
-		if (!ReleaseSemaphore(cond->sema, 1, 0))
-			return -1;
+
+	if (waiters && !ReleaseSemaphore(cond->sema, 1, 0))
+		return -1;
 	return 1;
 #endif
 }
@@ -224,35 +203,23 @@ int cond_broadcast(cond_t *cond)
 #if defined(LINUX) || defined(OS_X)
 	return pthread_cond_broadcast(cond) ? -1 : 1;
 #elif defined(WINDOWS)
-	// This is needed to ensure that <waiters_count_> and <was_broadcast_> are
-	// consistent relative to each other.
+	BOOL waiters = FALSE;
+
 	EnterCriticalSection(&cond->lock);
-	int have_waiters = 0;
-
-	if (cond->count > 0)
+	if (cond->count)
 	{
-		// We are broadcasting, even if there is just one waiter...
-		// Record that we are broadcasting, which helps optimize
-		// <pthread_cond_wait> for the non-broadcast case.
-		cond->bcast = 1;
-		have_waiters = 1;
-	}
-
-	if (have_waiters)
-		// Wake up all the waiters atomically.
 		if (!ReleaseSemaphore(cond->sema, cond->count, 0))
 			return -1;
-
+		cond->bcast = TRUE;
+		waiters = TRUE;
+	}
 	LeaveCriticalSection(&cond->lock);
 
-	if (have_waiters)
-		// Wait for all the awakened threads to acquire the counting
-		// semaphore. 
+	if (waiters)
+	{
 		if (WaitForSingleObject(cond->done, INFINITE) == WAIT_FAILED)
 			return -1;
-		// This assignment is okay, even without the <waiters_count_lock_> held 
-		// because no other waiter threads can wake up to access it.
-		cond->bcast = 0;
+		cond->bcast = FALSE;
 	}
 	return 1;
 #endif
