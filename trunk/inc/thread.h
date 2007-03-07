@@ -34,7 +34,7 @@
 typedef pthread_t tid_t;
 typedef void *(*thread_entry)(void *arg);
 typedef pthread_mutex_t mutex_t;
-typedef pthread_cond_t cond_t
+typedef pthread_cond_t cond_t;
 
 #elif defined(WINDOWS)
 
