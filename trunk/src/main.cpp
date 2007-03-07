@@ -23,15 +23,18 @@
  |	Boston MA 02111-1307
  */
 
+/* C stuff: */
 #include "gray.h"
-#include "board.h"
+
+/* Default Gray Matter stuff: */
 #include "config.h"
-#include "history.h"
-#include "opening.h"
-#include "search.h"
-#include "table.h"
 #include "types.h"
+
+/* Extra Gray Matter stuff: */
 #include "xboard.h"
+#include "table.h"
+#include "history.h"
+#include "search.h"
 
 /* Global variables: */
 int mb = TABLE_MB; // The size of the transposition (in megabytes).
