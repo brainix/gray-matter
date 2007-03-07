@@ -44,7 +44,7 @@ int thread_exit()
 {
 #if defined(LINUX) || defined(OS_X)
 	pthread_exit(NULL);
-#elif defined(WINDOWS)
+#elif defined(WINDOWS) && !defined(__cplusplus)
 	ExitThread(0);
 #endif
 	return -1;
