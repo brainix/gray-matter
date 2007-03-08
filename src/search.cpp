@@ -451,8 +451,11 @@ move_t search::negascout(int depth, int alpha, int beta)
 			m = *it;
 	}
 
-	table_ptr->store(hash, m, depth, type);
-	history_ptr->store(whose, m, depth);
+	if (!timeout)
+	{
+		table_ptr->store(hash, m, depth, type);
+		history_ptr->store(whose, m, depth);
+	}
 	return m;
 }
 
