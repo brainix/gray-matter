@@ -357,8 +357,16 @@ move_t search::negascout(int depth, int alpha, int beta)
 	 | Before anything else, do some Research Re: search & Research.  ;-)
 	 | (Apologies to Aske Plaat.)  If we've already sufficiently examined
 	 | this position, return the best move from our previous search.
+	 | Otherwise, if we can, reduce the size of our alpha-beta window.
 	 */
-	if (table_ptr->probe(hash, &m, depth, alpha, beta) != USELESS)
+	switch (table_ptr->probe(hash, &m, depth, alpha, beta))
+	{
+		case USELESS :                  break;
+		case   ALPHA : alpha = m.value; break;
+		case    BETA :  beta = m.value; break;
+		case   EXACT :                  return m;
+	}
+	if (alpha >= beta)
 		return m;
 
 	/*
