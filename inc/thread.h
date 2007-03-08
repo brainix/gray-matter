@@ -45,8 +45,8 @@
 
 #if defined(LINUX) || defined(OS_X)
 
-#include <errno.h>
 #include <pthread.h>
+#include <errno.h>
 
 /* Data types: */
 typedef pthread_t thread_t;
