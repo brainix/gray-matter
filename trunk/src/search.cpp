@@ -49,10 +49,7 @@ search::search(xboard *x, table *t, history *h)
 	table_ptr = t;
 	history_ptr = h;
 
-#if defined(LINUX) || defined(OS_X)
-	signal(SIGALRM, handle);
-#endif
-
+	timer_function(handle);
 	mutex_init(&mutex);
 	cond_init(&cond, NULL);
 	thread_create(&thread, (entry_t) start, this);
@@ -99,7 +96,7 @@ class search& search::operator=(const search& that)
 /*----------------------------------------------------------------------------*\
  |				    handle()				      |
 \*----------------------------------------------------------------------------*/
-void search::handle(int num)
+void search::handle()
 {
 
 /* The alarm has sounded.  Handle it. */
