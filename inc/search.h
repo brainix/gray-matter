@@ -54,7 +54,7 @@ public:
 	search(xboard *x, table *t, history *h);
 	~search();
 	search& operator=(const search& that);
-	static void handle(int num);
+	static void handle();
 	void clear() const;
 	move_t get_hint() const;
 	thread_t get_thread() const;
