@@ -33,7 +33,7 @@ int thread_create(thread_t *thread, entry_t entry, void *arg)
 #if defined(LINUX) || defined(OS_X)
 	return pthread_create(thread, NULL, entry, arg) ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
-	return (*thread = CreateThread(NULL, 0, entry, 0, NULL)) == NULL ? CRITICAL : SUCCESSFUL;
+	return (*thread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)entry, NULL, 0, NULL)) == NULL ? CRITICAL : SUCCESSFUL;
 #endif
 }
 
@@ -70,7 +70,8 @@ int mutex_init(mutex_t *mutex)
 #if defined(LINUX) || defined(OS_X)
 	return pthread_mutex_init(mutex, NULL) ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
-	InitializeCriticalSection(mutex);
+	*mutex = CreateMutex(NULL, FALSE, NULL);
+	//InitializeCriticalSection(mutex);
 	return SUCCESSFUL;
 #endif
 }
@@ -88,7 +89,8 @@ int mutex_try_lock(mutex_t *mutex)
 		case 0     : return SUCCESSFUL;
 	}
 #elif defined(WINDOWS)
-	return !TryEnterCriticalSection(mutex) ? NON_CRITICAL : SUCCESSFUL;
+	//return !TryEnterCriticalSection(mutex) ? NON_CRITICAL : SUCCESSFUL;
+	return WaitForSingleObject(*mutex, 0) == WAIT_TIMEOUT ? 0 : 1;
 #endif
 }
 
@@ -100,8 +102,8 @@ int mutex_lock(mutex_t *mutex)
 #if defined(LINUX) || defined(OS_X)
 	return pthread_mutex_lock(mutex) ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
-	EnterCriticalSection(mutex);
-	return SUCCESSFUL;
+	//EnterCriticalSection(mutex);
+	return WaitForSingleObject(*mutex, INFINITE) == WAIT_FAILED ? CRITICAL : SUCCESSFUL;
 #endif
 }
 
@@ -113,8 +115,8 @@ int mutex_unlock(mutex_t *mutex)
 #if defined(LINUX) || defined(OS_X)
 	return pthread_mutex_unlock(mutex) ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
-	LeaveCriticalSection(mutex);
-	return SUCCESSFUL;
+	//LeaveCriticalSection(mutex);
+	return ReleaseMutex(*mutex) ? SUCCESSFUL : CRITICAL;
 #endif
 }
 
@@ -126,8 +128,8 @@ int mutex_destroy(mutex_t *mutex)
 #if defined(LINUX) || defined(OS_X)
 	return pthread_mutex_destroy(mutex) ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
-	DeleteCriticalSection(mutex);
-	return SUCCESSFUL;
+	//DeleteCriticalSection(mutex);
+	return CloseHandle(*mutex) ? SUCCESSFUL : CRITICAL;
 #endif
 }
 
@@ -171,7 +173,7 @@ int cond_wait(cond_t *cond, mutex_t *mutex)
 
 	if (!waiter && SignalObjectAndWait(cond->done, *mutex, INFINITE, FALSE) == WAIT_FAILED)
 		return CRITICAL;
-	if (waiter && WaitForSingleObject(*mutex) == WAIT_FAILED)
+	if (waiter && WaitForSingleObject(*mutex, INFINITE) == WAIT_FAILED)
 		return CRITICAL;
 	return SUCCESSFUL;
 #endif
