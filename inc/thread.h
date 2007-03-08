@@ -45,8 +45,9 @@
 
 #if defined(LINUX) || defined(OS_X)
 
-#include <pthread.h>
 #include <errno.h>
+#include <pthread.h>
+#include <sys/time.h>
 
 /* Data types: */
 typedef pthread_t thread_t;
@@ -91,5 +92,9 @@ int cond_wait(cond_t *cond, mutex_t *mutex);
 int cond_signal(cond_t *cond);
 int cond_broadcast(cond_t *cond);
 int cond_destroy(cond_t *cond);
+
+/* Function prototypes related to timers: */
+int timer_function();
+int timer_set(int sec);
 
 #endif
