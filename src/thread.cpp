@@ -33,7 +33,7 @@ int thread_create(thread_t *thread, entry_t entry, void *arg)
 #if defined(LINUX) || defined(OS_X)
 	return pthread_create(thread, NULL, entry, arg) ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
-	return (*thread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)entry, arg, 0, NULL)) == NULL ? CRITICAL : SUCCESSFUL;
+	return (*thread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) entry, arg, 0, NULL)) == NULL ? CRITICAL : SUCCESSFUL;
 #endif
 }
 
