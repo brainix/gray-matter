@@ -238,3 +238,31 @@ int cond_destroy(cond_t *cond)
 	return SUCCESSFUL;
 #endif
 }
+
+/*----------------------------------------------------------------------------*\
+ |				timer_function()			      |
+\*----------------------------------------------------------------------------*/
+int timer_function()
+{
+#if defined(LINUX) || defined(OS_X)
+#elif defined(WINDOWS)
+#endif
+	return SUCCESSFUL;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				  timer_set()				      |
+\*----------------------------------------------------------------------------*/
+int timer_set(int sec)
+{
+#if defined(LINUX) || defined(OS_X)
+	struct itimerval itimerval;
+	itimerval.it_interval.tv_sec = 0;
+	itimerval.it_interval.tv_usec = 0;
+	itimerval.it_value.tv_sec = 0;
+	itimerval.it_value.tv_usec = sec;
+	return setitimer(ITIMER_REAL, &itimerval, NULL) == -1 ? CRITICAL : SUCCESSFUL;
+#elif defined(WINDOWS)
+	return SUCCESSFUL;
+#endif
+}
