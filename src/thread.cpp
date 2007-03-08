@@ -259,8 +259,8 @@ int timer_set(int sec)
 	struct itimerval itimerval;
 	itimerval.it_interval.tv_sec = 0;
 	itimerval.it_interval.tv_usec = 0;
-	itimerval.it_value.tv_sec = 0;
-	itimerval.it_value.tv_usec = sec;
+	itimerval.it_value.tv_sec = sec;
+	itimerval.it_value.tv_usec = 0;
 	return setitimer(ITIMER_REAL, &itimerval, NULL) == -1 ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
 	return SUCCESSFUL;

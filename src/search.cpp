@@ -264,17 +264,7 @@ void search::iterate(int s)
 	nodes = 0;
 	clock_t start = clock();
 	if (s == THINKING)
-	{
-#if defined(LINUX) || defined(OS_X)
-		struct itimerval itimerval;
-		itimerval.it_interval.tv_sec = 0;
-		itimerval.it_interval.tv_usec = 0;
-		itimerval.it_value.tv_sec = max_time;
-		itimerval.it_value.tv_usec = 0;
-		setitimer(ITIMER_REAL, &itimerval, NULL);
-#elif defined(WINDOWS)
-#endif
-	}
+		timer_set(max_time);
 
 	/*
 	 | Perform iterative deepening until the alarm has sounded (if we're
@@ -310,15 +300,7 @@ void search::iterate(int s)
 	 */
 	if (s == THINKING)
 	{
-#if defined(LINUX) || defined(OS_X)
-		struct itimerval itimerval;
-		itimerval.it_interval.tv_sec = 0;
-		itimerval.it_interval.tv_usec = 0;
-		itimerval.it_value.tv_sec = 0;
-		itimerval.it_value.tv_usec = 0;
-		setitimer(ITIMER_REAL, &itimerval, NULL);
-#elif defined(WINDOWS)
-#endif
+		timer_set(0);
 		if (status != QUITTING)
 			xboard_ptr->print_result(pv.front());
 	}
