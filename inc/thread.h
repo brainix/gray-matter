@@ -61,7 +61,7 @@ typedef pthread_cond_t cond_t;
 /* Data types: */
 typedef HANDLE thread_t;
 typedef DWORD (*entry_t)(LPVOID arg);
-typedef CRITICAL_SECTION mutex_t;
+typedef HANDLE mutex_t;
 typedef struct
 {
 	CRITICAL_SECTION lock; // Lock to protect count, bcast.
