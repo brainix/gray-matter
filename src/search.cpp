@@ -397,7 +397,7 @@ move_t search::negascout(int depth, int alpha, int beta)
 	 | captures, king moves, queen moves, rook moves, bishop moves, knight
 	 | moves, and pawn moves.  Here, we assign preliminary scores to the
 	 | moves, sort by those scores, and hope the STL's sort algorithm is
-	 | stable (so as not to disturb the board class' move ordering).  ;-)
+	 | stable so as not to disturb the board class' move ordering.  ;-)
 	 */
 	nodes++;
 	b.generate(l);
