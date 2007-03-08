@@ -239,14 +239,25 @@ int cond_destroy(cond_t *cond)
 #endif
 }
 
+void (*callback)();
+
+/*----------------------------------------------------------------------------*\
+ |				timer_handler()				      |
+\*----------------------------------------------------------------------------*/
+void timer_handler(int num)
+{
+	(*callback)();
+}
+
 /*----------------------------------------------------------------------------*\
  |				timer_function()			      |
 \*----------------------------------------------------------------------------*/
-int timer_function()
+int timer_function(void (*function)())
 {
 #if defined(LINUX) || defined(OS_X)
-#elif defined(WINDOWS)
+	signal(SIGALRM, timer_handler);
 #endif
+	callback = function;
 	return SUCCESSFUL;
 }
 

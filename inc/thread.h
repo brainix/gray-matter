@@ -94,7 +94,7 @@ int cond_broadcast(cond_t *cond);
 int cond_destroy(cond_t *cond);
 
 /* Function prototypes related to timers: */
-int timer_function();
+int timer_function(void (*function)());
 int timer_set(int sec);
 
 #endif
