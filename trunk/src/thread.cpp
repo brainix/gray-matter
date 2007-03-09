@@ -239,33 +239,35 @@ int cond_destroy(cond_t *cond)
 #endif
 }
 
+/* Global variables: */
 void (*callback)();
+#if defined(WINDOWS)
+HANDLE timer_id = INVALID_HANDLE_VALUE;
+#endif
 
 /*----------------------------------------------------------------------------*\
  |				timer_handler()				      |
 \*----------------------------------------------------------------------------*/
 #if defined(LINUX) || defined(OS_X)
-
 void timer_handler(int num)
-{
-	(*callback)();
-}
-
 #elif defined(WINDOWS)
-
-HANDLE timer_id = INVALID_HANDLE_VALUE;
-
 VOID CALLBACK timer_handler(LPVOID arg, DWORD timeLow, DWORD timeHigh)
+#endif
 {
+
+/* The alarm has sounded.  Call the previously specified function. */
+
 	(*callback)();
 }
-#endif
 
 /*----------------------------------------------------------------------------*\
  |				timer_function()			      |
 \*----------------------------------------------------------------------------*/
 int timer_function(void (*function)())
 {
+
+/* Specify the function to be called once the alarm has sounded. */
+
 #if defined(LINUX) || defined(OS_X)
 	signal(SIGALRM, timer_handler);
 #endif
@@ -273,12 +275,14 @@ int timer_function(void (*function)())
 	return SUCCESSFUL;
 }
 
-
 /*----------------------------------------------------------------------------*\
  |				  timer_set()				      |
 \*----------------------------------------------------------------------------*/
 int timer_set(int sec)
 {
+
+/* Set the alarm to sound after the specified number of seconds. */
+
 #if defined(LINUX) || defined(OS_X)
 	struct itimerval itimerval;
 	itimerval.it_interval.tv_sec = 0;
@@ -287,29 +291,32 @@ int timer_set(int sec)
 	itimerval.it_value.tv_usec = 0;
 	return setitimer(ITIMER_REAL, &itimerval, NULL) == -1 ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
-	if(timer_id == INVALID_HANDLE_VALUE) {
-		timer_id = CreateWaitableTimer(NULL, TRUE, NULL);
-		if(timer_id == NULL)
+	if (timer_id == INVALID_HANDLE_VALUE)
+		if ((timer_id = CreateWaitableTimer(NULL, TRUE, NULL)) == NULL)
 			return CRITICAL;
-	}
 	LARGE_INTEGER relTime;
 	/* negative means relative time in intervals of 100 nanoseconds */
 	relTime.QuadPart = -(sec * 10000000L); 
-	if(!SetWaitableTimer(timer_id, &relTime, 0, timer_handler, NULL, FALSE))
-		return CRITICAL;
-	return SUCCESSFUL;
+	return !SetWaitableTimer(timer_id, &relTime, 0, timer_handler, NULL, FALSE) ? CRITICAL : SUCCESSFUL;
 #endif
 }
 
 /*----------------------------------------------------------------------------*\
- |				  timer_stop()				      |
+ |				 timer_cancel()				      |
 \*----------------------------------------------------------------------------*/
-int timer_stop()
+int timer_cancel()
 {
-#if defined(LINUX) || defined(OS_X)
-#elif defined(WINDOWS)
-	CancelWaitableTimer(timer_id);
-#endif
-	return SUCCESSFUL;
-}
 
+/* Cancel any pending alarm. */
+
+#if defined(LINUX) || defined(OS_X)
+	struct itimerval itimerval;
+	itimerval.it_interval.tv_sec = 0;
+	itimerval.it_interval.tv_usec = 0;
+	itimerval.it_value.tv_sec = 0;
+	itimerval.it_value.tv_usec = 0;
+	return setitimer(ITIMER_REAL, &itimerval, NULL) == -1 ? CRITICAL : SUCCESSFUL;
+#elif defined(WINDOWS)
+	return !CancelWaitableTimer(timer_id) ? CRITICAL : SUCCESSFUL;
+#endif
+}

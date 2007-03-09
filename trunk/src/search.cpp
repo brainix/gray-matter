@@ -297,7 +297,7 @@ void search::iterate(int s)
 	 */
 	if (s == THINKING)
 	{
-		timer_set(0);
+		timer_cancel();
 		if (status != QUITTING)
 			xboard_ptr->print_result(pv.front());
 	}
