@@ -2,7 +2,7 @@
 
 = Compile =
 
-*cross-compilation*: It is extremely easy to build a win32 executable using MinGW's compiler utilities on a UNIX-like system.  First, you have to get MinGW installed for your system, then it's as simple as 'make -f WINmakefile' in gray-matter's root dir.
+On a Unix-like system, it's easy to use MinGW to cross-compile a Windows executable.  First, install MinGW on your system, then, in the *gray-matter/* directory, issue the following command: *make -f WINmakefile*
 
 *Gentoo Linux*: Follow the steps up to and including 'crossdev mingw32': [http://gentoo-wiki.com/HOWTO_MinGW]
 
