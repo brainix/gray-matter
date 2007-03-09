@@ -23,9 +23,7 @@
  |	Boston MA 02111-1307
  */
 
-/*
- | Windows insists on being included first.
- */
+/* Windows insists on feeling included by being included first. */
 #if defined(WINDOWS)
 #include <windows.h>
 #endif
