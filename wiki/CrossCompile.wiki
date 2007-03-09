@@ -1,0 +1,23 @@
+#summary How to cross-compile Gray Matter on Linux to run on Windows
+
+= Obtain =
+
+If you don't already have it, install Subversion.^1^  Then, type: *svn checkout http://gray-matter.googlecode.com/svn/trunk/ gray-matter*  Congratulations!  The Gray Matter source code is in the newly created *gray-matter/* directory.
+
+^1^ On Ubuntu, type: *sudo apt-get install subversion*  On Gentoo, type: *emerge subversion*
+
+= Compile =
+
+On Linux, it's easy to use MinGW to cross-compile a Windows executable.  If you don't already have it, install MinGW.^1^  Then, in the *gray-matter/* directory, type: *make -f WINmakefile*  Congratulations!  Your shiny, happy Windows executable is: *bin/gray.exe*
+
+^1^ On Ubuntu, type: *sudo apt-get install mingw32*  On Gentoo, [http://gentoo-wiki.com/HOWTO_MinGW follow these steps] up to and including: *crossdev mingw32*
+
+= Install =
+
+= Run =
+
+*!WinBoard*: !WinBoard is a nice frontend for chess engines on Windows.  You can download it from the XBoard website: [http://www.tim-mann.org/xboard.html]
+
+*Install*: Unpack and place the gray.exe file wherever !WinBoard is installed.
+
+Start !WinBoard via *!WinBoard Startup Dialog*, and, in the first box, replace ~~GNUChess~~ with *gray.exe*.  The game should start, and the engine defaults to playing black.  Use the menus to change this.
