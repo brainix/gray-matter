@@ -2,7 +2,7 @@
 
 = Prepare =
 
-You need Subversion (to obtain the Gray Matter source code) and MinGW (to cross-compile Gray Matter for Windows).  If you don't already have these tools, install them now:
+You need Subversion (to download the Gray Matter source code) and MinGW (to cross-compile Gray Matter for Windows).  If you don't already have these tools, install them now:
 
 === On Gentoo ===
   * To install Subversion, type: *{{{emerge subversion}}}*
@@ -14,7 +14,7 @@ You need Subversion (to obtain the Gray Matter source code) and MinGW (to cross-
   * To install Subversion, type: *{{{sudo apt-get install subversion}}}*
   * To install MinGW, type: *{{{sudo apt-get install mingw32}}}*
 
-= Obtain =
+= Download =
 
 To download the latest Gray Matter source code, type: *{{{svn checkout http://gray-matter.googlecode.com/svn/trunk/ gray-matter}}}*  The source code now resides in the *{{{gray-matter/}}}* directory.
 
@@ -24,10 +24,8 @@ To cross-compile Gray Matter for Windows, in the *{{{gray-matter/}}}* directory,
 
 = Install =
 
+To download !WinBoard, click [http://ftp.gnu.org/gnu/winboard/winboard-4_2_7a.exe here].  Copy *{{{gray.exe}}}* into !WinBoard's directory.
+
 = Run =
 
-*!WinBoard*: !WinBoard is a nice frontend for chess engines on Windows.  You can download it from the XBoard website: [http://www.tim-mann.org/xboard.html]
-
-*Install*: Unpack and place the gray.exe file wherever !WinBoard is installed.
-
-Start !WinBoard via *{{{WinBoard Startup Dialog}}}*, and, in the first box, replace ~~*{{{GNUChess}}}*~~ with *{{{gray.exe}}}*.  The game should start, and the engine defaults to playing black.  Use the menus to change this.
+Launch !WinBoard via *{{{WinBoard Startup Dialog}}}*, and, in the first box, replace ~~*{{{GNUChess}}}*~~ with *{{{gray.exe}}}*.  The game starts, and Gray Matter defaults to playing black and awaits your move.  Explore !WinBoard's menus to change various settings.  Enjoy Gray Matter on Windows!  :-)
