@@ -2,6 +2,8 @@
 
 = Obtain =
 
+Get the source code [http://code.google.com/p/gray-matter/source here].
+
 = Compile =
 
 On a Unix-like system, it's easy to use MinGW to cross-compile a Windows executable.  First, install MinGW on your system.^1^  Then, in the *gray-matter/* directory, issue the following command: *make -f WINmakefile*
