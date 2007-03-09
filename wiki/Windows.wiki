@@ -2,15 +2,15 @@
 
 = Obtain =
 
-Get the Gray Matter source code [http://code.google.com/p/gray-matter/source here].
+First, if you don't already have it, install Subversion.^1^  Then, to download the latest Gray Matter source code, type: *svn checkout http://gray-matter.googlecode.com/svn/trunk/ gray-matter*
+
+^1^ On Ubuntu, type: *sudo apt-get install subversion*
 
 = Compile =
 
-On Linux, it's easy to use MinGW to cross-compile a Windows executable.  First, install MinGW.^1^  Then, in the *gray-matter/* directory, type: *make -f WINmakefile*  Congratulations!  Your shiny, happy Windows executable is: *bin/gray.exe*
+On Linux, it's easy to use MinGW to cross-compile a Windows executable.  First, if you don't already have it, install MinGW.^1^  Then, in the *gray-matter/* directory, type: *make -f WINmakefile*  Congratulations!  Your shiny, happy Windows executable is: *bin/gray.exe*
 
-^1^ If you run Ubuntu, type: *sudo apt-get install mingw32*
-
-If you run Gentoo, [http://gentoo-wiki.com/HOWTO_MinGW follow these steps] up to and including: *crossdev mingw32*
+^1^ On Ubuntu, type: *sudo apt-get install mingw32*  On Gentoo, [http://gentoo-wiki.com/HOWTO_MinGW follow these steps] up to and including: *crossdev mingw32*
 
 = Install =
 
