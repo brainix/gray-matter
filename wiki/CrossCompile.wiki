@@ -10,10 +10,10 @@ You need Subversion (to obtain the Gray Matter source code) and MinGW (to cross-
 
 === On Gentoo ===
   * To install Subversion, type: *emerge subversion*
-  * To install MinGW, [http://gentoo-wiki.com/HOWTO_MinGW follow these steps] up to and including: *crossdev mingw32*  For the impatient:
-    * Type: *emerge -va sys-devel/crossdev*
-    * Type: *echo 'PORTDIR_OVERLAY="/usr/local/overlays/crossdev"' >> /etc/make.conf*
-    * Type: *crossdev mingw32*
+  * To install MinGW, [http://gentoo-wiki.com/HOWTO_MinGW follow these steps] up to and including: *crossdev mingw32*  For the impatient, type:
+    * *emerge -va sys-devel/crossdev*
+    * *echo 'PORTDIR_OVERLAY="/usr/local/overlays/crossdev"' >> /etc/make.conf*
+    * *crossdev mingw32*
 
 = Obtain =
 
