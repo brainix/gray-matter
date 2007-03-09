@@ -2,9 +2,9 @@
 
 = Compile =
 
-On a Unix-like system, it's easy to use MinGW to cross-compile a Windows executable.  First, install MinGW on your system, then, in the *gray-matter/* directory, issue the following command: *make -f WINmakefile*
+On a Unix-like system, it's easy to use MinGW to cross-compile a Windows executable.  First, install MinGW on your system,^1^ then, in the *gray-matter/* directory, issue the following command: *make -f WINmakefile*
 
-*Gentoo Linux*: Follow the steps up to and including 'crossdev mingw32': [http://gentoo-wiki.com/HOWTO_MinGW]
+^1^ If you run Gentoo, [http://gentoo-wiki.com/HOWTO_MinGW follow these steps] up to and including *crossdev mingw32*.
 
 = Run =
 
@@ -13,3 +13,4 @@ On a Unix-like system, it's easy to use MinGW to cross-compile a Windows executa
 *Install*: Unpack and place the gray.exe file wherever !WinBoard is installed.
 
 *Run*: Start !WinBoard via "!WinBoard Startup Dialog", and enter "gray.exe" in the first box instead of "GNUChess".  The game should start, and the engine defaults to playing black.  Use the menus to change this.
+
