@@ -24,11 +24,12 @@
  */
 
 /*
- * Windows insists on being included first.
+ | Windows insists on being included first.
  */
 #if defined(WINDOWS)
 #include <windows.h>
 #endif
+
 
 
 /*
