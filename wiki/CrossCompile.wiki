@@ -10,7 +10,10 @@ You need Subversion (to obtain the Gray Matter source code) and MinGW (to cross-
 
 === On Gentoo ===
   * To install Subversion, type: *emerge subversion*
-  * To install MinGW, [http://gentoo-wiki.com/HOWTO_MinGW follow these steps] up to and including: *crossdev mingw32*
+  * To install MinGW, [http://gentoo-wiki.com/HOWTO_MinGW follow these steps] up to and including: *crossdev mingw32*  For the impatient:
+    * Type: *emerge -va sys-devel/crossdev*
+    * Type: *echo 'PORTDIR_OVERLAY="/usr/local/overlays/crossdev"' >> /etc/make.conf*
+    * Type: *crossdev mingw32*
 
 = Obtain =
 
@@ -29,4 +32,3 @@ On Linux, it's easy to use MinGW to cross-compile a Windows executable.  If you 
 *Install*: Unpack and place the gray.exe file wherever !WinBoard is installed.
 
 Start !WinBoard via *!WinBoard Startup Dialog*, and, in the first box, replace ~~GNUChess~~ with *gray.exe*.  The game should start, and the engine defaults to playing black.  Use the menus to change this.
-
