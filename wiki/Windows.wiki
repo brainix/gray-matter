@@ -6,9 +6,9 @@ Get the source code [http://code.google.com/p/gray-matter/source here].
 
 = Compile =
 
-On a Unix-like system, it's easy to use MinGW to cross-compile a Windows executable.  First, install MinGW on your system.^1^  Then, in the *gray-matter/* directory, issue the following command: *make -f WINmakefile*  Congratulations!  Your shiny, happy Windows executable is: *bin/gray.exe*
+On Linux, it's easy to use MinGW to cross-compile a Windows executable.  First, install MinGW.^1^  Then, in the *gray-matter/* directory, type: *make -f WINmakefile*  Congratulations!  Your shiny, happy Windows executable is: *bin/gray.exe*
 
-^1^ If you run Ubuntu, issue the following command: *sudo apt-get install mingw32*
+^1^ If you run Ubuntu, type: *sudo apt-get install mingw32*
 
 If you run Gentoo, [http://gentoo-wiki.com/HOWTO_MinGW follow these steps] up to and including: *crossdev mingw32*
 
