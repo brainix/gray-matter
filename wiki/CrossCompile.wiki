@@ -20,7 +20,7 @@ To download the latest Gray Matter source code, type: *{{{svn checkout http://gr
 
 = Cross-Compile =
 
-To cross-compile Gray Matter, in the *{{{gray-matter/}}}* directory, type: *{{{make -f WINmakefile}}}*  The Windows executable is now: *{{{bin/gray.exe}}}*
+To cross-compile Gray Matter for Windows, in the *{{{gray-matter/}}}* directory, type: *{{{make -f WINmakefile}}}*  The Windows executable is now: *{{{bin/gray.exe}}}*
 
 = Install =
 
