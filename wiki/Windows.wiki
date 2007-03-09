@@ -1,10 +1,14 @@
 #summary How to compile and run Gray Matter on Windows
 
+= Obtain =
+
 = Compile =
 
 On a Unix-like system, it's easy to use MinGW to cross-compile a Windows executable.  First, install MinGW on your system.^1^  Then, in the *gray-matter/* directory, issue the following command: *make -f WINmakefile*
 
 ^1^ If you run Gentoo, [http://gentoo-wiki.com/HOWTO_MinGW follow these steps] up to and including: *crossdev mingw32*
+
+= Install =
 
 = Run =
 
