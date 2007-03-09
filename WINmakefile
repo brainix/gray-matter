@@ -4,10 +4,6 @@
 #	Copyright © 2005-2007, The Gray Matter Team, original authors.	       #
 #==============================================================================#
 
-# Your operating system.  This must be LINUX, OS_X, or WINDOWS.
-# BSD is based on OS X.  If you insist on running BSD, set this to OS_X.  ;-)
-PLAT   = WINDOWS
-
 ARCH   = mingw32
 TARGET = i686-pc-mingw32
 
@@ -15,8 +11,7 @@ CXX    = mingw32-g++
 LANG   = -ansi
 WARN   = -Wall -Werror
 OPTI   = -O3 -fomit-frame-pointer
-PREP   = -D$(PLAT)
-LINK   = 
+PREP   = -DWINDOWS
 DIR    = -Iinc
 
 OBJS = bin/board.o   \
@@ -36,4 +31,4 @@ bin/%.o : src/%.cpp
 	$(CXX) -c -o $@ $< $(LANG) $(WARN) $(OPTI) $(PREP) $(DIR)
 
 bin/gray.exe : $(OBJS)
-	$(CXX) -o $@ $(LANG) $(WARN) $(OPTI) $(PREP) $(LINK) $(DIR) $(OBJS)
+	$(CXX) -o $@ $(LANG) $(WARN) $(OPTI) $(PREP) $(DIR) $(OBJS)
