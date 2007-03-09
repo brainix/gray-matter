@@ -1,4 +1,4 @@
-#summary HOWTO Compile and Run Gray Matter on Windows
+#summary How to compile and run Gray Matter on Windows
 
 = Introduction =
 
