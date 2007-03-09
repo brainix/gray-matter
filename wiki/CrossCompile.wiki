@@ -5,23 +5,23 @@
 You need Subversion (to obtain the Gray Matter source code) and MinGW (to cross-compile Gray Matter for Windows).  If you don't already have these tools, install them now:
 
 === On Ubuntu ===
-  * To install Subversion, type: *sudo apt-get install subversion*
-  * To install MinGW, type: *sudo apt-get install mingw32*
+  * To install Subversion, type: *{{{sudo apt-get install subversion}}}*
+  * To install MinGW, type: *{{{sudo apt-get install mingw32}}}*
 
 === On Gentoo ===
-  * To install Subversion, type: *emerge subversion*
-  * To install MinGW, [http://gentoo-wiki.com/HOWTO_MinGW follow these steps] up to and including: *crossdev mingw32*  For the impatient, type:
-    * *emerge -va sys-devel/crossdev*
-    * *echo 'PORTDIR_OVERLAY="/usr/local/overlays/crossdev"' >> /etc/make.conf*
-    * *crossdev mingw32*
+  * To install Subversion, type: *{{{emerge subversion}}}*
+  * To install MinGW, [http://gentoo-wiki.com/HOWTO_MinGW follow these steps] up to and including: *{{{crossdev mingw32}}}*  For the impatient, type:
+    * *{{{emerge -va sys-devel/crossdev}}}*
+    * *{{{echo 'PORTDIR_OVERLAY="/usr/local/overlays/crossdev"' >> /etc/make.conf}}}*
+    * *{{{crossdev mingw32}}}*
 
 = Obtain =
 
-To download the latest Gray Matter source code, type: *svn checkout http://gray-matter.googlecode.com/svn/trunk/ gray-matter*  The source code now resides in the newly created *gray-matter/* directory.
+To download the latest Gray Matter source code, type: *{{{svn checkout http://gray-matter.googlecode.com/svn/trunk/ gray-matter}}}*  The source code now resides in the newly created *{{{gray-matter/}}}* directory.
 
 = Cross-Compile =
 
-To cross-compile Gray Matter, in the *gray-matter/* directory, type: *make -f WINmakefile*  Congratulations!  The Windows executable is now: *bin/gray.exe*
+To cross-compile Gray Matter, in the *{{{gray-matter/}}}* directory, type: *{{{make -f WINmakefile}}}*  Congratulations!  The Windows executable is now: *{{{bin/gray.exe}}}*
 
 = Install =
 
