@@ -4,16 +4,15 @@
 
 You need Subversion (to obtain the Gray Matter source code) and MinGW (to cross-compile Gray Matter for Windows).  If you don't already have these tools, install them now:
 
-=== On Ubuntu ===
-  * To install Subversion, type: *{{{sudo apt-get install subversion}}}*
-  * To install MinGW, type: *{{{sudo apt-get install mingw32}}}*
-
 === On Gentoo ===
   * To install Subversion, type: *{{{emerge subversion}}}*
   * To install MinGW, [http://gentoo-wiki.com/HOWTO_MinGW follow these steps] up to and including: *{{{crossdev mingw32}}}*  For the impatient, type:
     * *{{{emerge -va sys-devel/crossdev}}}*
     * *{{{echo 'PORTDIR_OVERLAY="/usr/local/overlays/crossdev"' >> /etc/make.conf}}}*
     * *{{{crossdev mingw32}}}*
+=== On Ubuntu ===
+  * To install Subversion, type: *{{{sudo apt-get install subversion}}}*
+  * To install MinGW, type: *{{{sudo apt-get install mingw32}}}*
 
 = Obtain =
 
