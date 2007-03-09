@@ -340,9 +340,9 @@ move_t search::negascout(int depth, int alpha, int beta)
 	 */
 	switch (table_ptr->probe(hash, &m, depth, alpha, beta))
 	{
-		case EXACT :                  return m;
-		case BETA  : beta  = m.value; break;
-		case ALPHA : alpha = m.value; break;
+		case ALPHA: alpha = GREATER(alpha, m.value); break;
+		case BETA: beta = LESSER(beta, m.value); break;
+		case EXACT: return m;
 	}
 	if (alpha >= beta)
 		return m;
