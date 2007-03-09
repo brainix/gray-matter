@@ -47,9 +47,6 @@
 /* The transposition table size (in megabytes).  This must be >= 1. */
 #define TABLE_MB	256
 
-/* The opening book file name: */
-#define BOOK		"book.pgn"
-
 
 
 /*----------------------------------------------------------------------------*\
