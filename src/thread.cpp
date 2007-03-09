@@ -293,7 +293,8 @@ int timer_set(int sec)
 			return CRITICAL;
 	}
 	LARGE_INTEGER relTime;
-	relTime.QuadPart = -(sec * 10000000L); /* negative means relative time */
+	/* negative means relative time in intervals of 100 nanoseconds */
+	relTime.QuadPart = -(sec * 10000000L); 
 	if(!SetWaitableTimer(timer_id, &relTime, 0, timer_handler, NULL, FALSE))
 		return CRITICAL;
 	return SUCCESSFUL;
