@@ -1,5 +1,9 @@
 #summary How to cross-compile Gray Matter on Linux to run on Windows
 
+This document only explains how to cross-compile Gray Matter on a Linux system to run on Windows.  If you're simply interested in installing Gray Matter on Windows, you've come to the wrong place.
+
+Perform the Prepare, Download, and Cross-Compile steps on your Linux system, and the Install and Run steps on Windows.
+
 = Prepare =
 
 You need Subversion (to download the Gray Matter source code) and MinGW (to cross-compile Gray Matter for Windows).  If you don't already have these tools, install them now:
