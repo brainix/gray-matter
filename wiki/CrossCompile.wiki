@@ -17,11 +17,11 @@ You need Subversion (to obtain the Gray Matter source code) and MinGW (to cross-
 
 = Obtain =
 
-If you don't already have it, install Subversion.  Then, type: *svn checkout http://gray-matter.googlecode.com/svn/trunk/ gray-matter*  Congratulations!  The Gray Matter source code is in the newly created *gray-matter/* directory.
+To download the latest Gray Matter source code, type: *svn checkout http://gray-matter.googlecode.com/svn/trunk/ gray-matter*  The source code now resides in the newly created *gray-matter/* directory.
 
 = Cross-Compile =
 
-On Linux, it's easy to use MinGW to cross-compile a Windows executable.  If you don't already have it, install MinGW.  Then, in the *gray-matter/* directory, type: *make -f WINmakefile*  Congratulations!  Your shiny, happy Windows executable is: *bin/gray.exe*
+To cross-compile Gray Matter, in the *gray-matter/* directory, type: *make -f WINmakefile*  Congratulations!  The Windows executable is now: *bin/gray.exe*
 
 = Install =
 
