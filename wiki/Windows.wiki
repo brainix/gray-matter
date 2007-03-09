@@ -2,7 +2,7 @@
 
 = Obtain =
 
-First, if you don't already have it, install Subversion.^1^  Then, type: *svn checkout http://gray-matter.googlecode.com/svn/trunk/ gray-matter*  Congratulations!  You've downloaded the Gray Matter source code, and it's in the newly created *gray-matter/* directory.
+First, if you don't already have it, install Subversion.^1^  Then, type: *svn checkout http://gray-matter.googlecode.com/svn/trunk/ gray-matter*  Congratulations!  The Gray Matter source code is in the newly created *gray-matter/* directory.
 
 ^1^ On Ubuntu, type: *sudo apt-get install subversion*  On Gentoo, type: *emerge subversion*
 
