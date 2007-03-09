@@ -4,7 +4,7 @@
 
 First, if you don't already have it, install Subversion.^1^  Then, to download the latest Gray Matter source code, type: *svn checkout http://gray-matter.googlecode.com/svn/trunk/ gray-matter*
 
-^1^ On Ubuntu, type: *sudo apt-get install subversion*
+^1^ On Ubuntu, type: *sudo apt-get install subversion*  On Gentoo?
 
 = Compile =
 
