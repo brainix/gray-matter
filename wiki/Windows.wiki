@@ -2,7 +2,7 @@
 
 = Obtain =
 
-Get the source code [http://code.google.com/p/gray-matter/source here].
+Get the Gray Matter source code [http://code.google.com/p/gray-matter/source here].
 
 = Compile =
 
