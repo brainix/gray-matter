@@ -244,10 +244,22 @@ void (*callback)();
 /*----------------------------------------------------------------------------*\
  |				timer_handler()				      |
 \*----------------------------------------------------------------------------*/
+#if defined(LINUX) || defined(OS_X)
+
 void timer_handler(int num)
 {
 	(*callback)();
 }
+
+#elif defined(WINDOWS)
+
+HANDLE timer_id = INVALID_HANDLE_VALUE;
+
+VOID CALLBACK timer_handler(LPVOID arg, DWORD timeLow, DWORD timeHigh)
+{
+	(*callback)();
+}
+#endif
 
 /*----------------------------------------------------------------------------*\
  |				timer_function()			      |
@@ -260,6 +272,7 @@ int timer_function(void (*function)())
 	callback = function;
 	return SUCCESSFUL;
 }
+
 
 /*----------------------------------------------------------------------------*\
  |				  timer_set()				      |
@@ -274,6 +287,28 @@ int timer_set(int sec)
 	itimerval.it_value.tv_usec = 0;
 	return setitimer(ITIMER_REAL, &itimerval, NULL) == -1 ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
+	if(timer_id == INVALID_HANDLE_VALUE) {
+		timer_id = CreateWaitableTimer(NULL, TRUE, NULL);
+		if(timer_id == NULL)
+			return CRITICAL;
+	}
+	LARGE_INTEGER relTime;
+	relTime.QuadPart = -(sec * 10000000L); /* negative means relative time */
+	if(!SetWaitableTimer(timer_id, &relTime, 0, timer_handler, NULL, FALSE))
+		return CRITICAL;
 	return SUCCESSFUL;
 #endif
 }
+
+/*----------------------------------------------------------------------------*\
+ |				  timer_stop()				      |
+\*----------------------------------------------------------------------------*/
+int timer_stop()
+{
+#if defined(LINUX) || defined(OS_X)
+#elif defined(WINDOWS)
+	CancelWaitableTimer(timer_id);
+#endif
+	return SUCCESSFUL;
+}
+
