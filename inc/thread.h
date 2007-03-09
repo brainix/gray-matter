@@ -79,6 +79,7 @@ typedef struct
 int thread_create(thread_t *thread, entry_t entry, void *arg);
 int thread_exit();
 int thread_wait(thread_t *thread);
+int thread_terminate(thread_t *thread);
 
 /* Function prototypes related to mutexes: */
 int mutex_init(mutex_t *mutex);

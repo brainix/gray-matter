@@ -63,6 +63,21 @@ int thread_wait(thread_t *thread)
 }
 
 /*----------------------------------------------------------------------------*\
+ |				 thread_terminate()				      |
+\*----------------------------------------------------------------------------*/
+int thread_terminate(thread_t *thread)
+{
+#if defined(LINUX) || defined(OS_X)
+	return pthread_kill(*thread, SIGTERM) ? CRITICAL : SUCCESSFUL;
+#elif defined(WINDOWS)
+	if(!TerminateThread(thread, 0))
+		return CRITICAL;
+	*thread = INVALID_HANDLE_VALUE;
+	return SUCCESSFUL;
+#endif
+}
+
+/*----------------------------------------------------------------------------*\
  |				  mutex_init()				      |
 \*----------------------------------------------------------------------------*/
 int mutex_init(mutex_t *mutex)
@@ -242,7 +257,7 @@ int cond_destroy(cond_t *cond)
 /* Global variables: */
 void (*callback)();
 #if defined(WINDOWS)
-HANDLE timer_id = INVALID_HANDLE_VALUE;
+thread_t timer_thread = INVALID_HANDLE_VALUE;
 #endif
 
 /*----------------------------------------------------------------------------*\
@@ -250,15 +265,37 @@ HANDLE timer_id = INVALID_HANDLE_VALUE;
 \*----------------------------------------------------------------------------*/
 #if defined(LINUX) || defined(OS_X)
 void timer_handler(int num)
-#elif defined(WINDOWS)
-VOID CALLBACK timer_handler(LPVOID arg, DWORD timeLow, DWORD timeHigh)
-#endif
 {
 
 /* The alarm has sounded.  Call the previously specified function. */
 
 	(*callback)();
 }
+
+#elif defined(WINDOWS)
+DWORD timer_handler(LPVOID arg)
+{
+	unsigned int ms = *((unsigned int*)arg); /* number of ms to wait */
+	HANDLE timer_id;
+
+	if ((timer_id = CreateWaitableTimer(NULL, TRUE, NULL)) == NULL)
+		return 0;
+
+	LARGE_INTEGER relTime;
+	/* negative means relative time in intervals of 100 nanoseconds */
+	relTime.QuadPart = -(ms * 10000L); 
+	if (!SetWaitableTimer(timer_id, &relTime, 0, NULL, NULL, FALSE))
+		return 0;
+
+	if (!WaitForSingleObject(timer_id, INFINITE))
+		return 0;
+
+	(*callback)();
+
+	timer_thread = INVALID_HANDLE_VALUE;
+	return 0;
+}
+#endif
 
 /*----------------------------------------------------------------------------*\
  |				timer_function()			      |
@@ -291,13 +328,11 @@ int timer_set(int sec)
 	itimerval.it_value.tv_usec = 0;
 	return setitimer(ITIMER_REAL, &itimerval, NULL) == -1 ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
-	if (timer_id == INVALID_HANDLE_VALUE)
-		if ((timer_id = CreateWaitableTimer(NULL, TRUE, NULL)) == NULL)
-			return CRITICAL;
-	LARGE_INTEGER relTime;
-	/* negative means relative time in intervals of 100 nanoseconds */
-	relTime.QuadPart = -(sec * 10000000L); 
-	return !SetWaitableTimer(timer_id, &relTime, 0, timer_handler, NULL, FALSE) ? CRITICAL : SUCCESSFUL;
+	if (timer_thread != INVALID_HANDLE_VALUE)
+		return CRITICAL; /* only allow one timer */
+
+	unsigned int ms = sec * 1000;
+	return thread_create(&timer_thread, (entry_t)timer_handler, &ms);
 #endif
 }
 
@@ -317,6 +352,8 @@ int timer_cancel()
 	itimerval.it_value.tv_usec = 0;
 	return setitimer(ITIMER_REAL, &itimerval, NULL) == -1 ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
-	return !CancelWaitableTimer(timer_id) ? CRITICAL : SUCCESSFUL;
+	if (timer_thread == INVALID_HANDLE_VALUE)
+		return CRITICAL;
+	return thread_terminate(&timer_thread);
 #endif
 }
