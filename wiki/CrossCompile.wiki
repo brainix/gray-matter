@@ -30,4 +30,4 @@ To cross-compile Gray Matter, in the *{{{gray-matter/}}}* directory, type: *{{{m
 
 *Install*: Unpack and place the gray.exe file wherever !WinBoard is installed.
 
-Start !WinBoard via *!WinBoard Startup Dialog*, and, in the first box, replace ~~GNUChess~~ with *gray.exe*.  The game should start, and the engine defaults to playing black.  Use the menus to change this.
+Start !WinBoard via *{{{WinBoard Startup Dialog}}}*, and, in the first box, replace ~~*{{{GNUChess}}}*~~ with *{{{gray.exe}}}*.  The game should start, and the engine defaults to playing black.  Use the menus to change this.
