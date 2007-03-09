@@ -39,9 +39,9 @@
 #define THREAD_H
 
 /* For the functions defined here, these are the standard return values: */
-#define CRITICAL	-1 // Critical error.      :-(
-#define NON_CRITICAL	 0 // Non-critical error.  :-|
-#define SUCCESSFUL	 1 // Success.             :-)
+#define CRITICAL	-1 // Critical failure.      :-(
+#define NON_CRITICAL	 0 // Non-critical failure.  :-|
+#define SUCCESSFUL	 1 // Success.               :-)
 
 #if defined(LINUX) || defined(OS_X)
 
