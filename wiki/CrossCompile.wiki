@@ -17,11 +17,11 @@ You need Subversion (to obtain the Gray Matter source code) and MinGW (to cross-
 
 = Obtain =
 
-To download the latest Gray Matter source code, type: *{{{svn checkout http://gray-matter.googlecode.com/svn/trunk/ gray-matter}}}*  The source code now resides in the newly created *{{{gray-matter/}}}* directory.
+To download the latest Gray Matter source code, type: *{{{svn checkout http://gray-matter.googlecode.com/svn/trunk/ gray-matter}}}*  The source code now resides in the *{{{gray-matter/}}}* directory.
 
 = Cross-Compile =
 
-To cross-compile Gray Matter, in the *{{{gray-matter/}}}* directory, type: *{{{make -f WINmakefile}}}*  Congratulations!  The Windows executable is now: *{{{bin/gray.exe}}}*
+To cross-compile Gray Matter, in the *{{{gray-matter/}}}* directory, type: *{{{make -f WINmakefile}}}*  The Windows executable is now: *{{{bin/gray.exe}}}*
 
 = Install =
 
