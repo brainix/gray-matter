@@ -8,8 +8,8 @@
 
 = Run =
 
-*WinBoard*: WinBoard is a nice frontend for chess engines on Windows.  You can download it from the XBoard website: [http://www.tim-mann.org/xboard.html]
+*!WinBoard*: !WinBoard is a nice frontend for chess engines on Windows.  You can download it from the XBoard website: [http://www.tim-mann.org/xboard.html]
 
-*Install*: Unpack and place the gray.exe file wherever WinBoard is installed.
+*Install*: Unpack and place the gray.exe file wherever !WinBoard is installed.
 
-*Run*: Start WinBoard via "WinBoard Startup Dialog", and enter "gray.exe" in the first box instead of "GNUChess".  The game should start, and the engine defaults to playing black.  Use the menus to change this.
+*Run*: Start !WinBoard via "!WinBoard Startup Dialog", and enter "gray.exe" in the first box instead of "GNUChess".  The game should start, and the engine defaults to playing black.  Use the menus to change this.
