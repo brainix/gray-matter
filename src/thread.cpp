@@ -268,30 +268,56 @@ thread_t timer_thread = INVALID_HANDLE_VALUE;
 void timer_handler(int num)
 {
 
-/* The alarm has sounded.  Call the previously specified function. */
+/* On Linux and OS X, the alarm has sounded.  Call the previously specified
+ * function. */
 
 	(*callback)();
 }
 #elif defined(WINDOWS)
 DWORD timer_handler(LPVOID arg)
 {
-	unsigned long long ms = *((unsigned int *) arg); /* number of ms to wait */
+
+/*
+ | On Windows, Steve Ballmer is too busy throwing chairs to implement SIGALRM.
+ | So, in order to replicate its functionality, we have to jump through these
+ | hoops:
+ |
+ |	1. Create a timer thread.  Then, within the timer thread:
+ |	2. Create an alarm.
+ |	3. Set the alarm.
+ |	4. Wait for the alarm to sound.
+ |	5. Notify the other thread somehow.
+ |	6. Exit the timer thread.
+ |
+ | This way, while the timer thread waits for the alarm to sound, the other
+ | thread continues with its work.  At this point, the timer thread has already
+ | been created, and this function is its entry point.  Think of this function
+ | as the timer thread's main().
+ */
+
+	unsigned long long msec = *((unsigned int *) arg); /* number of ms to wait */
 	HANDLE timer_id = INVALID_HANDLE_VALUE;
 
+	/* Create an alarm. */
 	if ((timer_id = CreateWaitableTimer(NULL, TRUE, NULL)) == NULL)
 		goto exit_timer_handler;
 
+	/* Set the alarm. */
 	LARGE_INTEGER rel_time;
-	/* negative means relative time in intervals of 100 nanoseconds */
-	rel_time.QuadPart = -(ms * 100000000L); 
+	rel_time.QuadPart = -(msec * 100000000L); // We negate this value to
+	                                          // denote time in 100
+	                                          // nanosecond increments.
 	if (!SetWaitableTimer(timer_id, &rel_time, 0, NULL, NULL, FALSE))
 		goto exit_timer_handler;
 
+	/* Wait for the alarm to sound. */
 	if (WaitForSingleObject(timer_id, INFINITE))
 		goto exit_timer_handler;
 
+	/* Notify the other thread - call the previously specified function. */
 	(*callback)();
 
+	/* Exit the timer thread. */
 exit_timer_handler:
 	if (timer_id != INVALID_HANDLE_VALUE)
 		CloseHandle(timer_id);
@@ -334,9 +360,8 @@ int timer_set(int sec)
 #elif defined(WINDOWS)
 	if (timer_thread != INVALID_HANDLE_VALUE)
 		return CRITICAL; /* only allow one timer */
-
-	unsigned int ms = sec * 1000;
-	return thread_create(&timer_thread, (entry_t) timer_handler, &ms);
+	unsigned int msec = sec * 1000;
+	return thread_create(&timer_thread, (entry_t) timer_handler, &msec);
 #endif
 }
 
