@@ -280,16 +280,25 @@ DWORD timer_handler(LPVOID arg)
 	HANDLE timer_id = INVALID_HANDLE_VALUE;
 
 	if ((timer_id = CreateWaitableTimer(NULL, TRUE, NULL)) == NULL)
+	{
 		goto exit_timer_handler;
+		printf("telluser Couldn't CreateWaitableTimer().\n");
+	}
 
 	LARGE_INTEGER relTime;
 	/* negative means relative time in intervals of 100 nanoseconds */
 	relTime.QuadPart = -(ms * 100000000L); 
 	if (!SetWaitableTimer(timer_id, &relTime, 0, NULL, NULL, FALSE))
+	{
 		goto exit_timer_handler;
+		printf("telluser Couldn't SetWaitableTimer().\n");
+	}
 
 	if (WaitForSingleObject(timer_id, INFINITE))
+	{
 		goto exit_timer_handler;
+		printf("telluser Couldn't WaitForSingleObject().\n");
+	}
 
 	(*callback)();
 
