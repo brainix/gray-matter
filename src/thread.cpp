@@ -277,31 +277,25 @@ void timer_handler(int num)
 DWORD timer_handler(LPVOID arg)
 {
 	unsigned long long ms = *((unsigned int*)arg); /* number of ms to wait */
-	HANDLE timer_id;
+	HANDLE timer_id = INVALID_HANDLE_VALUE;
 
-	if ((timer_id = CreateWaitableTimer(NULL, TRUE, NULL)) == NULL) {
-		timer_thread = INVALID_HANDLE_VALUE;
-		thread_exit();
-	}
+	if ((timer_id = CreateWaitableTimer(NULL, TRUE, NULL)) == NULL)
+		goto exit_timer_handler;
 
 	LARGE_INTEGER relTime;
 	/* negative means relative time in intervals of 100 nanoseconds */
 	relTime.QuadPart = -(ms * 100000000L); 
-	if (!SetWaitableTimer(timer_id, &relTime, 0, NULL, NULL, FALSE)) {
-		CloseHandle(timer_id);
-		timer_thread = INVALID_HANDLE_VALUE;
-		thread_exit();
-	}
+	if (!SetWaitableTimer(timer_id, &relTime, 0, NULL, NULL, FALSE))
+		goto exit_timer_handler;
 
-	if (WaitForSingleObject(timer_id, INFINITE)) {
-		CloseHandle(timer_id);
-		timer_thread = INVALID_HANDLE_VALUE;
-		thread_exit();
-	}
-	CloseHandle(timer_id);
+	if (WaitForSingleObject(timer_id, INFINITE))
+		goto exit_timer_handler;
 
 	(*callback)();
 
+exit_timer_handler:
+	if (timer_id != INVALID_HANDLE_VALUE)
+		CloseHandle(timer_id);
 	timer_thread = INVALID_HANDLE_VALUE;
 	thread_exit();
 	return 0;
