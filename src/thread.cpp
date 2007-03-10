@@ -284,12 +284,16 @@ DWORD timer_handler(LPVOID arg)
 
 	LARGE_INTEGER relTime;
 	/* negative means relative time in intervals of 100 nanoseconds */
-	relTime.QuadPart = -(ms * 100000L); 
-	if (!SetWaitableTimer(timer_id, &relTime, 0, NULL, NULL, FALSE))
+	relTime.QuadPart = -(ms * 100000000L); 
+	if (!SetWaitableTimer(timer_id, &relTime, 0, NULL, NULL, FALSE)) {
+		CloseHandle(timer_id);
 		return 0;
+	}
 
-	if (WaitForSingleObject(timer_id, INFINITE))
+	if (WaitForSingleObject(timer_id, INFINITE)) {
+		CloseHandle(timer_id);
 		return 0;
+	}
 	CloseHandle(timer_id);
 
 	(*callback)();
