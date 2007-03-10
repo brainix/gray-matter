@@ -32,6 +32,7 @@ mutex_t mutex;   // ...mutex protects this...
 cond_t cond;     // ...condition which watches the...
 int status;      // ...search status!  :-D
 bool timeout;    // Whether to stop thinking or pondering.
+mutex_t timeout_mutex;
 
 /*----------------------------------------------------------------------------*\
  |				    search()				      |
@@ -49,10 +50,13 @@ search::search(xboard *x, table *t, history *h)
 	table_ptr = t;
 	history_ptr = h;
 
+	mutex_init(&timeout_mutex);
+
 	timer_function(handle);
 	mutex_init(&mutex);
 	cond_init(&cond, NULL);
 	thread_create(&thread, (entry_t) start, this);
+
 }
 
 /*----------------------------------------------------------------------------*\
@@ -65,6 +69,8 @@ search::~search()
 
 	cond_destroy(&cond);
 	mutex_destroy(&mutex);
+
+	mutex_destroy(&timeout_mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -101,7 +107,9 @@ void search::handle()
 
 /* The alarm has sounded.  Handle it. */
 
+	mutex_lock(&timeout_mutex);
 	timeout = true;
+	mutex_unlock(&timeout_mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -185,7 +193,9 @@ void *search::start(void *arg)
 		/* Do the requested work - idle, think, ponder, or quit. */
 		if (status == THINKING || status == PONDERING)
 		{
+			mutex_lock(&timeout_mutex);
 			timeout = false;
+			mutex_unlock(&timeout_mutex);
 			search_ptr->iterate(status);
 		}
 	} while (status != QUITTING);
@@ -229,7 +239,10 @@ void search::change(int s, const board& now)
  |	 12		start thinking
  */
 
+	mutex_lock(&timeout_mutex);
 	timeout = true;
+	mutex_unlock(&timeout_mutex);
+
 	if (s == THINKING || s == PONDERING)
 	{
 		b.lock();
