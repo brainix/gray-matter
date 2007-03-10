@@ -290,6 +290,7 @@ DWORD timer_handler(LPVOID arg)
 
 	if (WaitForSingleObject(timer_id, INFINITE))
 		return 0;
+	CloseHandle(timer_id);
 
 	(*callback)();
 
