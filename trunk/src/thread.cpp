@@ -272,33 +272,23 @@ void timer_handler(int num)
 
 	(*callback)();
 }
-
 #elif defined(WINDOWS)
 DWORD timer_handler(LPVOID arg)
 {
-	unsigned long long ms = *((unsigned int*)arg); /* number of ms to wait */
+	unsigned long long ms = *((unsigned int *) arg); /* number of ms to wait */
 	HANDLE timer_id = INVALID_HANDLE_VALUE;
 
 	if ((timer_id = CreateWaitableTimer(NULL, TRUE, NULL)) == NULL)
-	{
-		printf("telluser Couldn't CreateWaitableTimer().\n");
 		goto exit_timer_handler;
-	}
 
-	LARGE_INTEGER relTime;
+	LARGE_INTEGER rel_time;
 	/* negative means relative time in intervals of 100 nanoseconds */
-	relTime.QuadPart = -(ms * 100000000L); 
-	if (!SetWaitableTimer(timer_id, &relTime, 0, NULL, NULL, FALSE))
-	{
-		printf("telluser Couldn't SetWaitableTimer().\n");
+	rel_time.QuadPart = -(ms * 100000000L); 
+	if (!SetWaitableTimer(timer_id, &rel_time, 0, NULL, NULL, FALSE))
 		goto exit_timer_handler;
-	}
 
 	if (WaitForSingleObject(timer_id, INFINITE))
-	{
-		printf("telluser Couldn't WaitForSingleObject().\n");
 		goto exit_timer_handler;
-	}
 
 	(*callback)();
 
@@ -346,7 +336,7 @@ int timer_set(int sec)
 		return CRITICAL; /* only allow one timer */
 
 	unsigned int ms = sec * 1000;
-	return thread_create(&timer_thread, (entry_t)timer_handler, &ms);
+	return thread_create(&timer_thread, (entry_t) timer_handler, &ms);
 #endif
 }
 

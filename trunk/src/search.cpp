@@ -27,12 +27,13 @@
 #include "search.h"
 
 /* Global variables: */
-thread_t thread; // The thread in which this...
-mutex_t mutex;   // ...mutex protects this...
-cond_t cond;     // ...condition which watches the...
-int status;      // ...search status!  :-D
-bool timeout;    // Whether to stop thinking or pondering.
-mutex_t timeout_mutex;
+mutex_t timeout_mutex; // The lock that protects...
+bool timeout_flag;     // ...the flag that determines when to stop thinking or pondering!  :-D
+
+mutex_t mutex;         // The lock that protects...
+cond_t cond;           // ...the condition that controls...
+thread_t thread;       // ...the search thread via...
+int status;            // ...the search status!  :-D
 
 /*----------------------------------------------------------------------------*\
  |				    search()				      |
@@ -51,7 +52,6 @@ search::search(xboard *x, table *t, history *h)
 	history_ptr = h;
 
 	mutex_init(&timeout_mutex);
-
 	timer_function(handle);
 	mutex_init(&mutex);
 	cond_init(&cond, NULL);
@@ -69,7 +69,6 @@ search::~search()
 
 	cond_destroy(&cond);
 	mutex_destroy(&mutex);
-
 	mutex_destroy(&timeout_mutex);
 }
 
@@ -108,7 +107,7 @@ void search::handle()
 /* The alarm has sounded.  Handle it. */
 
 	mutex_lock(&timeout_mutex);
-	timeout = true;
+	timeout_flag = true;
 	mutex_unlock(&timeout_mutex);
 }
 
@@ -194,7 +193,7 @@ void *search::start(void *arg)
 		if (status == THINKING || status == PONDERING)
 		{
 			mutex_lock(&timeout_mutex);
-			timeout = false;
+			timeout_flag = false;
 			mutex_unlock(&timeout_mutex);
 			search_ptr->iterate(status);
 		}
@@ -240,7 +239,7 @@ void search::change(int s, const board& now)
  */
 
 	mutex_lock(&timeout_mutex);
-	timeout = true;
+	timeout_flag = true;
 	mutex_unlock(&timeout_mutex);
 
 	if (s == THINKING || s == PONDERING)
@@ -285,7 +284,7 @@ void search::iterate(int s)
 	for (int depth = 0; depth <= max_depth; depth++)
 	{
 		negascout(depth, -WEIGHT_KING, WEIGHT_KING);
-		if (timeout && depth)
+		if (timeout_flag && depth)
 			/*
 			 | Oops.  The alarm has interrupted this iteration; the
 			 | current results are incomplete and unreliable.  Go
@@ -410,7 +409,7 @@ move_t search::negascout(int depth, int alpha, int beta)
 	l.sort(compare);
 
 	/* Score each move in the list. */
-	for (it = l.begin(); !timeout && it != l.end(); it++)
+	for (it = l.begin(); !timeout_flag && it != l.end(); it++)
 	{
 		b.make(*it);
 		if (depth <= 0)
@@ -442,7 +441,7 @@ move_t search::negascout(int depth, int alpha, int beta)
 			m = *it;
 	}
 
-	if (!timeout)
+	if (!timeout_flag)
 	{
 		table_ptr->store(hash, m, depth, type);
 		history_ptr->store(whose, m, depth);
