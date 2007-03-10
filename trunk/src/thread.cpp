@@ -64,7 +64,7 @@ int thread_wait(thread_t *thread)
 }
 
 /*----------------------------------------------------------------------------*\
- |				 thread_terminate()				      |
+ |			       thread_terminate()			      |
 \*----------------------------------------------------------------------------*/
 int thread_terminate(thread_t *thread)
 {
@@ -358,7 +358,7 @@ int timer_cancel()
 	return setitimer(ITIMER_REAL, &itimerval, NULL) == -1 ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
 	if (timer_thread == INVALID_HANDLE_VALUE)
-		return CRITICAL;
+		return NON_CRITICAL;
 	return thread_terminate(&timer_thread);
 #endif
 }
