@@ -44,6 +44,7 @@ class xboard
 {
 public:
 	xboard();
+	~xboard();
 	void vomit(char *message) const;
 	void loop(class search *s);
 	void print_output(int ply, int value, int time, int nodes, list<move_t> &pv) const;

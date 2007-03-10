@@ -27,13 +27,13 @@
 #include "search.h"
 
 /* Global variables: */
-mutex_t timeout_mutex; // The lock that protects...
-bool timeout_flag;     // ...the flag that determines when to stop thinking or pondering!  :-D
+mutex_t timeout_mutex;  // The lock that protects...
+bool timeout_flag;      // ...the flag that determines when to stop thinking or pondering!  :-D
 
-mutex_t mutex;         // The lock that protects...
-cond_t cond;           // ...the condition that controls...
-thread_t thread;       // ...the search thread via...
-int status;            // ...the search status!  :-D
+mutex_t search_mutex;   // The lock that protects...
+cond_t search_cond;     // ...the condition that controls...
+thread_t search_thread; // ...the search thread via...
+int search_status;      // ...the search status!  :-D
 
 /*----------------------------------------------------------------------------*\
  |				    search()				      |
@@ -53,9 +53,9 @@ search::search(xboard *x, table *t, history *h)
 
 	mutex_init(&timeout_mutex);
 	timer_function(handle);
-	mutex_init(&mutex);
-	cond_init(&cond, NULL);
-	thread_create(&thread, (entry_t) start, this);
+	mutex_init(&search_mutex);
+	cond_init(&search_cond, NULL);
+	thread_create(&search_thread, (entry_t) start, this);
 
 }
 
@@ -67,8 +67,8 @@ search::~search()
 
 /* Destructor. */
 
-	cond_destroy(&cond);
-	mutex_destroy(&mutex);
+	cond_destroy(&search_cond);
+	mutex_destroy(&search_mutex);
 	mutex_destroy(&timeout_mutex);
 }
 
@@ -133,7 +133,7 @@ move_t search::get_hint() const
 \*----------------------------------------------------------------------------*/
 thread_t search::get_thread() const
 {
-	return thread;
+	return search_thread;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -178,26 +178,26 @@ void *search::start(void *arg)
 /* Think of this method as main() for the search thread. */
 
 	class search *search_ptr = (class search *) arg;
-	int tmp = status = IDLING;
+	int tmp = search_status = IDLING;
 
 	do
 	{
 		/* Wait for the status to change. */
-		mutex_lock(&mutex);
-		while (tmp == status)
-			cond_wait(&cond, &mutex);
-		tmp = status;
-		mutex_unlock(&mutex);
+		mutex_lock(&search_mutex);
+		while (tmp == search_status)
+			cond_wait(&search_cond, &search_mutex);
+		tmp = search_status;
+		mutex_unlock(&search_mutex);
 
 		/* Do the requested work - idle, think, ponder, or quit. */
-		if (status == THINKING || status == PONDERING)
+		if (search_status == THINKING || search_status == PONDERING)
 		{
 			mutex_lock(&timeout_mutex);
 			timeout_flag = false;
 			mutex_unlock(&timeout_mutex);
-			search_ptr->iterate(status);
+			search_ptr->iterate(search_status);
 		}
-	} while (status != QUITTING);
+	} while (search_status != QUITTING);
 
 	thread_exit();
 	return NULL;
@@ -249,10 +249,10 @@ void search::change(int s, const board& now)
 		b.unlock();
 	}
 
-	mutex_lock(&mutex);
-	status = s;
-	cond_signal(&cond);
-	mutex_unlock(&mutex);
+	mutex_lock(&search_mutex);
+	search_status = s;
+	cond_signal(&search_cond);
+	mutex_unlock(&search_mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -292,6 +292,13 @@ void search::iterate(int s)
 			 */
 			break;
 		extract(s);
+		if (pv.empty())
+			/*
+			 | Oops.  In this position, there's no principal
+			 | variation, there's no legal move.  This position must
+			 | be terminal (the end of the game).
+			 */
+			break;
 		if (output)
 			xboard_ptr->print_output(depth + 1, pv.front().value, (clock() - start) / CLOCKS_PER_SEC, nodes, pv);
 		if (pv.front().value == WEIGHT_KING || pv.front().value == -WEIGHT_KING)
@@ -310,8 +317,13 @@ void search::iterate(int s)
 	if (s == THINKING)
 	{
 		timer_cancel();
-		if (status != QUITTING)
-			xboard_ptr->print_result(pv.front());
+		if (search_status != QUITTING)
+		{
+			if (pv.empty())
+				xboard_ptr->vomit("The principal variation is empty.  :-(");
+			else
+				xboard_ptr->print_result(pv.front());
+		}
 	}
 }
 
@@ -372,11 +384,13 @@ move_t search::negascout(int depth, int alpha, int beta)
 		default:
 			m.value =  CONTEMPT;
 			m.promo = m.new_y = m.new_x = m.old_y = m.old_x = 0;
+			table_ptr->store(hash, m, depth, EXACT);
 			return m;
 		case CHECKMATE:
 		case ILLEGAL:
 			m.value = -WEIGHT_KING;
 			m.promo = m.new_y = m.new_x = m.old_y = m.old_x = 0;
+			table_ptr->store(hash, m, depth, EXACT);
 			return m;
 	}
 
@@ -463,6 +477,8 @@ void search::extract(int s)
 	/* Get the principal variation. */
 	while (table_ptr->probe(b.get_hash(), &m, 0))
 	{
+		if (!m.old_x && !m.old_y && !m.new_x && !m.new_y && !m.promo)
+			break;
 		pv.push_back(m);
 		b.make(m);
 		if (pv.size() == (unsigned) max_depth)
