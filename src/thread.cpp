@@ -23,6 +23,7 @@
  |	Boston MA 02111-1307
  */
 
+#include <stdio.h>
 #include "thread.h"
 
 /*----------------------------------------------------------------------------*\
@@ -275,7 +276,7 @@ void timer_handler(int num)
 #elif defined(WINDOWS)
 DWORD timer_handler(LPVOID arg)
 {
-	unsigned int ms = *((unsigned int*)arg); /* number of ms to wait */
+	unsigned long long ms = *((unsigned int*)arg); /* number of ms to wait */
 	HANDLE timer_id;
 
 	if ((timer_id = CreateWaitableTimer(NULL, TRUE, NULL)) == NULL)
@@ -287,9 +288,8 @@ DWORD timer_handler(LPVOID arg)
 	if (!SetWaitableTimer(timer_id, &relTime, 0, NULL, NULL, FALSE))
 		return 0;
 
-	WaitForSingleObject(timer_id, INFINITE);
-	//if (!WaitForSingleObject(timer_id, INFINITE))
-	//	return 0;
+	if (WaitForSingleObject(timer_id, INFINITE))
+		return 0;
 
 	(*callback)();
 
