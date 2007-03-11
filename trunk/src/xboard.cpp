@@ -433,9 +433,12 @@ void xboard::do_hint() const
 
 /* Aww, poor baby.  Our opponent needs us to hold her hand.  Give her a hint. */
 
+	move_t m = search_ptr->get_hint();
+	if (IS_NULL_MOVE(m))
+		return;
 	mutex_lock(&output_mutex);
 	printf("Hint: ");
-	print_move(search_ptr->get_hint());
+	print_move(m);
 	printf("\n");
 	mutex_unlock(&output_mutex);
 }

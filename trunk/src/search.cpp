@@ -283,7 +283,7 @@ void search::iterate(int s)
 	b.lock();
 	for (int depth = 0; depth <= max_depth; depth++)
 	{
-		negascout(depth, -WEIGHT_KING, WEIGHT_KING);
+		move_t m = negascout(depth, -WEIGHT_KING, WEIGHT_KING);
 		if (timeout_flag && depth)
 			/*
 			 | Oops.  The alarm has interrupted this iteration; the
@@ -291,14 +291,13 @@ void search::iterate(int s)
 			 | with the last iteration's results.
 			 */
 			break;
-		extract(s);
-		if (pv.empty())
+		if (IS_NULL_MOVE(m))
 			/*
-			 | Oops.  In this position, there's no principal
-			 | variation, there's no legal move.  This position must
-			 | be terminal (the end of the game).
+			 | Oops.  There's no legal move in this position.  The
+			 | game must've ended.
 			 */
 			break;
+		extract(s);
 		if (output)
 			xboard_ptr->print_output(depth + 1, pv.front().value, (clock() - start) / CLOCKS_PER_SEC, nodes, pv);
 		if (pv.front().value == WEIGHT_KING || pv.front().value == -WEIGHT_KING)
@@ -318,12 +317,7 @@ void search::iterate(int s)
 	{
 		timer_cancel();
 		if (search_status != QUITTING)
-		{
-			if (pv.empty())
-				xboard_ptr->vomit("The principal variation is empty.  :-(");
-			else
-				xboard_ptr->print_result(pv.front());
-		}
+			xboard_ptr->print_result(pv.front());
 	}
 }
 
@@ -382,14 +376,14 @@ move_t search::negascout(int depth, int alpha, int beta)
 		case IN_PROGRESS:
 			break;
 		default:
-			m.value =  CONTEMPT;
-			m.promo = m.new_y = m.new_x = m.old_y = m.old_x = 0;
+			SET_NULL_MOVE(m);
+			m.value = CONTEMPT;
 			table_ptr->store(hash, m, depth, EXACT);
 			return m;
 		case CHECKMATE:
 		case ILLEGAL:
+			SET_NULL_MOVE(m);
 			m.value = -WEIGHT_KING;
-			m.promo = m.new_y = m.new_x = m.old_y = m.old_x = 0;
 			table_ptr->store(hash, m, depth, EXACT);
 			return m;
 	}
@@ -477,7 +471,7 @@ void search::extract(int s)
 	/* Get the principal variation. */
 	while (table_ptr->probe(b.get_hash(), &m, 0))
 	{
-		if (!m.old_x && !m.old_y && !m.new_x && !m.new_y && !m.promo)
+		if (IS_NULL_MOVE(m))
 			break;
 		pv.push_back(m);
 		b.make(m);
@@ -493,8 +487,10 @@ void search::extract(int s)
 		list<move_t>::iterator it = pv.begin();
 		hint = *++it;
 	}
-	if (s == PONDERING && pv.size() >= 1)
+	else if (s == PONDERING && pv.size() >= 1)
 		hint = pv.front();
+	else
+		SET_NULL_MOVE(hint);
 }
 
 /*----------------------------------------------------------------------------*\
