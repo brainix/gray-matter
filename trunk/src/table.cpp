@@ -74,6 +74,7 @@ void table::clear()
 		for (uint64_t index = 0; index < slots / 2; index++)
 		{
 			data[policy][index].hash = 0;
+			SET_NULL_MOVE(data[policy][index].move);
 			data[policy][index].depth = 0;
 			data[policy][index].type = USELESS;
 		}
@@ -87,17 +88,17 @@ int table::probe(bitboard_t hash, move_t *move_ptr, int depth, int alpha, int be
 	uint64_t index = hash % (slots / 2);
 	int type = USELESS;
 
-	move_ptr->value = move_ptr->promo = move_ptr->new_y = move_ptr->new_x = move_ptr->old_y = move_ptr->old_x = 0;
+	SET_NULL_MOVE(*move_ptr);
 	for (int policy = DEEP; policy <= FRESH; policy++)
 		if (data[policy][index].hash == hash && data[policy][index].depth >= (unsigned) depth)
 		{
 			*move_ptr = data[policy][index].move;
-			if (data[policy][index].type == ALPHA && move_ptr->value <= alpha)
+			if (data[policy][index].type == ALPHA && move_ptr->value >= alpha)
 			{
 				move_ptr->value = alpha;
 				type = ALPHA;
 			}
-			if (data[policy][index].type == BETA && move_ptr->value >= beta)
+			if (data[policy][index].type == BETA && move_ptr->value <= beta)
 			{
 				move_ptr->value = beta;
 				type = BETA;
@@ -114,6 +115,9 @@ int table::probe(bitboard_t hash, move_t *move_ptr, int depth, int alpha, int be
 void table::store(bitboard_t hash, move_t move, int depth, int type)
 {
 	uint64_t index = hash % (slots / 2);
+
+	if (IS_NULL_MOVE(move))
+		return;
 
 	for (int policy = DEEP; policy <= FRESH; policy++)
 		if (policy == FRESH || (unsigned) depth >= data[DEEP][index].depth)

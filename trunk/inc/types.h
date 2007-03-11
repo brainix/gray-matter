@@ -86,8 +86,8 @@ typedef struct move
 /*
  |
  */
-#define IS_NULL_MOVE(m)		(!m.promo && !m.new_y && !m.new_x && !m.old_y && !m.old_x)
-#define SET_NULL_MOVE(m)	(m.promo = m.new_y = m.new_x = m.old_y = m.old_x = 0)
+#define IS_NULL_MOVE(m)		(!(m).promo && !(m).new_y && !(m).new_x && !(m).old_y && !(m).old_x)
+#define SET_NULL_MOVE(m)	((m).promo = (m).new_y = (m).new_x = (m).old_y = (m).old_x = 0)
 
 /*
  | This structure describes a transposition table slot.
