@@ -27,6 +27,11 @@
  | This is our cross-platform multithreading library.  All of these data types
  | and functions are defined twice: once for POSIX, again for Win32.
  |
+ | This interface file and its corresponding implementation file were originally
+ | ripped off from Doug Taylor's excellent libMetric.  You can find it here:
+ | http://jdtaylor.org/  Hopefully, we'll do some meaningful work that Doug will
+ | be able to merge upstream.
+ |
  | Throughout this endeavor, I've learned that writing a multithreaded program
  | for Windows is akin to building a Ferrari out of Duplo.  Sadly, the world is
  | populated with toddlers with stubby fingers that are too clumsy to manipulate
