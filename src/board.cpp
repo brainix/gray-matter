@@ -322,7 +322,7 @@ void board::make(move_t m)
 	hashes.push_back(hash);
 
 	/* If we're making a null move, skip a bunch of this nonsense. */
-	if (m.old_x == 0 && m.old_y == 0 && m.new_x == 0 && m.new_y == 0)
+	if (IS_NULL_MOVE(m))
 		goto end;
 
 	/* Move the piece and remove the captured piece. */
