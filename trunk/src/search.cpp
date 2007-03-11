@@ -284,17 +284,12 @@ void search::iterate(int s)
 	for (int depth = 0; depth <= max_depth; depth++)
 	{
 		move_t m = negascout(depth, -WEIGHT_KING, WEIGHT_KING);
-		if (timeout_flag && depth)
+		if (timeout_flag && depth || IS_NULL_MOVE(m))
 			/*
-			 | Oops.  The alarm has interrupted this iteration; the
-			 | current results are incomplete and unreliable.  Go
-			 | with the last iteration's results.
-			 */
-			break;
-		if (IS_NULL_MOVE(m))
-			/*
-			 | Oops.  There's no legal move in this position.  The
-			 | game must've ended.
+			 | Oops.  Either the alarm has interrupted this
+			 | iteration (and the results are incomplete and
+			 | unreliable), or there's no legal move in this
+			 | position (and the game must've ended).
 			 */
 			break;
 		extract(s);
@@ -349,6 +344,7 @@ move_t search::negascout(int depth, int alpha, int beta)
 	int type = ALPHA;
 	bool whose = b.get_whose();
 	bitboard_t hash = b.get_hash();
+	nodes++;
 
 	/*
 	 | Before anything else, do some Research Re: search & Research.  ;-)
@@ -397,7 +393,6 @@ move_t search::negascout(int depth, int alpha, int beta)
 	 | moves, sort by those scores, and hope the STL's sort algorithm is
 	 | stable so as not to disturb the board class' move ordering.  ;-)
 	 */
-	nodes++;
 	b.generate(l);
 	for (it = l.begin(); it != l.end(); it++)
 		if (it->old_x == m.old_x && it->old_y == m.old_y &&
