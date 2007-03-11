@@ -61,21 +61,25 @@
 #define WEIGHT_KING		10300
 
 /* Penalty/bonus for castling statuses: */
-#define WEIGHT_CANT_CASTLE	 -100 // The penalty/bonus for castling ranges
-#define WEIGHT_CAN_CASTLE	    0 // from -2 pawns (for being unable to
-#define WEIGHT_HAS_CASTLED	  200 // castle on either side) to +1 pawn (for
-				      // having castled).  This means, in some
-				      // situations, Gray Matter would give up 3
-				      // pawns in order to castle and be quite
-				      // pleased with itself!  I can't think of
-				      // a better way (without doing something
-				      // ugly like mucking about with fractions
-				      // of a pawn) to prevent absurd rook moves
-				      // early in games.  :-(  Someone should
-				      // fix this before we challenge Kasparov.
+#define WEIGHT_CANT_CASTLE	  -50 // The penalty/bonus for castling ranges
+#define WEIGHT_CAN_CASTLE	    0 // from -1 pawn (for being unable to
+#define WEIGHT_HAS_CASTLED	  100 // castle on either side) to +0.5 pawns
+				      // (for having castled).  This means, in
+				      // some situations, Gray Matter would give
+				      // up a pawn in order to castle and a
+				      // second pawn in order to prevent its
+				      // opponent from castling.  I've set the
+				      // weights like this to prevent absurd
+				      // rook moves early in games.  Is this
+				      // optimal?  Someone should look into this
+				      // before we challenge Kasparov.
 
 /* How much we hate our opponent: */
 #define CONTEMPT		  900
+
+/* Set this to the smallest absolute value of all of the preceeding weights,
+ * excluding CONTEMPT: */
+#define WEIGHT_INCREMENT	   50
 
 
 
