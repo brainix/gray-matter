@@ -437,7 +437,8 @@ move_t search::negascout(int depth, int alpha, int beta)
 		if (it->value >= beta)
 		{
 			it->value = beta;
-			table_ptr->store(hash, *it, depth, BETA);
+			if (!timeout_flag)
+				table_ptr->store(hash, *it, depth, BETA);
 			return *it;
 		}
 		if (it->value > alpha)
