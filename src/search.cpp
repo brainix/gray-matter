@@ -354,8 +354,8 @@ move_t search::negascout(int depth, int alpha, int beta)
 	 */
 	switch (table_ptr->probe(hash, &m, depth, alpha, beta))
 	{
-		case ALPHA: alpha = GREATER(alpha, m.value); break;
-		case BETA: beta = LESSER(beta, m.value); break;
+		case ALPHA: alpha = m.value; break;
+		case BETA: beta = m.value; break;
 		case EXACT: return m;
 	}
 	if (alpha >= beta)
@@ -374,13 +374,11 @@ move_t search::negascout(int depth, int alpha, int beta)
 		default:
 			SET_NULL_MOVE(m);
 			m.value = CONTEMPT;
-			table_ptr->store(hash, m, depth, EXACT);
 			return m;
 		case CHECKMATE:
 		case ILLEGAL:
 			SET_NULL_MOVE(m);
 			m.value = -WEIGHT_KING;
-			table_ptr->store(hash, m, depth, EXACT);
 			return m;
 	}
 
