@@ -175,6 +175,12 @@ void xboard::print_result(move_t m)
 			mutex_lock(&output_mutex);
 			printf("offer draw\n");
 			mutex_unlock(&output_mutex);
+			/*
+			 | Even though our opponent had offered a draw, it may
+			 | have become invalid before we just accepted it.
+			 | Therefore, the game might not be over.  We can't just
+			 | return here; we have to keep playing.
+			 */
 		}
 		else
 		{
@@ -193,8 +199,8 @@ void xboard::print_result(move_t m)
 	printf("\n");
 	mutex_unlock(&output_mutex);
 
-	search_ptr->change(ponder ? PONDERING : IDLING, b);
-	game_over();
+	int status = game_over();
+	search_ptr->change(ponder && status == IN_PROGRESS ? PONDERING : IDLING, b);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -202,6 +208,11 @@ void xboard::print_result(move_t m)
 \*----------------------------------------------------------------------------*/
 void xboard::print_move(move_t m) const
 {
+	/*
+	 | Subtle!  Other methods in this class lock and call this method.  If
+	 | we were to lock around the following output, at least without a
+	 | recursive lock, we'd deadlock.
+	 */
 	printf("%c%c", m.old_x + 'a', m.old_y + '1');
 	printf("%c%c", m.new_x + 'a', m.new_y + '1');
 	switch (m.promo)
