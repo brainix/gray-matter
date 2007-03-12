@@ -354,12 +354,17 @@ move_t search::negascout(int depth, int alpha, int beta)
 	 */
 	switch (table_ptr->probe(hash, &m, depth, alpha, beta))
 	{
-		case ALPHA: alpha = m.value; break;
-		case BETA: beta = m.value; break;
-		case EXACT: return m;
+		case ALPHA:
+			if (GREATER(alpha, m.value) >= beta)
+				return m;
+			break;
+		case BETA:
+			if (alpha >= LESSER(beta, m.value))
+				return m;
+			break;
+		case EXACT:
+			return m;
 	}
-	if (alpha >= beta)
-		return m;
 
 	/*
 	 | If this position is terminal (the end of the game), there's no legal
@@ -430,9 +435,8 @@ move_t search::negascout(int depth, int alpha, int beta)
 		if (it->value >= beta)
 		{
 			it->value = beta;
-			if (!timeout_flag)
-				table_ptr->store(hash, *it, depth, BETA);
-			return *it;
+			m = *it;
+			goto done;
 		}
 		if (it->value > alpha)
 		{
@@ -443,10 +447,12 @@ move_t search::negascout(int depth, int alpha, int beta)
 			m = *it;
 	}
 
+done:
 	if (!timeout_flag)
 	{
 		table_ptr->store(hash, m, depth, type);
-		history_ptr->store(whose, m, depth);
+		if (type == EXACT)
+			history_ptr->store(whose, m, depth);
 	}
 	return m;
 }
