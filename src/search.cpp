@@ -469,7 +469,7 @@ void search::extract(int s)
 	pv.clear();
 
 	/* Get the principal variation. */
-	while (table_ptr->probe(b.get_hash(), &m, 0))
+	while (table_ptr->probe(b.get_hash(), &m, 0) && b.get_status(true) == IN_PROGRESS)
 	{
 		if (IS_NULL_MOVE(m))
 			break;
