@@ -24,4 +24,4 @@ To download the latest Gray Matter source code, type: *{{{svn checkout http://gr
 
 = Install and Run =
 
-To install !WinBoard, [http://ftp.gnu.org/gnu/winboard/winboard-4_2_7a.exe download] and run the installer and follow the on-screen instructions.  To install Gray Matter, simply copy *{{{gray.exe}}}* into !WinBoard's folder.  To run Gray Matter, run !WinBoard and, in the *{{{WinBoard Startup Dialog}}}* window, replace ~~*{{{GNUChess}}}*~~ with *{{{gray.exe}}}*.  The game starts, and Gray Matter defaults to playing black and awaits your move.  Explore !WinBoard's menus to change various settings.  Enjoy Gray Matter on Windows!  :-)
+To install !WinBoard, [http://ftp.gnu.org/gnu/winboard/winboard-4_2_7a.exe download] and run the installer and follow the on-screen instructions.  To install Gray Matter, simply copy *{{{gray.exe}}}* into !WinBoard's folder.  To run Gray Matter, run !WinBoard and, in the *{{{WinBoard Startup Dialog}}}* window, replace ~~*{{{GNUChess}}}*~~ with *{{{gray.exe}}}*.  The game starts, and Gray Matter defaults to playing black and awaits your move.  Enjoy Gray Matter on Windows!  :-)
