@@ -281,7 +281,7 @@ void search::iterate(int s)
 	 | reached the maximum depth (either way).
 	 */
 	b.lock();
-	for (int depth = 0; depth <= max_depth; depth++)
+	for (int depth = 0; depth < max_depth; depth++)
 	{
 		move_t m = negascout(depth, -WEIGHT_KING, WEIGHT_KING);
 		if (timeout_flag && depth || IS_NULL_MOVE(m))
