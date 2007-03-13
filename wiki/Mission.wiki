@@ -20,6 +20,7 @@
   * To employ state-of-the-art techniques like:
     * Parallel (multithreaded) move search, and
     * Book learning.
+  * To earn a master-level rating.
 
 = Quotes =
 This section contains quotes about Gray Matter and its developers.
