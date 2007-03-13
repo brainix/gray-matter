@@ -2,12 +2,13 @@
 [http://gray-matter.googlecode.com/svn/trunk/doc/credits The Gray Matter Team]'s mission is to develop a competitive, pedagogical chess engine.  And, most importantly, to have [http://www.oreillynet.com/onlamp/blog/2005/10/ofun.html fun] while doing it!
 
 === Short Term (in the Next Month) ===
+  * To nurture an active community of hackers and chess players.
   * To automate [http://tim-mann.org/ics.html ICS] play.
   * To set up a dedicated testing box to run on [http://www.freechess.org/ FICS] 24/7.
 === Mid Term (in the Next Year) ===
-  *
+  * To nurture an active community of hackers and chess players.
 === Long Term (in the Project's Lifetime) ===
-  *
+  * To nurture an active community of hackers and chess players.
 
 = Quotes =
 This section contains quotes about Gray Matter and its developers.
