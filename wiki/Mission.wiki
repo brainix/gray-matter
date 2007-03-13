@@ -2,7 +2,7 @@
 [http://gray-matter.googlecode.com/svn/trunk/doc/credits The Gray Matter Team]'s mission is to develop a competitive, pedagogical chess engine.  And, most importantly, to have [http://www.oreillynet.com/onlamp/blog/2005/10/ofun.html fun] while doing it!
 
 === Short Term Goals (for the Next Month) ===
-  * To nurture an active community of hackers and chess players by:
+  * To nurture a community of hackers and chess players by:
     * Cleaning up and commenting code, authoring documentation,
     * Automating [http://tim-mann.org/ics.html ICS] play,
     * Setting up a dedicated testing box to run on [http://www.freechess.org/ FICS] 24/7, and
@@ -11,12 +11,12 @@
   * To adopt a version numbering standard and provide builds.
   * To earn a provisional rating.
 === Mid Term Goals (for the Next Year) ===
-  * To nurture an active community of hackers and chess players.
+  * To nurture a community of hackers and chess players.
   * To clean up algorithms and data structures to be more robust.
   * To prove (or at least provide evidence for) correctness of search (equivalence to straight [http://www.nist.gov/dads/HTML/minimax.html MiniMax]).
   * For the engine to regularly checkmate its hackers.
 === Long Term Goals (for the Project's Lifetime) ===
-  * To nurture an active community of hackers and chess players.
+  * To nurture a community of hackers and chess players.
   * To employ state-of-the-art techniques like:
     * Parallel (multithreaded) move search, and
     * Book learning.
