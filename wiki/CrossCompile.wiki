@@ -20,8 +20,8 @@ You need Subversion (to download the Gray Matter source code) and MinGW (to cros
 
 = Download and Cross-Compile =
 
-  * To download the Gray Matter source code, type: *{{{svn checkout http://gray-matter.googlecode.com/svn/trunk/ gray-matter/}}}*
-  * To cross-compile Gray Matter for Windows, type: *{{{cd gray-matter/;make -f WINmakefile}}}*
+  * To download the source code, type: *{{{svn checkout http://gray-matter.googlecode.com/svn/trunk/ gray-matter/}}}*
+  * To cross-compile for Windows, type: *{{{cd gray-matter/; make -f WINmakefile}}}*
 
 The Windows executable is now: *{{{bin/gray.exe}}}*
 
