@@ -6,7 +6,7 @@ Carry out the *Prepare* and *Download and Cross-Compile* steps on Linux and the 
 
 = Prepare =
 
-You need Subversion (to download the Gray Matter source code) and MinGW (to cross-compile Gray Matter for Windows).  If you don't already have these tools, install them now:
+You need [http://subversion.tigris.org/ Subversion] and [http://www.mingw.org/ MinGW].  If you don't already have these tools, install them now:
 
 === On Gentoo ===
   * To install Subversion, type: *{{{emerge subversion}}}*
