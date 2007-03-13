@@ -7,7 +7,7 @@
     * automating [http://tim-mann.org/ics.html ICS] play
     * setting up a dedicated testing box to run on [http://www.freechess.org/ FICS] 24/7
     * making friends in person, on IRC, and on ICS
-  * to generate/accept all legal moves (including en passant!) and correctly detect checkmate, stalemate
+  * to generate/accept all legal moves (including en passant!) and correctly detect checkmate/stalemate
   * to adopt a version numbering standard and provide builds
   * to earn a provisional rating
 === Mid Term Goals (for the Next Year) ===
