@@ -6,10 +6,14 @@
     * cleaning up and commenting code, authoring documentation
     * automating [http://tim-mann.org/ics.html ICS] play
     * setting up a dedicated testing box to run on [http://www.freechess.org/ FICS] 24/7
+    * making friends in person, on IRC, and on ICS
+  * to generate/accept all legal moves (including en passant!) and correctly detect checkmate, stalemate
   * to adopt a version numbering standard and provide builds
   * to earn a provisional rating
 === Mid Term Goals (for the Next Year) ===
   * to nurture an active community of hackers and chess players
+  * to clean up algorithms and data structures to be more robust
+  * to prove (or at least provide evidence for) correctness of search (equivalence to straight [http://www.nist.gov/dads/HTML/minimax.html MiniMax])
   * for the engine to regularly checkmate its hackers
 === Long Term Goals (for the Project's Lifetime) ===
   * to nurture an active community of hackers and chess players
