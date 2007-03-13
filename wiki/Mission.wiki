@@ -4,7 +4,7 @@
 
 = Quotes =
 
-This section contains quotes about Gray Matter or its developers.
+This section contains quotes about Gray Matter and its developers.
 
   * I really like the simplicity.  Nice coding.  Easy to follow and understand from the get go.  Excellent work! - Joshua Haglund
 
