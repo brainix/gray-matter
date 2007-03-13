@@ -16,6 +16,7 @@
   * To clean up algorithms and data structures to be more robust.
   * To prove (or at least provide evidence for) correctness of search (equivalence to straight [http://www.nist.gov/dads/HTML/minimax.html MiniMax]).
   * To implement quiescence search and null move pruning.
+  * To implement an opening book and endgame tablebase.
   * For the engine to regularly checkmate its hackers.
 
 === Long Term Goals (for the Project's Lifetime) ===
