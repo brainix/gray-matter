@@ -1,3 +1,13 @@
 #summary Mission statement.
 
 [http://gray-matter.googlecode.com/svn/trunk/doc/credits The Gray Matter Team]'s mission is to develop a competitive, pedagogical chess engine.  And, most importantly, to have fun while doing it!
+
+= Quotes =
+
+This section contains quotes about Gray Matter or its developers.
+
+  * I really like the simplicity.  Nice coding.  Easy to follow and understand from the get go.  Excellent work! - Joshua Haglund
+
+  * Thank you very much for having created Gray Matter - I'm trying to create a basic chess engine to communicate with XBoard, and your code provided valuable insight! - Christian Korn
+
+  * Calm down in there, Rain Man. - a cute girl at Agora
