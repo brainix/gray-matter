@@ -1,9 +1,14 @@
 #summary Mission statement.
+[http://gray-matter.googlecode.com/svn/trunk/doc/credits The Gray Matter Team]'s mission is to develop a competitive, pedagogical chess engine.  And, most importantly, to have [http://www.oreillynet.com/onlamp/blog/2005/10/ofun.html fun] while doing it!
 
-[http://gray-matter.googlecode.com/svn/trunk/doc/credits The Gray Matter Team]'s mission is to develop a competitive, pedagogical chess engine.  And, most importantly, to have fun while doing it!
+=== Short Term (in the Next Month) ===
+  * To set up a dedicated testing box to run on [http://www.freechess.org/ FICS] 24/7.
+=== Mid Term (in the Next Year) ===
+  *
+=== Long Term (in the Project's Lifetime) ===
+  *
 
 = Quotes =
-
 This section contains quotes about Gray Matter and its developers.
 
   * I really like the simplicity.  Nice coding.  Easy to follow and understand from the get go.  Excellent work! - Joshua Haglund
