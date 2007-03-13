@@ -18,6 +18,7 @@
   * To implement quiescence search and null move pruning.
   * To implement an opening book and endgame tablebase.
   * For the engine to regularly checkmate its hackers.
+  * To participate in a tournament.
 
 === Long Term Goals (for the Project's Lifetime) ===
   * To nurture a community of hackers and chess players.
