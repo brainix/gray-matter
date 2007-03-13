@@ -10,8 +10,12 @@
   * to earn a provisional rating
 === Mid Term Goals (for the Next Year) ===
   * to nurture an active community of hackers and chess players
+  * for the engine to regularly checkmate its hackers
 === Long Term Goals (for the Project's Lifetime) ===
   * to nurture an active community of hackers and chess players
+  * to employ state-of-the-art techniques like
+    * parallel (multithreaded) move search
+    * book learning
 
 = Quotes =
 This section contains quotes about Gray Matter and its developers.
