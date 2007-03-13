@@ -1,6 +1,6 @@
 #summary Relevant links.
 
-=Chess Engine Programming=
+= Chess Engine Programming =
   * [http://www.gamedev.net/reference/programming/features/chess1/ Chess Programming] - Overviews of various concepts by François-Dominic Laramée, the author of Java Chess.
   * [http://www.frayn.net/beowulf/theory.html Computer Chess Programming Theory] - Overviews of various concepts by Colin Frayn, the author of Beowulf.
   * [http://www.cis.uab.edu/hyatt/pubs.html Online Technical Papers] - In-depth discussions of bitboards, hashing, and parallel search by Bob Hyatt, the author of Crafty.
@@ -8,5 +8,8 @@
 
   * [http://www.ascotti.org/programming/chess/Shannon%20-%20Programming%20a%20computer%20for%20playing%20chess.pdf Programming a Computer for Playing Chess] - The paper that started it all (in 1949!) by Claude E. Shannon, the father of modern digital communications and information theory.
 
-=Fun=
+= Open Source =
+  * [http://www.oreillynet.com/onlamp/blog/2005/10/ofun.html -Ofun] - The future of project management by Geoff Broadwell.
+
+= Fun =
   * [http://www.scottmccloud.com/comics/chess/chess.html My Obsession with Chess] - A comic by Scott !McCloud.
