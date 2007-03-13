@@ -6,7 +6,7 @@
     * Cleaning up and commenting code, authoring documentation,
     * Automating [http://tim-mann.org/ics.html ICS] play,
     * Setting up a dedicated testing box to run on [http://www.freechess.org/ FICS] 24/7, and
-    * Making friends in person, on IRC, and on ICS.
+    * Making friends.
   * To generate/accept all legal moves (including en passant!) and correctly detect checkmate/stalemate.
   * To adopt a version numbering standard and provide builds.
   * To earn a provisional rating.
