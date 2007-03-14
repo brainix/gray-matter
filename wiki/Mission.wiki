@@ -28,7 +28,7 @@
   * To earn a master-level rating.
 
 = Quotes =
-This section contains quotes about Gray Matter and its developers.
+This section contains quotes about Gray Matter and its hackers.
 
   * I really like the simplicity.  Nice coding.  Easy to follow and understand from the get go.  Excellent work! - Joshua Haglund
 
