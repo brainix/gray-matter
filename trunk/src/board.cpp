@@ -878,14 +878,17 @@ void board::generate_pawn(list<move_t> &l) const
 	/* If our pawn is on our fifth row, and our opponent's pawn is beside
 	 * our pawn, and, as her last move, our opponent advanced her pawn two
 	 * squares, then we can perform an en passant. */
-//	if (state.en_passant != -1)
-//	{
-//		m.old_y = (m.new_y = ON_MOVE ? 2 : 5) + (ON_MOVE ? 1 : -1);
-//		m.new_x = (unsigned) state.en_passant;
-//		for (m.old_x = state.en_passant == 0 ? 1 : (unsigned) (state.en_passant - 1); m.old_x <= (unsigned) (state.en_passant == 7 ? 6 : state.en_passant + 1); m.old_x += 2)
-//			if (BIT_GET(state.piece[ON_MOVE][PAWN], m.old_x, m.old_y))
-//				l.push_front(m);
-//	}
+	if (state.en_passant != -1)
+	{
+		m.promo = 0;
+		m.new_y = ON_MOVE ? 2 : 5;
+		m.new_x = state.en_passant;
+		m.old_y = ON_MOVE ? 3 : 4;
+		if (state.en_passant != 0 && BIT_GET(state.piece[ON_MOVE][PAWN], m.old_x = state.en_passant - 1, m.old_y))
+			l.push_front(m);
+		if (state.en_passant != 7 && BIT_GET(state.piece[ON_MOVE][PAWN], m.old_x = state.en_passant + 1, m.old_y))
+			l.push_front(m);
+	}
 
 	/* A pawn can advance one square. */
 	b = state.piece[ON_MOVE][PAWN];
