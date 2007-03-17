@@ -32,6 +32,8 @@ The Windows executable is now: *{{{bin/gray.exe}}}*
 
   * [http://ftp.gnu.org/gnu/winboard/winboard-4_2_7a.exe Download] and run the !WinBoard installer.  Follow the on-screen instructions.
   * Copy *{{{gray.exe}}}* into !WinBoard's folder.
-  * Run !WinBoard and, in the *{{{WinBoard Startup Dialog}}}* window, replace ~~*{{{GNUChess}}}*~~ with *{{{gray.exe}}}*.
+  * Run !WinBoard and, in the *{{{WinBoard Startup Dialog}}}* window,^1^ replace ~~*{{{GNUChess}}}*~~ with *{{{gray.exe}}}*.
+
+^1^  Could we get a screenshot here?
 
 The game starts, and Gray Matter defaults to playing black and awaits your move.  Enjoy Gray Matter on Windows!  :-)
