@@ -179,7 +179,7 @@ void xboard::print_result(move_t m)
 void xboard::print_resignation() const
 {
 	mutex_lock(&output_mutex);
-	printf("%s\n" draw ? "offer draw" : "resign");
+	printf("%s\n", draw ? "offer draw" : "resign");
 	mutex_unlock(&output_mutex);
 }
 
