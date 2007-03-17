@@ -49,6 +49,7 @@ public:
 	void loop(class search *s);
 	void print_output(int ply, int value, int time, int nodes, list<move_t> &pv) const;
 	void print_result(move_t m);
+	void print_resignation() const;
 private:
 	char buffer[80];          // Input buffer.
 	bool ponder;              // Whether we're to ponder.
