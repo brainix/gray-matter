@@ -345,7 +345,6 @@ move_t search::negascout(int depth, int alpha, int beta)
 	int type = ALPHA;
 	bool whose = b.get_whose();
 	bitboard_t hash = b.get_hash();
-	nodes++;
 
 	/*
 	 | Before anything else, do some Research Re: search & Research.  ;-)
@@ -397,6 +396,7 @@ move_t search::negascout(int depth, int alpha, int beta)
 	 | moves, sort by those scores, and hope the STL's sort algorithm is
 	 | stable so as not to disturb the board class' move ordering.  ;-)
 	 */
+	nodes++;
 	b.generate(l);
 	for (it = l.begin(); it != l.end(); it++)
 		if (it->old_x == m.old_x && it->old_y == m.old_y &&
