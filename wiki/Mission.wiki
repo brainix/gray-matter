@@ -1,5 +1,5 @@
 #summary Mission statement, goals, and quotes.
-#labels Featured
+#labels Featured,Phase-Requirements
 [http://gray-matter.googlecode.com/svn/trunk/doc/credits The Gray Matter Team]'s mission is to develop a competitive, pedagogical chess engine.  And, most importantly, to have [http://www.oreillynet.com/onlamp/blog/2005/10/ofun.html fun] while doing it!
 
 === Short Term Goals (for the Next Month) ===
