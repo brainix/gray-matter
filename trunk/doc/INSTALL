@@ -1,12 +1,12 @@
 
 Read these instructions before disregarding them.
-To install Gray Matter:
+To install Gray Matter on Linux:
 
 --------------------------------------------------------------------------------
 
 Extract:
-	· Type: unzip "Gray Matter.zip"
-	· Type: cd "Gray Matter"
+	· Type: tar xfvz gray-matter.tar.gz
+	· Type: cd gray-matter/
 
 --------------------------------------------------------------------------------
 
