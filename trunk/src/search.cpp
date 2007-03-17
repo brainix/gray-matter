@@ -310,7 +310,7 @@ void search::iterate(int s)
 	 */
 	if (s == THINKING)
 		timer_cancel();
-	if (pv.front().value == THINKING ? -WEIGHT_KING : WEIGHT_KING)
+	if (pv.front().value == (THINKING ? -WEIGHT_KING : WEIGHT_KING))
 		xboard_ptr->print_resignation();
 	if (s == THINKING && search_status != QUITTING)
 		xboard_ptr->print_result(pv.front());
