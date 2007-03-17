@@ -161,36 +161,6 @@ void xboard::print_output(int ply, int value, int time, int nodes, list<move_t> 
 \*----------------------------------------------------------------------------*/
 void xboard::print_result(move_t m)
 {
-	if (m.value == -WEIGHT_KING)
-	{
-		/*
-		 | Bloody hell.  At this point, even our best response leads to
-		 | a loss; there's no hope.  We might as well take it like
-		 | samurais and eviscerate ourselves.  If our opponent has
-		 | offered a draw, accept it.  Otherwise, resign.  I hate
-		 | myself.
-		 */
-		if (draw)
-		{
-			mutex_lock(&output_mutex);
-			printf("offer draw\n");
-			mutex_unlock(&output_mutex);
-			/*
-			 | Even though our opponent had offered a draw, it may
-			 | have become invalid before we just accepted it.
-			 | Therefore, the game might not be over.  We can't just
-			 | return here; we have to keep playing.
-			 */
-		}
-		else
-		{
-			mutex_lock(&output_mutex);
-			printf("resign\n");
-			mutex_unlock(&output_mutex);
-			return;
-		}
-	}
-
 	b.make(m);
 
 	mutex_lock(&output_mutex);
@@ -201,6 +171,16 @@ void xboard::print_result(move_t m)
 
 	int status = game_over();
 	search_ptr->change(ponder && status == IN_PROGRESS ? PONDERING : IDLING, b);
+}
+
+/*----------------------------------------------------------------------------*\
+ |			      print_resignation()			      |
+\*----------------------------------------------------------------------------*/
+void xboard::print_resignation() const
+{
+	mutex_lock(&output_mutex);
+	printf("%s\n" draw ? "offer draw" : "resign");
+	mutex_unlock(&output_mutex);
 }
 
 /*----------------------------------------------------------------------------*\

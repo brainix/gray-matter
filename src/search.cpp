@@ -309,11 +309,11 @@ void search::iterate(int s)
 	 | our favorite move.
 	 */
 	if (s == THINKING)
-	{
 		timer_cancel();
-		if (search_status != QUITTING)
-			xboard_ptr->print_result(pv.front());
-	}
+	if (pv.front().value == THINKING ? -WEIGHT_KING : WEIGHT_KING)
+		xboard_ptr->print_resignation();
+	if (s == THINKING && search_status != QUITTING)
+		xboard_ptr->print_result(pv.front());
 }
 
 /*----------------------------------------------------------------------------*\
