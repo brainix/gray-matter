@@ -361,8 +361,8 @@ void xboard::do_sd() const
 void xboard::do_usermove()
 {
 
-/* Our opponent has moved.  If the move was legal, we're not in force mode, and
- * the move didn't just end the game: formulate a response. */
+/* Our opponent has moved.  If the move was legal, and it didn't just end the
+ * game, and we're not in force mode: formulate a response. */
 
 	move_t m;
 
@@ -383,14 +383,19 @@ void xboard::do_usermove()
 
 	b.make(m);
 
-	/* Alright, so the move was legal.  Are we in force mode, or did the
-	 * move just end the game? */
-	if (force || game_over())
-		/* Yes.  Either way, we're not to respond. */
+	/* Alright, so the move was legal.  Did it just end the game? */
+	if (game_over())
+		/* Yes.  We're not to respond. */
 		return;
 
-	/* Alright, so the move was legal, we're not in force mode, and the move
-	 * didn't just end the game.  Formulate a response. */
+	/* Alright, so the move was legal, and it didn't just end the game.  Are
+	 * we in force mode? */
+	if (force)
+		/* Yes.  We're not to respond. */
+		return;
+
+	/* Alright, so the move was legal, and it didn't just end the game, and
+	 * we're not in force mode.  Formulate a response. */
 	search_ptr->change(THINKING, b);
 }
 
