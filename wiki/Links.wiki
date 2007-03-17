@@ -1,4 +1,5 @@
 #summary Relevant links.
+#labels Phase-Implementation
 
 = Chess Engine Programming =
   * [http://www.gamedev.net/reference/programming/features/chess1/ Chess Programming] - Overviews of various concepts by François-Dominic Laramée, the author of Java Chess.
