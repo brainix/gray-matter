@@ -267,10 +267,11 @@ void search::iterate(int s)
  */
 
 	/*
-	 | Initialize the number of nodes searched and note the start time.  If
-	 | we're to think, set the alarm.
+	 | Initialize the number of nodes searched, clear the history table, and
+	 | note the start time.  If we're to think, set the alarm.
 	 */
 	nodes = 0;
+	history_ptr->clear();
 	clock_t start = clock();
 	if (s == THINKING)
 		timer_set(max_time);
