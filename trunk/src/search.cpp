@@ -38,7 +38,7 @@ int search_status;      // ...the search status!  :-D
 /*----------------------------------------------------------------------------*\
  |				    search()				      |
 \*----------------------------------------------------------------------------*/
-search::search()
+search::search(xboard *x, table *t, history *h)
 {
 
 /* Constructor. */
@@ -46,6 +46,10 @@ search::search()
 	max_time = INT_MAX;
 	max_depth = DEPTH;
 	output = false;
+
+	xboard_ptr = x;
+	table_ptr = t;
+	history_ptr = h;
 
 	mutex_init(&timeout_mutex);
 	timer_function(handle);
@@ -92,17 +96,6 @@ class search& search::operator=(const search& that)
 	xboard_ptr = that.xboard_ptr;
 
 	return *this;
-}
-
-/*----------------------------------------------------------------------------*\
- |				     bind()				      |
-\*----------------------------------------------------------------------------*/
-void search::bind(table *t, history *h, xboard *x)
-{
-	b.bind(t);
-	table_ptr = t;
-	history_ptr = h;
-	xboard_ptr = x;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -433,7 +426,7 @@ move_t search::negascout(int depth, int alpha, int beta)
 		{
 			/* Recursive case: minimal (scout) window. */
 			if (type == EXACT)
-				it->value = -negascout(depth - 1, -alpha - 1, -alpha).value;
+				it->value = -negascout(depth - 1, -alpha - WEIGHT_INCREMENT, -alpha).value;
 			/* Recursive case: full alpha-beta window. */
 			if (type != EXACT || alpha < it->value && it->value < beta)
 				it->value = -negascout(depth - 1, -beta, -alpha).value;

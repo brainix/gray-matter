@@ -176,7 +176,7 @@ board& board::operator=(const board& that)
 	 | It's like this.  And who gives a f*ck about those?
 	 | So just chill, 'til the next episode.
 	 |
-	 |	Snoop Doggy Dogg and Dr. Dre on overloading the assignment operator
+	 |	Snoop Doggy Dogg and Dr. Dre on overloading the = operator
 	 */
 	if (this == &that)
 		return *this;
@@ -191,18 +191,7 @@ board& board::operator=(const board& that)
 		}
 	hashes = that.hashes;
 	hash = that.hash;
-	pawn_hashes = that.pawn_hashes;
-	pawn_hash = that.pawn_hash;
-	table_ptr = that.table_ptr;
 	return *this;
-}
-
-/*----------------------------------------------------------------------------*\
- |				     bind()				      |
-\*----------------------------------------------------------------------------*/
-void board::bind(table *t)
-{
-	table_ptr = t;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -284,7 +273,7 @@ int board::evaluate() const
 {
 
 /* Evaluate the current state.  For simplicity's sake, evaluate from the
- * perspective of the player who moved last (the color that's off move). */
+ * perspective of the player who's just moved (the color that's off move). */
 
 	int sign, coefficient, weight, sum = 0;
 
@@ -301,37 +290,7 @@ int board::evaluate() const
 		for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
 			sum += sign * weight_castle[state.castle[color][side]];
 	}
-	return sum + evaluate_pawn();
-}
-
-/*----------------------------------------------------------------------------*\
- |				evaluate_pawn()				      |
-\*----------------------------------------------------------------------------*/
-int board::evaluate_pawn() const
-{
-
-/* Evaluate the current pawn state.  Since this is called from the preceeding
- * method, evaluate from the perspective of the player who moved last (the color
- * that's off move).  In order to do this, evaluate from white's perspective,
- * then negate the evaluation if black moved last. */
-
-	int sign, sum;
-
-	if (table_ptr->probe(hash, &sum) == PAWN_STRUCT)
-		goto end;
-
-	for (int color = WHITE; color <= BLACK; color++)
-	{
-		sign = color == WHITE ? 1 : -1;
-		/* Penalize isolated pawns. */
-		/* Penalize doubled pawns.  */
-		/* Penalize backward pawns. */
-		/* Reward connected pawns.  */
-	}
-
-	table_ptr->store(hash, sum);
-end:
-	return sum * (OFF_MOVE == WHITE ? 1 : -1);
+	return sum;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -361,7 +320,6 @@ void board::make(move_t m)
 		for (int color = WHITE; color <= COLORS; color++)
 			rotations[angle][color].push_back(rotation[angle][color]);
 	hashes.push_back(hash);
-	pawn_hashes.push_back(pawn_hash);
 
 	/* If we're making a null move, skip a bunch of this nonsense. */
 	if (IS_NULL_MOVE(m))
@@ -381,11 +339,6 @@ void board::make(move_t m)
 			}
 			hash ^= key_piece[ON_MOVE][shape][m.old_x][m.old_y];
 			hash ^= key_piece[ON_MOVE][shape][m.new_x][m.new_y];
-			if (shape == PAWN)
-			{
-				pawn_hash ^= key_piece[ON_MOVE][shape][m.old_x][m.old_y];
-				pawn_hash ^= key_piece[ON_MOVE][shape][m.new_x][m.new_y];
-			}
 		}
 		if (BIT_GET(state.piece[OFF_MOVE][shape], m.new_x, m.new_y))
 		{
@@ -393,8 +346,6 @@ void board::make(move_t m)
 			for (int angle = L45; angle <= R90; angle++)
 				BIT_CLR(rotation[angle][OFF_MOVE], coord[MAP][angle][m.new_x][m.new_y][X], coord[MAP][angle][m.new_x][m.new_y][Y]);
 			hash ^= key_piece[OFF_MOVE][shape][m.new_x][m.new_y];
-			if (shape == PAWN)
-				pawn_hash ^= key_piece[OFF_MOVE][shape][m.new_x][m.new_y];
 		}
 	}
 
@@ -458,7 +409,6 @@ void board::make(move_t m)
 			BIT_SET(state.piece[ON_MOVE][m.promo], m.new_x, m.new_y);
 			hash ^= key_piece[ON_MOVE][PAWN][m.new_x][m.new_y];
 			hash ^= key_piece[ON_MOVE][m.promo][m.new_x][m.new_y];
-			pawn_hash ^= key_piece[ON_MOVE][PAWN][m.new_x][m.new_y];
 		}
 
 		/* If we're performing an en passant, remove the captured
@@ -469,7 +419,6 @@ void board::make(move_t m)
 			for (int angle = L45; angle <= R90; angle++)
 				BIT_CLR(rotation[angle][OFF_MOVE], coord[MAP][angle][m.new_x][m.old_y][X], coord[MAP][angle][m.new_x][m.old_y][Y]);
 			hash ^= key_piece[OFF_MOVE][PAWN][m.new_x][m.old_y];
-			pawn_hash ^= key_piece[OFF_MOVE][PAWN][m.new_x][m.old_y];
 		}
 
 		/* If we're advancing a pawn two squares, mark it vulnerable to
@@ -511,8 +460,6 @@ void board::unmake()
 		}
 	hash = hashes.back();
 	hashes.pop_back();
-	pawn_hash = pawn_hashes.back();
-	pawn_hashes.pop_back();
 }
 
 /*----------------------------------------------------------------------------*\
@@ -687,8 +634,6 @@ void board::init_hash()
 
 	hashes.clear();
 	hash = 0;
-	pawn_hashes.clear();
-	pawn_hash = 0;
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
@@ -700,8 +645,6 @@ void board::init_hash()
 				x = n % 8;
 				y = n / 8;
 				hash ^= key_piece[color][shape][x][y];
-				if (shape == PAWN)
-					pawn_hash ^= key_piece[color][shape][x][y];
 			}
 		}
 

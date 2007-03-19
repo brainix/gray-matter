@@ -36,12 +36,6 @@ using namespace std;
 #include "types.h"
 #include "thread.h"
 
-/* Extra Gray Matter stuff: */
-#include "table.h"
-
-/* Forward declarations: */
-class table;
-
 /* These macros represent the colors on and off move. */
 #define ON_MOVE			(state.whose)
 #define OFF_MOVE		(!state.whose)
@@ -95,7 +89,6 @@ public:
 	board();
 	~board();
 	board& operator=(const board& that);
-	void bind(table *t);
 	void set_board();
 	void lock();
 	void unlock();
@@ -105,7 +98,6 @@ public:
 	bitboard_t get_hash() const;
 	int get_status(bool mate_test);
 	int evaluate() const;
-	int evaluate_pawn() const;
 
 	/* These methods generate, make, and take back moves. */
 	void generate(list<move_t> &l) const;
@@ -114,16 +106,13 @@ public:
 	void make(char *p);
 
 private:
-	list<state_t> states;                           // Previous states.
-	state_t state;                                  // Current state.
-	list<bitboard_t> rotations[ANGLES][COLORS + 1]; // Previous rotated bitboards.
-	bitboard_t rotation[ANGLES][COLORS + 1];        // Current rotated bitboard.
-	list<bitboard_t> hashes;                        // Previous Zobrist hash keys.
-	bitboard_t hash;                                // Current Zobrist hash key.
-	list<bitboard_t> pawn_hashes;                   // Previous pawn Zobrist hash keys.
-	bitboard_t pawn_hash;                           // Current pawn Zobrist hash key.
-	mutex_t mutex;                                  // ?
-	table *table_ptr;                               // Transposition table object.
+	list<state_t> states;                           /* Previous states.            */
+	state_t state;                                  /* Current state.              */
+	list<bitboard_t> rotations[ANGLES][COLORS + 1]; /* Previous rotated bitboards. */
+	bitboard_t rotation[ANGLES][COLORS + 1];        /* Current rotated bitboard.   */
+	list<bitboard_t> hashes;                        /* Previous Zobrist hash keys. */
+	bitboard_t hash;                                /* Current Zobrist hash key.   */
+	mutex_t mutex;				/* ?                           */
 
 	/* These methods start up games. */
 	void init_state();
