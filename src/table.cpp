@@ -29,10 +29,12 @@
 /*----------------------------------------------------------------------------*\
  |				    table()				      |
 \*----------------------------------------------------------------------------*/
-table::table(int mb)
+table::table(xboard *x, int mb)
 {
 
 /* Constructor. */
+
+	xboard_ptr = x;
 
 	try
 	{
@@ -44,8 +46,9 @@ table::table(int mb)
 	}
 	catch (...)
 	{
-		/* We should probably do some error checking here. */
+		xboard_ptr->vomit("Couldn't allocate transposition table.");
 	}
+
 	clear();
 }
 
@@ -80,14 +83,14 @@ void table::clear()
 /*----------------------------------------------------------------------------*\
  |				    probe()				      |
 \*----------------------------------------------------------------------------*/
-int table::probe(bitboard_t hash, move_t *move_ptr, int depth, int alpha, int beta) const
+int table::probe(bitboard_t hash, move_t *move_ptr, int depth, int alpha, int beta)
 {
 	uint64_t index = hash % (slots / 2);
 	int type = USELESS;
 
 	SET_NULL_MOVE(*move_ptr);
 	for (int policy = DEEP; policy <= FRESH; policy++)
-		if (data[policy][index].hash == hash && data[policy][index].depth >= (unsigned) depth && (data[policy][index].type == ALPHA || data[policy][index].type == BETA || data[policy][index].type == EXACT))
+		if (data[policy][index].hash == hash && data[policy][index].depth >= (unsigned) depth)
 		{
 			*move_ptr = data[policy][index].move;
 			if (data[policy][index].type == ALPHA && move_ptr->value >= alpha)
@@ -124,29 +127,4 @@ void table::store(bitboard_t hash, move_t move, int depth, int type)
 			data[policy][index].depth = depth;
 			data[policy][index].type = type;
 		}
-}
-
-/*----------------------------------------------------------------------------*\
- |				    probe()				      |
-\*----------------------------------------------------------------------------*/
-int table::probe(bitboard_t hash, int *value_ptr) const
-{
-	uint64_t index = hash % (slots / 2);
-	bool found = data[FRESH][index].hash == hash && data[FRESH][index].type == PAWN_STRUCT;
-	*value_ptr = found ? data[FRESH][index].move.value : 0;
-	return found ? PAWN_STRUCT : USELESS;
-}
-
-/*----------------------------------------------------------------------------*\
- |				    store()				      |
-\*----------------------------------------------------------------------------*/
-void table::store(bitboard_t hash, int value)
-{
-	uint64_t index = hash % (slots / 2);
-
-	data[FRESH][index].hash = hash;
-	SET_NULL_MOVE(data[FRESH][index].move);
-	data[FRESH][index].move.value = value;
-	data[FRESH][index].depth = 0;
-	data[FRESH][index].type = PAWN_STRUCT;
 }
