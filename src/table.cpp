@@ -133,7 +133,7 @@ int table::probe(bitboard_t hash, int *value_ptr) const
 {
 	uint64_t index = hash % (slots / 2);
 	bool found = data[FRESH][index].hash == hash && data[FRESH][index].type == PAWN_STRUCT;
-	*value_ptr = data[FRESH][index].move.value;
+	*value_ptr = found ? data[FRESH][index].move.value : 0;
 	return found ? PAWN_STRUCT : USELESS;
 }
 
