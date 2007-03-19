@@ -315,7 +315,10 @@ int board::evaluate_pawn() const
  * that's off move).  In order to do this, evaluate from white's perspective,
  * then negate the evaluation if black moved last. */
 
-	int sign, sum = 0;
+	int sign, sum;
+
+	if (table_ptr->probe(hash, &sum) == PAWN_STRUCT)
+		goto end;
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
@@ -326,6 +329,7 @@ int board::evaluate_pawn() const
 		/* Reward connected pawns.  */
 	}
 
+	table_ptr->store(hash, sum);
 end:
 	return sum * (OFF_MOVE == WHITE ? 1 : -1);
 }
