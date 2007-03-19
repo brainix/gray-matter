@@ -300,7 +300,7 @@ DWORD timer_handler(LPVOID arg)
 
 	/* Create an alarm. */
 	if ((timer_id = CreateWaitableTimer(NULL, TRUE, NULL)) == NULL)
-		goto exit_timer_handler;
+		goto end;
 
 	/* Set the alarm. */
 	LARGE_INTEGER rel_time;
@@ -308,17 +308,17 @@ DWORD timer_handler(LPVOID arg)
 	                                          // denote time in 100
 	                                          // nanosecond increments.
 	if (!SetWaitableTimer(timer_id, &rel_time, 0, NULL, NULL, FALSE))
-		goto exit_timer_handler;
+		goto end;
 
 	/* Wait for the alarm to sound. */
 	if (WaitForSingleObject(timer_id, INFINITE))
-		goto exit_timer_handler;
+		goto end;
 
 	/* Notify the other thread - call the previously specified function. */
 	(*callback)();
 
 	/* Exit the timer thread. */
-exit_timer_handler:
+end:
 	if (timer_id != INVALID_HANDLE_VALUE)
 		CloseHandle(timer_id);
 	timer_thread = INVALID_HANDLE_VALUE;
