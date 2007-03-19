@@ -155,7 +155,8 @@
 #define ALPHA		1
 #define BETA		2
 #define EXACT		3
-#define ENTRY_TYPES	4
+#define PAWN_STRUCT	4
+#define ENTRY_TYPES	5
 
 /* */
 #define IDLING		0 // Masturbating.
