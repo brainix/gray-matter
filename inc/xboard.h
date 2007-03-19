@@ -40,6 +40,10 @@ using namespace std;
 #include "board.h"
 #include "search.h"
 
+/* Forward declarations: */
+class board;
+class search;
+
 class xboard
 {
 public:

@@ -39,6 +39,10 @@ using namespace std;
 #include "board.h"
 #include "table.h"
 
+/* Forward declarations: */
+class board;
+class table;
+
 class opening
 {
 public:
