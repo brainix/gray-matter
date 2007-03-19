@@ -193,7 +193,16 @@ board& board::operator=(const board& that)
 	hash = that.hash;
 	pawn_hashes = that.pawn_hashes;
 	pawn_hash = that.pawn_hash;
+	table_ptr = that.table_ptr;
 	return *this;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				     bind()				      |
+\*----------------------------------------------------------------------------*/
+void board::bind(table *t)
+{
+	table_ptr = t;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -317,6 +326,7 @@ int board::evaluate_pawn() const
 		/* Reward connected pawns.  */
 	}
 
+end:
 	return sum * (OFF_MOVE == WHITE ? 1 : -1);
 }
 

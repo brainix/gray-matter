@@ -66,6 +66,7 @@ xboard::~xboard()
 void xboard::bind(class search *s, table *t)
 {
 	search_ptr = s;
+	b.bind(t);
 }
 
 /*----------------------------------------------------------------------------*\

@@ -36,6 +36,12 @@ using namespace std;
 #include "types.h"
 #include "thread.h"
 
+/* Extra Gray Matter stuff: */
+#include "table.h"
+
+/* Forward declarations: */
+class table;
+
 /* These macros represent the colors on and off move. */
 #define ON_MOVE			(state.whose)
 #define OFF_MOVE		(!state.whose)
@@ -89,6 +95,7 @@ public:
 	board();
 	~board();
 	board& operator=(const board& that);
+	void bind(table *t);
 	void set_board();
 	void lock();
 	void unlock();
@@ -116,6 +123,7 @@ private:
 	list<bitboard_t> pawn_hashes;                   // Previous pawn Zobrist hash keys.
 	bitboard_t pawn_hash;                           // Current pawn Zobrist hash key.
 	mutex_t mutex;                                  // ?
+	table *table_ptr;                               // Transposition table object.
 
 	/* These methods start up games. */
 	void init_state();

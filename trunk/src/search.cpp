@@ -99,6 +99,7 @@ class search& search::operator=(const search& that)
 \*----------------------------------------------------------------------------*/
 void search::bind(table *t, history *h, xboard *x)
 {
+	b.bind(t);
 	table_ptr = t;
 	history_ptr = h;
 	xboard_ptr = x;
