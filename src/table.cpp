@@ -129,11 +129,11 @@ void table::store(bitboard_t hash, move_t move, int depth, int type)
 /*----------------------------------------------------------------------------*\
  |				    probe()				      |
 \*----------------------------------------------------------------------------*/
-int table::probe(bitboard_t hash, int *value) const
+int table::probe(bitboard_t hash, int *value_ptr) const
 {
 	uint64_t index = hash % (slots / 2);
 	bool found = data[FRESH][index].hash == hash && data[FRESH][index].type == PAWN_STRUCT;
-	*value = data[FRESH][index].move.value;
+	*value_ptr = data[FRESH][index].move.value;
 	return found ? PAWN_STRUCT : USELESS;
 }
 

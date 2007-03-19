@@ -38,7 +38,7 @@ public:
 	void clear();
 	int probe(bitboard_t hash, move_t *move_ptr, int depth, int alpha = INT_MIN, int beta = INT_MAX) const;
 	void store(bitboard_t hash, move_t move, int depth, int type);
-	int probe(bitboard_t hash, int *value) const;
+	int probe(bitboard_t hash, int *value_ptr) const;
 	void store(bitboard_t hash, int value);
 private:
 	uint64_t slots;
