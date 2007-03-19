@@ -53,8 +53,8 @@ int main(int argc, char **argv)
 	/* Instantiate the classes. */
 	class search s;
 	table t(mb);
-	history h();
-	xboard x();
+	history h;
+	xboard x;
 
 	/* Bind the objects. */
 	s.bind(&t, &h, &x);
