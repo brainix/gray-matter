@@ -1105,6 +1105,7 @@ bool board::check(bitboard_t b1, bool color) const
 			bitrow_t r = squares_row[loc][occ];
 			bitboard_t b2 = 0;
 			ROW_SET(b2, num, r);
+			b2 &= rotation[angle][color];
 			b2 = rotate(b2, UNMAP, angle);
 			if (b2 & (state.piece[color][QUEEN] | state.piece[color][ROOK]))
 				return true;
@@ -1120,6 +1121,7 @@ bool board::check(bitboard_t b1, bool color) const
 			bitrow_t d = squares_row[loc][occ] & msk;
 			bitboard_t b2 = 0;
 			DIAG_SET(b2, num, d);
+			b2 &= rotation[angle][color];
 			b2 = rotate(b2, UNMAP, angle);
 			if (b2 & (state.piece[color][QUEEN] | state.piece[color][BISHOP]))
 				return true;
