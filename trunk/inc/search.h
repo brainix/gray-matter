@@ -37,23 +37,24 @@ using namespace std;
 #include "thread.h"
 
 /* Extra Gray Matter stuff: */
-#include "xboard.h"
+#include "board.h"
 #include "table.h"
 #include "history.h"
-#include "board.h"
+#include "xboard.h"
 
 /* Forward declarations: */
-class xboard;
+class board;
 class table;
 class history;
-class board;
+class xboard;
 
 class search
 {
 public:
-	search(xboard *x, table *t, history *h);
+	search(history *h, table *t, xboard *x);
 	~search();
 	search& operator=(const search& that);
+	void bind(table *t, history *h, xboard *x);
 	static void handle();
 	void clear() const;
 	move_t get_hint() const;
@@ -71,10 +72,10 @@ private:
 	int nodes;            // Number of nodes searched.
 	bool output;          // Whether to print thinking output.
 
-	xboard *xboard_ptr;   // Chess Engine Communication Protocol object.
+	board b;              // Board representation object.
 	table *table_ptr;     // Transposition table object.
 	history *history_ptr; // History table object.
-	board b;              // Board representation object.
+	xboard *xboard_ptr;   // Chess Engine Communication Protocol object.
 
 	void iterate(int s);
 	move_t negascout(int depth, int alpha, int beta);

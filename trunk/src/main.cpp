@@ -31,10 +31,10 @@
 #include "types.h"
 
 /* Extra Gray Matter stuff: */
-#include "xboard.h"
+#include "search.h"
 #include "table.h"
 #include "history.h"
-#include "search.h"
+#include "xboard.h"
 
 /* Global variables: */
 int mb = TABLE_MB; // The size of the transposition (in megabytes).
@@ -51,12 +51,16 @@ int main(int argc, char **argv)
 	srand(time(NULL));
 
 	/* Instantiate the classes. */
-	xboard x;
-	table t(&x, mb);
-	history h(&x);
-	class search s(&x, &t, &h);
+	class search s;
+	table t(mb);
+	history h();
+	xboard x();
+
+	/* Bind the objects. */
+	s.bind(&t, &h, &x);
+	x.bind(&s, &t);
 
 	/* Launch the event loop. */
-	x.loop(&s);
+	x.loop();
 	return 0;
 }

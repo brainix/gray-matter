@@ -30,23 +30,16 @@
 #include "config.h"
 #include "types.h"
 
-/* Extra Gray Matter stuff: */
-#include "xboard.h"
-
-/* Forward declarations: */
-class xboard;
-
 class history
 {
 public:
-	history(xboard *x);
+	history();
 	~history();
 	void clear();
 	int probe(bool color, move_t move);
 	void store(bool color, move_t move, int depth);
 private:
-	xboard *xboard_ptr; // Chess Engine Communication Protocol object.
-	int *****data;      //
+	int *****data;
 };
 
 #endif
