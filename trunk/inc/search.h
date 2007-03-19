@@ -51,7 +51,7 @@ class xboard;
 class search
 {
 public:
-	search(history *h, table *t, xboard *x);
+	search();
 	~search();
 	search& operator=(const search& that);
 	void bind(table *t, history *h, xboard *x);
