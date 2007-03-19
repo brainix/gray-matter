@@ -299,7 +299,7 @@ void search::iterate(int s)
 		if (pv.front().value == WEIGHT_KING || pv.front().value == -WEIGHT_KING)
 			/*
 			 | Oops.  The game will be over at this depth.  There's
-			 | no point in searching deeper.
+			 | no point in searching deeper.  Eyes on the prize.
 			 */
 			break;
 	}

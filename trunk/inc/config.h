@@ -45,7 +45,7 @@
 #define DEPTH		16
 
 /* The transposition table size (in megabytes).  This must be >= 1. */
-#define TABLE_MB	256
+#define TABLE_MB	64
 
 
 
@@ -82,6 +82,17 @@
 /*----------------------------------------------------------------------------*\
  |		There are no tunable settings beyond this point!	      |
 \*----------------------------------------------------------------------------*/
+
+/* The following preprocessor directives are used to ensure that the user has
+ * chosen sane values for the preceeding settings. */
+
+#if (DEPTH < 4)
+#error "In inc/config.h, DEPTH must be greater than or equal to 4!"
+#endif
+
+#if (TABLE_MB < 1)
+#error "In inc/config.h, TABLE_MB must be greater than or equal to 1!"
+#endif
 
 /* Piece colors: */
 #define WHITE		0
