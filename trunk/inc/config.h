@@ -45,7 +45,7 @@
 #define DEPTH		16
 
 /* The transposition table size (in megabytes).  This must be >= 1. */
-#define TABLE_MB	256
+#define TABLE_MB	64
 
 
 
@@ -76,10 +76,6 @@
 
 /* How much we hate our opponent: */
 #define CONTEMPT		  900
-
-/* Set this to the smallest absolute value of all of the preceeding weights,
- * excluding CONTEMPT: */
-#define WEIGHT_INCREMENT	   50
 
 
 
