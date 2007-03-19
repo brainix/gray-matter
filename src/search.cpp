@@ -38,7 +38,7 @@ int search_status;      // ...the search status!  :-D
 /*----------------------------------------------------------------------------*\
  |				    search()				      |
 \*----------------------------------------------------------------------------*/
-search::search(xboard *x, table *t, history *h)
+search::search()
 {
 
 /* Constructor. */
@@ -46,10 +46,6 @@ search::search(xboard *x, table *t, history *h)
 	max_time = INT_MAX;
 	max_depth = DEPTH;
 	output = false;
-
-	xboard_ptr = x;
-	table_ptr = t;
-	history_ptr = h;
 
 	mutex_init(&timeout_mutex);
 	timer_function(handle);
@@ -96,6 +92,16 @@ class search& search::operator=(const search& that)
 	xboard_ptr = that.xboard_ptr;
 
 	return *this;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				     bind()				      |
+\*----------------------------------------------------------------------------*/
+void search::bind(table *t, history *h, xboard *x)
+{
+	table_ptr = t;
+	history_ptr = h;
+	xboard_ptr = x;
 }
 
 /*----------------------------------------------------------------------------*\

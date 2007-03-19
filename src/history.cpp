@@ -29,12 +29,10 @@
 /*----------------------------------------------------------------------------*\
  |				   history()				      |
 \*----------------------------------------------------------------------------*/
-history::history(xboard *x)
+history::history()
 {
 
 /* Constructor. */
-
-	xboard_ptr = x;
 
 	try
 	{
@@ -56,9 +54,8 @@ history::history(xboard *x)
 	}
 	catch (...)
 	{
-		xboard_ptr->vomit("Couldn't allocate history table.");
+		/* We should probably do some error checking here. */
 	}
-
 	clear();
 }
 

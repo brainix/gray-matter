@@ -37,16 +37,23 @@ using namespace std;
 #include "thread.h"
 
 /* Extra Gray Matter stuff: */
-#include "board.h"
 #include "search.h"
+#include "board.h"
+#include "table.h"
+
+/* Forward declarations: */
+class search;
+class board;
+class table;
 
 class xboard
 {
 public:
 	xboard();
 	~xboard();
+	void bind(class search *s, table *t);
 	void vomit(char *message) const;
-	void loop(class search *s);
+	void loop();
 	void print_output(int ply, int value, int time, int nodes, list<move_t> &pv) const;
 	void print_result(move_t m);
 	void print_resignation() const;
@@ -56,8 +63,8 @@ private:
 	bool force;               // Whether we're in force mode.
 	bool draw;                // Whether our opponent has offered a draw.
 
-	board b;                  // Board representation object.
 	class search *search_ptr; // Move search object.
+	board b;                  // Board representation object.
 
 	void print_move(move_t m) const;
 	void do_xboard() const;

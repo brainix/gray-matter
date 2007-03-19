@@ -29,12 +29,10 @@
 /*----------------------------------------------------------------------------*\
  |				    table()				      |
 \*----------------------------------------------------------------------------*/
-table::table(xboard *x, int mb)
+table::table(int mb)
 {
 
 /* Constructor. */
-
-	xboard_ptr = x;
 
 	try
 	{
@@ -46,9 +44,8 @@ table::table(xboard *x, int mb)
 	}
 	catch (...)
 	{
-		xboard_ptr->vomit("Couldn't allocate transposition table.");
+		/* We should probably do some error checking here. */
 	}
-
 	clear();
 }
 
