@@ -77,10 +77,6 @@
 /* How much we hate our opponent: */
 #define CONTEMPT		  900
 
-/* Set this to the smallest absolute value of all of the preceeding weights,
- * excluding CONTEMPT: */
-#define WEIGHT_INCREMENT	   50
-
 
 
 /*----------------------------------------------------------------------------*\

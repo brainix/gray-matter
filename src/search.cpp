@@ -426,7 +426,7 @@ move_t search::negascout(int depth, int alpha, int beta)
 		{
 			/* Recursive case: minimal (scout) window. */
 			if (type == EXACT)
-				it->value = -negascout(depth - 1, -alpha - WEIGHT_INCREMENT, -alpha).value;
+				it->value = -negascout(depth - 1, -alpha - 1, -alpha).value;
 			/* Recursive case: full alpha-beta window. */
 			if (type != EXACT || alpha < it->value && it->value < beta)
 				it->value = -negascout(depth - 1, -beta, -alpha).value;
