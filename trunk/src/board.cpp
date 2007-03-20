@@ -995,13 +995,9 @@ void board::precomp_row() const
 	 * row, mark the sliding piece's legal moves in the bitrow
 	 * squares_row[x][occ]. */
 	for (int x = 0; x <= 7; x++)
-		for (int occ = 0; occ <= 255; occ++)
+		for (int occ = 0; occ <= 0xFF; occ++)
 		{
 			squares_row[x][occ] = 0;
-			if (!BIT_GET(occ, x, 0))
-				/* Oops.  This occupancy is impossible because
-				 * there must be a sliding piece on square x. */
-				continue;
 			for (int dir = -1; dir <= 1; dir += 2)
 				for (int j = x + dir; j >= 0 && j <= 7; j += dir)
 				{
