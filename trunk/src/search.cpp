@@ -378,7 +378,7 @@ move_t search::negascout(int depth, int alpha, int beta)
 			break;
 		default:
 			SET_NULL_MOVE(m);
-			m.value = CONTEMPT;
+			m.value = -CONTEMPT;
 			return m;
 		case CHECKMATE:
 		case ILLEGAL:
