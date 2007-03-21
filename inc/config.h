@@ -120,14 +120,14 @@
 #define CASTLE_STATS	3
 
 /* Castling requirements: */
-#define UNOCCUPIED	0 // The squares which mustn't be occupied.
-#define UNATTACKED	1 // The squares which mustn't be attacked.
+#define UNOCCUPIED	0 // Squares which mustn't be occupied.
+#define UNATTACKED	1 // Squares which mustn't be attacked.
 #define REQS		2
 
 /* Game statuses: */
 #define IN_PROGRESS	0
-#define STALEMATE	1 // Drawn due to stalemate.
-#define INSUFFICIENT	2 // Drawn due to insufficient material.
+#define STALEMATE	1 // Drawn by stalemate.
+#define INSUFFICIENT	2 // Drawn by insufficient material.
 #define THREE		3 // Drawn by threefold repetition.
 #define FIFTY		4 // Drawn by the fifty move rule.
 #define CHECKMATE	5
@@ -172,16 +172,16 @@
 #define IDLING		0 // Masturbating.
 #define THINKING	1 // Thinking (on our own time).
 #define PONDERING	2 // Pondering (on our opponent's time).
-#define QUITTING	3 // Terminating the search thread.
+#define QUITTING	3 // Terminating search thread.
 #define SEARCH_STATS	4
 
 /* Convenient bitboards: */
-#define CENTER		0x0000001818000000ULL // The 4 center squares.
-#define EXPANDED_CENTER	0x00003C3C3C3C0000ULL // The 16 center squares.
-#define PRINCIPAL_DIAGS	0x8142241818244281ULL // The 16 principal diagonal squares.
-#define WHITE_SIDE	0x00000000FFFFFFFFULL // The 16 white side squares.
-#define BLACK_SIDE	0xFFFFFFFF00000000ULL // The 16 black side squares.
-#define CORNERS		0x8100000000000081ULL // The 4 corner squares.
+#define CENTER		0x0000001818000000ULL // 4 center squares.
+#define EXPANDED_CENTER	0x00003C3C3C3C0000ULL // 16 center squares.
+#define PRINCIPAL_DIAGS	0x8142241818244281ULL // 16 principal diagonal squares.
+#define WHITE_SIDE	0x00000000FFFFFFFFULL // 16 white side squares.
+#define BLACK_SIDE	0xFFFFFFFF00000000ULL // 16 black side squares.
+#define CORNERS		0x8100000000000081ULL // 4 corner squares.
 
 /* Memory units: */
 #define B		1           // Byte.
