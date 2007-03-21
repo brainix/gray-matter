@@ -208,9 +208,9 @@ void board::set_board()
 
 /* Set the board. */
 
-	init_state();    // Initialize state.
-	init_rotation(); // Initialize rotated bitboards.
-	init_hash();     // Initialize Zobrist hash.
+	init_state();
+	init_rotation();
+	init_hash();
 }
 
 /*----------------------------------------------------------------------------*\
