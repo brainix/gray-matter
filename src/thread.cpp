@@ -71,7 +71,7 @@ int thread_terminate(thread_t *thread)
 #if defined(LINUX) || defined(OS_X)
 	return pthread_kill(*thread, SIGTERM) ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
-	if(!TerminateThread(thread, 0))
+	if (!TerminateThread(thread, 0))
 		return CRITICAL;
 	*thread = INVALID_HANDLE_VALUE;
 	return SUCCESSFUL;
@@ -104,7 +104,7 @@ int mutex_try_lock(mutex_t *mutex)
 		case 0     : return SUCCESSFUL;
 	}
 #elif defined(WINDOWS)
-	return WaitForSingleObject(*mutex, 0) == WAIT_TIMEOUT ? 0 : 1;
+	return WaitForSingleObject(*mutex, 0) == WAIT_TIMEOUT ? NON_CRITICAL : SUCCESSFUL;
 #endif
 }
 
@@ -159,7 +159,7 @@ int cond_init(cond_t *cond, void *attr)
 	if ((cond->done = CreateEvent(NULL, FALSE, FALSE, NULL)) == NULL)
 		return CRITICAL;
 	cond->bcast = FALSE;
-	return 1;
+	return SUCCESSFUL;
 #endif
 }
 
@@ -295,7 +295,10 @@ DWORD timer_handler(LPVOID arg)
  | as the timer thread's main().
  */
 
-	unsigned long long msec = *((unsigned int *) arg); /* number of ms to wait */
+	unsigned long long msec = *((unsigned int *) arg); // Number of milli-
+	                                                   // seconds to wait
+	                                                   // before notifying
+	                                                   // the other thread.
 	HANDLE timer_id = INVALID_HANDLE_VALUE;
 
 	/* Create an alarm. */
