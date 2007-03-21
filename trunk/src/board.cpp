@@ -941,8 +941,10 @@ void board::precomp_king() const
 
 /* Pre-compute the king moves. */
 
-	/* Imagine the board is empty except for a king at (x, y).  Mark the
-	 * king's legal moves in the bitboard squares_king[x][y]. */
+	/*
+	 | Imagine an empty board except for a king at (x, y).  Mark the king's
+	 | legal moves in the bitboard squares_king[x][y].
+	 */
 	for (int y = 0; y <= 7; y++)
 		for (int x = 0; x <= 7; x++)
 		{
@@ -951,13 +953,17 @@ void board::precomp_king() const
 				for (int j = -1; j <= 1; j++)
 				{
 					if (!j && !k)
-						/* Oops.  The king can't stand
-						 * still. */
+						/*
+						 | Oops.  The king can't stand
+						 | still.
+						 */
 						continue;
 					if (x + j < 0 || x + j > 7 ||
 					    y + k < 0 || y + k > 7)
-						/* Oops.  The king can't step
-						 * off the board. */
+						/*
+						 | Oops.  The king can't step
+						 | off the board.
+						 */
 						continue;
 					BIT_SET(squares_king[x][y], x + j, y + k);
 				}
@@ -990,10 +996,11 @@ void board::precomp_row() const
 
 /* Pre-compute the sliding piece moves. */
 
-	/* Imagine there's a sliding piece on square x.  For each possible
-	 * occupancy (combination) of enemy pieces along the sliding piece's
-	 * row, mark the sliding piece's legal moves in the bitrow
-	 * squares_row[x][occ]. */
+	/*
+	 | Imagine a sliding piece on square x.  For each possible occupancy
+	 | (combination) of enemy pieces along the sliding piece's row, mark the
+	 | sliding piece's legal moves in the bitrow squares_row[x][occ].
+	 */
 	for (int x = 0; x <= 7; x++)
 		for (int occ = 0; occ <= 0xFF; occ++)
 		{
@@ -1003,9 +1010,11 @@ void board::precomp_row() const
 				{
 					BIT_SET(squares_row[x][occ], j, 0);
 					if (BIT_GET(occ, j, 0))
-						/* Oops.  The sliding piece
-						 * can't slide through an enemy
-						 * piece. */
+						/*
+						 | Oops.  The sliding piece
+						 | can't slide through an enemy
+						 | piece.
+						 */
 						break;
 				}
 		}
@@ -1019,8 +1028,10 @@ void board::precomp_knight() const
 
 /* Pre-compute the knight moves. */
 
-	/* Imagine the board is empty except for a knight at (x, y).  Mark the
-	 * knight's legal moves in the bitboard squares_knight[x][y]. */
+	/*
+	 | Imagine an empty board except for a knight at (x, y).  Mark the
+	 | knight's legal moves in the bitboard squares_knight[x][y].
+	 */
 	for (int y = 0; y <= 7; y++)
 		for (int x = 0; x <= 7; x++)
 		{
@@ -1029,15 +1040,19 @@ void board::precomp_knight() const
 				for (int j = -2; j <= 2; j++)
 				{
 					if (abs(j) == abs(k) || !j || !k)
-						/* Oops.  The knight can only
-						 * jump two squares in one
-						 * direction and one square in a
-						 * perpendicular direction. */
+						/*
+						 | Oops.  The knight can only
+						 | jump two squares in one
+						 | direction and one square in a
+						 | perpendicular direction.
+						 */
 						continue;
 					if (x + j < 0 || x + j > 7 ||
 					    y + k < 0 || y + k > 7)
-						/* Oops.  The knight can't jump
-						 * off the board. */
+						/*
+						 | Oops.  The knight can't jump
+						 | off the board.
+						 */
 						continue;
 					BIT_SET(squares_knight[x][y], x + j, y + k);
 				}
@@ -1050,15 +1065,19 @@ void board::precomp_knight() const
 int board::mate()
 {
 
-/* Is the game over due to stalemate or checkmate?  We test for both conditions
- * in the same function because they're so similar.  During both, the color on
- * move doesn't have a legal move.  The only difference: during stalemate, her
- * king isn't attacked; during checkmate, her king is attacked. */
+/*
+ | Is the game over due to stalemate or checkmate?  We test for both conditions
+ | in the same function because they're so similar.  During both, the color on
+ | move doesn't have a legal move.  The only difference: during stalemate, her
+ | king isn't attacked; during checkmate, her king is attacked.
+ */
 
 	list<move_t> l;
 	bool escape = false;
 
-	/* Look for a legal move. */
+	/*
+	 | Look for a legal move.
+	 */
 	generate(l);
 	for (list<move_t>::iterator it = l.begin(); it != l.end() && !escape; it++)
 	{
@@ -1068,9 +1087,11 @@ int board::mate()
 		unmake();
 	}
 
-	/* If there's a legal move, the game isn't over.  Otherwise, if the king
-	 * isn't attacked, the game is over due to stalemate.  Otherwise, the
-	 * game is over due to checkmate. */
+	/*
+	 | If there's a legal move, the game isn't over.  Otherwise, if the king
+	 | isn't attacked, the game is over due to stalemate.  Otherwise, the
+	 | game is over due to checkmate.
+	 */
 	return escape ? IN_PROGRESS : !check(state.piece[ON_MOVE][KING], OFF_MOVE) ? STALEMATE : CHECKMATE;
 }
 
@@ -1092,7 +1113,12 @@ bool board::check(bitboard_t b1, bool color) const
 		if (squares_king[x][y] & state.piece[color][KING])
 			return true;
 
-		/* Look for a horizontal or vertical queen or rook attack. */
+		/*
+		 | Look for a horizontal or vertical queen or rook attack.  The
+		 | logic here is "interesting."  If our king were in check by a
+		 | rook, then, if our king were a rook, we'd be able to capture
+		 | our opponent's rook.
+		 */
 		for (int angle = ZERO; angle <= R90; angle += R90 - ZERO)
 		{
 			int loc = ROW_LOC(x, y, angle);
@@ -1127,13 +1153,20 @@ bool board::check(bitboard_t b1, bool color) const
 		if (squares_knight[x][y] & state.piece[color][KNIGHT])
 			return true;
 
-		/* Look for a pawn attack. */
-		if (color && y >= 6 || !color && y <= 1)
-			continue;
+		/*
+		 | Look for a pawn attack.  The logic here is different than for
+		 | the previous pieces.  We simply mark the squares in the (at
+		 | most) two columns from which a pawn could attack and
+		 | intersect those squares with the squares in the (at most) one
+		 | row from which a pawn could attack.  This results in 0, 1, or
+		 | 2 marked squares from which a pawn could attack.  Then, we
+		 | simply check whether an opposing pawn sits on any of our
+		 | marked squares.  Easy peasy.
+		 */
 		bitboard_t b2 = 0;
 		for (int j = x == 0 ? 1 : -1; j <= (x == 7 ? -1 : 1); j += 2)
 			b2 |= COL_MSK(x + j);
-		b2 &= ROW_MSK(y + (color ? 1 : -1));
+		b2 &= (color && y >= 6 || !color && y <= 1) ? 0 : ROW_MSK(y + (color ? 1 : -1));
 		if (b2 & state.piece[color][PAWN])
 			return true;
 	}
@@ -1154,6 +1187,10 @@ bool board::insufficient() const
 		if (state.piece[color][PAWN] ||
 		    state.piece[color][ROOK] ||
 		    state.piece[color][QUEEN])
+			/*
+			 | Oops.  There's a pawn, rook, or queen on the board.
+			 | Someone could mate.
+			 */
 			return false;
 
 	for (int color = WHITE; color <= BLACK; color++)
