@@ -437,7 +437,7 @@ move_t search::negascout(int depth, int alpha, int beta)
 		{
 			it->value = beta;
 			m = *it;
-			goto done;
+			goto end;
 		}
 		if (it->value > alpha)
 		{
@@ -448,7 +448,7 @@ move_t search::negascout(int depth, int alpha, int beta)
 			m = *it;
 	}
 
-done:
+end:
 	if (!timeout_flag)
 	{
 		table_ptr->store(hash, m, depth, type);
