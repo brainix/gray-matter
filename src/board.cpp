@@ -138,15 +138,17 @@ static int weight_castle[] = {WEIGHT_CAN_CASTLE, WEIGHT_CANT_CASTLE, WEIGHT_HAS_
 board::board()
 {
 
-/* Constructor.  Important!  Seed the random number generator - issue
- * srand(time(NULL)); - before instantiating this class! */
+/*
+ | Constructor.  Important!  Seed the random number generator - issue
+ | srand(time(NULL)); - before instantiating this class!
+ */
 
 	if (!precomputed)
 	{
-		precomp_king();   // Pre-compute the king moves.
-		precomp_row();    // Pre-compute the sliding piece moves.
-		precomp_knight(); // Pre-compute the knight moves.
-		precomp_key();    // Pre-compute the Zobrist hash keys.
+		precomp_king();   // Pre-compute king moves.
+		precomp_row();    // Pre-compute sliding piece moves.
+		precomp_knight(); // Pre-compute knight moves.
+		precomp_key();    // Pre-compute Zobrist hash keys.
 		precomputed = true;
 	}
 	set_board(); // Set the board.
@@ -159,6 +161,9 @@ board::board()
 \*----------------------------------------------------------------------------*/
 board::~board()
 {
+
+/* Destructor. */
+
 	mutex_destroy(&mutex);
 }
 
@@ -202,9 +207,9 @@ void board::set_board()
 
 /* Set the board. */
 
-	init_state();    // Initialize the state.
-	init_rotation(); // Initialize the rotated bitboards.
-	init_hash();     // Initialize the Zobrist hash.
+	init_state();    // Initialize state.
+	init_rotation(); // Initialize rotated bitboards.
+	init_hash();     // Initialize Zobrist hash.
 }
 
 /*----------------------------------------------------------------------------*\
@@ -272,8 +277,10 @@ int board::get_status(bool mate_test)
 int board::evaluate() const
 {
 
-/* Evaluate the current state.  For simplicity's sake, evaluate from the
- * perspective of the player who's just moved (the color that's off move). */
+/*
+ | Evaluate the current state.  For simplicity's sake, evaluate from the
+ | perspective of the player who's just moved (the color that's off move).
+ */
 
 	int sign, coefficient, weight, sum = 0;
 
@@ -349,18 +356,22 @@ void board::make(move_t m)
 		}
 	}
 
-	/* If we're moving a piece from one of our rooks' initial positions,
-	 * make sure we're no longer marked able to castle on that rook's
-	 * side. */
+	/*
+	 | If we're moving a piece from one of our rooks' initial positions,
+	 | make sure we're no longer marked able to castle on that rook's
+	 | side.
+	 */
 	if ((m.old_x == 0 || m.old_x == 7) && (m.old_y == (ON_MOVE ? 7 : 0)) && state.castle[ON_MOVE][m.old_x == 7] == CAN_CASTLE)
 	{
 		state.castle[ON_MOVE][m.old_x == 7] = CANT_CASTLE;
 		hash ^= key_castle[ON_MOVE][m.old_x == 7][CANT_CASTLE];
 	}
 
-	/* If we're moving a piece to one of our opponent's rooks' initial
-	 * positions, make sure our opponent is no longer marked able to castle
-	 * on that rook's side. */
+	/*
+	 | If we're moving a piece to one of our opponent's rooks' initial
+	 | positions, make sure our opponent is no longer marked able to castle
+	 | on that rook's side.
+	 */
 	if ((m.new_x == 0 || m.new_x == 7) && (m.new_y == (OFF_MOVE ? 7 : 0)) && state.castle[OFF_MOVE][m.new_x == 7] == CAN_CASTLE)
 	{
 		state.castle[OFF_MOVE][m.new_x == 7] = CANT_CASTLE;
@@ -370,8 +381,10 @@ void board::make(move_t m)
 	/* If we're moving the king: */
 	if (BIT_GET(state.piece[ON_MOVE][KING], m.new_x, m.new_y))
 	{
-		/* If we're castling, move the rook and mark us having castled
-		 * on this side. */
+		/*
+		 | If we're castling, move the rook and mark us having castled
+		 | on this side.
+		 */
 		if (abs((int) m.old_x - (int) m.new_x) == 2)
 		{
 			BIT_CLR(state.piece[ON_MOVE][ROOK], m.new_x == 6 ? 7 : 0, ON_MOVE ? 7 : 0);
@@ -387,8 +400,10 @@ void board::make(move_t m)
 			hash ^= key_castle[ON_MOVE][m.new_x == 6][HAS_CASTLED];
 		}
 
-		/* At this point, we've moved the king.  Make sure we're no
-		 * longer marked able to castle on either side. */
+		/*
+		 | At this point, we've moved the king.  Make sure we're no
+		 | longer marked able to castle on either side.
+		 */
 		for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
 			if (state.castle[ON_MOVE][side] == CAN_CASTLE)
 			{
@@ -401,8 +416,10 @@ void board::make(move_t m)
 	hash ^= state.en_passant == -1 ? key_no_en_passant : key_en_passant[state.en_passant];
 	if (BIT_GET(state.piece[ON_MOVE][PAWN], m.new_x, m.new_y))
 	{
-		/* If we're promoting a pawn, replace it with the promotion
-		 * piece. */
+		/*
+		 | If we're promoting a pawn, replace it with the promotion
+		 | piece.
+		 */
 		if (m.promo)
 		{
 			BIT_CLR(state.piece[ON_MOVE][PAWN], m.new_x, m.new_y);
@@ -411,8 +428,10 @@ void board::make(move_t m)
 			hash ^= key_piece[ON_MOVE][m.promo][m.new_x][m.new_y];
 		}
 
-		/* If we're performing an en passant, remove the captured
-		 * pawn. */
+		/*
+		 | If we're performing an en passant, remove the captured
+		 | pawn.
+		 */
 		if ((int) m.new_x == state.en_passant && m.new_y == (ON_MOVE ? 2 : 5))
 		{
 			BIT_CLR(state.piece[OFF_MOVE][PAWN], m.new_x, m.old_y);
@@ -426,8 +445,10 @@ void board::make(move_t m)
 		state.en_passant = abs((int) m.old_y - (int) m.new_y) == 2 ? (int) m.old_x : -1;
 	}
 	else
-		/* Oops.  We're not moving a pawn.  Mark no pawn vulnerable to
-		 * en passant. */
+		/*
+		 | Oops.  We're not moving a pawn.  Mark no pawn vulnerable to
+		 | en passant.
+		 */
 		state.en_passant = -1;
 	hash ^= state.en_passant == -1 ? key_no_en_passant : key_en_passant[state.en_passant];
 
@@ -468,8 +489,10 @@ void board::unmake()
 void board::make(char *p)
 {
 
-/* Convert a move from standard algebraic notation to coordinate notation, then
- * make the move. */
+/*
+ | Convert a move from standard algebraic notation to coordinate notation, then
+ | make the move.
+ */
 
 	int shape = -1, old_x = -1, old_y = -1, new_x = -1, new_y = -1, promo = -1;
 	move_t m;
@@ -875,9 +898,11 @@ void board::generate_pawn(list<move_t> &l) const
 		l.push_back(m);
 	}
 
-	/* If our pawn is on our fifth row, and our opponent's pawn is beside
-	 * our pawn, and, as her last move, our opponent advanced her pawn two
-	 * squares, then we can perform an en passant. */
+	/*
+	 | If our pawn is on our fifth row, and our opponent's pawn is beside
+	 | our pawn, and, as her last move, our opponent advanced her pawn two
+	 | squares, then we can perform an en passant.
+	 */
 	if (state.en_passant != -1)
 	{
 		m.promo = 0;
@@ -1075,9 +1100,7 @@ int board::mate()
 	list<move_t> l;
 	bool escape = false;
 
-	/*
-	 | Look for a legal move.
-	 */
+	/* Look for a legal move. */
 	generate(l);
 	for (list<move_t>::iterator it = l.begin(); it != l.end() && !escape; it++)
 	{
@@ -1101,8 +1124,10 @@ int board::mate()
 bool board::check(bitboard_t b1, bool color) const
 {
 
-/* Is any of the specified squares being attacked by the specified color?  Check
- * for check.  ;-) */
+/*
+ | Is any of the specified squares being attacked by the specified color?  Check
+ | for check.  ;-)
+ */
 
 	for (int n, x, y; (n = FST(b1)) != -1; BIT_CLR(b1, x, y))
 	{
@@ -1115,9 +1140,9 @@ bool board::check(bitboard_t b1, bool color) const
 
 		/*
 		 | Look for a horizontal or vertical queen or rook attack.  The
-		 | logic here is "interesting."  If our king were in check by a
-		 | rook, then, if our king were a rook, we'd be able to capture
-		 | our opponent's rook.
+		 | logic here is interesting.  Pretend our king were a rook.
+		 | Would it be able to capture a rook?  If so, we're in check.
+		 | If not, we're not in check, at least not by a rook.
 		 */
 		for (int angle = ZERO; angle <= R90; angle += R90 - ZERO)
 		{
@@ -1154,14 +1179,18 @@ bool board::check(bitboard_t b1, bool color) const
 			return true;
 
 		/*
-		 | Look for a pawn attack.  The logic here is different than for
-		 | the previous pieces.  We simply mark the squares in the (at
-		 | most) two columns from which a pawn could attack and
-		 | intersect those squares with the squares in the (at most) one
-		 | row from which a pawn could attack.  This results in 0, 1, or
-		 | 2 marked squares from which a pawn could attack.  Then, we
-		 | simply check whether an opposing pawn sits on any of our
-		 | marked squares.  Easy peasy.
+		 | Look for a pawn attack.  The logic here is the same as for
+		 | the previous pieces, but things are a bit easier because a
+		 | pawn can attack at most 2 squares and, conversely, a square
+		 | can be attacked by at most 2 pawns.  We simply mark the
+		 | squares in the (at most) 2 columns from which a pawn could
+		 | attack and find the intersection between those squares and
+		 | the squares in the (at most) 1 row from which a pawn could
+		 | attack.  This results in 0, 1, or 2 marked squares from which
+		 | a pawn could attack.  Then, we simply check whether an
+		 | opposing pawn sits on any of our marked squares.  If so,
+		 | we're in check.  If not, we're not in check, at least not by
+		 | a pawn.  Easy peasy.
 		 */
 		bitboard_t b2 = 0;
 		for (int j = x == 0 ? 1 : -1; j <= (x == 7 ? -1 : 1); j += 2)
@@ -1334,9 +1363,11 @@ void board::insert(int x, int y, bitboard_t b, int angle, list<move_t> &l, bool 
 int board::find_64(int64_t signed_num) const
 {
 
-/* Find the first (least significant) set bit in a 64-bit integer.  The return
- * value ranges from 0 (for no bits set) to 64 (for only the most significant
- * bit set). */
+/*
+ | Find the first (least significant) set bit in a 64-bit integer.  The return
+ | value ranges from 0 (for no bits set) to 64 (for only the most significant
+ | bit set).
+ */
 
 #if defined(OS_X) || defined(WINDOWS)
 	uint64_t unsigned_num = signed_num & -signed_num;
@@ -1358,9 +1389,11 @@ int board::find_64(int64_t signed_num) const
 int board::find_32(int32_t signed_num) const
 {
 
-/* Find the first (least significant) set bit in a 32-bit integer.  The return
- * value ranges from 0 (for no bits set) to 32 (for only the most significant
- * bit set). */
+/*
+ | Find the first (least significant) set bit in a 32-bit integer.  The return
+ | value ranges from 0 (for no bits set) to 32 (for only the most significant
+ | bit set).
+ */
 
 #if defined(LINUX) || defined(OS_X)
 	return ffs(signed_num);
@@ -1387,6 +1420,9 @@ int board::find_32(int32_t signed_num) const
 \*----------------------------------------------------------------------------*/
 uint64_t board::randomize() const
 {
+
+/* Generate a 64-bit pseudo-random number. */
+
 #if defined(LINUX)
 	return (uint64_t) rand() << 32 | rand();
 #elif defined(OS_X)
