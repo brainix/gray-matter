@@ -50,6 +50,7 @@
 
 #if defined(LINUX) || defined(OS_X)
 
+/* Header files: */
 #include <errno.h>
 #include <pthread.h>
 #include <signal.h>
@@ -63,6 +64,7 @@ typedef pthread_cond_t cond_t;
 
 #elif defined(WINDOWS)
 
+/* Header files: */
 #include <windows.h>
 
 /* Data types: */
