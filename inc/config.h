@@ -120,16 +120,16 @@
 #define CASTLE_STATS	3
 
 /* Castling requirements: */
-#define UNOCCUPIED	0
-#define UNATTACKED	1
+#define UNOCCUPIED	0 // The squares which mustn't be occupied.
+#define UNATTACKED	1 // The squares which mustn't be attacked.
 #define REQS		2
 
 /* Game statuses: */
 #define IN_PROGRESS	0
-#define STALEMATE	1
-#define INSUFFICIENT	2
-#define THREE		3
-#define FIFTY		4
+#define STALEMATE	1 // Drawn due to stalemate.
+#define INSUFFICIENT	2 // Drawn due to insufficient material.
+#define THREE		3 // Drawn by threefold repetition.
+#define FIFTY		4 // Drawn by the fifty move rule.
 #define CHECKMATE	5
 #define ILLEGAL		6
 #define GAME_STATS	7
