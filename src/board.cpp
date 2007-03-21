@@ -145,13 +145,13 @@ board::board()
 
 	if (!precomputed)
 	{
-		precomp_king();   // Pre-compute king moves.
-		precomp_row();    // Pre-compute sliding piece moves.
-		precomp_knight(); // Pre-compute knight moves.
-		precomp_key();    // Pre-compute Zobrist hash keys.
+		precomp_king();
+		precomp_row();
+		precomp_knight();
+		precomp_key();
 		precomputed = true;
 	}
-	set_board(); // Set the board.
+	set_board();
 
 	mutex_init(&mutex);
 }
