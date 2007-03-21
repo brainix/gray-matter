@@ -181,7 +181,8 @@ board& board::operator=(const board& that)
 	 | It's like this.  And who gives a f*ck about those?
 	 | So just chill, 'til the next episode.
 	 |
-	 |	Snoop Doggy Dogg and Dr. Dre on overloading the assignment operator
+	 |	Snoop Doggy Dogg and Dr. Dre on overloading the assignment
+	 |	operator
 	 */
 	if (this == &that)
 		return *this;
