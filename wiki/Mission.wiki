@@ -31,6 +31,8 @@
 = Quotes =
 This section contains quotes about Gray Matter and its hackers.
 
+  * Smack my bishop! - Prodigy
+
   * I really like the simplicity.  Nice coding.  Easy to follow and understand from the get go.  Excellent work! - Joshua Haglund
 
   * Thank you very much for having created Gray Matter - I'm trying to create a basic chess engine to communicate with [http://www.tim-mann.org/xboard.html XBoard], and your code provided valuable insight! - Christian Korn
