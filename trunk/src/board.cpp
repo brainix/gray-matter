@@ -758,7 +758,7 @@ void board::generate_queen(list<move_t> &l) const
 		y = n / 8;
 
 		/* Generate the horizontal and vertical moves. */
-		for (int angle = ZERO; angle <= R90; angle += R90 - ZERO)
+		for (int angle = ZERO; angle == ZERO || angle == R90; angle += R90 - ZERO)
 		{
 			int loc = ROW_LOC(x, y, angle);
 			int num = ROW_NUM(x, y, angle);
@@ -773,7 +773,7 @@ void board::generate_queen(list<move_t> &l) const
 		}
 
 		/* Generate the diagonal moves. */
-		for (int angle = L45; angle <= R45; angle += R45 - L45)
+		for (int angle = L45; angle == L45 || angle == R45; angle += R45 - L45)
 		{
 			int loc = DIAG_LOC(x, y, angle);
 			int num = DIAG_NUM(x, y, angle);
@@ -804,7 +804,7 @@ void board::generate_rook(list<move_t> &l) const
 	{
 		x = n % 8;
 		y = n / 8;
-		for (int angle = ZERO; angle <= R90; angle += R90 - ZERO)
+		for (int angle = ZERO; angle == ZERO || angle == R90; angle += R90 - ZERO)
 		{
 			int loc = ROW_LOC(x, y, angle);
 			int num = ROW_NUM(x, y, angle);
@@ -834,7 +834,7 @@ void board::generate_bishop(list<move_t> &l) const
 	{
 		x = n % 8;
 		y = n / 8;
-		for (int angle = L45; angle <= R45; angle += R45 - L45)
+		for (int angle = L45; angle == L45 || angle == R45; angle += R45 - L45)
 		{
 			int loc = DIAG_LOC(x, y, angle);
 			int num = DIAG_NUM(x, y, angle);
@@ -1145,7 +1145,7 @@ bool board::check(bitboard_t b1, bool color) const
 		 | Would it be able to capture a rook?  If so, we're in check.
 		 | If not, we're not in check, at least not by a rook.
 		 */
-		for (int angle = ZERO; angle <= R90; angle += R90 - ZERO)
+		for (int angle = ZERO; angle == ZERO || angle == R90; angle += R90 - ZERO)
 		{
 			int loc = ROW_LOC(x, y, angle);
 			int num = ROW_NUM(x, y, angle);
@@ -1160,7 +1160,7 @@ bool board::check(bitboard_t b1, bool color) const
 		}
 
 		/* Look for a diagonal queen or bishop attack. */
-		for (int angle = L45; angle <= R45; angle += R45 - L45)
+		for (int angle = L45; angle == L45 || angle == R45; angle += R45 - L45)
 		{
 			int loc = DIAG_LOC(x, y, angle);
 			int num = DIAG_NUM(x, y, angle);
