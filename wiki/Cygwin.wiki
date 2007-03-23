@@ -8,3 +8,4 @@
 =Compiling Gray Matter=
 * make -f CYGmakefile
 
+* apparently WinBoard also uses cygwin.  It is distributed with a file called cygwin1.dll, which is most likely out of date with the dll version we just compiled Gray Matter with.  Copy the cygwin1.dll file from the Cygwin's bin directory into the WinBoard installation directory, and both WinBoard and Gray Matter should run fine.
