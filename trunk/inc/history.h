@@ -39,7 +39,7 @@ public:
 	int probe(bool color, move_t move) const;
 	void store(bool color, move_t move, int depth);
 private:
-	int *****data; //
+	int *****data;
 };
 
 #endif
