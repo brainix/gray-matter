@@ -33,14 +33,14 @@
 class table
 {
 public:
-	table(int mb = TABLE_MB);
+	table(int mb = XPOS_TABLE_MB);
 	~table();
 	void clear();
 	int probe(bitboard_t hash, move_t *move_ptr, int depth, int alpha = INT_MIN, int beta = INT_MAX) const;
 	void store(bitboard_t hash, move_t move, int depth, int type);
 private:
-	uint64_t slots; //
-	xpos_slot_t **data;  //
+	uint64_t slots;
+	xpos_slot_t **data;
 };
 
 #endif
