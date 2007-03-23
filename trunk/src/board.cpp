@@ -303,8 +303,7 @@ int board::evaluate() const
 			sum += sign * weight_castle[state.castle[color][side]];
 	}
 
-	sum += evaluate_pawn();
-	return sum;
+	return sum + evaluate_pawn();
 }
 
 /*----------------------------------------------------------------------------*\
@@ -321,7 +320,25 @@ int board::evaluate_pawn() const
 	for (int color = WHITE; color <= BLACK; color++)
 	{
 		sign = color == WHITE ? 1 : -1;
-		/* Evaluate. */
+		for (int x = 0; x <= 7; x++)
+		{
+			if (!(state.piece[color][PAWN] & COL_MSK(x)))
+				continue;
+
+			/* Penalize isolated pawns. */
+			bool adjacent_pawn = false;
+			for (int j = x == 0 ? 1 : -1; j <= (x == 7 ? -1 : 1); j += 2)
+				if (state.piece[color][PAWN] & COL_MSK(x + j))
+					adjacent_pawn = true;
+			if (!adjacent_pawn)
+				sum += sign * WEIGHT_ISOLATED;
+
+			/* Penalize doubled pawns. */
+			int n = count(state.piece[color][PAWN] & COL_MSK(x)) - 1;
+			sum += sign * n * WEIGHT_DOUBLED;
+
+			/* Penalize backward pawns. */
+		}
 	}
 
 	pawn_table.store(pawn_hash, sum);
