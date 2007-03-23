@@ -132,6 +132,8 @@ bitboard_t key_whose;
 static int weight_piece[] = {WEIGHT_PAWN, WEIGHT_KNIGHT, WEIGHT_BISHOP, WEIGHT_ROOK, WEIGHT_QUEEN, WEIGHT_KING};
 static int weight_castle[] = {WEIGHT_CAN_CASTLE, WEIGHT_CANT_CASTLE, WEIGHT_HAS_CASTLED};
 
+pawn_table pt;
+
 /*----------------------------------------------------------------------------*\
  |				    board()				      |
 \*----------------------------------------------------------------------------*/

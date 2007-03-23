@@ -30,24 +30,17 @@
 #include "config.h"
 #include "types.h"
 
-/* Extra Gray Matter stuff: */
-#include "xboard.h"
-
-/* Forward declarations: */
-class xboard;
-
 class table
 {
 public:
-	table(xboard *x, int mb = TABLE_MB);
+	table(int mb = TABLE_MB);
 	~table();
 	void clear();
-	int probe(bitboard_t hash, move_t *move_ptr, int depth, int alpha = INT_MIN, int beta = INT_MAX);
+	int probe(bitboard_t hash, move_t *move_ptr, int depth, int alpha = INT_MIN, int beta = INT_MAX) const;
 	void store(bitboard_t hash, move_t move, int depth, int type);
 private:
-	xboard *xboard_ptr; // Chess Engine Communication Protocol object.
-	uint64_t slots;     //
-	slot_t **data;      //
+	uint64_t slots; //
+	slot_t **data;  //
 };
 
 #endif

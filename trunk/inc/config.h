@@ -47,6 +47,9 @@
 /* The transposition table size (in megabytes).  This must be >= 1. */
 #define TABLE_MB	64
 
+/* */
+#define PAWN_TABLE_MB	 1
+
 
 
 /*----------------------------------------------------------------------------*\

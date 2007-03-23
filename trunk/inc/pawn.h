@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*\
- |	main.cpp							      |
+ |	pawn.h								      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
@@ -23,37 +23,24 @@
  |	Boston MA 02111-1307
  */
 
-/* C stuff: */
-#include "gray.h"
+#ifndef PAWN_H
+#define PAWN_H
 
 /* Default Gray Matter stuff: */
 #include "config.h"
 #include "types.h"
 
-/* Extra Gray Matter stuff: */
-#include "table.h"
-#include "history.h"
-#include "xboard.h"
-#include "search.h"
-
-/* Function prototypes: */
-int main(int argc, char **argv);
-
-/*----------------------------------------------------------------------------*\
- |				     main()				      |
-\*----------------------------------------------------------------------------*/
-int main(int argc, char **argv)
+class pawn_table
 {
-	/* Seed the random number generator. */
-	srand(time(NULL));
+public:
+	pawn_table(int mb = PAWN_TABLE_MB);
+	~pawn_table();
+	void clear();
+	int probe(bitboard_t pawn_hash) const;
+	void store(bitboard_t pawn_hash, int value);
+private:
+	uint64_t slots;
+	pawn_slot_t *data;
+};
 
-	/* Instantiate the classes. */
-	table t;
-	history h;
-	xboard x;
-	class search s(&t, &h, &x);
-
-	/* Launch the event loop. */
-	x.loop(&s);
-	return 0;
-}
+#endif
