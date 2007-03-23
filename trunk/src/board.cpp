@@ -132,7 +132,7 @@ bitboard_t key_whose;
 static int weight_piece[] = {WEIGHT_PAWN, WEIGHT_KNIGHT, WEIGHT_BISHOP, WEIGHT_ROOK, WEIGHT_QUEEN, WEIGHT_KING};
 static int weight_castle[] = {WEIGHT_CAN_CASTLE, WEIGHT_CANT_CASTLE, WEIGHT_HAS_CASTLED};
 
-pawn_table pt;
+pawn pawn_table;
 
 /*----------------------------------------------------------------------------*\
  |				    board()				      |
@@ -312,7 +312,11 @@ int board::evaluate() const
 \*----------------------------------------------------------------------------*/
 int board::evaluate_pawn() const
 {
-	int sign, sum = 0;
+	int sign, sum;
+
+	if ((sum = pawn_table.probe(pawn_hash)) != INT_MIN)
+		goto end;
+	sum = 0;
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
@@ -320,6 +324,8 @@ int board::evaluate_pawn() const
 		/* Evaluate. */
 	}
 
+	pawn_table.store(pawn_hash, sum);
+end:
 	sign = OFF_MOVE == WHITE ? 1 : -1;
 	return sign * sum;
 }

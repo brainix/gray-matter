@@ -45,9 +45,9 @@
 #define DEPTH		16
 
 /* The transposition table size (in megabytes).  This must be >= 1. */
-#define TABLE_MB	64
+#define XPOS_TABLE_MB	64
 
-/* */
+/* The pawn table size (in megabytes).  This must be >= 1. */
 #define PAWN_TABLE_MB	 1
 
 
@@ -93,8 +93,12 @@
 #error "In inc/config.h, DEPTH must be greater than or equal to 4!"
 #endif
 
-#if (TABLE_MB < 1)
-#error "In inc/config.h, TABLE_MB must be greater than or equal to 1!"
+#if (XPOS_TABLE_MB < 1)
+#error "In inc/config.h, XPOS_TABLE_MB must be greater than or equal to 1!"
+#endif
+
+#if (PAWN_TABLE_MB < 1)
+#error "In inc/config.h, PAWN_TABLE_MB must be greater than or equal to 1!"
 #endif
 
 /* Piece colors: */

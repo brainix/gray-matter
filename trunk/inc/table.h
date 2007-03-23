@@ -40,7 +40,7 @@ public:
 	void store(bitboard_t hash, move_t move, int depth, int type);
 private:
 	uint64_t slots; //
-	slot_t **data;  //
+	xpos_slot_t **data;  //
 };
 
 #endif

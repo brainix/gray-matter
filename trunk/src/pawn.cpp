@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*\
- |	pawn.cpp							      |
+ |	pawn.cpp - pawn table implementation				      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
@@ -27,9 +27,9 @@
 #include "pawn.h"
 
 /*----------------------------------------------------------------------------*\
- |				  pawn_table()				      |
+ |				     pawn()				      |
 \*----------------------------------------------------------------------------*/
-pawn_table::pawn_table(int mb)
+pawn::pawn(int mb)
 {
 
 /* Constructor. */
@@ -38,7 +38,7 @@ pawn_table::pawn_table(int mb)
 	{
 		if ((slots = mb * MB / sizeof(pawn_slot_t)) == 0)
 			throw;
-		data = new pawn_slot_t[slots]
+		data = new pawn_slot_t[slots];
 	}
 	catch (...)
 	{
@@ -48,9 +48,9 @@ pawn_table::pawn_table(int mb)
 }
 
 /*----------------------------------------------------------------------------*\
- |				 ~pawn_table()				      |
+ |				    ~pawn()				      |
 \*----------------------------------------------------------------------------*/
-pawn_table::~pawn_table()
+pawn::~pawn()
 {
 
 /* Destructor. */
@@ -61,11 +61,11 @@ pawn_table::~pawn_table()
 /*----------------------------------------------------------------------------*\
  |				    clear()				      |
 \*----------------------------------------------------------------------------*/
-void pawn_table::clear()
+void pawn::clear()
 {
 	for (uint64_t index = 0; index < slots; index++)
 	{
-		data[index].pawn_hash = 0;
+		data[index].hash = 0;
 		data[index].value = INT_MIN;
 	}
 }
@@ -73,18 +73,18 @@ void pawn_table::clear()
 /*----------------------------------------------------------------------------*\
  |				    probe()				      |
 \*----------------------------------------------------------------------------*/
-int pawn_table::probe(bitboard_t pawn_hash) const
+int pawn::probe(bitboard_t hash) const
 {
-	uint64_t index = pawn_hash % slots;
-	return data[index].pawn_hash == pawn_hash ? data[index].value : INT_MIN;
+	uint64_t index = hash % slots;
+	return data[index].hash == hash ? data[index].value : INT_MIN;
 }
 
 /*----------------------------------------------------------------------------*\
  |				    store()				      |
 \*----------------------------------------------------------------------------*/
-void pawn_table::store(bitboard_t pawn_hash, int value)
+void pawn::store(bitboard_t hash, int value)
 {
-	uint64_t index = pawn_hash % slots;
-	data[index].pawn_hash = pawn_hash;
+	uint64_t index = hash % slots;
+	data[index].hash = hash;
 	data[index].value = value;
 }

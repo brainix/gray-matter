@@ -92,21 +92,21 @@ typedef struct move
 /*
  | This structure describes a transposition table slot.
  */
-typedef struct slot
+typedef struct xpos_slot
 {
 	bitboard_t hash; // Zobrist hash key.
 	move_t move;     // Best move.
 	uint16_t depth;  // Depth.
 	uint16_t type;   // Type (useless, alpha, beta, or exact value).
-} __attribute__((packed)) slot_t;
+} __attribute__((packed)) xpos_slot_t;
 
 /*
- |
+ | This structure describes a pawn table slot.
  */
 typedef struct pawn_slot
 {
-	bitboard_t pawn_hash; // Zobrist hash key.
-	int value;            //
+	bitboard_t hash; // Zobrist hash key.
+	int value;       //
 } __attribute__((packed)) pawn_slot_t;
 
 #endif
