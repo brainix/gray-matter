@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*\
- |	pawn.h								      |
+ |	pawn.h - pawn table interface					      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
@@ -30,14 +30,14 @@
 #include "config.h"
 #include "types.h"
 
-class pawn_table
+class pawn
 {
 public:
-	pawn_table(int mb = PAWN_TABLE_MB);
-	~pawn_table();
+	pawn(int mb = PAWN_TABLE_MB);
+	~pawn();
 	void clear();
-	int probe(bitboard_t pawn_hash) const;
-	void store(bitboard_t pawn_hash, int value);
+	int probe(bitboard_t hash) const;
+	void store(bitboard_t hash, int value);
 private:
 	uint64_t slots;
 	pawn_slot_t *data;
