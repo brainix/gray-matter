@@ -197,6 +197,8 @@ board& board::operator=(const board& that)
 		}
 	hashes = that.hashes;
 	hash = that.hash;
+	pawn_hashes = that.pawn_hashes;
+	pawn_hash = that.pawn_hash;
 	return *this;
 }
 
@@ -298,7 +300,26 @@ int board::evaluate() const
 		for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
 			sum += sign * weight_castle[state.castle[color][side]];
 	}
+
+	sum += evaluate_pawn();
 	return sum;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				evaluate_pawn()				      |
+\*----------------------------------------------------------------------------*/
+int board::evaluate_pawn() const
+{
+	int sign, sum = 0;
+
+	for (int color = WHITE; color <= BLACK; color++)
+	{
+		sign = color == WHITE ? 1 : -1;
+		/* Evaluate. */
+	}
+
+	sign = OFF_MOVE == WHITE ? 1 : -1;
+	return sign * sum;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -328,6 +349,7 @@ void board::make(move_t m)
 		for (int color = WHITE; color <= COLORS; color++)
 			rotations[angle][color].push_back(rotation[angle][color]);
 	hashes.push_back(hash);
+	pawn_hashes.push_back(pawn_hash);
 
 	/* If we're making a null move, skip a bunch of this nonsense. */
 	if (IS_NULL_MOVE(m))
@@ -347,6 +369,11 @@ void board::make(move_t m)
 			}
 			hash ^= key_piece[ON_MOVE][shape][m.old_x][m.old_y];
 			hash ^= key_piece[ON_MOVE][shape][m.new_x][m.new_y];
+			if (shape == PAWN)
+			{
+				pawn_hash ^= key_piece[ON_MOVE][shape][m.old_x][m.old_y];
+				pawn_hash ^= key_piece[ON_MOVE][shape][m.new_x][m.new_y];
+			}
 		}
 		if (BIT_GET(state.piece[OFF_MOVE][shape], m.new_x, m.new_y))
 		{
@@ -354,6 +381,8 @@ void board::make(move_t m)
 			for (int angle = L45; angle <= R90; angle++)
 				BIT_CLR(rotation[angle][OFF_MOVE], coord[MAP][angle][m.new_x][m.new_y][X], coord[MAP][angle][m.new_x][m.new_y][Y]);
 			hash ^= key_piece[OFF_MOVE][shape][m.new_x][m.new_y];
+			if (shape == PAWN)
+				pawn_hash ^= key_piece[OFF_MOVE][shape][m.new_x][m.new_y];
 		}
 	}
 
@@ -415,6 +444,7 @@ void board::make(move_t m)
 
 	/* If we're moving a pawn: */
 	hash ^= state.en_passant == -1 ? key_no_en_passant : key_en_passant[state.en_passant];
+	pawn_hash ^= state.en_passant == -1 ? key_no_en_passant : key_en_passant[state.en_passant];
 	if (BIT_GET(state.piece[ON_MOVE][PAWN], m.new_x, m.new_y))
 	{
 		/*
@@ -427,6 +457,7 @@ void board::make(move_t m)
 			BIT_SET(state.piece[ON_MOVE][m.promo], m.new_x, m.new_y);
 			hash ^= key_piece[ON_MOVE][PAWN][m.new_x][m.new_y];
 			hash ^= key_piece[ON_MOVE][m.promo][m.new_x][m.new_y];
+			pawn_hash ^= key_piece[ON_MOVE][PAWN][m.new_x][m.new_y];
 		}
 
 		/*
@@ -439,6 +470,7 @@ void board::make(move_t m)
 			for (int angle = L45; angle <= R90; angle++)
 				BIT_CLR(rotation[angle][OFF_MOVE], coord[MAP][angle][m.new_x][m.old_y][X], coord[MAP][angle][m.new_x][m.old_y][Y]);
 			hash ^= key_piece[OFF_MOVE][PAWN][m.new_x][m.old_y];
+			pawn_hash ^= key_piece[OFF_MOVE][PAWN][m.new_x][m.old_y];
 		}
 
 		/* If we're advancing a pawn two squares, mark it vulnerable to
@@ -452,6 +484,7 @@ void board::make(move_t m)
 		 */
 		state.en_passant = -1;
 	hash ^= state.en_passant == -1 ? key_no_en_passant : key_en_passant[state.en_passant];
+	pawn_hash ^= state.en_passant == -1 ? key_no_en_passant : key_en_passant[state.en_passant];
 
 	/* Set the other color on move. */
 end:
@@ -482,6 +515,8 @@ void board::unmake()
 		}
 	hash = hashes.back();
 	hashes.pop_back();
+	pawn_hash = pawn_hashes.back();
+	pawn_hashes.pop_back();
 }
 
 /*----------------------------------------------------------------------------*\
@@ -658,6 +693,8 @@ void board::init_hash()
 
 	hashes.clear();
 	hash = 0;
+	pawn_hashes.clear();
+	pawn_hash = 0;
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
@@ -669,6 +706,8 @@ void board::init_hash()
 				x = n % 8;
 				y = n / 8;
 				hash ^= key_piece[color][shape][x][y];
+				if (shape == PAWN)
+					pawn_hash ^= key_piece[color][shape][x][y];
 			}
 		}
 
@@ -677,6 +716,7 @@ void board::init_hash()
 	}
 
 	hash ^= key_no_en_passant;
+	pawn_hash ^= key_no_en_passant;
 
 	hash ^= key_whose;
 }
