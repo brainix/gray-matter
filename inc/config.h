@@ -77,6 +77,11 @@
 				      // optimal?  Someone should look into this
 				      // before we challenge Kasparov.
 
+/* Penalties for weak pawn formations: */
+#define WEIGHT_ISOLATED		   -0
+#define WEIGHT_DOUBLED		   -0
+#define WEIGHT_BACKWARD		   -0
+
 /* How much we hate our opponent: */
 #define CONTEMPT		  900
 
