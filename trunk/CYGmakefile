@@ -33,4 +33,4 @@ bin/%.o : src/%.cpp
 	$(CXX) -c -o $@ $< $(LANG) $(WARN) $(OPTI) $(PREP) $(DIR)
 
 bin/gray.exe : $(OBJS)
-	$(CXX) -o $@ $(LANG) $(WARN) $(OPTI) $(PREP) $(LINK) $(DIR) $(OBJS)
+	$(CXX) -o $@ $(LANG) $(WARN) $(OPTI) $(PREP) $(DIR) $(OBJS)
