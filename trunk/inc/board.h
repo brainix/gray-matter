@@ -98,6 +98,7 @@ public:
 	bitboard_t get_hash() const;
 	int get_status(bool mate_test);
 	int evaluate() const;
+	int evaluate_pawn() const;
 
 	/* These methods generate, make, and take back moves. */
 	void generate(list<move_t> &l) const;
@@ -112,7 +113,9 @@ private:
 	bitboard_t rotation[ANGLES][COLORS + 1];        /* Current rotated bitboard.   */
 	list<bitboard_t> hashes;                        /* Previous Zobrist hash keys. */
 	bitboard_t hash;                                /* Current Zobrist hash key.   */
-	mutex_t mutex;				/* ?                           */
+	list<bitboard_t> pawn_hashes;                   /* ?                           */
+	bitboard_t pawn_hash;                           /* ?                           */
+	mutex_t mutex;				        /* ?                           */
 
 	/* These methods start up games. */
 	void init_state();
