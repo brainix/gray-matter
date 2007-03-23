@@ -36,6 +36,12 @@ using namespace std;
 #include "types.h"
 #include "thread.h"
 
+/* Extra Gray Matter stuff: */
+#include "pawn.h"
+
+/* Forward declarations: */
+class pawn_table;
+
 /* These macros represent the colors on and off move. */
 #define ON_MOVE			(state.whose)
 #define OFF_MOVE		(!state.whose)

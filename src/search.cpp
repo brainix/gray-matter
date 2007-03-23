@@ -38,7 +38,7 @@ int search_status;      // ...the search status!  :-D
 /*----------------------------------------------------------------------------*\
  |				    search()				      |
 \*----------------------------------------------------------------------------*/
-search::search(xboard *x, table *t, history *h)
+search::search(table *t, history *h, xboard *x)
 {
 
 /* Constructor. */
@@ -47,9 +47,9 @@ search::search(xboard *x, table *t, history *h)
 	max_depth = DEPTH;
 	output = false;
 
-	xboard_ptr = x;
 	table_ptr = t;
 	history_ptr = h;
+	xboard_ptr = x;
 
 	mutex_init(&timeout_mutex);
 	timer_function(handle);

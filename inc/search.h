@@ -37,21 +37,21 @@ using namespace std;
 #include "thread.h"
 
 /* Extra Gray Matter stuff: */
-#include "xboard.h"
 #include "table.h"
 #include "history.h"
+#include "xboard.h"
 #include "board.h"
 
 /* Forward declarations: */
-class xboard;
 class table;
 class history;
+class xboard;
 class board;
 
 class search
 {
 public:
-	search(xboard *x, table *t, history *h);
+	search(table *t, history *h, xboard *x);
 	~search();
 	search& operator=(const search& that);
 	static void handle();

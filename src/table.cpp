@@ -29,12 +29,10 @@
 /*----------------------------------------------------------------------------*\
  |				    table()				      |
 \*----------------------------------------------------------------------------*/
-table::table(xboard *x, int mb)
+table::table(int mb)
 {
 
 /* Constructor. */
-
-	xboard_ptr = x;
 
 	try
 	{
@@ -46,7 +44,6 @@ table::table(xboard *x, int mb)
 	}
 	catch (...)
 	{
-		xboard_ptr->vomit("Couldn't allocate transposition table.");
 	}
 
 	clear();
@@ -83,7 +80,7 @@ void table::clear()
 /*----------------------------------------------------------------------------*\
  |				    probe()				      |
 \*----------------------------------------------------------------------------*/
-int table::probe(bitboard_t hash, move_t *move_ptr, int depth, int alpha, int beta)
+int table::probe(bitboard_t hash, move_t *move_ptr, int depth, int alpha, int beta) const
 {
 	uint64_t index = hash % (slots / 2);
 	int type = USELESS;

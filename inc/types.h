@@ -100,4 +100,13 @@ typedef struct slot
 	uint16_t type;   // Type (useless, alpha, beta, or exact value).
 } __attribute__((packed)) slot_t;
 
+/*
+ |
+ */
+typedef struct pawn_slot
+{
+	bitboard_t pawn_hash; // Zobrist hash key.
+	int value;            //
+} __attribute__((packed)) pawn_slot_t;
+
 #endif
