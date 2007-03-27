@@ -1,4 +1,4 @@
-#summary How to compile on Cygwin on Windows
+#summary How to compile on Cygwin on Windows.
 #labels Phase-Deploy
 
 =Install Cygwin=
