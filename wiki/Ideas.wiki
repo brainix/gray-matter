@@ -1,4 +1,5 @@
 #summary Various ideas, some crazier than others.
+#labels Phase-Design
 
 =Abstraction and Modularization=
   * {{{board::heuristic()}}} could be declared virtual to permit alternative versions.
