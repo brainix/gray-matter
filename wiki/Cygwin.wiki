@@ -1,4 +1,4 @@
-#summary How to compile Gray Matter on Win32 in the Cygwin environment
+#summary How to compile Gray Matter on Cygwin on Windows
 
 =Installing Cygwin=
 * Download the 'setup.exe' from one of the Cygwin mirrors at: http://www.cygwin.com/mirrors.html
