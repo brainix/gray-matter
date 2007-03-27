@@ -1,4 +1,5 @@
-#summary How to compile Gray Matter on Cygwin on Windows
+#summary How to compile on Cygwin on Windows
+#labels Phase-Deploy
 
 =Install Cygwin=
   * Download Cygwin's {{{setup.exe}}} from one of the mirrors at: http://www.cygwin.com/mirrors.html
