@@ -4,15 +4,11 @@
 #	Copyright © 2005-2007, The Gray Matter Team, original authors.	       #
 #==============================================================================#
 
-# Your operating system.  This must be LINUX, OS_X, or WINDOWS.
-# BSD is based on OS X.  If you insist on running BSD, set this to OS_X.  ;-)
-PLAT = WINDOWS
-
 CXX  = g++
 LANG = -ansi
 WARN = -Wall -Werror
 OPTI = -O3 -fomit-frame-pointer
-PREP = -D$(PLAT)
+PREP = -DWINDOWS
 DIR  = -Iinc
 
 OBJS = bin/board.o   \
