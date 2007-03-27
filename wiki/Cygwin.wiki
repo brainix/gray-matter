@@ -5,6 +5,10 @@
   * Download Cygwin's {{{setup.exe}}} from one of the mirrors at: http://www.cygwin.com/mirrors.html
   * Run {{{setup.exe}}} and make sure to install the GNU Compiler Collection (GCC) and G++.
 
-=Compile and Install Gray Matter=
+=Compile Gray Matter=
   * Type: *{{{make -f CYGmakefile}}}*
-  * apparently !WinBoard also uses cygwin.  It is distributed with a file called cygwin1.dll, which is most likely out of date with the dll version we just compiled Gray Matter with.  Copy the cygwin1.dll file from the Cygwin's bin directory into the !WinBoard installation directory, and both !WinBoard and Gray Matter should run fine.
+
+=Install WinBoard=
+
+=Hack WinBoard=
+  * !WinBoard also uses Cygwin.  It's distributed with a file named {{{cygwin1.dll}}}, which is likely out of date with the version we just compiled Gray Matter against.  Copy the {{{cygwin1.dll}}} file from Cygwin's {{{bin\}}} folder into !WinBoard's folder.
