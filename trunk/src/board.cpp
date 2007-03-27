@@ -319,14 +319,15 @@ int board::evaluate_pawn() const
 	for (int color = WHITE; color <= BLACK; color++)
 	{
 		sign = color == WHITE ? 1 : -1;
-		for (int x = 0; x <= 7; x++)
+		for (int file = 0; file <= 7; file++)
 		{
-			if ((coef = count(state.piece[color][PAWN] & COL_MSK(x))) == 0)
+			bitboard_t b = state.piece[color][PAWN] & COL_MSK(file);
+			if ((coef = count(b)) == 0)
 				continue;
 
 			/* Penalize isolated pawns. */
 			bitboard_t adj_cols = 0;
-			for (int j = x == 0 ? 1 : -1; j <= (x == 7 ? -1 : 1); j += 2)
+			for (int j = file == 0 ? 1 : -1; j <= (file == 7 ? -1 : 1); j += 2)
 				adj_cols |= COL_MSK(j);
 			if (!(state.piece[color][PAWN] & adj_cols))
 				sum += sign * coef * WEIGHT_ISOLATED;
@@ -334,7 +335,7 @@ int board::evaluate_pawn() const
 			/* Penalize doubled pawns. */
 			sum += sign * (coef - 1) * WEIGHT_DOUBLED;
 
-			/* Penalize backward pawns. */
+			/* TODO: Penalize backward pawns. */
 		}
 	}
 
