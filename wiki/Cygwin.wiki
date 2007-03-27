@@ -2,8 +2,8 @@
 #labels Phase-Deploy
 
 =Install Cygwin=
-  * Download Cygwin's {{{setup.exe}}} from one of the mirrors at: http://www.cygwin.com/mirrors.html
-  * Run {{{setup.exe}}} and make sure to install the GNU Compiler Collection (GCC) and G++.
+  * Download Cygwin's *{{{setup.exe}}}* from one of the mirrors at: http://www.cygwin.com/mirrors.html
+  * Run *{{{setup.exe}}}* and make sure to install the GNU Compiler Collection (GCC) and G++.
 
 =Compile Gray Matter=
   * Type: *{{{make -f CYGmakefile}}}*
@@ -11,4 +11,4 @@
 =Install WinBoard=
 
 =Hack WinBoard=
-  * !WinBoard also uses Cygwin.  It's distributed with a file named {{{cygwin1.dll}}}, which is likely out of date with the version we just compiled Gray Matter against.  Copy the {{{cygwin1.dll}}} from Cygwin's {{{bin\}}} folder into !WinBoard's folder.
+  * !WinBoard also uses Cygwin.  It's distributed with a file named *{{{cygwin1.dll}}}*, which is likely out of date with the version we just compiled Gray Matter against.  Copy the *{{{cygwin1.dll}}}* from Cygwin's *{{{bin\}}}* folder into !WinBoard's folder.
