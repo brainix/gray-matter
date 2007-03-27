@@ -313,9 +313,8 @@ int board::evaluate_pawn() const
 {
 	int sign, sum;
 
-	if ((sum = pawn_table.probe(pawn_hash)) != INT_MIN)
+	if (pawn_table.probe(pawn_hash, &sum) == EXACT)
 		goto end;
-	sum = 0;
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
