@@ -1,11 +1,9 @@
 #summary How to compile Gray Matter on Cygwin on Windows
 
-=Installing Cygwin=
-* Download the 'setup.exe' from one of the Cygwin mirrors at: http://www.cygwin.com/mirrors.html
+=Install Cygwin=
+  * Download the 'setup.exe' from one of the Cygwin mirrors at: http://www.cygwin.com/mirrors.html
+  * Run the installer and make sure you install the GNU compiler collection (GCC) and g++.
 
-* Run the installer and make sure you install the GNU compiler collection (GCC) and g++.
-
-=Compiling Gray Matter=
-* make -f CYGmakefile
-
-* apparently !WinBoard also uses cygwin.  It is distributed with a file called cygwin1.dll, which is most likely out of date with the dll version we just compiled Gray Matter with.  Copy the cygwin1.dll file from the Cygwin's bin directory into the !WinBoard installation directory, and both !WinBoard and Gray Matter should run fine.
+=Compile Gray Matter=
+  * make -f CYGmakefile
+  * apparently !WinBoard also uses cygwin.  It is distributed with a file called cygwin1.dll, which is most likely out of date with the dll version we just compiled Gray Matter with.  Copy the cygwin1.dll file from the Cygwin's bin directory into the !WinBoard installation directory, and both !WinBoard and Gray Matter should run fine.
