@@ -78,9 +78,9 @@
 				      // before we challenge Kasparov.
 
 /* Penalties for weak pawn formations: */
-#define WEIGHT_ISOLATED		   -0
-#define WEIGHT_DOUBLED		   -0
-#define WEIGHT_BACKWARD		   -0
+#define WEIGHT_ISOLATED		   -5
+#define WEIGHT_DOUBLED		   -5
+#define WEIGHT_BACKWARD		   -5
 
 /* How much we hate our opponent: */
 #define CONTEMPT		  900
