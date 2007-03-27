@@ -30,4 +30,4 @@ The Windows executable is now: *{{{bin/gray.exe}}}*
 
 = Install and Run =
 
-  * On Windows, [Install follow these steps].  Of course, instead of the provided {{{gray.exe}}}, use the one you just compiled.
+  * On Windows, [Install follow these steps].  Of course, instead of the provided *{{{gray.exe}}}*, use the one you just compiled.
