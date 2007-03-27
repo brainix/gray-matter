@@ -1,0 +1,39 @@
+#summary How to cross-compile Gray Matter on Linux to run on Windows.
+#labels Phase-Deploy
+
+This document only explains how to cross-compile Gray Matter on Linux to run on Windows.  If you're interested in compiling _and_ running it on Linux or using a pre-built executable on Windows, you're in the wrong place.
+
+Carry out the *Prepare* and *Download and Cross-Compile* steps on Linux and the *Install and Run* step on Windows.
+
+= Prepare =
+
+You need Subversion and MinGW.  If you don't already have these tools, install them now:
+
+=== On Gentoo ===
+  * To install Subversion, type: *{{{emerge subversion}}}*
+  * To install MinGW, [http://gentoo-wiki.com/HOWTO_MinGW follow these steps] up to and including: *{{{crossdev mingw32}}}*  For the impatient, type:
+    * *{{{emerge -va sys-devel/crossdev}}}*
+    * *{{{echo 'PORTDIR_OVERLAY="/usr/local/overlays/crossdev"' >> /etc/make.conf}}}*
+    * *{{{crossdev mingw32}}}*
+=== On Ubuntu ===
+  * To install Subversion, type: *{{{sudo apt-get install subversion}}}*
+  * To install MinGW, type: *{{{sudo apt-get install mingw32}}}*
+
+= Download and Cross-Compile =
+
+Type:
+  * *{{{svn checkout http://gray-matter.googlecode.com/svn/trunk/ gray-matter/}}}*
+  * *{{{cd gray-matter/}}}*
+  * *{{{make -f WINmakefile}}}*
+
+The Windows executable is now: *{{{bin/gray.exe}}}*
+
+= Install and Run =
+
+  * [http://ftp.gnu.org/gnu/winboard/winboard-4_2_7a.exe Download] and run the !WinBoard installer.  Follow the on-screen instructions.
+  * Copy *{{{gray.exe}}}* into !WinBoard's folder.
+  * Run !WinBoard and, in the *{{{WinBoard Startup}}}* window, replace *{{{GNUChess}}}* with *{{{gray.exe}}}* like so:
+
+[http://gray-matter.googlecode.com/files/WinBoard.jpg]
+
+The game starts, and Gray Matter defaults to playing black and awaits your move.  Enjoy Gray Matter on Windows!  :-)
