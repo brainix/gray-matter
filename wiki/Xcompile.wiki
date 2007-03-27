@@ -1,7 +1,7 @@
 #summary How to cross-compile on Linux to run on Windows.
 #labels Phase-Deploy
 
-This document only explains how to cross-compile Gray Matter on Linux to run on Windows.  If you're interested in compiling _and_ running it on Linux or using a pre-built executable on Windows, you're in the wrong place.
+This document only explains how to cross-compile Gray Matter on Linux to run on Windows.  If you're interested in compiling _and_ running it on Linux, you're in the wrong place.  If you're interested in using a pre-built executable on Windows, [Install click here].
 
 Carry out the *Prepare* and *Download and Cross-Compile* steps on Linux and the *Install and Run* step on Windows.
 
