@@ -36,7 +36,7 @@ public:
 	pawn(int mb = PAWN_TABLE_MB);
 	~pawn();
 	void clear();
-	int probe(bitboard_t hash) const;
+	int probe(bitboard_t hash, int *value_ptr) const;
 	void store(bitboard_t hash, int value);
 private:
 	uint64_t slots;

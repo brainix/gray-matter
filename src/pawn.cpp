@@ -73,10 +73,12 @@ void pawn::clear()
 /*----------------------------------------------------------------------------*\
  |				    probe()				      |
 \*----------------------------------------------------------------------------*/
-int pawn::probe(bitboard_t hash) const
+int pawn::probe(bitboard_t hash, int *value_ptr) const
 {
 	uint64_t index = hash % slots;
-	return data[index].hash == hash ? data[index].value : INT_MIN;
+	bool found = data[index].hash == hash;
+	*value_ptr = found ? data[index].value : 0;
+	return found ? EXACT : USELESS;
 }
 
 /*----------------------------------------------------------------------------*\
