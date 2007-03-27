@@ -287,16 +287,16 @@ int board::evaluate() const
  | perspective of the player who's just moved (the color that's off move).
  */
 
-	int sign, coefficient, weight, sum = 0;
+	int sign, coef, weight, sum = 0;
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
 		sign = color == OFF_MOVE ? 1 : -1;
 		for (int shape = PAWN; shape <= QUEEN; shape++)
 		{
-			coefficient = count(state.piece[color][shape]);
+			coef = count(state.piece[color][shape]);
 			weight = weight_piece[shape];
-			sum += sign * coefficient * weight;
+			sum += sign * coef * weight;
 		}
 
 		for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
@@ -311,7 +311,7 @@ int board::evaluate() const
 \*----------------------------------------------------------------------------*/
 int board::evaluate_pawn() const
 {
-	int sign, sum;
+	int sign, coef, sum;
 
 	if (pawn_table.probe(pawn_hash, &sum) == EXACT)
 		goto end;
@@ -321,20 +321,18 @@ int board::evaluate_pawn() const
 		sign = color == WHITE ? 1 : -1;
 		for (int x = 0; x <= 7; x++)
 		{
-			if (!(state.piece[color][PAWN] & COL_MSK(x)))
+			if ((coef = count(state.piece[color][PAWN] & COL_MSK(x))) == 0)
 				continue;
 
 			/* Penalize isolated pawns. */
-			bool adjacent_pawn = false;
+			bitboard_t adj_cols = 0;
 			for (int j = x == 0 ? 1 : -1; j <= (x == 7 ? -1 : 1); j += 2)
-				if (state.piece[color][PAWN] & COL_MSK(x + j))
-					adjacent_pawn = true;
-			if (!adjacent_pawn)
-				sum += sign * WEIGHT_ISOLATED;
+				adj_cols |= COL_MSK(j);
+			if (!(state.piece[color][PAWN] & adj_cols))
+				sum += sign * coef * WEIGHT_ISOLATED;
 
 			/* Penalize doubled pawns. */
-			int n = count(state.piece[color][PAWN] & COL_MSK(x)) - 1;
-			sum += sign * n * WEIGHT_DOUBLED;
+			sum += sign * (coef - 1) * WEIGHT_DOUBLED;
 
 			/* Penalize backward pawns. */
 		}
