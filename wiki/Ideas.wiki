@@ -6,5 +6,4 @@
   * search::iterate() could be modified to call an abstract method for tree searching.  This would also facilitate runtime switching between tactical search methods.  It would also allow anyone to experiment with other algorithms besides !NegaScout without disturbing the current implementation.
 
 =Heuristics=
-* A "sub-heuristic" that I've played around with is to reward pieces that can capture their own color.  What this does is promote good defensive structure, e.g., pawns protecting each other.  It's extremely important to make this heuristic value less than the lowest piece capture heuristic.  The effect would be, if two lines have the same normal evaluation, the defensive heuristic would break the tie.  I found that this is good for creating opening pawn structure, where normal heuristics would mostly be equal.
-
+  * A "sub-heuristic" that I've played around with is to reward pieces that can capture their own color.  What this does is promote good defensive structure, e.g., pawns protecting each other.  It's extremely important to make this heuristic value less than the lowest piece capture heuristic.  The effect would be, if two lines have the same normal evaluation, the defensive heuristic would break the tie.  I found that this is good for creating opening pawn structure, where normal heuristics would mostly be equal.
