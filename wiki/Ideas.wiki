@@ -1,9 +1,10 @@
 #summary List of various ideas for Gray Matter development.
 
-=Modularization=
-  * board::heuristic() could be declared virtual to permit alternative versions.
-    * Even better, the board class could associate a heuristic class capable of being modified at runtime.
-  * search::iterate() could be modified to call an abstract method for tree searching.  This would also facilitate runtime switching between tactical search methods.  It would also allow anyone to experiment with other algorithms besides !NegaScout without disturbing the current implementation.
+=Abstraction and Modularization=
+  * {{{board::heuristic()}}} could be declared virtual to permit alternative versions.
+    * Even better, the {{{board}}} class could associate a {{{heuristic}}} class capable of being modified at runtime.
+  * {{{search::iterate()}}} could be modified to call an abstract method for tree searching.  This would also facilitate runtime switching between tactical search methods.  It would also allow anyone to experiment with algorithms other than !NegaScout without disturbing the current implementation.
+    * Maybe we could go even further and have {{{search::change()}}} call an abstract method?  This way, we could play with alternate iterative deepening strategies.  Also, some tree search methods may not be conducive to iterative deepening.
 
 =Heuristics=
   * A "sub-heuristic" that I've played around with is to reward pieces that can capture their own color.  What this does is promote good defensive structure, e.g., pawns protecting each other.  It's extremely important to make this heuristic value less than the lowest piece capture heuristic.  The effect would be, if two lines have the same normal evaluation, the defensive heuristic would break the tie.  I found that this is good for creating opening pawn structure, where normal heuristics would mostly be equal.
