@@ -1,4 +1,4 @@
-#summary List of various ideas for Gray Matter development.
+#summary Various ideas, some crazier than others.
 
 =Abstraction and Modularization=
   * {{{board::heuristic()}}} could be declared virtual to permit alternative versions.
