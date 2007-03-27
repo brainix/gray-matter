@@ -9,4 +9,4 @@
 
 = Heuristics =
   * A "sub-heuristic" I've played around with is to reward pieces that can capture pieces of their own color.  This promotes good defensive structures, e.g., pawns that protect each other.  It's extremely important to make this sub-heuristic worth less than the lowest material value.  The effect is, if two lines have the same heuristic (material) evaluation, the sub-heuristic (defensive structure) breaks the tie.  This is good for creating opening pawn structure.
-    * This is a great idea for pawns but can't be generalized to all pieces.  For example, a bishop trapped behind (defending) two pawns is worthless.  Take a look at the latest revision of [http://gray-matter.googlecode.com/svn/trunk/src/board.cpp the board class], specifically {{{board::evaluate_pawn()}}}.
+    * This is a great idea for pawns but can't be generalized to all pieces.  For example, a bishop trapped behind (defending) two pawns is worthless.  Take a look at the latest revision of [http://gray-matter.googlecode.com/svn/trunk/src/board.cpp the board class], specifically *{{{board::evaluate_pawn()}}}*.
