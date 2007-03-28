@@ -1,7 +1,7 @@
 #summary Various ideas, some crazier than others.
 #labels Phase-Design
 
-= Abstraction and Modularization =
+= Modularization and Abstraction=
   * *{{{board::heuristic()}}}* could be declared virtual to permit alternative versions.
     * Even better, the *{{{board}}}* class could associate a *{{{heuristic}}}* class capable of being modified at runtime.
   * *{{{search::iterate()}}}* could call an abstract method for tree searching.  This would facilitate runtime switching between tactical search methods.  It would also allow anyone to experiment with algorithms other than !NegaScout (like conspiracy number search?) without disturbing the current implementation.
