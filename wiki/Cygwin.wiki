@@ -6,11 +6,11 @@
   * Run *{{{setup.exe}}}* and make sure to install the GNU Compiler Collection (GCC) and G++.
 
 =Compile Gray Matter=
-Use your favorite Subversion client to check out the latest Gray Matter source code.  Then, in Cygwin, in the {{{gray-matter\}}} folder:
+Use your favorite Subversion client to check out the latest Gray Matter source code.  Then, in Cygwin, in the *{{{gray-matter/}}}* folder:
   * Type: *{{{make -f CYGmakefile}}}*
-The Windows executable is now: {{{bin\gray.exe}}}
+The Windows executable is now: *{{{bin/gray.exe}}}*
 
 =Install WinBoard=
 
 =Hack WinBoard=
-  * !WinBoard also uses Cygwin.  It's distributed with a file named *{{{cygwin1.dll}}}*, which is likely out of date with the version we just compiled Gray Matter against.  Copy the *{{{cygwin1.dll}}}* from Cygwin's *{{{bin\}}}* folder into !WinBoard's folder.
+  * !WinBoard also uses Cygwin.  It's distributed with a file named *{{{cygwin1.dll}}}*, which is likely out of date with the version we just compiled Gray Matter against.  Copy the *{{{cygwin1.dll}}}* from Cygwin's *{{{bin/}}}* folder into !WinBoard's folder.
