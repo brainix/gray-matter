@@ -6,7 +6,7 @@
   * Run *{{{setup.exe}}}* and be sure to install the GNU Compiler Collection (GCC) and G++.
 
 =Compile Gray Matter=
-  * Use your favorite [http://subversion.tigris.org/links.html#clients Subversion client] to check out the latest Gray Matter source code.
+  * Use your favorite [http://subversion.tigris.org/links.html#clients Subversion client] to check out the latest Gray Matter source code from: *{{{http://gray-matter.googlecode.com/svn/trunk/}}}*
   * In Cygwin, *{{{cd}}}* into the *{{{gray-matter/}}}* directory, and
   * Type: *{{{make -f CYGmakefile}}}*
 The Windows executable is now: *{{{bin/gray.exe}}}*
