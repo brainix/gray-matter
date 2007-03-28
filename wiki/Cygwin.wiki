@@ -2,7 +2,7 @@
 #labels Phase-Deploy
 
 =Install Cygwin=
-  * Download Cygwin's *{{{setup.exe}}}* from one of the mirrors at: http://www.cygwin.com/mirrors.html
+  * Download Cygwin's *{{{setup.exe}}}* from one of the [http://www.cygwin.com/mirrors.html mirrors].
   * Run *{{{setup.exe}}}* and make sure to install the GNU Compiler Collection (GCC) and G++.
 
 =Compile Gray Matter=
