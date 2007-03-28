@@ -6,8 +6,8 @@
   * Run *{{{setup.exe}}}* and make sure to install the GNU Compiler Collection (GCC) and G++.
 
 =Compile Gray Matter=
-Use your favorite Subversion client to check out the latest Gray Matter source code.  Then, in Cygwin, in the *{{{gray-matter/}}}* folder:
-  * Type: *{{{make -f CYGmakefile}}}*
+Use your favorite Subversion client to check out the latest Gray Matter source code.  Then, in Cygwin, in the *{{{gray-matter/}}}* folder, type:
+  * *{{{make -f CYGmakefile}}}*
 The Windows executable is now: *{{{bin/gray.exe}}}*
 
 =Install WinBoard=
