@@ -5,21 +5,21 @@ This document only explains how to cross-compile Gray Matter on Linux to run on 
 
 Carry out the *Prepare* and *Download and Cross-Compile* steps on Linux and the *Install and Run* step on Windows.
 
-= Prepare =
+=Prepare=
 
 You need Subversion and MinGW.  If you don't already have these tools, install them now:
 
-=== On Gentoo ===
+===On Gentoo===
   * To install Subversion, type: *{{{emerge subversion}}}*
   * To install MinGW, [http://gentoo-wiki.com/HOWTO_MinGW follow these steps] up to and including: *{{{crossdev mingw32}}}*  For the impatient, type:
     * *{{{emerge -va sys-devel/crossdev}}}*
     * *{{{echo 'PORTDIR_OVERLAY="/usr/local/overlays/crossdev"' >> /etc/make.conf}}}*
     * *{{{crossdev mingw32}}}*
-=== On Ubuntu ===
+===On Ubuntu===
   * To install Subversion, type: *{{{sudo apt-get install subversion}}}*
   * To install MinGW, type: *{{{sudo apt-get install mingw32}}}*
 
-= Download and Cross-Compile =
+=Download and Cross-Compile=
 
 Type:
   * *{{{svn checkout http://gray-matter.googlecode.com/svn/trunk/ gray-matter/}}}*
@@ -28,6 +28,6 @@ Type:
 
 The Windows executable is now: *{{{bin/gray.exe}}}*
 
-= Install and Run =
+=Install and Run=
 
   * On Windows, [Install follow these steps].  Of course, instead of the provided *{{{gray.exe}}}*, use the one you just compiled.
