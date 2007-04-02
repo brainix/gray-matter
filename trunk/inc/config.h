@@ -41,14 +41,17 @@
 /*----------------------------------------------------------------------------*\
 \*----------------------------------------------------------------------------*/
 
-/* In an excess of time, the maximum search depth (in plies): */
-#define DEPTH		16
+/* The number of CPUs.  This must be >= 1. */
+#define NUM_CPUS	 1
 
 /* The transposition table size (in megabytes).  This must be >= 1. */
 #define XPOS_TABLE_MB	64
 
 /* The pawn table size (in megabytes).  This must be >= 1. */
 #define PAWN_TABLE_MB	 1
+
+/* In an excess of time, the maximum search depth (in plies).  This must be >= 4. */
+#define DEPTH		16
 
 
 
@@ -94,8 +97,8 @@
 /* The following preprocessor directives are used to ensure that the user has
  * chosen sane values for the preceeding settings. */
 
-#if (DEPTH < 4)
-#error "In inc/config.h, DEPTH must be greater than or equal to 4!"
+#if (NUM_CPUS < 1)
+#error "In inc/config.h, NUM_CPUS must be greater than or equal to 1!"
 #endif
 
 #if (XPOS_TABLE_MB < 1)
@@ -104,6 +107,10 @@
 
 #if (PAWN_TABLE_MB < 1)
 #error "In inc/config.h, PAWN_TABLE_MB must be greater than or equal to 1!"
+#endif
+
+#if (DEPTH < 4)
+#error "In inc/config.h, DEPTH must be greater than or equal to 4!"
 #endif
 
 /* Piece colors: */
