@@ -17,9 +17,7 @@ LINK = -lpthread
 DIR  = -Iinc
 
 OBJS = bin/board.o   \
-       bin/history.o \
        bin/main.o    \
-       bin/pawn.o    \
        bin/search.o  \
        bin/table.o   \
        bin/thread.o  \
