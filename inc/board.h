@@ -37,7 +37,7 @@ using namespace std;
 #include "thread.h"
 
 /* Extra Gray Matter stuff: */
-#include "pawn.h"
+#include "table.h"
 
 /* Forward declarations: */
 class pawn_table;

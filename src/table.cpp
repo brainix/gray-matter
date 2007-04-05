@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*\
- |	table.cpp - transposition table implementation			      |
+ |	table.cpp - transposition, pawn, and history table implementations    |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
@@ -124,4 +124,160 @@ void table::store(bitboard_t hash, move_t move, int depth, int type)
 			data[policy][index].depth = depth;
 			data[policy][index].type = type;
 		}
+}
+
+/*----------------------------------------------------------------------------*\
+ |				     pawn()				      |
+\*----------------------------------------------------------------------------*/
+pawn::pawn(int mb)
+{
+
+/* Constructor. */
+
+	try
+	{
+		if ((slots = mb * MB / sizeof(pawn_slot_t)) == 0)
+			throw;
+		data = new pawn_slot_t[slots];
+	}
+	catch (...)
+	{
+	}
+
+	clear();
+}
+
+/*----------------------------------------------------------------------------*\
+ |				    ~pawn()				      |
+\*----------------------------------------------------------------------------*/
+pawn::~pawn()
+{
+
+/* Destructor. */
+
+	delete[] data;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				    clear()				      |
+\*----------------------------------------------------------------------------*/
+void pawn::clear()
+{
+	for (uint64_t index = 0; index < slots; index++)
+	{
+		data[index].hash = 0;
+		data[index].value = INT_MIN;
+	}
+}
+
+/*----------------------------------------------------------------------------*\
+ |				    probe()				      |
+\*----------------------------------------------------------------------------*/
+int pawn::probe(bitboard_t hash, int *value_ptr) const
+{
+	uint64_t index = hash % slots;
+	bool found = data[index].hash == hash;
+	*value_ptr = found ? data[index].value : 0;
+	return found ? EXACT : USELESS;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				    store()				      |
+\*----------------------------------------------------------------------------*/
+void pawn::store(bitboard_t hash, int value)
+{
+	uint64_t index = hash % slots;
+	data[index].hash = hash;
+	data[index].value = value;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   history()				      |
+\*----------------------------------------------------------------------------*/
+history::history()
+{
+
+/* Constructor. */
+
+	try
+	{
+		data = new int ****[COLORS];
+		for (int color = WHITE; color <= BLACK; color++)
+		{
+			data[color] = new int ***[8];
+			for (int old_x = 0; old_x <= 7; old_x++)
+			{
+				data[color][old_x] = new int **[8];
+				for (int old_y = 0; old_y <= 7; old_y++)
+				{
+					data[color][old_x][old_y] = new int *[8];
+					for (int new_x = 0; new_x <= 7; new_x++)
+						data[color][old_x][old_y][new_x] = new int[8];
+				}
+			}
+		}
+	}
+	catch (...)
+	{
+	}
+
+	clear();
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   ~history()				      |
+\*----------------------------------------------------------------------------*/
+history::~history()
+{
+
+/* Destructor. */
+
+	for (int color = WHITE; color <= BLACK; color++)
+	{
+		for (int old_x = 0; old_x <= 7; old_x++)
+		{
+			for (int old_y = 0; old_y <= 7; old_y++)
+			{
+				for (int new_x = 0; new_x <= 7; new_x++)
+					delete[] data[color][old_x][old_y][new_x];
+				delete[] data[color][old_x][old_y];
+			}
+			delete[] data[color][old_x];
+		}
+		delete[] data[color];
+	}
+	delete[] data;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				    clear()				      |
+\*----------------------------------------------------------------------------*/
+void history::clear()
+{
+	for (int color = WHITE; color <= BLACK; color++)
+		for (int old_y = 0; old_y <= 7; old_y++)
+			for (int old_x = 0; old_x <= 7; old_x++)
+				for (int new_y = 0; new_y <= 7; new_y++)
+					for (int new_x = 0; new_x <= 7; new_x++)
+						data[color][old_x][old_y][new_x][new_y] = 0;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				    probe()				      |
+\*----------------------------------------------------------------------------*/
+int history::probe(bool color, move_t move) const
+{
+	return data[color][move.old_x][move.old_y][move.new_x][move.new_y];
+}
+
+/*----------------------------------------------------------------------------*\
+ |				    store()				      |
+\*----------------------------------------------------------------------------*/
+void history::store(bool color, move_t move, int depth)
+{
+
+/* Gray Matter has searched to the specified depth and determined the specified
+ * move for the specified color to be the best.  Note this. */
+
+	data[color][move.old_x][move.old_y][move.new_x][move.new_y] += 1 << depth;
 }
