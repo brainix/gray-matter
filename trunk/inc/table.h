@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*\
- |	table.h - transposition table interface				      |
+ |	table.h - transposition, pawn, and history table interfaces	      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
@@ -41,6 +41,31 @@ public:
 private:
 	uint64_t slots;
 	xpos_slot_t **data;
+};
+
+class pawn
+{
+public:
+	pawn(int mb = PAWN_TABLE_MB);
+	~pawn();
+	void clear();
+	int probe(bitboard_t hash, int *value_ptr) const;
+	void store(bitboard_t hash, int value);
+private:
+	uint64_t slots;
+	pawn_slot_t *data;
+};
+
+class history
+{
+public:
+	history();
+	~history();
+	void clear();
+	int probe(bool color, move_t move) const;
+	void store(bool color, move_t move, int depth);
+private:
+	int *****data;
 };
 
 #endif

@@ -32,7 +32,6 @@
 
 /* Extra Gray Matter stuff: */
 #include "table.h"
-#include "history.h"
 #include "xboard.h"
 #include "search.h"
 
