@@ -88,13 +88,13 @@ class pawn_table;
 /* This macro finds the first set bit in a bitboard. */
 #define FST(b)			(find_64(b) - 1)
 
-class board
+class Board
 {
 public:
 	/* These methods set information. */
-	board();
-	~board();
-	board& operator=(const board& that);
+	Board();
+	~Board();
+	Board& operator=(const Board& that);
 	void set_board();
 	void lock();
 	void unlock();

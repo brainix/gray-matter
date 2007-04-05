@@ -135,9 +135,9 @@ static int weight_castle[] = {WEIGHT_CAN_CASTLE, WEIGHT_CANT_CASTLE, WEIGHT_HAS_
 pawn pawn_table;
 
 /*----------------------------------------------------------------------------*\
- |				    board()				      |
+ |				    Board()				      |
 \*----------------------------------------------------------------------------*/
-board::board()
+Board::Board()
 {
 
 /*
@@ -159,9 +159,9 @@ board::board()
 }
 
 /*----------------------------------------------------------------------------*\
- |				    ~board()				      |
+ |				    ~Board()				      |
 \*----------------------------------------------------------------------------*/
-board::~board()
+Board::~Board()
 {
 
 /* Destructor. */
@@ -172,7 +172,7 @@ board::~board()
 /*----------------------------------------------------------------------------*\
  |				       =				      |
 \*----------------------------------------------------------------------------*/
-board& board::operator=(const board& that)
+Board& Board::operator=(const Board& that)
 {
 
 /* Overloaded assignment operator. */
@@ -207,7 +207,7 @@ board& board::operator=(const board& that)
 /*----------------------------------------------------------------------------*\
  |				  set_board()				      |
 \*----------------------------------------------------------------------------*/
-void board::set_board()
+void Board::set_board()
 {
 
 /* Set the board. */
@@ -220,7 +220,7 @@ void board::set_board()
 /*----------------------------------------------------------------------------*\
  |				     lock()				      |
 \*----------------------------------------------------------------------------*/
-void board::lock()
+void Board::lock()
 {
 	mutex_lock(&mutex);
 }
@@ -228,7 +228,7 @@ void board::lock()
 /*----------------------------------------------------------------------------*\
  |				    unlock()				      |
 \*----------------------------------------------------------------------------*/
-void board::unlock()
+void Board::unlock()
 {
 	mutex_unlock(&mutex);
 }
@@ -236,7 +236,7 @@ void board::unlock()
 /*----------------------------------------------------------------------------*\
  |				  get_whose()				      |
 \*----------------------------------------------------------------------------*/
-bool board::get_whose() const
+bool Board::get_whose() const
 {
 
 /* Return the color on move. */
@@ -247,7 +247,7 @@ bool board::get_whose() const
 /*----------------------------------------------------------------------------*\
  |				   get_hash()				      |
 \*----------------------------------------------------------------------------*/
-bitboard_t board::get_hash() const
+bitboard_t Board::get_hash() const
 {
 
 /* Return the hash key for the current state. */
@@ -258,7 +258,7 @@ bitboard_t board::get_hash() const
 /*----------------------------------------------------------------------------*\
  |				  get_status()				      |
 \*----------------------------------------------------------------------------*/
-int board::get_status(bool mate_test)
+int Board::get_status(bool mate_test)
 {
 	int type;
 
@@ -279,7 +279,7 @@ int board::get_status(bool mate_test)
 /*----------------------------------------------------------------------------*\
  |				   evaluate()				      |
 \*----------------------------------------------------------------------------*/
-int board::evaluate() const
+int Board::evaluate() const
 {
 
 /*
@@ -309,7 +309,7 @@ int board::evaluate() const
 /*----------------------------------------------------------------------------*\
  |				evaluate_pawn()				      |
 \*----------------------------------------------------------------------------*/
-int board::evaluate_pawn() const
+int Board::evaluate_pawn() const
 {
 	int sign, coef, sum;
 
@@ -348,7 +348,7 @@ end:
 /*----------------------------------------------------------------------------*\
  |				   generate()				      |
 \*----------------------------------------------------------------------------*/
-void board::generate(list<move_t> &l) const
+void Board::generate(list<move_t> &l) const
 {
 	generate_king(l);
 	generate_queen(l);
@@ -361,7 +361,7 @@ void board::generate(list<move_t> &l) const
 /*----------------------------------------------------------------------------*\
  |				     make()				      |
 \*----------------------------------------------------------------------------*/
-void board::make(move_t m)
+void Board::make(move_t m)
 {
 
 /* Make a move. */
@@ -522,7 +522,7 @@ end:
 /*----------------------------------------------------------------------------*\
  |				    unmake()				      |
 \*----------------------------------------------------------------------------*/
-void board::unmake()
+void Board::unmake()
 {
 
 /* Take back the last move. */
@@ -545,7 +545,7 @@ void board::unmake()
 /*----------------------------------------------------------------------------*\
  |				     make()				      |
 \*----------------------------------------------------------------------------*/
-void board::make(char *p)
+void Board::make(char *p)
 {
 
 /*
@@ -652,7 +652,7 @@ void board::make(char *p)
 /*----------------------------------------------------------------------------*\
  |				  init_state()				      |
 \*----------------------------------------------------------------------------*/
-void board::init_state()
+void Board::init_state()
 {
 
 /* Initialize the state. */
@@ -693,7 +693,7 @@ void board::init_state()
 /*----------------------------------------------------------------------------*\
  |				init_rotation()				      |
 \*----------------------------------------------------------------------------*/
-void board::init_rotation()
+void Board::init_rotation()
 {
 
 /* Initialize the rotated bitboards. */
@@ -709,7 +709,7 @@ void board::init_rotation()
 /*----------------------------------------------------------------------------*\
  |				  init_hash()				      |
 \*----------------------------------------------------------------------------*/
-void board::init_hash()
+void Board::init_hash()
 {
 
 /* Initialize the Zobrist hash. */
@@ -747,7 +747,7 @@ void board::init_hash()
 /*----------------------------------------------------------------------------*\
  |				 precomp_key()				      |
 \*----------------------------------------------------------------------------*/
-void board::precomp_key() const
+void Board::precomp_key() const
 {
 
 /* Pre-compute the Zobrist hash keys. */
@@ -774,7 +774,7 @@ void board::precomp_key() const
 /*----------------------------------------------------------------------------*\
  |				generate_king()				      |
 \*----------------------------------------------------------------------------*/
-void board::generate_king(list<move_t> &l) const
+void Board::generate_king(list<move_t> &l) const
 {
 
 /* Generate the king moves. */
@@ -808,7 +808,7 @@ void board::generate_king(list<move_t> &l) const
 /*----------------------------------------------------------------------------*\
  |				generate_queen()			      |
 \*----------------------------------------------------------------------------*/
-void board::generate_queen(list<move_t> &l) const
+void Board::generate_queen(list<move_t> &l) const
 {
 
 /* Generate the queen moves. */
@@ -856,7 +856,7 @@ void board::generate_queen(list<move_t> &l) const
 /*----------------------------------------------------------------------------*\
  |				generate_rook()				      |
 \*----------------------------------------------------------------------------*/
-void board::generate_rook(list<move_t> &l) const
+void Board::generate_rook(list<move_t> &l) const
 {
 
 /* Generate the rook moves. */
@@ -886,7 +886,7 @@ void board::generate_rook(list<move_t> &l) const
 /*----------------------------------------------------------------------------*\
  |			       generate_bishop()			      |
 \*----------------------------------------------------------------------------*/
-void board::generate_bishop(list<move_t> &l) const
+void Board::generate_bishop(list<move_t> &l) const
 {
 
 /* Generate the bishop moves. */
@@ -917,7 +917,7 @@ void board::generate_bishop(list<move_t> &l) const
 /*----------------------------------------------------------------------------*\
  |			       generate_knight()			      |
 \*----------------------------------------------------------------------------*/
-void board::generate_knight(list<move_t> &l) const
+void Board::generate_knight(list<move_t> &l) const
 {
 
 /* Generate the knight moves. */
@@ -938,7 +938,7 @@ void board::generate_knight(list<move_t> &l) const
 /*----------------------------------------------------------------------------*\
  |				generate_pawn()				      |
 \*----------------------------------------------------------------------------*/
-void board::generate_pawn(list<move_t> &l) const
+void Board::generate_pawn(list<move_t> &l) const
 {
 
 /* Generate the pawn moves. */
@@ -1025,7 +1025,7 @@ void board::generate_pawn(list<move_t> &l) const
 /*----------------------------------------------------------------------------*\
  |				 precomp_king()				      |
 \*----------------------------------------------------------------------------*/
-void board::precomp_king() const
+void Board::precomp_king() const
 {
 
 /* Pre-compute the king moves. */
@@ -1080,7 +1080,7 @@ void board::precomp_king() const
 /*----------------------------------------------------------------------------*\
  |				 precomp_row()				      |
 \*----------------------------------------------------------------------------*/
-void board::precomp_row() const
+void Board::precomp_row() const
 {
 
 /* Pre-compute the sliding piece moves. */
@@ -1112,7 +1112,7 @@ void board::precomp_row() const
 /*----------------------------------------------------------------------------*\
  |				precomp_knight()			      |
 \*----------------------------------------------------------------------------*/
-void board::precomp_knight() const
+void Board::precomp_knight() const
 {
 
 /* Pre-compute the knight moves. */
@@ -1151,7 +1151,7 @@ void board::precomp_knight() const
 /*----------------------------------------------------------------------------*\
  |				     mate()				      |
 \*----------------------------------------------------------------------------*/
-int board::mate()
+int Board::mate()
 {
 
 /*
@@ -1185,7 +1185,7 @@ int board::mate()
 /*----------------------------------------------------------------------------*\
  |				    check()				      |
 \*----------------------------------------------------------------------------*/
-bool board::check(bitboard_t b1, bool color) const
+bool Board::check(bitboard_t b1, bool color) const
 {
 
 /*
@@ -1269,7 +1269,7 @@ bool board::check(bitboard_t b1, bool color) const
 /*----------------------------------------------------------------------------*\
  |				 insufficient()				      |
 \*----------------------------------------------------------------------------*/
-bool board::insufficient() const
+bool Board::insufficient() const
 {
 
 /* Is the game drawn due to insufficient material? */
@@ -1303,7 +1303,7 @@ bool board::insufficient() const
 /*----------------------------------------------------------------------------*\
  |				    three()				      |
 \*----------------------------------------------------------------------------*/
-bool board::three() const
+bool Board::three() const
 {
 
 /* Is the game drawn by threefold repetition? */
@@ -1320,7 +1320,7 @@ bool board::three() const
 /*----------------------------------------------------------------------------*\
  |				    fifty()				      |
 \*----------------------------------------------------------------------------*/
-bool board::fifty() const
+bool Board::fifty() const
 {
 
 /* Is the game drawn by the fifty move rule? */
@@ -1340,7 +1340,7 @@ bool board::fifty() const
 /*----------------------------------------------------------------------------*\
  |				    rotate()				      |
 \*----------------------------------------------------------------------------*/
-bitboard_t board::rotate(bitboard_t b1, int map, int angle) const
+bitboard_t Board::rotate(bitboard_t b1, int map, int angle) const
 {
 
 /* Rotate a bitboard. */
@@ -1359,7 +1359,7 @@ bitboard_t board::rotate(bitboard_t b1, int map, int angle) const
 /*----------------------------------------------------------------------------*\
  |				    count()				      |
 \*----------------------------------------------------------------------------*/
-int board::count(bitboard_t b) const
+int Board::count(bitboard_t b) const
 {
 
 /* Count the number of pieces in a bitboard. */
@@ -1392,7 +1392,7 @@ int board::count(bitboard_t b) const
 /*----------------------------------------------------------------------------*\
  |				    insert()				      |
 \*----------------------------------------------------------------------------*/
-void board::insert(int x, int y, bitboard_t b, int angle, list<move_t> &l, bool pos) const
+void Board::insert(int x, int y, bitboard_t b, int angle, list<move_t> &l, bool pos) const
 {
 
 /* Prepend or append a piece's possible moves to a list. */
@@ -1424,7 +1424,7 @@ void board::insert(int x, int y, bitboard_t b, int angle, list<move_t> &l, bool 
 /*----------------------------------------------------------------------------*\
  |				   find_64()				      |
 \*----------------------------------------------------------------------------*/
-int board::find_64(int64_t signed_num) const
+int Board::find_64(int64_t signed_num) const
 {
 
 /*
@@ -1450,7 +1450,7 @@ int board::find_64(int64_t signed_num) const
 /*----------------------------------------------------------------------------*\
  |				   find_32()				      |
 \*----------------------------------------------------------------------------*/
-int board::find_32(int32_t signed_num) const
+int Board::find_32(int32_t signed_num) const
 {
 
 /*
@@ -1482,7 +1482,7 @@ int board::find_32(int32_t signed_num) const
 /*----------------------------------------------------------------------------*\
  |				  randomize()				      |
 \*----------------------------------------------------------------------------*/
-uint64_t board::randomize() const
+uint64_t Board::randomize() const
 {
 
 /* Generate a 64-bit pseudo-random number. */
