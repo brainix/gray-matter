@@ -41,7 +41,7 @@ using namespace std;
 #include "search.h"
 
 /* Forward declarations: */
-class Board;
+class board;
 class search;
 
 class xboard
@@ -60,7 +60,7 @@ private:
 	bool force;               // Whether we're in force mode.
 	bool draw;                // Whether our opponent has offered a draw.
 
-	Board b;                  // Board representation object.
+	board b;                  // Board representation object.
 	class search *search_ptr; // Move search object.
 
 	void print_move(move_t m) const;
