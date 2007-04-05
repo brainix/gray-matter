@@ -206,7 +206,7 @@ void *search::start(void *arg)
 /*----------------------------------------------------------------------------*\
  |				    change()				      |
 \*----------------------------------------------------------------------------*/
-void search::change(int s, const board& now)
+void search::change(int s, const Board& now)
 {
 
 /*
