@@ -31,6 +31,9 @@
 \*----------------------------------------------------------------------------*/
 int thread_create(thread_t *thread, entry_t entry, void *arg)
 {
+
+/* Create a thread. */
+
 #if defined(LINUX) || defined(OS_X)
 	return pthread_create(thread, NULL, entry, arg) ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
@@ -43,6 +46,9 @@ int thread_create(thread_t *thread, entry_t entry, void *arg)
 \*----------------------------------------------------------------------------*/
 int thread_exit()
 {
+
+/* Exit from a thread. */
+
 #if defined(LINUX) || defined(OS_X)
 	pthread_exit(NULL);
 #elif defined(WINDOWS) && !defined(__cplusplus)
@@ -68,6 +74,9 @@ int thread_wait(thread_t *thread)
 \*----------------------------------------------------------------------------*/
 int thread_terminate(thread_t *thread)
 {
+
+/* Terminate a thread. */
+
 #if defined(LINUX) || defined(OS_X)
 	return pthread_kill(*thread, SIGTERM) ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
@@ -355,15 +364,25 @@ int timer_set(int sec)
 
 #if defined(LINUX) || defined(OS_X)
 	struct itimerval itimerval;
+
+	/* Is an alarm already pending? */
+	if (getitimer(ITIMER_REAL, &itimerval) == -1 || itimerval.it_value.tv_sec || itimerval.it_value.tv_usec)
+		/* Yes.  We can only set one alarm at a time.  :-( */
+		return CRITICAL;
+
 	itimerval.it_interval.tv_sec = 0;
 	itimerval.it_interval.tv_usec = 0;
 	itimerval.it_value.tv_sec = sec;
 	itimerval.it_value.tv_usec = 0;
 	return setitimer(ITIMER_REAL, &itimerval, NULL) == -1 ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
-	if (timer_thread != INVALID_HANDLE_VALUE)
-		return CRITICAL; /* only allow one timer */
 	unsigned int msec = sec * 1000;
+
+	/* Is an alarm already pending? */
+	if (timer_thread != INVALID_HANDLE_VALUE)
+		/* Yes.  We can only set one alarm at a time.  :-( */
+		return CRITICAL;
+
 	return thread_create(&timer_thread, (entry_t) timer_handler, &msec);
 #endif
 }
@@ -378,14 +397,23 @@ int timer_cancel()
 
 #if defined(LINUX) || defined(OS_X)
 	struct itimerval itimerval;
+
+	/* Is an alarm pending? */
+	if (getitimer(ITIMER_REAL, &itimerval) == -1 || itimerval.it_value.tv_sec || itimerval.it_value.tv_usec)
+		/* No.  There's nothing to cancel. */
+		return NON_CRITICAL;
+
 	itimerval.it_interval.tv_sec = 0;
 	itimerval.it_interval.tv_usec = 0;
 	itimerval.it_value.tv_sec = 0;
 	itimerval.it_value.tv_usec = 0;
 	return setitimer(ITIMER_REAL, &itimerval, NULL) == -1 ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
+	/* Is an alarm pending? */
 	if (timer_thread == INVALID_HANDLE_VALUE)
+		/* No.  There's nothing to cancel. */
 		return NON_CRITICAL;
+
 	return thread_terminate(&timer_thread);
 #endif
 }

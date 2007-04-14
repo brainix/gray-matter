@@ -50,28 +50,28 @@
 
 #if defined(LINUX) || defined(OS_X)
 
-/* Header files: */
+/* POSIX header files: */
 #include <errno.h>
 #include <pthread.h>
 #include <signal.h>
 #include <sys/time.h>
 
-/* Data types: */
-typedef pthread_t thread_t;
-typedef void *(*entry_t)(void *arg);
-typedef pthread_mutex_t mutex_t;
-typedef pthread_cond_t cond_t;
+/* POSIX data types: */
+typedef pthread_t thread_t;          // Thread.
+typedef void *(*entry_t)(void *arg); // Entry point.
+typedef pthread_mutex_t mutex_t;     // Mutex.
+typedef pthread_cond_t cond_t;       // Condition variable.
 
 #elif defined(WINDOWS)
 
-/* Header files: */
+/* Win32 header files: */
 #include <windows.h>
 
-/* Data types: */
-typedef HANDLE thread_t;
-typedef DWORD (*entry_t)(LPVOID arg);
-typedef HANDLE mutex_t;
-typedef struct
+/* Win32 data types: */
+typedef HANDLE thread_t;              // Thread.
+typedef DWORD (*entry_t)(LPVOID arg); // Entry point.
+typedef HANDLE mutex_t;               // Mutex.
+typedef struct                        // Condition variable.
 {
 	CRITICAL_SECTION lock; // Lock to protect count, bcast.
 	int count;             // Number of waiting threads.
