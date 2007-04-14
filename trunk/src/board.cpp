@@ -332,8 +332,6 @@ int board::evaluate_castling() const
 			sum += sign * weight;
 		}
 
-		if (state.castle[color][side] != HAS_CASTLED)
-			continue;
 		/*
 		 | TODO: Reward castling into a strong pawn formation; punish
 		 | castling into a weak pawn formation.
