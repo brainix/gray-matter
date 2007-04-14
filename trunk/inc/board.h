@@ -104,6 +104,8 @@ public:
 	bitboard_t get_hash() const;
 	int get_status(bool mate_test);
 	int evaluate() const;
+	int evaluate_material() const;
+	int evaluate_castling() const;
 	int evaluate_pawn() const;
 
 	/* These methods generate, make, and take back moves. */
