@@ -500,8 +500,10 @@ void search::extract(int s)
 bool search::compare(move_t m1, move_t m2)
 {
 
-/* Pass this method to l.sort() to sort the move list in descending order by
- * score. */
+/*
+ | Pass this method to l.sort() to sort the move list in descending order by
+ | score.
+ */
 
 	return m1.value > m2.value;
 }
