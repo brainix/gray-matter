@@ -115,15 +115,15 @@ public:
 	void make(char *p);
 
 private:
-	list<state_t> states;                           /* Previous states.            */
-	state_t state;                                  /* Current state.              */
-	list<bitboard_t> rotations[ANGLES][COLORS + 1]; /* Previous rotated bitboards. */
-	bitboard_t rotation[ANGLES][COLORS + 1];        /* Current rotated bitboard.   */
-	list<bitboard_t> hashes;                        /* Previous Zobrist hash keys. */
-	bitboard_t hash;                                /* Current Zobrist hash key.   */
-	list<bitboard_t> pawn_hashes;                   /* ?                           */
-	bitboard_t pawn_hash;                           /* ?                           */
-	mutex_t mutex;				        /* ?                           */
+	list<state_t> states;                           // Previous states.
+	state_t state;                                  // Current state.
+	list<bitboard_t> rotations[ANGLES][COLORS + 1]; // Previous rotated bitboards.
+	bitboard_t rotation[ANGLES][COLORS + 1];        // Current rotated bitboard.
+	list<bitboard_t> hashes;                        // Previous Zobrist hash keys.
+	bitboard_t hash;                                // Current Zobrist hash key.
+	list<bitboard_t> pawn_hashes;                   // Previous pawn hash keys.
+	bitboard_t pawn_hash;                           // Current pawn hash key.
+	mutex_t mutex;				        // Lock.
 
 	/* These methods start up games. */
 	void init_state();
