@@ -94,8 +94,10 @@
  |		There are no tunable settings beyond this point!	      |
 \*----------------------------------------------------------------------------*/
 
-/* The following preprocessor directives are used to ensure that the user has
- * chosen sane values for the preceeding settings. */
+/*
+ | The following preprocessor directives are used to ensure that the user has
+ | chosen sane values for the preceeding settings.
+ */
 
 #if (NUM_CPUS < 1)
 #error "In inc/config.h, NUM_CPUS must be greater than or equal to 1!"
