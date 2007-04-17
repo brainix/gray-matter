@@ -1383,25 +1383,6 @@ bool board::fifty() const
 }
 
 /*----------------------------------------------------------------------------*\
- |				    rotate()				      |
-\*----------------------------------------------------------------------------*/
-bitboard_t board::rotate(bitboard_t b1, int map, int angle) const
-{
-
-/* Rotate a bitboard. */
-
-	bitboard_t b2 = 0;
-
-	for (int n, x, y; (n = FST(b1)) != -1; BIT_CLR(b1, x, y))
-	{
-		x = n & 0x7;
-		y = n >> 3;
-		BIT_SET(b2, coord[map][angle][x][y][X], coord[map][angle][x][y][Y]);
-	}
-	return b2;
-}
-
-/*----------------------------------------------------------------------------*\
  |				    count()				      |
 \*----------------------------------------------------------------------------*/
 int board::count(bitboard_t b) const
@@ -1432,32 +1413,6 @@ int board::count(bitboard_t b) const
 			case 0xF: sum += 4; break;
 		}
 	return sum;
-}
-
-/*----------------------------------------------------------------------------*\
- |				    insert()				      |
-\*----------------------------------------------------------------------------*/
-void board::insert(int x, int y, bitboard_t b, int angle, list<move_t> &l, bool pos) const
-{
-
-/* Prepend or append a piece's possible moves to a list. */
-
-	move_t m;
-	m.old_x = x;
-	m.old_y = y;
-	m.value = m.promo = 0;
-
-	for (int n; (n = FST(b)) != -1; BIT_CLR(b, x, y))
-	{
-		x = n & 0x7;
-		y = n >> 3;
-		m.new_x = coord[UNMAP][angle][x][y][X];
-		m.new_y = coord[UNMAP][angle][x][y][Y];
-		if (pos == FRONT)
-			l.push_front(m);
-		else
-			l.push_back(m);
-	}
 }
 
 /*
@@ -1525,6 +1480,25 @@ int board::find_32(int32_t signed_num) const
 }
 
 /*----------------------------------------------------------------------------*\
+ |				    rotate()				      |
+\*----------------------------------------------------------------------------*/
+bitboard_t board::rotate(bitboard_t b1, int map, int angle) const
+{
+
+/* Rotate a bitboard. */
+
+	bitboard_t b2 = 0;
+
+	for (int n, x, y; (n = FST(b1)) != -1; BIT_CLR(b1, x, y))
+	{
+		x = n & 0x7;
+		y = n >> 3;
+		BIT_SET(b2, coord[map][angle][x][y][X], coord[map][angle][x][y][Y]);
+	}
+	return b2;
+}
+
+/*----------------------------------------------------------------------------*\
  |				  randomize()				      |
 \*----------------------------------------------------------------------------*/
 uint64_t board::randomize() const
@@ -1539,4 +1513,30 @@ uint64_t board::randomize() const
 #elif defined(WINDOWS)
 	return (uint64_t) rand() << 32 | rand();
 #endif
+}
+
+/*----------------------------------------------------------------------------*\
+ |				    insert()				      |
+\*----------------------------------------------------------------------------*/
+void board::insert(int x, int y, bitboard_t b, int angle, list<move_t> &l, bool pos) const
+{
+
+/* Prepend or append a piece's possible moves to a list. */
+
+	move_t m;
+	m.old_x = x;
+	m.old_y = y;
+	m.value = m.promo = 0;
+
+	for (int n; (n = FST(b)) != -1; BIT_CLR(b, x, y))
+	{
+		x = n & 0x7;
+		y = n >> 3;
+		m.new_x = coord[UNMAP][angle][x][y][X];
+		m.new_y = coord[UNMAP][angle][x][y][Y];
+		if (pos == FRONT)
+			l.push_front(m);
+		else
+			l.push_back(m);
+	}
 }
