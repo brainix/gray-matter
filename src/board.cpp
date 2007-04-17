@@ -353,6 +353,14 @@ int board::evaluate_pawn() const
 	if (pawn_table.probe(pawn_hash, &sum) == EXACT)
 		goto end;
 
+//	bitboard_t b = state.piece[WHITE][PAWN] | state.piece[BLACK][PAWN];
+//	for (int n, x, y; (n = FST(b)) != -1; BIT_CLR(b, x, y))
+//	{
+//		x = n & 0x7;
+//		y = n >> 3;
+//		sign = BIT_GET(state.piece[WHITE][PAWN], x, y) ? 1 : -1;
+//	}
+
 	for (int color = WHITE; color <= BLACK; color++)
 	{
 		sign = color == WHITE ? 1 : -1;
@@ -763,8 +771,8 @@ void board::init_hash()
 			bitboard_t b = state.piece[color][shape];
 			for (int n, x, y; (n = FST(b)) != -1; BIT_CLR(b, x, y))
 			{
-				x = n % 8;
-				y = n / 8;
+				x = n & 0x7;
+				y = n >> 3;
 				hash ^= key_piece[color][shape][x][y];
 				if (shape == PAWN)
 					pawn_hash ^= key_piece[color][shape][x][y];
@@ -816,7 +824,7 @@ void board::generate_king(list<move_t> &l) const
 
 /* Generate the king moves. */
 
-	int n = FST(state.piece[ON_MOVE][KING]), x = n % 8, y = n / 8;
+	int n = FST(state.piece[ON_MOVE][KING]), x = n & 0x7, y = n >> 3;
 	bitboard_t takes = squares_king[x][y] & rotation[ZERO][OFF_MOVE];
 	bitboard_t moves = squares_king[x][y] & ~rotation[ZERO][COLORS];
 	insert(x, y, takes, ZERO, l, FRONT);
@@ -854,8 +862,8 @@ void board::generate_queen(list<move_t> &l) const
 
 	for (int n, x, y; (n = FST(from)) != -1; BIT_CLR(from, x, y))
 	{
-		x = n % 8;
-		y = n / 8;
+		x = n & 0x7;
+		y = n >> 3;
 
 		/* Generate the horizontal and vertical moves. */
 		for (int angle = ZERO; angle == ZERO || angle == R90; angle += R90 - ZERO)
@@ -902,8 +910,8 @@ void board::generate_rook(list<move_t> &l) const
 
 	for (int n, x, y; (n = FST(from)) != -1; BIT_CLR(from, x, y))
 	{
-		x = n % 8;
-		y = n / 8;
+		x = n & 0x7;
+		y = n >> 3;
 		for (int angle = ZERO; angle == ZERO || angle == R90; angle += R90 - ZERO)
 		{
 			int loc = ROW_LOC(x, y, angle);
@@ -932,8 +940,8 @@ void board::generate_bishop(list<move_t> &l) const
 
 	for (int n, x, y; (n = FST(from)) != -1; BIT_CLR(from, x, y))
 	{
-		x = n % 8;
-		y = n / 8;
+		x = n & 0x7;
+		y = n >> 3;
 		for (int angle = L45; angle == L45 || angle == R45; angle += R45 - L45)
 		{
 			int loc = DIAG_LOC(x, y, angle);
@@ -963,8 +971,8 @@ void board::generate_knight(list<move_t> &l) const
 
 	for (int n, x, y; (n = FST(from)) != -1; BIT_CLR(from, x, y))
 	{
-		x = n % 8;
-		y = n / 8;
+		x = n & 0x7;
+		y = n >> 3;
 		bitboard_t takes = squares_knight[x][y] & rotation[ZERO][OFF_MOVE];
 		bitboard_t moves = squares_knight[x][y] & ~rotation[ZERO][COLORS];
 		insert(x, y, takes, ZERO, l, FRONT);
@@ -994,8 +1002,8 @@ void board::generate_pawn(list<move_t> &l) const
 	}
 	for (int n; (n = FST(b)) != -1; BIT_CLR(b, m.new_x, m.new_y))
 	{
-		m.old_x = m.new_x = n % 8;
-		m.old_y = (m.new_y = n / 8) + (ON_MOVE ? 2 : -2);
+		m.old_x = m.new_x = n & 0x7;
+		m.old_y = (m.new_y = n >> 3) + (ON_MOVE ? 2 : -2);
 		l.push_back(m);
 	}
 
@@ -1023,8 +1031,8 @@ void board::generate_pawn(list<move_t> &l) const
 	b &= ~rotation[ZERO][COLORS];
 	for (int n; (n = FST(b)) != -1; BIT_CLR(b, m.new_x, m.new_y))
 	{
-		m.old_x = m.new_x = n % 8;
-		m.old_y = (m.new_y = n / 8) + (ON_MOVE ? 1 : -1);
+		m.old_x = m.new_x = n & 0x7;
+		m.old_y = (m.new_y = n >> 3) + (ON_MOVE ? 1 : -1);
 		if (m.new_y != (ON_MOVE ? 0 : 7))
 		{
 			l.push_back(m);
@@ -1045,8 +1053,8 @@ void board::generate_pawn(list<move_t> &l) const
 		b &= rotation[ZERO][OFF_MOVE];
 		for (int n; (n = FST(b)) != -1; BIT_CLR(b, m.new_x, m.new_y))
 		{
-			m.old_x = (m.new_x = n % 8) - x;
-			m.old_y = (m.new_y = n / 8) + (ON_MOVE ? 1 : -1);
+			m.old_x = (m.new_x = n & 0x7) - x;
+			m.old_y = (m.new_y = n >> 3) + (ON_MOVE ? 1 : -1);
 			if (m.new_y != (ON_MOVE ? 0 : 7))
 			{
 				l.push_front(m);
@@ -1232,8 +1240,8 @@ bool board::check(bitboard_t b1, bool color) const
 
 	for (int n, x, y; (n = FST(b1)) != -1; BIT_CLR(b1, x, y))
 	{
-		x = n % 8;
-		y = n / 8;
+		x = n & 0x7;
+		y = n >> 3;
 
 		/* Look for a king attack. */
 		if (squares_king[x][y] & state.piece[color][KING])
@@ -1328,8 +1336,8 @@ bool board::insufficient() const
 		n_count += count(state.piece[color][KNIGHT]);
 		b_count += count(state.piece[color][BISHOP]);
 		bitboard_t b = state.piece[color][BISHOP];
-		for (int n; (n = FST(b)) != -1; BIT_CLR(b, n % 8, n / 8))
-			b_array[color][n % 2]++;
+		for (int n; (n = FST(b)) != -1; BIT_CLR(b, n & 0x7, n >> 3))
+			b_array[color][n & 0x1]++;
 	}
 	return n_count == 0 && b_count == 0 ||
 	       n_count == 1 && b_count == 0 ||
@@ -1386,8 +1394,8 @@ bitboard_t board::rotate(bitboard_t b1, int map, int angle) const
 
 	for (int n, x, y; (n = FST(b1)) != -1; BIT_CLR(b1, x, y))
 	{
-		x = n % 8;
-		y = n / 8;
+		x = n & 0x7;
+		y = n >> 3;
 		BIT_SET(b2, coord[map][angle][x][y][X], coord[map][angle][x][y][Y]);
 	}
 	return b2;
@@ -1441,8 +1449,8 @@ void board::insert(int x, int y, bitboard_t b, int angle, list<move_t> &l, bool 
 
 	for (int n; (n = FST(b)) != -1; BIT_CLR(b, x, y))
 	{
-		x = n % 8;
-		y = n / 8;
+		x = n & 0x7;
+		y = n >> 3;
 		m.new_x = coord[UNMAP][angle][x][y][X];
 		m.new_y = coord[UNMAP][angle][x][y][Y];
 		if (pos == FRONT)

@@ -298,7 +298,7 @@ DWORD timer_handler(LPVOID arg)
  |	2. Create an alarm.
  |	3. Set the alarm.
  |	4. Wait for the alarm to sound.
- |	5. Notify the other thread somehow.
+ |	5. Somehow notify the other thread.
  |	6. Exit the timer thread.
  |
  | This way, while the timer thread waits for the alarm to sound, the other
