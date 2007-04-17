@@ -51,10 +51,10 @@ search::search(table *t, history *h, xboard *x)
 	history_ptr = h;
 	xboard_ptr = x;
 
-	mutex_init(&timeout_mutex);
+	mutex_create(&timeout_mutex);
 	timer_function(handle);
-	mutex_init(&search_mutex);
-	cond_init(&search_cond, NULL);
+	mutex_create(&search_mutex);
+	cond_create(&search_cond, NULL);
 	thread_create(&search_thread, (entry_t) start, this);
 
 }
@@ -199,7 +199,7 @@ void *search::start(void *arg)
 		}
 	} while (search_status != QUITTING);
 
-	thread_exit();
+	thread_destroy(NULL);
 	return NULL;
 }
 
