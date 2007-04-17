@@ -353,14 +353,6 @@ int board::evaluate_pawn() const
 	if (pawn_table.probe(pawn_hash, &sum) == EXACT)
 		goto end;
 
-//	bitboard_t b = state.piece[WHITE][PAWN] | state.piece[BLACK][PAWN];
-//	for (int n, x, y; (n = FST(b)) != -1; BIT_CLR(b, x, y))
-//	{
-//		x = n & 0x7;
-//		y = n >> 3;
-//		sign = BIT_GET(state.piece[WHITE][PAWN], x, y) ? 1 : -1;
-//	}
-
 	for (int color = WHITE; color <= BLACK; color++)
 	{
 		sign = color == WHITE ? 1 : -1;
