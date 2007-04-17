@@ -45,7 +45,6 @@ table::table(int mb)
 	catch (...)
 	{
 	}
-
 	clear();
 }
 
@@ -143,7 +142,6 @@ pawn::pawn(int mb)
 	catch (...)
 	{
 	}
-
 	clear();
 }
 
@@ -220,7 +218,6 @@ history::history()
 	catch (...)
 	{
 	}
-
 	clear();
 }
 

@@ -42,26 +42,13 @@ int thread_create(thread_t *thread, entry_t entry, void *arg)
 }
 
 /*----------------------------------------------------------------------------*\
- |				 thread_exit()				      |
-\*----------------------------------------------------------------------------*/
-int thread_exit()
-{
-
-/* Exit from a thread. */
-
-#if defined(LINUX) || defined(OS_X)
-	pthread_exit(NULL);
-#elif defined(WINDOWS) && !defined(__cplusplus)
-	ExitThread(0);
-#endif
-	return CRITICAL;
-}
-
-/*----------------------------------------------------------------------------*\
  |				 thread_wait()				      |
 \*----------------------------------------------------------------------------*/
 int thread_wait(thread_t *thread)
 {
+
+/* Wait for a thread to exit. */
+
 #if defined(LINUX) || defined(OS_X)
 	return pthread_join(*thread, NULL) ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
@@ -70,27 +57,43 @@ int thread_wait(thread_t *thread)
 }
 
 /*----------------------------------------------------------------------------*\
- |			       thread_terminate()			      |
+ |				thread_destroy()			      |
 \*----------------------------------------------------------------------------*/
-int thread_terminate(thread_t *thread)
+int thread_destroy(thread_t *thread)
 {
 
-/* Terminate a thread. */
+/* Destroy a thread.  If thread is NULL, destroy the calling thread.  Otherwise,
+ * destroy the specified thread. */
 
 #if defined(LINUX) || defined(OS_X)
-	return pthread_kill(*thread, SIGTERM) ? CRITICAL : SUCCESSFUL;
+	if (thread == NULL)
+	{
+		pthread_exit(NULL);
+		return CRITICAL; // This should never be reached.
+	}
+	else
+		return pthread_kill(*thread, SIGTERM) ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
-	if (!TerminateThread(thread, 0))
-		return CRITICAL;
-	*thread = INVALID_HANDLE_VALUE;
-	return SUCCESSFUL;
+	if (thread == NULL)
+	{
+		ExitThread(0);
+		return CRITICAL; // This should never be reached.
+	}
+	else
+	{
+		if (!TerminateThread(thread, 0))
+			return CRITICAL;
+		*thread = INVALID_HANDLE_VALUE;
+		return SUCCESSFUL;
+	}
 #endif
+	return CRITICAL; // This should never be reached.
 }
 
 /*----------------------------------------------------------------------------*\
- |				  mutex_init()				      |
+ |				 mutex_create()				      |
 \*----------------------------------------------------------------------------*/
-int mutex_init(mutex_t *mutex)
+int mutex_create(mutex_t *mutex)
 {
 #if defined(LINUX) || defined(OS_X)
 	return pthread_mutex_init(mutex, NULL) ? CRITICAL : SUCCESSFUL;
@@ -154,9 +157,9 @@ int mutex_destroy(mutex_t *mutex)
 }
 
 /*----------------------------------------------------------------------------*\
- |				  cond_init()				      |
+ |				 cond_create()				      |
 \*----------------------------------------------------------------------------*/
-int cond_init(cond_t *cond, void *attr)
+int cond_create(cond_t *cond, void *attr)
 {
 #if defined(LINUX) || defined(OS_X)
 	return pthread_cond_init(cond, (pthread_condattr_t *) attr) ? CRITICAL : SUCCESSFUL;
@@ -399,6 +402,6 @@ int timer_cancel()
 	if (timer_thread == INVALID_HANDLE_VALUE)
 		/* No.  There's nothing to cancel. */
 		return NON_CRITICAL;
-	return thread_terminate(&timer_thread);
+	return thread_destroy(&timer_thread);
 #endif
 }
