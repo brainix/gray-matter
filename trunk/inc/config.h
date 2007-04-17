@@ -66,15 +66,18 @@
 #define WEIGHT_QUEEN		  900
 #define WEIGHT_KING		10300
 
-/* Penalty/bonus for castling statuses: */
-#define WEIGHT_CANT_CASTLE	   -5
-#define WEIGHT_CAN_CASTLE	    0
-#define WEIGHT_HAS_CASTLED	   10
-
 /* Penalties for weak pawn formations: */
 #define WEIGHT_ISOLATED		   -1
 #define WEIGHT_DOUBLED		   -1
 #define WEIGHT_BACKWARD		   -1
+
+/* */
+#define WEIGHT_EAGER_QUEEN	   -1
+
+/* Penalty/bonus for castling statuses: */
+#define WEIGHT_CANT_CASTLE	   -5
+#define WEIGHT_CAN_CASTLE	    0
+#define WEIGHT_HAS_CASTLED	   10
 
 /* How much we hate our opponent: */
 #define CONTEMPT		  900
@@ -193,6 +196,8 @@
 #define PRINCIPAL_DIAGS	0x8142241818244281ULL // 16 principal diagonal squares.
 #define WHITE_SIDE	0x00000000FFFFFFFFULL // 16 white side squares.
 #define BLACK_SIDE	0xFFFFFFFF00000000ULL // 16 black side squares.
+#define WHITE_SQUARES	0x55AA55AA55AA55AAULL // 32 white squares.
+#define BLACK_SQUARES	0xAA55AA55AA55AA55ULL // 32 black squares.
 #define CORNERS		0x8100000000000081ULL // 4 corner squares.
 
 /* Memory units: */
