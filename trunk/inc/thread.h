@@ -84,19 +84,18 @@ typedef struct                        // Condition variable.
 
 /* Function prototypes related to threads: */
 int thread_create(thread_t *thread, entry_t entry, void *arg);
-int thread_exit();
 int thread_wait(thread_t *thread);
-int thread_terminate(thread_t *thread);
+int thread_destroy(thread_t *thread);
 
 /* Function prototypes related to mutexes: */
-int mutex_init(mutex_t *mutex);
+int mutex_create(mutex_t *mutex);
 int mutex_try_lock(mutex_t *mutex);
 int mutex_lock(mutex_t *mutex);
 int mutex_unlock(mutex_t *mutex);
 int mutex_destroy(mutex_t *mutex);
 
 /* Function prototypes related to condition variables: */
-int cond_init(cond_t *cond, void *attr);
+int cond_create(cond_t *cond, void *attr);
 int cond_wait(cond_t *cond, mutex_t *mutex);
 int cond_signal(cond_t *cond);
 int cond_broadcast(cond_t *cond);
