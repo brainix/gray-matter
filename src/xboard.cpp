@@ -46,7 +46,7 @@ xboard::xboard()
 	force = false;
 	draw = false;
 
-	mutex_init(&output_mutex);
+	mutex_create(&output_mutex);
 }
 
 /*----------------------------------------------------------------------------*\
