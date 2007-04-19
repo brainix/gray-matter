@@ -149,6 +149,12 @@
 #define ILLEGAL		6
 #define GAME_STATS	7
 
+/* Game phases: */
+#define OPENING		0
+#define MIDGAME		1
+#define ENDGAME		2
+#define PHASES		3
+
 /* Rotated bitboard maps: */
 #define MAP		0
 #define UNMAP		1
@@ -194,8 +200,8 @@
 #define CENTER		0x0000001818000000ULL // 4 center squares.
 #define EXPANDED_CENTER	0x00003C3C3C3C0000ULL // 16 center squares.
 #define PRINCIPAL_DIAGS	0x8142241818244281ULL // 16 principal diagonal squares.
-#define WHITE_SIDE	0x00000000FFFFFFFFULL // 16 white side squares.
-#define BLACK_SIDE	0xFFFFFFFF00000000ULL // 16 black side squares.
+#define WHITE_SIDE	0x00000000FFFFFFFFULL // 32 white side squares.
+#define BLACK_SIDE	0xFFFFFFFF00000000ULL // 32 black side squares.
 #define WHITE_SQUARES	0x55AA55AA55AA55AAULL // 32 white squares.
 #define BLACK_SQUARES	0xAA55AA55AA55AA55ULL // 32 black squares.
 #define CORNERS		0x8100000000000081ULL // 4 corner squares.
