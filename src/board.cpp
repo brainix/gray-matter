@@ -287,30 +287,38 @@ int board::evaluate() const
  | perspective of the player who's just moved (the color that's off move).
  */
 
-	return evaluate_material() + evaluate_king() + evaluate_pawn();
+	int sum, diff;
+
+	evaluate_material(&sum, &diff);
+	switch (states.length() < OPENING_MOVES ? OPENING : sum > ENDGAME_MATERIAL ? MIDGAME : ENDGAME)
+	{
+		case OPENING: diff += evaluate_king() + evaluate_pawn(); break;
+		case MIDGAME: diff += evaluate_king() + evaluate_pawn(); break;
+		case ENDGAME: diff +=                   evaluate_pawn(); break;
+	}
+	return diff;
 }
 
 /*----------------------------------------------------------------------------*\
  |			      evaluate_material()			      |
 \*----------------------------------------------------------------------------*/
-int board::evaluate_material() const
+int board::evaluate_material(int *sum, int *diff) const
 {
 
 /* Evaluate material balance. */
 
-	int sign, coef, weight, sum = 0;
+	int material[COLORS];
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
-		sign = color == OFF_MOVE ? 1 : -1;
+		material[color] = 0;
 		for (int shape = PAWN; shape <= QUEEN; shape++)
-		{
-			coef = count(state.piece[color][shape]);
-			weight = weight_piece[shape];
-			sum += sign * coef * weight;
-		}
+			material[color] += count(state.piece[color][shape]) * weight_piece[shape];
 	}
-	return sum;
+	if (sum)
+		*sum = material[WHITE] + material[BLACK];
+	if (diff)
+		*diff = (OFF_MOVE == WHITE ? 1 : -1) * (material[WHITE] - material[BLACK]);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -321,7 +329,7 @@ int board::evaluate_king() const
 
 /* Evaluate king safety. */
 
-	int sign, weight, sum = 0;
+	int sign, weight, diff = 0;
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
@@ -329,7 +337,7 @@ int board::evaluate_king() const
 		for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
 		{
 			weight = weight_castle[state.castle[color][side]];
-			sum += sign * weight;
+			diff += sign * weight;
 			if (state.castle[color][side] == HAS_CASTLED)
 				/*
 				 | TODO: Reward castling into and maintaining a
@@ -338,7 +346,7 @@ int board::evaluate_king() const
 				;
 		}
 	}
-	return sum;
+	return diff;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -349,9 +357,9 @@ int board::evaluate_pawn() const
 
 /* Evaluate pawn structure. */
 
-	int sign, coef, sum;
+	int sign, coef, diff;
 
-	if (pawn_table.probe(pawn_hash, &sum) == EXACT)
+	if (pawn_table.probe(pawn_hash, &diff) == EXACT)
 		goto end;
 
 	for (int color = WHITE; color <= BLACK; color++)
@@ -359,28 +367,37 @@ int board::evaluate_pawn() const
 		sign = color == WHITE ? 1 : -1;
 		for (int file = 0; file <= 7; file++)
 		{
-			bitboard_t b = state.piece[color][PAWN] & COL_MSK(file);
-			if ((coef = count(b)) == 0)
+			bitboard_t pawns = state.piece[color][PAWN] & COL_MSK(file);
+			if ((coef = count(pawns)) == 0)
 				continue;
+			bitboard_t adj_files = 0;
+			for (int j = file == 0 ? 1 : -1; j <= (file == 7 ? -1 : 1); j += 2)
+				adj_files |= COL_MSK(j);
+			bitboard_t adj_pawns = state.piece[color][PAWN] & adj_files;
 
 			/* Penalize isolated pawns. */
-			bitboard_t adj_cols = 0;
-			for (int j = file == 0 ? 1 : -1; j <= (file == 7 ? -1 : 1); j += 2)
-				adj_cols |= COL_MSK(j);
-			if (!(state.piece[color][PAWN] & adj_cols))
-				sum += sign * coef * WEIGHT_ISOLATED;
+			if (!adj_pawns)
+				diff += sign * coef * WEIGHT_ISOLATED;
 
-			/* Penalize doubled pawns. */
-			sum += sign * (coef - 1) * WEIGHT_DOUBLED;
+			/* Penalize doubled (and not isolated) pawns. */
+			if (adj_pawns)
+				diff += sign * (coef - 1) * WEIGHT_DOUBLED;
 
-			/* TODO: Penalize backward pawns. */
+			/* Penalize backward pawns. */
+			for (int n, x, y; (n = FST(pawns)) != -1; BIT_CLR(pawns, x, y))
+			{
+				x = n & 0x7;
+				y = n >> 3;
+				if (!(state.piece[color][PAWN] & adj_files & (ROW_MSK(y) | ROW_MSK(y - sign))))
+					diff += sign * WEIGHT_BACKWARD;
+			}
 		}
 	}
 
-	pawn_table.store(pawn_hash, sum);
+	pawn_table.store(pawn_hash, diff);
 end:
 	sign = OFF_MOVE == WHITE ? 1 : -1;
-	return sign * sum;
+	return sign * diff;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -1391,28 +1408,11 @@ int board::count(bitboard_t b) const
 
 /* Count the number of pieces in a bitboard. */
 
+	static const int table[] = {0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4};
 	int sum = 0;
 
 	for (; b; b >>= 4)
-		switch (b & 0xF)
-		{
-			case 0x0: sum += 0; break;
-			case 0x1: sum += 1; break;
-			case 0x2: sum += 1; break;
-			case 0x3: sum += 2; break;
-			case 0x4: sum += 1; break;
-			case 0x5: sum += 2; break;
-			case 0x6: sum += 2; break;
-			case 0x7: sum += 3; break;
-			case 0x8: sum += 1; break;
-			case 0x9: sum += 2; break;
-			case 0xA: sum += 2; break;
-			case 0xB: sum += 3; break;
-			case 0xC: sum += 2; break;
-			case 0xD: sum += 3; break;
-			case 0xE: sum += 3; break;
-			case 0xF: sum += 4; break;
-		}
+		sum += table[b & 0xF];
 	return sum;
 }
 
@@ -1436,7 +1436,7 @@ int board::find_64(int64_t signed_num) const
 
 #if defined(OS_X) || defined(WINDOWS)
 	uint64_t unsigned_num = signed_num & -signed_num;
-	int shift = unsigned_num <= 0x00000000FFFFFFFFULL ? 0 : 32;
+	int shift = unsigned_num <= 0xFFFFFFFFULL ? 0 : 32;
 #endif
 
 #if defined(LINUX)
