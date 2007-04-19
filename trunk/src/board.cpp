@@ -284,39 +284,33 @@ int board::evaluate() const
  | perspective of the player who's just moved (the color that's off move).
  */
 
-	int sum, diff;
-
-	evaluate_material(&sum, &diff);
-	switch (states.length() < OPENING_PLIES ? OPENING : sum > ENDGAME_WEIGHT ? MIDGAME : ENDGAME)
-	{
-		case OPENING: diff += evaluate_king() + evaluate_pawn(); break;
-		case MIDGAME: diff += evaluate_king() + evaluate_pawn(); break;
-		case ENDGAME: diff +=                   evaluate_pawn(); break;
-	}
-	return diff;
+	return evaluate_material() + evaluate_king() + evaluate_pawn();
 }
 
 /*----------------------------------------------------------------------------*\
  |			      evaluate_material()			      |
 \*----------------------------------------------------------------------------*/
-int board::evaluate_material(int *sum, int *diff) const
+int board::evaluate_material() const
 {
 
 /* Evaluate material balance. */
 
-	static const int weight_piece[] = {WEIGHT_PAWN, WEIGHT_KNIGHT, WEIGHT_BISHOP, WEIGHT_ROOK, WEIGHT_QUEEN, WEIGHT_KING};
-	int material[COLORS];
+	static const int weight_piece[] = {WEIGHT_PAWN,   WEIGHT_KNIGHT,
+	                                   WEIGHT_BISHOP, WEIGHT_ROOK,
+	                                   WEIGHT_QUEEN,  WEIGHT_KING};
+	int sign, coef, weight, sum = 0;
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
-		material[color] = 0;
+		sign = color == OFF_MOVE ? 1 : -1;
 		for (int shape = PAWN; shape <= QUEEN; shape++)
-			material[color] += count(state.piece[color][shape]) * weight_piece[shape];
+		{
+			coef = count(state.piece[color][shape]);
+			weight = weight_piece[shape];
+			sum += sign * coef * weight;
+		}
 	}
-	if (sum)
-		*sum = material[WHITE] + material[BLACK];
-	if (diff)
-		*diff = (OFF_MOVE == WHITE ? 1 : -1) * (material[WHITE] - material[BLACK]);
+	return sum;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -327,8 +321,10 @@ int board::evaluate_king() const
 
 /* Evaluate king safety. */
 
-	static const int weight_castle[] = {WEIGHT_CAN_CASTLE, WEIGHT_CANT_CASTLE, WEIGHT_HAS_CASTLED};
-	int sign, weight, diff = 0;
+	static const int weight_castle[] = {WEIGHT_CAN_CASTLE,
+	                                    WEIGHT_CANT_CASTLE,
+	                                    WEIGHT_HAS_CASTLED};
+	int sign, weight, sum = 0;
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
@@ -336,16 +332,10 @@ int board::evaluate_king() const
 		for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
 		{
 			weight = weight_castle[state.castle[color][side]];
-			diff += sign * weight;
-			if (state.castle[color][side] == HAS_CASTLED)
-				/*
-				 | TODO: Reward castling into and maintaining a
-				 | strong pawn formation.
-				 */
-				;
+			sum += sign * weight;
 		}
 	}
-	return diff;
+	return sum;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -356,9 +346,9 @@ int board::evaluate_pawn() const
 
 /* Evaluate pawn structure. */
 
-	int sign, coef, diff;
+	int sign, coef, sum;
 
-	if (pawn_table.probe(pawn_hash, &diff) == EXACT)
+	if (pawn_table.probe(pawn_hash, &sum) == EXACT)
 		goto end;
 
 	for (int color = WHITE; color <= BLACK; color++)
@@ -376,10 +366,10 @@ int board::evaluate_pawn() const
 
 			/* Penalize isolated pawns. */
 			if (!adj_pawns)
-				diff += sign * coef * WEIGHT_ISOLATED;
+				sum += sign * coef * WEIGHT_ISOLATED;
 
 			/* Penalize doubled pawns. */
-			diff += sign * (coef - 1) * WEIGHT_DOUBLED;
+			sum += sign * (coef - 1) * WEIGHT_DOUBLED;
 
 			/* Penalize backward pawns. */
 			for (int n, x, y; (n = FST(pawns)) != -1; BIT_CLR(pawns, x, y))
@@ -387,23 +377,15 @@ int board::evaluate_pawn() const
 				x = n & 0x7;
 				y = n >> 3;
 				if (!(state.piece[color][PAWN] & adj_files & (ROW_MSK(y) | ROW_MSK(y - sign))))
-					diff += sign * WEIGHT_BACKWARD;
+					sum += sign * WEIGHT_BACKWARD;
 			}
 		}
 	}
 
-	pawn_table.store(pawn_hash, diff);
+	pawn_table.store(pawn_hash, sum);
 end:
 	sign = OFF_MOVE == WHITE ? 1 : -1;
-	return sign * diff;
-}
-
-/*----------------------------------------------------------------------------*\
- |			     evaluate_repetition()			      |
-\*----------------------------------------------------------------------------*/
-int board::evaluate_repetition(int num_moves) const
-{
-	return num_moves ? num_moves + evaluate_repetition(num_moves - 1) : 0;
+	return sign * sum;
 }
 
 /*----------------------------------------------------------------------------*\
