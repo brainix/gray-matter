@@ -347,6 +347,7 @@ int board::evaluate_pawn() const
 /* Evaluate pawn structure. */
 
 	int sign, coef, sum;
+	bitboard_t pawns, adj_files, adj_pawns, ranks;
 
 	if (pawn_table.probe(pawn_hash, &sum) == EXACT)
 		goto end;
@@ -356,13 +357,13 @@ int board::evaluate_pawn() const
 		sign = color == WHITE ? 1 : -1;
 		for (int file = 0; file <= 7; file++)
 		{
-			bitboard_t pawns = state.piece[color][PAWN] & COL_MSK(file);
+			pawns = state.piece[color][PAWN] & COL_MSK(file);
 			if ((coef = count(pawns)) == 0)
 				continue;
-			bitboard_t adj_files = 0;
+			adj_files = 0;
 			for (int j = file == 0 ? 1 : -1; j <= (file == 7 ? -1 : 1); j += 2)
 				adj_files |= COL_MSK(j);
-			bitboard_t adj_pawns = state.piece[color][PAWN] & adj_files;
+			adj_pawns = state.piece[color][PAWN] & adj_files;
 
 			/* Penalize isolated pawns. */
 			if (!adj_pawns)
@@ -371,13 +372,22 @@ int board::evaluate_pawn() const
 			/* Penalize doubled pawns. */
 			sum += sign * (coef - 1) * WEIGHT_DOUBLED;
 
-			/* Penalize backward pawns. */
 			for (int n, x, y; (n = FST(pawns)) != -1; BIT_CLR(pawns, x, y))
 			{
 				x = n & 0x7;
 				y = n >> 3;
-				if (!(state.piece[color][PAWN] & adj_files & (ROW_MSK(y) | ROW_MSK(y - sign))))
+
+				/* Penalize backward pawns. */
+				ranks = ROW_MSK(y) | ROW_MSK(y - sign);
+				if (!(state.piece[color][PAWN] & adj_files & ranks))
 					sum += sign * WEIGHT_BACKWARD;
+
+				/* Reward passed pawns. */
+				ranks = 0;
+				for (int k = y + sign; k < 7 && k > 0; k += sign)
+					ranks |= ROW_MSK(k);
+				if (!(state.piece[!color][PAWN] & adj_files & ranks))
+					sum += sign * WEIGHT_PASSED;
 			}
 		}
 	}
@@ -1015,10 +1025,9 @@ void board::generate_pawn(list<move_t> &l) const
 		m.promo = 0;
 		m.new_y = ON_MOVE ? 2 : 5;
 		m.new_x = state.en_passant;
-		m.old_y = ON_MOVE ? 3 : 4;
-		if (state.en_passant != 0 && BIT_GET(state.piece[ON_MOVE][PAWN], m.old_x = state.en_passant - 1, m.old_y))
+		if (state.en_passant != 0 && BIT_GET(state.piece[ON_MOVE][PAWN], m.old_x = state.en_passant - 1, m.old_y = ON_MOVE ? 3 : 4))
 			l.push_front(m);
-		if (state.en_passant != 7 && BIT_GET(state.piece[ON_MOVE][PAWN], m.old_x = state.en_passant + 1, m.old_y))
+		if (state.en_passant != 7 && BIT_GET(state.piece[ON_MOVE][PAWN], m.old_x = state.en_passant + 1, m.old_y = ON_MOVE ? 3 : 4))
 			l.push_front(m);
 	}
 
@@ -1297,7 +1306,7 @@ bool board::check(bitboard_t b1, bool color) const
 		 | a pawn could attack.  Then, we simply check whether an
 		 | opposing pawn sits on any of our marked squares.  If so,
 		 | we're in check.  If not, we're not in check, at least not by
-		 | a pawn.  Easy peasy.
+		 | a pawn.  Easy, breezy, beautiful.
 		 */
 		bitboard_t b2 = 0;
 		for (int j = x == 0 ? 1 : -1; j <= (x == 7 ? -1 : 1); j += 2)
@@ -1317,7 +1326,7 @@ bool board::insufficient() const
 
 /* Is the game drawn due to insufficient material? */
 
-	int n_count = 0, b_count = 0, b_array[COLORS][COLORS] = {{0, 0}, {0, 0}};
+	int n_count = 0, b_count = 0, b_array[COLORS][COLORS];
 
 	for (int color = WHITE; color <= BLACK; color++)
 		if (state.piece[color][PAWN] ||
@@ -1333,13 +1342,10 @@ bool board::insufficient() const
 	{
 		n_count += count(state.piece[color][KNIGHT]);
 		b_count += count(state.piece[color][BISHOP]);
-		bitboard_t b = state.piece[color][BISHOP];
-		for (int n; (n = FST(b)) != -1; BIT_CLR(b, n & 0x7, n >> 3))
-			b_array[color][n & 0x1]++;
+		b_array[color][WHITE] = count(state.piece[color][BISHOP] & WHITE_SQUARES);
+		b_array[color][BLACK] = count(state.piece[color][BISHOP] & BLACK_SQUARES);
 	}
-	return n_count == 0 && b_count == 0 ||
-	       n_count == 1 && b_count == 0 ||
-	       n_count == 0 && b_count == 1 ||
+	return n_count + b_count <= 1 ||
 	       n_count == 0 && b_count == 2 && b_array[WHITE] == b_array[BLACK];
 }
 
