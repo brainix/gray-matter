@@ -66,12 +66,13 @@
 #define WEIGHT_QUEEN		  900
 #define WEIGHT_KING		10300
 
-/* Penalties for weak pawn formations: */
+/* Values of pawn formations: */
 #define WEIGHT_ISOLATED		   -1
 #define WEIGHT_DOUBLED		   -1
 #define WEIGHT_BACKWARD		   -1
+#define WEIGHT_PASSED		    1
 
-/* Penalty/bonus for castling statuses: */
+/* Values of castling statuses: */
 #define WEIGHT_CANT_CASTLE	   -5
 #define WEIGHT_CAN_CASTLE	    0
 #define WEIGHT_HAS_CASTLED	   10
