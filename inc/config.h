@@ -82,6 +82,10 @@
 /* How much we hate our opponent: */
 #define CONTEMPT		  900
 
+/* */
+#define OPENING_MOVES		    0
+#define ENDGAME_MATERIAL	    0
+
 
 
 /*----------------------------------------------------------------------------*\
