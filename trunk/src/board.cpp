@@ -287,7 +287,7 @@ int board::evaluate() const
  | perspective of the player who's just moved (the color that's off move).
  */
 
-	return evaluate_material() + evaluate_castling() + evaluate_pawn();
+	return evaluate_material() + evaluate_king() + evaluate_pawn();
 }
 
 /*----------------------------------------------------------------------------*\
@@ -296,7 +296,7 @@ int board::evaluate() const
 int board::evaluate_material() const
 {
 
-/* Evaluate the material balance. */
+/* Evaluate material balance. */
 
 	int sign, coef, weight, sum = 0;
 
@@ -314,12 +314,12 @@ int board::evaluate_material() const
 }
 
 /*----------------------------------------------------------------------------*\
- |			      evaluate_castling()			      |
+ |				evaluate_king()				      |
 \*----------------------------------------------------------------------------*/
-int board::evaluate_castling() const
+int board::evaluate_king() const
 {
 
-/* Evaluate the castling status. */
+/* Evaluate king safety. */
 
 	int sign, weight, sum = 0;
 
@@ -330,12 +330,13 @@ int board::evaluate_castling() const
 		{
 			weight = weight_castle[state.castle[color][side]];
 			sum += sign * weight;
+			if (state.castle[color][side] == HAS_CASTLED)
+				/*
+				 | TODO: Reward castling into and maintaining a
+				 | strong pawn formation.
+				 */
+				;
 		}
-
-		/*
-		 | TODO: Reward castling into a strong pawn formation; punish
-		 | castling into a weak pawn formation.
-		 */
 	}
 	return sum;
 }
@@ -346,7 +347,7 @@ int board::evaluate_castling() const
 int board::evaluate_pawn() const
 {
 
-/* Evaluate the pawn structure. */
+/* Evaluate pawn structure. */
 
 	int sign, coef, sum;
 

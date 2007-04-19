@@ -105,7 +105,7 @@ public:
 	int get_status(bool mate_test);
 	int evaluate() const;
 	int evaluate_material() const;
-	int evaluate_castling() const;
+	int evaluate_king() const;
 	int evaluate_pawn() const;
 	int evaluate_repetition(int num_moves) const;
 
