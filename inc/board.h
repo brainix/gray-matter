@@ -104,10 +104,9 @@ public:
 	bitboard_t get_hash() const;
 	int get_status(bool mate_test);
 	int evaluate() const;
-	void evaluate_material(int *sum = NULL, int *diff = NULL) const;
+	int evaluate_material() const;
 	int evaluate_king() const;
 	int evaluate_pawn() const;
-	int evaluate_repetition(int num_moves) const;
 
 	/* These methods generate, make, and take back moves. */
 	void generate(list<move_t> &l) const;
