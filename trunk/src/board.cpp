@@ -129,9 +129,6 @@ bitboard_t key_no_en_passant;
 bitboard_t key_en_passant[8];
 bitboard_t key_whose;
 
-static int weight_piece[] = {WEIGHT_PAWN, WEIGHT_KNIGHT, WEIGHT_BISHOP, WEIGHT_ROOK, WEIGHT_QUEEN, WEIGHT_KING};
-static int weight_castle[] = {WEIGHT_CAN_CASTLE, WEIGHT_CANT_CASTLE, WEIGHT_HAS_CASTLED};
-
 pawn pawn_table;
 
 /*----------------------------------------------------------------------------*\
@@ -290,7 +287,7 @@ int board::evaluate() const
 	int sum, diff;
 
 	evaluate_material(&sum, &diff);
-	switch (states.length() < OPENING_MOVES ? OPENING : sum > ENDGAME_MATERIAL ? MIDGAME : ENDGAME)
+	switch (states.length() < OPENING_PLIES ? OPENING : sum > ENDGAME_WEIGHT ? MIDGAME : ENDGAME)
 	{
 		case OPENING: diff += evaluate_king() + evaluate_pawn(); break;
 		case MIDGAME: diff += evaluate_king() + evaluate_pawn(); break;
@@ -307,6 +304,7 @@ int board::evaluate_material(int *sum, int *diff) const
 
 /* Evaluate material balance. */
 
+	static const int weight_piece[] = {WEIGHT_PAWN, WEIGHT_KNIGHT, WEIGHT_BISHOP, WEIGHT_ROOK, WEIGHT_QUEEN, WEIGHT_KING};
 	int material[COLORS];
 
 	for (int color = WHITE; color <= BLACK; color++)
@@ -329,6 +327,7 @@ int board::evaluate_king() const
 
 /* Evaluate king safety. */
 
+	static const int weight_castle[] = {WEIGHT_CAN_CASTLE, WEIGHT_CANT_CASTLE, WEIGHT_HAS_CASTLED};
 	int sign, weight, diff = 0;
 
 	for (int color = WHITE; color <= BLACK; color++)
@@ -379,9 +378,8 @@ int board::evaluate_pawn() const
 			if (!adj_pawns)
 				diff += sign * coef * WEIGHT_ISOLATED;
 
-			/* Penalize doubled (and not isolated) pawns. */
-			if (adj_pawns)
-				diff += sign * (coef - 1) * WEIGHT_DOUBLED;
+			/* Penalize doubled pawns. */
+			diff += sign * (coef - 1) * WEIGHT_DOUBLED;
 
 			/* Penalize backward pawns. */
 			for (int n, x, y; (n = FST(pawns)) != -1; BIT_CLR(pawns, x, y))

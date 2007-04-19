@@ -67,7 +67,7 @@
 #define WEIGHT_KING		10300
 
 /* Penalties for weak pawn formations: */
-#define WEIGHT_ISOLATED		   -2
+#define WEIGHT_ISOLATED		   -1
 #define WEIGHT_DOUBLED		   -1
 #define WEIGHT_BACKWARD		   -1
 
@@ -83,8 +83,8 @@
 #define CONTEMPT		  900
 
 /* */
-#define OPENING_MOVES		    0
-#define ENDGAME_MATERIAL	    0
+#define OPENING_PLIES		    0
+#define ENDGAME_WEIGHT		    0
 
 
 
