@@ -118,7 +118,6 @@ bool precomputed = false;
 
 /* Pre-computed moves: */
 bitboard_t squares_king[8][8];
-bitboard_t squares_castle[COLORS][SIDES][REQS];
 bitrow_t squares_row[8][256];
 bitboard_t squares_knight[8][8];
 
@@ -284,7 +283,12 @@ int board::evaluate() const
  | perspective of the player who's just moved (the color that's off move).
  */
 
-	return evaluate_material() + evaluate_king() + evaluate_pawn();
+	int sum = 0;
+
+	sum += evaluate_material();
+	sum += evaluate_pawn();
+	sum += evaluate_king();
+	return sum;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -295,9 +299,12 @@ int board::evaluate_material() const
 
 /* Evaluate material balance. */
 
-	static const int weight_piece[] = {WEIGHT_PAWN,   WEIGHT_KNIGHT,
-	                                   WEIGHT_BISHOP, WEIGHT_ROOK,
-	                                   WEIGHT_QUEEN,  WEIGHT_KING};
+	static const int weight_piece[SHAPES] = {WEIGHT_PAWN,
+	                                         WEIGHT_KNIGHT,
+	                                         WEIGHT_BISHOP,
+	                                         WEIGHT_ROOK,
+	                                         WEIGHT_QUEEN,
+	                                         WEIGHT_KING};
 	int sign, coef, weight, sum = 0;
 
 	for (int color = WHITE; color <= BLACK; color++)
@@ -308,31 +315,6 @@ int board::evaluate_material() const
 			coef = count(state.piece[color][shape]);
 			weight = weight_piece[shape];
 			sum += sign * coef * weight;
-		}
-	}
-	return sum;
-}
-
-/*----------------------------------------------------------------------------*\
- |				evaluate_king()				      |
-\*----------------------------------------------------------------------------*/
-int board::evaluate_king() const
-{
-
-/* Evaluate king safety. */
-
-	static const int weight_castle[] = {WEIGHT_CAN_CASTLE,
-	                                    WEIGHT_CANT_CASTLE,
-	                                    WEIGHT_HAS_CASTLED};
-	int sign, weight, sum = 0;
-
-	for (int color = WHITE; color <= BLACK; color++)
-	{
-		sign = color == OFF_MOVE ? 1 : -1;
-		for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
-		{
-			weight = weight_castle[state.castle[color][side]];
-			sum += sign * weight;
 		}
 	}
 	return sum;
@@ -396,6 +378,31 @@ int board::evaluate_pawn() const
 end:
 	sign = OFF_MOVE == WHITE ? 1 : -1;
 	return sign * sum;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				evaluate_king()				      |
+\*----------------------------------------------------------------------------*/
+int board::evaluate_king() const
+{
+
+/* Evaluate king safety. */
+
+	static const int weight_castle[] = {WEIGHT_CAN_CASTLE,
+	                                    WEIGHT_CANT_CASTLE,
+	                                    WEIGHT_HAS_CASTLED};
+	int sign, weight, sum = 0;
+
+	for (int color = WHITE; color <= BLACK; color++)
+	{
+		sign = color == OFF_MOVE ? 1 : -1;
+		for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
+		{
+			weight = weight_castle[state.castle[color][side]];
+			sum += sign * weight;
+		}
+	}
+	return sum;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -832,6 +839,16 @@ void board::generate_king(list<move_t> &l) const
 
 /* Generate the king moves. */
 
+	static const bitboard_t squares_castle[COLORS][SIDES][REQS] =
+		{{{0x000000000000000EULL,    // The squares that must be unoccupied on the queen side in order for the white king to be able to castle.
+		   0x000000000000001CULL},   // The squares that must be unattacked on the queen side in order for the white king to be able to castle.
+		  {0x0000000000000060ULL,    // The squares that must be unoccupied on the king side in order for the white king to be able to castle.
+		   0x0000000000000070ULL}},  // The squares that must be unattacked on the king side in order for the white king to be able to castle.
+		 {{0x0E00000000000000ULL,    // The squares that must be unoccupied on the queen side in order for the black king to be able to castle.
+		   0x1C00000000000000ULL},   // The squares that must be unattacked on the queen side in order for the black king to be able to castle.
+		  {0x6000000000000000ULL,    // The squares that must be unoccupied on the king side in order for the black king to be able to castle.
+		   0x7000000000000000ULL}}}; // The squares that must be unattacked on the king side in order for the black king to be able to castle.
+
 	int n = FST(state.piece[ON_MOVE][KING]), x = n & 0x7, y = n >> 3;
 	bitboard_t takes = squares_king[x][y] & rotation[ZERO][OFF_MOVE];
 	bitboard_t moves = squares_king[x][y] & ~rotation[ZERO][COLORS];
@@ -1109,24 +1126,6 @@ void board::precomp_king() const
 					BIT_SET(squares_king[x][y], x + j, y + k);
 				}
 		}
-
-	/*
-	 | Abraham Maslow once noted, "If the only tool you have is a hammer,
-	 | you tend to see every problem as a [thumb]nail."  Well, the only tool
-	 | I have is a bitboard, so I tend to see every problem as a headache.
-	 |
-	 | These bitboards represent the squares which mustn't be occupied or
-	 | attacked on the respective sides in order for the respective kings to
-	 | be able to castle.
-	 */
-	squares_castle[WHITE][QUEEN_SIDE][UNOCCUPIED] = 0x000000000000000EULL;
-	squares_castle[WHITE][QUEEN_SIDE][UNATTACKED] = 0x000000000000001CULL;
-	squares_castle[WHITE][ KING_SIDE][UNOCCUPIED] = 0x0000000000000060ULL;
-	squares_castle[WHITE][ KING_SIDE][UNATTACKED] = 0x0000000000000070ULL;
-	squares_castle[BLACK][QUEEN_SIDE][UNOCCUPIED] = 0x0E00000000000000ULL;
-	squares_castle[BLACK][QUEEN_SIDE][UNATTACKED] = 0x1C00000000000000ULL;
-	squares_castle[BLACK][ KING_SIDE][UNOCCUPIED] = 0x6000000000000000ULL;
-	squares_castle[BLACK][ KING_SIDE][UNATTACKED] = 0x7000000000000000ULL;
 }
 
 /*----------------------------------------------------------------------------*\

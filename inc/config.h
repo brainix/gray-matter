@@ -58,7 +58,7 @@
 /*----------------------------------------------------------------------------*\
 \*----------------------------------------------------------------------------*/
 
-/* Value of material (in centipawns): */
+/* Values of material (in centipawns): */
 #define WEIGHT_PAWN		  100
 #define WEIGHT_KNIGHT		  300
 #define WEIGHT_BISHOP		  300
