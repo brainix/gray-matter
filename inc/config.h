@@ -187,7 +187,7 @@
 #define EXACT		3
 #define ENTRY_TYPES	4
 
-/* */
+/* Search statuses: */
 #define IDLING		0 // Masturbating.
 #define THINKING	1 // Thinking (on our own time).
 #define PONDERING	2 // Pondering (on our opponent's time).
