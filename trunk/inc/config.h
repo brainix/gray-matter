@@ -205,7 +205,7 @@
 #define CORNERS		0x8100000000000081ULL // 4 corner squares.
 
 /* Memory units: */
-#define B		1           // Byte.
+#define  B		1           // Byte.
 #define KB		(1024 * B)  // Kilobyte.
 #define MB		(1024 * KB) // Megabyte.
 #define GB		(1024 * MB) // Gigabyte.
