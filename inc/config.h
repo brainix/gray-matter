@@ -41,17 +41,11 @@
 /*----------------------------------------------------------------------------*\
 \*----------------------------------------------------------------------------*/
 
-/* The number of CPUs.  This must be >= 1. */
-#define NUM_CPUS	 1
-
-/* The transposition table size (in megabytes).  This must be >= 1. */
-#define XPOS_TABLE_MB	64
-
-/* The pawn table size (in megabytes).  This must be >= 1. */
-#define PAWN_TABLE_MB	 1
-
-/* In an excess of time, the maximum search depth (in plies).  This must be >= 4. */
-#define DEPTH		16
+/* All of the values in this section must be >= 1. */
+#define NUM_CPUS	 1 // The number of CPUs.
+#define XPOS_TABLE_MB	64 // The transposition table size (in MB).
+#define PAWN_TABLE_MB	 1 // The pawn table size (in MB).
+#define DEPTH		16 // The maximum search depth (in plies).
 
 
 
@@ -92,19 +86,19 @@
  */
 
 #if (NUM_CPUS < 1)
-#error "In inc/config.h, NUM_CPUS must be greater than or equal to 1!"
+#error "In inc/config.h, NUM_CPUS must be >= 1."
 #endif
 
 #if (XPOS_TABLE_MB < 1)
-#error "In inc/config.h, XPOS_TABLE_MB must be greater than or equal to 1!"
+#error "In inc/config.h, XPOS_TABLE_MB must be >= 1."
 #endif
 
 #if (PAWN_TABLE_MB < 1)
-#error "In inc/config.h, PAWN_TABLE_MB must be greater than or equal to 1!"
+#error "In inc/config.h, PAWN_TABLE_MB must be >= 1."
 #endif
 
-#if (DEPTH < 4)
-#error "In inc/config.h, DEPTH must be greater than or equal to 4!"
+#if (DEPTH < 1)
+#error "In inc/config.h, DEPTH must be >= 1."
 #endif
 
 /* Piece colors: */
