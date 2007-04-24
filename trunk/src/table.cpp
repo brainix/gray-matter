@@ -273,8 +273,10 @@ int history::probe(bool color, move_t move) const
 void history::store(bool color, move_t move, int depth)
 {
 
-/* Gray Matter has searched to the specified depth and determined the specified
- * move for the specified color to be the best.  Note this. */
+/*
+ | Gray Matter has searched to the specified depth and determined the specified
+ | move for the specified color to be the best.  Note this.
+ */
 
 	data[color][move.old_x][move.old_y][move.new_x][move.new_y] += 1 << depth;
 }
