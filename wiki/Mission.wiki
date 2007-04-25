@@ -9,7 +9,7 @@
     * Setting up a dedicated testing box to run on [http://www.freechess.org/ FICS] 24/7, and
     * Making friends.
   * ~~To generate/accept all/only legal moves (including en passant and castling!) and correctly detect checkmate/stalemate.~~
-  * To adopt a version numbering standard and provide builds.
+  * To ~~adopt a version numbering standard and~~ provide builds.
   * To earn a provisional rating.
 
 === Mid Term Goals (for the Next Year) ===
