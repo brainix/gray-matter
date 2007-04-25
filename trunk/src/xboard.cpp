@@ -217,17 +217,17 @@ void xboard::do_xboard() const
 void xboard::do_protover() const
 {
 	mutex_lock(&output_mutex);
-	printf("feature ping=1\n");                 //
-	printf("feature playother=1\n");            //
-	printf("feature usermove=1\n");             //
-	printf("feature time=0\n");                 //
-	printf("feature draw=1\n");                 //
-	printf("feature sigint=0\n");               //
-	printf("feature analyze=0\n");              //
-	printf("feature myname=\"Gray Matter\"\n"); //
-	printf("feature variants=\"normal\"\n");    //
-	printf("feature colors=0\n");               //
-	printf("feature done=1\n");                 //
+	printf("feature ping=1\n");                     //
+	printf("feature playother=1\n");                //
+	printf("feature usermove=1\n");                 //
+	printf("feature time=0\n");                     //
+	printf("feature draw=1\n");                     //
+	printf("feature sigint=0\n");                   //
+	printf("feature analyze=0\n");                  //
+	printf("feature myname=\"Gray Matter 0.0\"\n"); //
+	printf("feature variants=\"normal\"\n");        //
+	printf("feature colors=0\n");                   //
+	printf("feature done=1\n");                     //
 	mutex_unlock(&output_mutex);
 }
 
@@ -341,8 +341,10 @@ void xboard::do_sd() const
 void xboard::do_usermove()
 {
 
-/* Our opponent has moved.  If the move was legal, and it didn't just end the
- * game, and we're not in force mode: formulate a response. */
+/*
+ | Our opponent has moved.  If the move was legal, and it didn't just end the
+ | game, and we're not in force mode: formulate a response.
+ */
 
 	move_t m;
 
@@ -368,14 +370,18 @@ void xboard::do_usermove()
 		/* Yes.  We're not to respond. */
 		return;
 
-	/* Alright, so the move was legal, and it didn't just end the game.  Are
-	 * we in force mode? */
+	/*
+	 | Alright, so the move was legal, and it didn't just end the game.  Are
+	 | we in force mode?
+	 */
 	if (force)
 		/* Yes.  We're not to respond. */
 		return;
 
-	/* Alright, so the move was legal, and it didn't just end the game, and
-	 * we're not in force mode.  Formulate a response. */
+	/*
+	 | Alright, so the move was legal, and it didn't just end the game, and
+	 | we're not in force mode.  Formulate a response.
+	 */
 	search_ptr->change(THINKING, b);
 }
 
@@ -393,8 +399,10 @@ void xboard::do_question() const
 void xboard::do_ping()
 {
 
-/* XBoard has sent a ping request (to make sure we're not on drugs).  Send a
- * pong reply. */
+/*
+ | XBoard has sent a ping request (to make sure we're not on drugs).  Send a
+ | pong reply.
+ */
 
 	buffer[1] = 'o';
 	mutex_lock(&output_mutex);
