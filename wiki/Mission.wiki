@@ -38,3 +38,5 @@ This section contains quotes about Gray Matter and its hackers.
   * Thank you very much for having created Gray Matter - I'm trying to create a basic chess engine to communicate with [http://www.tim-mann.org/xboard.html XBoard], and your code provided valuable insight! - Christian Korn
 
   * Calm down in there, [http://files.myopera.com/Brainix/albums/130320/1.jpg Rain Man]. - a cute girl at [http://www.agorahouston.com/pages/agorafirst.html Agora]
+
+  * I had no problems compiling and playing it on my Linux box.  It's awesome! - Kyle Fitch
