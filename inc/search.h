@@ -77,6 +77,7 @@ private:
 
 	void iterate(int s);
 	move_t negascout(int depth, int alpha, int beta);
+	int quiesce();
 	void extract(int s);
 	static bool compare(move_t m1, move_t m2);
 };
