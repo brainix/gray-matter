@@ -421,7 +421,7 @@ move_t search::negascout(int depth, int alpha, int beta)
 		b.make(*it);
 		if (depth <= 0)
 			/* Base case. */
-			it->value = b.evaluate();
+			it->value = quiesce();
 		else
 		{
 			/* Recursive case: minimal (scout) window. */
@@ -456,6 +456,14 @@ end:
 			history_ptr->store(whose, m, depth);
 	}
 	return m;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   quiesce()				      |
+\*----------------------------------------------------------------------------*/
+int search::quiesce()
+{
+	return b.evaluate();
 }
 
 /*----------------------------------------------------------------------------*\
