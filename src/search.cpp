@@ -445,7 +445,6 @@ move_t search::negascout(int depth, int alpha, int beta, bool try_null_move)
 				it->value = -negascout(depth - 1, -beta, -alpha, true).value;
 		}
 		b.unmake();
-
 		if (it->value >= beta)
 		{
 			it->value = beta;
