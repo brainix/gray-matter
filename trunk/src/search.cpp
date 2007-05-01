@@ -395,9 +395,9 @@ move_t search::negascout(int depth, int alpha, int beta, bool try_null_move)
 	{
 		SET_NULL_MOVE(null_move);
 		b.make(null_move);
-		null_move = -negascout(depth - 3, -beta, -beta + 1, false);
+		null_move = negascout(depth - 3, -beta, -beta + 1, false);
 		b.unmake();
-		if ((null_move.value = LESSER(null_move.value, beta)) == beta)
+		if ((null_move.value = LESSER(-null_move.value, beta)) == beta)
 			return null_move;
 	}
 
