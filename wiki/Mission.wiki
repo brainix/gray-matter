@@ -14,7 +14,7 @@
 
 === Mid Term Goals (for the Next Year) ===
   * To nurture a community of hackers and chess players.
-  * To prove ~~(or at least provide evidence for)~~ correctness of search (equivalence to straight [http://www.nist.gov/dads/HTML/minimax.html MiniMax]).
+  * ~~To provide evidence for correctness of search.~~
   * To implement quiescence search ~~and null move pruning~~.
   * To implement an opening book and endgame tablebase.
   * For the engine to regularly checkmate its hackers.
