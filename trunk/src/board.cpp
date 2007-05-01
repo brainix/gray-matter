@@ -413,6 +413,18 @@ bool board::zugzwang() const
 
 /* Is the current position zugzwang? */
 
+	if (check(state.piece[state.whose][KING], !state.whose))
+		/* The color on move is in check. */
+		return true;
+	for (int color = WHITE; color <= BLACK; color++)
+	{
+		if (!count(state.piece[color][KNIGHT] | state.piece[color][BISHOP] | state.piece[color][ROOK] | state.piece[color][QUEEN]))
+			/* One color only has pawns and a king. */
+			return true;
+		if (!state.piece[color][KING])
+			/* One color doesn't even have a king. */
+			return true;
+	}
 	return false;
 }
 
