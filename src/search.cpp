@@ -320,7 +320,7 @@ void search::iterate(int s)
 /*----------------------------------------------------------------------------*\
  |				  negascout()				      |
 \*----------------------------------------------------------------------------*/
-move_t search::negascout(int depth, int alpha, int beta)
+move_t search::negascout(int depth, int alpha, int beta, bool try_null_move)
 {
 
 /*
@@ -330,21 +330,25 @@ move_t search::negascout(int depth, int alpha, int beta)
  | NegaMax treats both players as Max and negates the scores and negates and
  | swaps the values of alpha and beta on each recursive call.
  |
- | On top of NegaMax, this method implements the NegaScout algorithm.  NegaScout
- | assumes the first node is in the principal variation and searches this node
- | with a full alpha-beta window.  NegaScout tests its assumption by searching
- | the rest of the nodes with a minimal (scout) window where alpha and beta are
- | close in value.  If the test fails, NegaScout assumes the node at which it
- | failed is in the principal variation and so on.  NegaScout works best when
- | there is good move ordering and typically yields a 10% performance increase.
+ | On top of NegaMax, this method implements alpha-beta pruning.
+ |
+ | On top of alpha-beta pruning, this method implements the NegaScout algorithm.
+ | NegaScout assumes the first node is in the principal variation and searches
+ | this node with a full alpha-beta window.  NegaScout tests its assumption by
+ | searching the rest of the nodes with a minimal (scout) window where alpha and
+ | beta are close in value.  If the test fails, NegaScout assumes the node at
+ | which it failed is in the principal variation and so on.  NegaScout works
+ | best when there is good move ordering and typically yields a 10% performance
+ | increase.
  */
 
 	list<move_t> l;
 	list<move_t>::iterator it;
-	move_t m;
+	move_t m, null_move;
 	int type = ALPHA;
 	bool whose = b.get_whose();
 	bitboard_t hash = b.get_hash();
+	nodes++;
 
 	/*
 	 | Before anything else, do some Research Re: search & Research.  ;-)
@@ -387,6 +391,16 @@ move_t search::negascout(int depth, int alpha, int beta)
 			return m;
 	}
 
+	if (try_null_move)
+	{
+		SET_NULL_MOVE(null_move);
+		b.make(null_move);
+		null_move = -negascout(depth - 3, -beta, -beta + 1, false);
+		b.unmake();
+		if ((null_move.value = LESSER(null_move.value, beta)) == beta)
+			return null_move;
+	}
+
 	/*
 	 | Generate and re-order the move list.  The board class already
 	 | generates the list in an order: pawn captures and promotions, knight
@@ -396,7 +410,6 @@ move_t search::negascout(int depth, int alpha, int beta)
 	 | moves, sort by those scores, and hope the STL's sort algorithm is
 	 | stable so as not to disturb the board class' move ordering.  ;-)
 	 */
-	nodes++;
 	b.generate(l);
 	for (it = l.begin(); it != l.end(); it++)
 		if (it->old_x == m.old_x && it->old_y == m.old_y &&
@@ -426,10 +439,10 @@ move_t search::negascout(int depth, int alpha, int beta)
 		{
 			/* Recursive case: minimal (scout) window. */
 			if (type == EXACT)
-				it->value = -negascout(depth - 1, -alpha - 1, -alpha).value;
+				it->value = -negascout(depth - 1, -alpha - 1, -alpha, true).value;
 			/* Recursive case: full alpha-beta window. */
 			if (type != EXACT || alpha < it->value && it->value < beta)
-				it->value = -negascout(depth - 1, -beta, -alpha).value;
+				it->value = -negascout(depth - 1, -beta, -alpha, true).value;
 		}
 		b.unmake();
 
