@@ -391,7 +391,7 @@ move_t search::negascout(int depth, int alpha, int beta, bool try_null_move)
 			return m;
 	}
 
-	if (try_null_move)
+	if (try_null_move && !b.zugzwang())
 	{
 		SET_NULL_MOVE(null_move);
 		b.make(null_move);

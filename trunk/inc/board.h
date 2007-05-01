@@ -107,6 +107,7 @@ public:
 	int evaluate_material() const;
 	int evaluate_pawn() const;
 	int evaluate_king() const;
+	bool zugzwang() const;
 
 	/* These methods generate, make, and take back moves. */
 	void generate(list<move_t> &l, bool only_captures = false) const;
