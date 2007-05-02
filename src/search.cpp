@@ -475,7 +475,7 @@ move_t search::negascout(int depth, int alpha, int beta, bool try_null_move)
 /*----------------------------------------------------------------------------*\
  |				   quiesce()				      |
 \*----------------------------------------------------------------------------*/
-int search::quiesce(int alpha, int beta) const
+int search::quiesce(int alpha, int beta)
 {
 	list<move_t> l;            // From this position, the capture move list.
 	list<move_t>::iterator it; // The iterator through the capture move list.
