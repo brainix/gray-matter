@@ -411,10 +411,21 @@ int board::evaluate_king() const
 bool board::zugzwang() const
 {
 
-/* Is the current position zugzwang? */
+/*
+ | Is the current position zugzwang?
+ |
+ | In most positions, there's at least one move that the color that's on move
+ | could make to improve her lot.  In these normal positions, null-move pruning
+ | works.  However, in certain positions, her best move would be to pass.  These
+ | positions are called "zugzwang" (German for "compelled to move").  In these
+ | zugzwang positions, null-move pruning doesn't work.
+ |
+ | The search class calls this method on a particular position to decide whether
+ | or not to try null-move pruning.
+*/
 
 	if (check(state.piece[state.whose][KING], !state.whose))
-		/* The color on move is in check. */
+		/* The color that's on move is in check. */
 		return true;
 	for (int color = WHITE; color <= BLACK; color++)
 	{
@@ -884,14 +895,11 @@ void board::generate_king(list<move_t> &l, bool only_captures) const
 	for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
 	{
 		if (state.castle[ON_MOVE][side] != CAN_CASTLE)
-			/* Oops.  The king or rook has already moved. */
-			continue;
+			continue; // The king or rook has already moved.
 		if (squares_castle[ON_MOVE][side][UNOCCUPIED] & rotation[ZERO][COLORS])
-			/* Oops.  There's a piece in the way. */
-			continue;
+			continue; // There's a piece in the way.
 		if (check(squares_castle[ON_MOVE][side][UNATTACKED], OFF_MOVE))
-			/* Oops.  One of the squares is being attacked. */
-			continue;
+			continue; // One of the squares is being attacked.
 
 		move_t m;
 		m.new_x = (m.old_x = 4) + (side ? 2 : -2);

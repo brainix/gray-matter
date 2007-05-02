@@ -340,15 +340,18 @@ move_t search::negascout(int depth, int alpha, int beta, bool try_null_move)
  | which it failed is in the principal variation and so on.  NegaScout works
  | best when there is good move ordering and typically yields a 10% performance
  | increase.
+ |
+ | On top of NegaScout, this method implements null-move pruning.
  */
 
-	list<move_t> l;
-	list<move_t>::iterator it;
-	move_t m, null_move;
-	int type = ALPHA;
-	bool whose = b.get_whose();
-	bitboard_t hash = b.get_hash();
-	nodes++;
+	/* Local variables: */
+	list<move_t> l;                 // From this position, the move list.
+	list<move_t>::iterator it;      // The iterator through the move list.
+	move_t m, null_move;            // From this position, the best move.
+	int type = ALPHA;               //
+	bool whose = b.get_whose();     // In this position, the color on move.
+	bitboard_t hash = b.get_hash(); // This position's hash.
+	nodes++;                        // The number of positions searched.
 
 	/*
 	 | Before anything else, do some Research Re: search & Research.  ;-)
