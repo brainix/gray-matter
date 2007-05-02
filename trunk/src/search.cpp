@@ -440,7 +440,7 @@ move_t search::negascout(int depth, int alpha, int beta, bool try_null_move)
 			it->value = b.evaluate();
 		else
 		{
-			/* Recursive case: minimal (scout) window. */
+			/* Recursive case: minimal (scout) alpha-beta window. */
 			if (type == EXACT)
 				it->value = -negascout(depth - 1, -alpha - 1, -alpha, true).value;
 			/* Recursive case: full alpha-beta window. */
