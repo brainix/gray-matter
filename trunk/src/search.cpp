@@ -437,7 +437,7 @@ move_t search::negascout(int depth, int alpha, int beta, bool try_null_move)
 		b.make(*it);
 		if (depth <= 0)
 			/* Base case. */
-			it->value = quiesce(alpha, beta);
+			it->value = b.evaluate();
 		else
 		{
 			/* Recursive case: minimal (scout) window. */
@@ -470,34 +470,6 @@ move_t search::negascout(int depth, int alpha, int beta, bool try_null_move)
 			history_ptr->store(whose, m, depth);
 	}
 	return m;
-}
-
-/*----------------------------------------------------------------------------*\
- |				   quiesce()				      |
-\*----------------------------------------------------------------------------*/
-int search::quiesce(int alpha, int beta)
-{
-	list<move_t> l;            // From this position, the capture move list.
-	list<move_t>::iterator it; // The iterator through the capture move list.
-	int value = b.evaluate();  //
-	nodes++;                   // The number of positions searched.
-
-	if (value >= beta)
-		return value;
-
-	b.generate(l, true);
-	printf("capture list size: %d\n", l.size());
-	for (it = l.begin(); !timeout_flag && it != l.end(); it++)
-	{
-		b.make(*it);
-		value = -quiesce(-beta, -alpha);
-		b.unmake();
-		if (value >= beta)
-			break;
-		if (value > alpha)
-			alpha = value;
-	}
-	return value;
 }
 
 /*----------------------------------------------------------------------------*\
