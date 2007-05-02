@@ -486,6 +486,7 @@ int search::quiesce(int alpha, int beta)
 		return value;
 
 	b.generate(l, true);
+	printf("capture list size: %d\n", l.size());
 	for (it = l.begin(); !timeout_flag && it != l.end(); it++)
 	{
 		b.make(*it);
