@@ -137,8 +137,8 @@
 #define INSUFFICIENT	2 // Drawn by insufficient material.
 #define THREE		3 // Drawn by threefold repetition.
 #define FIFTY		4 // Drawn by the fifty move rule.
-#define CHECKMATE	5
-#define ILLEGAL		6
+#define CHECKMATE	5 // Checkmated.
+#define ILLEGAL		6 // Post-checkmated (king captured).
 #define GAME_STATS	7
 
 /* Game phases: */
