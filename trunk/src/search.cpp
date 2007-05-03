@@ -348,7 +348,7 @@ move_t search::negascout(int depth, int alpha, int beta, bool try_null_move)
 	list<move_t> l;                 // From this position, the move list.
 	list<move_t>::iterator it;      // The iterator through the move list.
 	move_t m, null_move;            // From this position, the best move.
-	int type = ALPHA;               //
+	int type = ALPHA;               // The score type: lower bound, upper bound, or exact value.
 	bool whose = b.get_whose();     // In this position, the color on move.
 	bitboard_t hash = b.get_hash(); // This position's hash.
 	nodes++;                        // The number of positions searched.
@@ -394,7 +394,8 @@ move_t search::negascout(int depth, int alpha, int beta, bool try_null_move)
 			return m;
 	}
 
-	if (try_null_move && !b.zugzwang())
+	/* Perform null-move pruning. */
+	if (depth >= 3 && try_null_move && !b.zugzwang())
 	{
 		SET_NULL_MOVE(null_move);
 		b.make(null_move);
@@ -448,6 +449,8 @@ move_t search::negascout(int depth, int alpha, int beta, bool try_null_move)
 				it->value = -negascout(depth - 1, -beta, -alpha, true).value;
 		}
 		b.unmake();
+
+		/* Perform alpha-beta pruning. */
 		if (it->value >= beta)
 		{
 			it->value = beta;
