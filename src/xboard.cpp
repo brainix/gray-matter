@@ -367,8 +367,11 @@ void xboard::do_usermove()
 
 	/* Alright, so the move was legal.  Did it just end the game? */
 	if (game_over())
+	{
 		/* Yes.  We're not to respond. */
+		search_ptr->change(IDLING, b);
 		return;
+	}
 
 	/*
 	 | Alright, so the move was legal, and it didn't just end the game.  Are
