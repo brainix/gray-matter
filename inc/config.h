@@ -175,10 +175,10 @@
 #define POLICIES	2
 
 /* Transposition table entry types: */
-#define USELESS		0
-#define ALPHA		1
-#define BETA		2
-#define EXACT		3
+#define USELESS		0 // No stored entry, or a stored entry for a different position (used to detect hash collisions).
+#define ALPHA		1 // The stored entry is for the queried position, and the value represents a lower bound.
+#define BETA		2 // The stored entry is for the queried position, and the value represents an upper bound.
+#define EXACT		3 // The stored entry is for the queried position, and the value represents the exact MiniMax value.
 #define ENTRY_TYPES	4
 
 /* Search statuses: */

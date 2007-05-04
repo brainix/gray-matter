@@ -66,6 +66,9 @@ table::~table()
 \*----------------------------------------------------------------------------*/
 void table::clear()
 {
+
+/* Clear the transposition table. */
+
 	for (int policy = DEEP; policy <= FRESH; policy++)
 		for (uint64_t index = 0; index < slots / 2; index++)
 		{
@@ -161,6 +164,9 @@ pawn::~pawn()
 \*----------------------------------------------------------------------------*/
 void pawn::clear()
 {
+
+/* Clear the pawn table. */
+
 	for (uint64_t index = 0; index < slots; index++)
 	{
 		data[index].hash = 0;
@@ -173,6 +179,13 @@ void pawn::clear()
 \*----------------------------------------------------------------------------*/
 int pawn::probe(bitboard_t hash, int *value_ptr) const
 {
+
+/*
+ | Given the pawn structure described in hash, check the pawn table to see if
+ | we've evaluated it before.  If so, save its previous evaluation to the memory
+ | pointed to by value_ptr and return success.  If not, return failure.
+ */
+
 	uint64_t index = hash % slots;
 	bool found = data[index].hash == hash;
 	*value_ptr = found ? data[index].value : 0;
@@ -184,6 +197,12 @@ int pawn::probe(bitboard_t hash, int *value_ptr) const
 \*----------------------------------------------------------------------------*/
 void pawn::store(bitboard_t hash, int value)
 {
+
+/*
+ | We've just evaluated the pawn structure described in hash.  Save its
+ | evaluation in the pawn table for future probes.
+ */
+
 	uint64_t index = hash % slots;
 	data[index].hash = hash;
 	data[index].value = value;
@@ -251,6 +270,9 @@ history::~history()
 \*----------------------------------------------------------------------------*/
 void history::clear()
 {
+
+/* Clear the history table. */
+
 	for (int color = WHITE; color <= BLACK; color++)
 		for (int old_y = 0; old_y <= 7; old_y++)
 			for (int old_x = 0; old_x <= 7; old_x++)
@@ -274,8 +296,8 @@ void history::store(bool color, move_t move, int depth)
 {
 
 /*
- | Gray Matter has searched to the specified depth and determined the specified
- | move for the specified color to be the best.  Note this.
+ | We've searched to the specified depth and determined the specified move for
+ | the specified color to be the best.  Note this.
  */
 
 	data[color][move.old_x][move.old_y][move.new_x][move.new_y] += 1 << depth;
