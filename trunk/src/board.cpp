@@ -331,6 +331,11 @@ int board::evaluate_pawn() const
 	int sign, coef, sum;
 	bitboard_t pawns, adj_files, adj_pawns, ranks;
 
+	/*
+	 | Before anything else, do some Research Re: search & Research.  ;-)
+	 | (Apologies to Aske Plaat.)  If we've already evaluated this pawn
+	 | structure, return our previous evaluation.
+	 */
 	if (pawn_table.probe(pawn_hash, &sum) == EXACT)
 		goto end;
 
@@ -341,6 +346,10 @@ int board::evaluate_pawn() const
 		{
 			pawns = state.piece[color][PAWN] & COL_MSK(file);
 			if ((coef = count(pawns)) == 0)
+				/*
+				 | The current color has no pawn on the current
+				 | file.  Move to the next file.
+				 */
 				continue;
 			adj_files = 0;
 			for (int j = file == 0 ? 1 : -1; j <= (file == 7 ? -1 : 1); j += 2)
@@ -416,9 +425,10 @@ bool board::zugzwang() const
  |
  | In most positions, there's at least one move that the color that's on move
  | could make to improve her lot.  In these normal positions, null-move pruning
- | works.  However, in certain positions, her best move would be to pass.  These
- | positions are called "zugzwang" (German for "compelled to move").  In these
- | zugzwang positions, null-move pruning doesn't work.
+ | works.  However, in certain positions, her best move would be to pass
+ | (particularly in endgame).  These positions are called "zugzwang" (German for
+ | "compelled to move").  In these zugzwang positions, null-move pruning doesn't
+ | work.
  |
  | The search class calls this method on a particular position to decide whether
  | or not to try null-move pruning.
@@ -460,7 +470,7 @@ void board::make(move_t m)
 
 /* Make a move. */
 
-	/* Save the current state, rotated bitboards, and hash key. */
+	/* Save the current state, rotated bitboards, and hash keys. */
 	states.push_back(state);
 	for (int angle = L45; angle <= R90; angle++)
 		for (int color = WHITE; color <= COLORS; color++)
@@ -590,8 +600,10 @@ void board::make(move_t m)
 			pawn_hash ^= key_piece[OFF_MOVE][PAWN][m.new_x][m.old_y];
 		}
 
-		/* If we're advancing a pawn two squares, mark it vulnerable to
-		 * en passant. */
+		/*
+		 | If we're advancing a pawn two squares, mark it vulnerable to
+		 | en passant.
+		 */
 		state.en_passant = abs((int) m.old_y - (int) m.new_y) == 2 ? (int) m.old_x : -1;
 	}
 	else
@@ -603,8 +615,8 @@ void board::make(move_t m)
 	hash ^= state.en_passant == -1 ? key_no_en_passant : key_en_passant[state.en_passant];
 	pawn_hash ^= state.en_passant == -1 ? key_no_en_passant : key_en_passant[state.en_passant];
 
-	/* Set the other color on move. */
 end:
+	/* Set the other color on move. */
 	state.whose = !state.whose;
 	hash ^= key_whose;
 
@@ -621,7 +633,7 @@ void board::unmake()
 
 /* Take back the last move. */
 
-	/* Restore the previous state, rotated bitboards, and hash key. */
+	/* Restore the previous state, rotated bitboards, and hash keys. */
 	state = states.back();
 	states.pop_back();
 	for (int angle = R90; angle >= L45; angle--)
