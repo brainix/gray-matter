@@ -41,6 +41,8 @@ public:
 private:
 	uint64_t slots;
 	xpos_slot_t **data;
+	int hits;
+	int misses;
 };
 
 class pawn
@@ -54,6 +56,8 @@ public:
 private:
 	uint64_t slots;
 	pawn_slot_t *data;
+	int hits;
+	int misses;
 };
 
 class history
