@@ -84,7 +84,7 @@ void table::clear()
 /*----------------------------------------------------------------------------*\
  |				 table::probe()				      |
 \*----------------------------------------------------------------------------*/
-int table::probe(bitboard_t hash, move_t *move_ptr, int depth, int alpha, int beta) const
+int table::probe(bitboard_t hash, move_t *move_ptr, int depth, int alpha, int beta)
 {
 	uint64_t index = hash % (slots / 2);
 	int type = USELESS;
@@ -185,7 +185,7 @@ void pawn::clear()
 /*----------------------------------------------------------------------------*\
  |				 pawn::probe()				      |
 \*----------------------------------------------------------------------------*/
-int pawn::probe(bitboard_t hash, int *value_ptr) const
+int pawn::probe(bitboard_t hash, int *value_ptr)
 {
 
 /*
