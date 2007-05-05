@@ -41,8 +41,10 @@ public:
 private:
 	uint64_t slots;
 	xpos_slot_t **data;
+#if DEBUG
 	int hits;
 	int misses;
+#endif
 };
 
 class pawn
@@ -56,8 +58,10 @@ public:
 private:
 	uint64_t slots;
 	pawn_slot_t *data;
+#if DEBUG
 	int hits;
 	int misses;
+#endif
 };
 
 class history

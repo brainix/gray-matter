@@ -77,8 +77,10 @@ void table::clear()
 			data[policy][index].depth = 0;
 			data[policy][index].type = USELESS;
 		}
+#if DEBUG
 	hits = 0;
 	misses = 0;
+#endif
 }
 
 /*----------------------------------------------------------------------------*\
@@ -107,10 +109,12 @@ int table::probe(bitboard_t hash, move_t *move_ptr, int depth, int alpha, int be
 			if (data[policy][index].type == EXACT)
 				type = EXACT;
 		}
+#if DEBUG
 	if (type != USELESS)
 		hits++;
 	else
 		misses++;
+#endif
 	return type;
 }
 
@@ -178,8 +182,10 @@ void pawn::clear()
 		data[index].hash = 0;
 		data[index].value = INT_MIN;
 	}
+#if DEBUG
 	hits = 0;
 	misses = 0;
+#endif
 }
 
 /*----------------------------------------------------------------------------*\
@@ -197,10 +203,12 @@ int pawn::probe(bitboard_t hash, int *value_ptr)
 	uint64_t index = hash % slots;
 	bool found = data[index].hash == hash;
 	*value_ptr = found ? data[index].value : 0;
+#if DEBUG
 	if (found)
 		hits++;
 	else
 		misses++;
+#endif
 	return found ? EXACT : USELESS;
 }
 
