@@ -351,7 +351,6 @@ move_t search::negascout(int depth, int alpha, int beta, bool try_null_move)
 	int type = ALPHA;               // The score type: lower bound, upper bound, or exact value.
 	bool whose = b.get_whose();     // In this position, the color on move.
 	bitboard_t hash = b.get_hash(); // This position's hash.
-	nodes++;                        // The number of positions searched.
 
 	/*
 	 | Before anything else, do some Research Re: search & Research.  ;-)
@@ -393,6 +392,9 @@ move_t search::negascout(int depth, int alpha, int beta, bool try_null_move)
 			m.value = -WEIGHT_KING;
 			return m;
 	}
+
+	/* Increment the number of positions searched. */
+	nodes++;
 
 	/* Perform null-move pruning. */
 	if (depth >= 3 && try_null_move && !b.zugzwang())
