@@ -2,11 +2,10 @@
 #labels Phase-Design,Phase-Implementation
 
 = Chess Engine Programming =
-  * [http://theory.lcs.mit.edu/~plaat/mtdf.html MTD(f)] - A !MiniMax algorithm faster than !NegaScout by Aske Plaat, the inventor of MTD(f).
+  * [http://www.cis.uab.edu/hyatt/pubs.html Online Technical Papers] - In-depth discussions of rotated bitboards, lockless hashing, and parallel search by Bob Hyatt, the author of Crafty.
   * [http://www.zib.de/reinefeld/Research/nsc.html NegaScout] - A !MiniMax algorithm faster than Alpha-Beta by Alexander Reinefeld, the inventor of !NegaScout.
   * [http://www.gamedev.net/reference/programming/features/chess1/ Chess Programming] - Overviews of various concepts by François-Dominic Laramée, the author of Java Chess.
   * [http://www.frayn.net/beowulf/theory.html Computer Chess Programming Theory] - Overviews of various concepts by Colin Frayn, the author of Beowulf.
-  * [http://www.cis.uab.edu/hyatt/pubs.html Online Technical Papers] - In-depth discussions of bitboards, hashing, and parallel search by Bob Hyatt, the author of Crafty.
   * [http://www.tim-mann.org/xboard/engine-intf.html Chess Engine Communication Protocol] - How to interface an engine with an interface by Tim Mann, the author of XBoard.
   * [http://tim-mann.org/xboard/zippy.README Zippy README] - How to automate play on an Internet Chess Server by Tim Mann, the author of XBoard.
 
