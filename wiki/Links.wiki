@@ -12,8 +12,5 @@
 
   * [http://www.ascotti.org/programming/chess/Shannon%20-%20Programming%20a%20computer%20for%20playing%20chess.pdf Programming a Computer for Playing Chess] - The paper that started it all (in 1949!) by Claude E. Shannon, the father of modern digital communications and information theory.
 
-= Open Source =
-  * [http://www.oreillynet.com/onlamp/blog/2005/10/ofun.html -Ofun] - The future of project management by Geoff Broadwell.
-
 = Fun =
   * [http://www.scottmccloud.com/comics/chess/chess.html My Obsession with Chess] - A comic by Scott !McCloud.
