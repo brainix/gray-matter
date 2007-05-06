@@ -464,7 +464,7 @@ void board::generate(list<move_t> &l, bool only_captures)
 	generate_knight(tmp, only_captures);
 	generate_pawn(tmp, only_captures);
 
-	for (it = tmp.begin(); it != tmp.end(); tmp++)
+	for (it = tmp.begin(); it != tmp.end(); it++)
 	{
 		make(*it);
 		if (!check(state.piece[OFF_MOVE][KING], ON_MOVE))
