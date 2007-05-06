@@ -110,7 +110,7 @@ public:
 	bool zugzwang() const;
 
 	/* These methods generate, make, and take back moves. */
-	void generate(list<move_t> &l, bool only_captures = false) const;
+	void generate(list<move_t> &l, bool only_captures = false);
 	void make(move_t m);
 	void unmake();
 	void make(char *p);
