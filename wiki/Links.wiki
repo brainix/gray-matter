@@ -11,5 +11,9 @@
 
   * [http://www.ascotti.org/programming/chess/Shannon%20-%20Programming%20a%20computer%20for%20playing%20chess.pdf Programming a Computer for Playing Chess] - The paper that started it all (in 1949!) by Claude E. Shannon, the father of modern digital communications and information theory.
 
+= Friendly Competition =
+  * [http://mediocrechess.blogspot.com/ Mediocre Chess] - Follow the process of creating a chess engine.
+  * [http://vicki-chess.blogspot.com/ VICKI Chess Engine] - The tale of a chess engine - from the very beginning!
+
 = Fun =
   * [http://www.scottmccloud.com/comics/chess/chess.html My Obsession with Chess] - A comic by Scott !McCloud.
