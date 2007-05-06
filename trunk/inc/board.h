@@ -114,6 +114,7 @@ public:
 	void make(move_t m);
 	void unmake();
 	void make(char *p);
+	int perft(int depth);
 
 private:
 	list<state_t> states;                           // Previous states.

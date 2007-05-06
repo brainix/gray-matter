@@ -756,6 +756,30 @@ void board::make(char *p)
 }
 
 /*----------------------------------------------------------------------------*\
+ |				    perft()				      |
+\*----------------------------------------------------------------------------*/
+int board::perft(int depth)
+{
+	list<move_t> l;
+	list<move_t>::iterator it;
+	int nodes = 0;
+
+	/* Base case. */
+	if (depth == 0)
+		return 1;
+
+	/* Recursive case. */
+	generate(l);
+	for (it = l.begin(); it != l.end(); it++)
+	{
+		make(*it);
+		nodes += perft(depth - 1);
+		unmake();
+	}
+	return nodes;
+}
+
+/*----------------------------------------------------------------------------*\
  |				  init_state()				      |
 \*----------------------------------------------------------------------------*/
 void board::init_state()
