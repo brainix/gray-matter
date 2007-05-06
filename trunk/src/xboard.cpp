@@ -571,7 +571,7 @@ int xboard::char_to_shape(char c) const
 /*----------------------------------------------------------------------------*\
  |				  test_move()				      |
 \*----------------------------------------------------------------------------*/
-bool xboard::test_move(move_t m) const
+bool xboard::test_move(move_t m)
 {
 
 /* In the current position, is the specified move legal? */
