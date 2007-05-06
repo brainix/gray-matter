@@ -92,7 +92,7 @@ private:
 	int str_to_num(const char *p) const;
 	int str_to_secs(const char *p) const;
 	int char_to_shape(char c) const;
-	bool test_move(move_t m) const;
+	bool test_move(move_t m);
 };
 
 #endif
