@@ -46,6 +46,7 @@
 #define XPOS_TABLE_MB	64 // The transposition table size (in MB).
 #define PAWN_TABLE_MB	 1 // The pawn table size (in MB).
 #define DEPTH		16 // The maximum search depth (in plies).
+#define R		 2 // The depth reduction during null-move pruning.
 #define DEBUG		 0 // Set this to 0 for better performance, 1 for better debugging.
 
 
