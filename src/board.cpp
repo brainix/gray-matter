@@ -452,24 +452,36 @@ bool board::zugzwang() const
 /*----------------------------------------------------------------------------*\
  |				   generate()				      |
 \*----------------------------------------------------------------------------*/
-void board::generate(list<move_t> &l, bool only_captures)
+void board::generate(list<move_t> &l, bool only_legal_moves, bool only_captures)
 {
 	list<move_t> tmp;
 	list<move_t>::iterator it;
 
-	generate_king(tmp, only_captures);
-	generate_queen(tmp, only_captures);
-	generate_rook(tmp, only_captures);
-	generate_bishop(tmp, only_captures);
-	generate_knight(tmp, only_captures);
-	generate_pawn(tmp, only_captures);
-
-	for (it = tmp.begin(); it != tmp.end(); it++)
+	if (!only_legal_moves)
 	{
-		make(*it);
-		if (!check(state.piece[OFF_MOVE][KING], ON_MOVE))
-			l.push_back(*it);
-		unmake();
+		generate_king(l, only_captures);
+		generate_queen(l, only_captures);
+		generate_rook(l, only_captures);
+		generate_bishop(l, only_captures);
+		generate_knight(l, only_captures);
+		generate_pawn(l, only_captures);
+	}
+	else
+	{
+		generate_king(tmp, only_captures);
+		generate_queen(tmp, only_captures);
+		generate_rook(tmp, only_captures);
+		generate_bishop(tmp, only_captures);
+		generate_knight(tmp, only_captures);
+		generate_pawn(tmp, only_captures);
+
+		for (it = tmp.begin(); it != tmp.end(); it++)
+		{
+			make(*it);
+			if (!check(state.piece[OFF_MOVE][KING], ON_MOVE))
+				l.push_back(*it);
+			unmake();
+		}
 	}
 }
 
