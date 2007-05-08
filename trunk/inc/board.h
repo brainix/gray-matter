@@ -143,6 +143,7 @@ private:
 	void precomp_king() const;
 	void precomp_row() const;
 	void precomp_knight() const;
+	void precomp_pawn() const;
 
 	/* These methods test for various conditions. */
 	int mate();
