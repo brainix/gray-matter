@@ -43,7 +43,6 @@ search::search(table *t, history *h, xboard *x)
 
 /* Constructor. */
 
-	SET_NULL_MOVE(hint);
 	max_time = INT_MAX;
 	max_depth = DEPTH;
 	output = false;
@@ -276,8 +275,6 @@ void search::iterate(int s)
 	clock_t start = clock();
 	if (s == THINKING)
 		timer_set(max_time);
-	if (s == PONDERING)
-		b.make(hint);
 
 	/*
 	 | Perform iterative deepening until the alarm has sounded (if we're
@@ -314,8 +311,6 @@ void search::iterate(int s)
 	 */
 	if (s == THINKING)
 		timer_cancel();
-	if (s == PONDERING)
-		b.unmake();
 	if (pv.front().value == (THINKING ? -WEIGHT_KING : WEIGHT_KING))
 		xboard_ptr->print_resignation();
 	if (s == THINKING && search_status != QUITTING)
