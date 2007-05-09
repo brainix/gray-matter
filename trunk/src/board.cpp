@@ -120,9 +120,6 @@ bool precomputed = false;
 bitboard_t squares_king[8][8];
 bitrow_t squares_row[8][256];
 bitboard_t squares_knight[8][8];
-bitboard_t squares_pawn_moves[COLORS][8][8];
-bitboard_t squares_pawn_takes[COLORS][8][8];
-bitboard_t squares_pawn_promo[COLORS][8][8];
 
 /* Zobrist hash keys: */
 bitboard_t key_piece[COLORS][SHAPES][8][8];
@@ -149,7 +146,6 @@ board::board()
 		precomp_king();
 		precomp_row();
 		precomp_knight();
-		precomp_pawn();
 		precomp_key();
 		precomputed = true;
 	}
@@ -1313,21 +1309,6 @@ void board::precomp_knight() const
 					BIT_SET(squares_knight[x][y], x + j, y + k);
 				}
 		}
-}
-
-/*----------------------------------------------------------------------------*\
- |				 precomp_pawn()				      |
-\*----------------------------------------------------------------------------*/
-void board::precomp_pawn() const
-{
-
-/* Pre-compute the pawn moves. */
-
-	for (int color = WHITE; color <= BLACK; color++)
-		for (int y = 0; y <= 7; y++)
-			for (int x = 0; x <= 7; x++)
-			{
-			}
 }
 
 /*----------------------------------------------------------------------------*\
