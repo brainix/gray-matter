@@ -337,6 +337,7 @@ move_t search::mtdf(int depth, int guess)
 		else
 			upper = m.value;
 	}
+	return m;
 }
 
 /*----------------------------------------------------------------------------*\
