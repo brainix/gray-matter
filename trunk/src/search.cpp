@@ -366,6 +366,9 @@ move_t search::minimax(int depth, int alpha, int beta)
 	int type = ALPHA;               // The score type: lower bound, upper bound, or exact value.
 	bitboard_t hash = b.get_hash(); // This position's hash.
 
+	/* Increment the number of positions searched. */
+	nodes++;
+
 	/*
 	 | Before anything else, do some Research Re: search & Research.  ;-)
 	 | (Apologies to Aske Plaat.)  If we've already sufficiently examined
@@ -407,11 +410,16 @@ move_t search::minimax(int depth, int alpha, int beta)
 			return m;
 	}
 
-	/* Increment the number of positions searched. */
-	nodes++;
-
 	/* Generate and re-order the move list. */
 	b.generate(l);
+	for (it = l.begin(); it != l.end(); it++)
+		if (it->old_x == m.old_x && it->old_y == m.old_y &&
+		    it->new_x == m.new_x && it->new_y == m.new_y &&
+		    it->promo == m.promo)
+		{
+			l.remove(m);
+			l.push_front(m);
+		}
 
 	/* Score each move in the list. */
 	for (it = l.begin(); !timeout_flag && it != l.end(); it++)
