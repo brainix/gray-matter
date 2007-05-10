@@ -266,19 +266,19 @@ void search::iterate(int s)
  | time) and pondering (on our opponent's time) since they're so similar.
  */
 
-	move_t m;
-	SET_NULL_MOVE(m);
-	static int guess[2] = {0, 0};
-
 	/*
-	 | Initialize the number of nodes searched, clear the history table, and
-	 | note the start time.  If we're to think, set the alarm.
+	 | Note the start time.  If we're to think, set the alarm.  Initialize
+	 | the number of nodes searched.  Clear the history table.
 	 */
-	nodes = 0;
-	history_ptr->clear();
 	clock_t start = clock();
 	if (s == THINKING)
 		timer_set(max_time);
+	nodes = 0;
+	history_ptr->clear();
+	move_t m;
+	SET_NULL_MOVE(m);
+	static int guess[COLORS] = {0, 0};
+	int whose = b.get_whose();
 
 	/*
 	 | Perform iterative deepening until the alarm has sounded (if we're
@@ -288,7 +288,7 @@ void search::iterate(int s)
 	b.lock();
 	for (int depth = 0; depth < max_depth; depth++)
 	{
-		m = mtdf(depth, guess[depth & 0x1]);
+		m = mtdf(depth, guess[whose + depth & 0x1]);
 		if (timeout_flag && depth || IS_NULL_MOVE(m))
 			/*
 			 | Oops.  Either the alarm has interrupted this
@@ -297,7 +297,7 @@ void search::iterate(int s)
 			 | position (and the game must've ended).
 			 */
 			break;
-		guess[depth & 0x1] = m.value;
+		guess[whose + depth & 0x1] = m.value;
 		extract(s);
 		if (output)
 			xboard_ptr->print_output(depth + 1, m.value, (clock() - start) / CLOCKS_PER_SEC, nodes, pv);
@@ -434,8 +434,8 @@ move_t search::minimax(int depth, int alpha, int beta)
 			 | search from this position determined this move to be
 			 | best.  In this search, this move could be good too.
 			 | Give it a high score to force it to the front of the
-			 | list to score it first to (hopefully) cause an
-			 | earlier cutoff.
+			 | list to score it first to hopefully cause an earlier
+			 | cutoff.
 			 */
 			it->value = WEIGHT_KING;
 		else
