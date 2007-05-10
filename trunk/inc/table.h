@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*\
- |	table.h - transposition, pawn, and history table interfaces	      |
+ |	table.h - transposition and pawn table interfaces		      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
@@ -62,18 +62,6 @@ private:
 	int hits;
 	int misses;
 #endif
-};
-
-class history
-{
-public:
-	history();
-	~history();
-	void clear();
-	int probe(bool color, move_t move) const;
-	void store(bool color, move_t move, int depth);
-private:
-	int *****data;
 };
 
 #endif
