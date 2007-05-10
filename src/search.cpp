@@ -284,7 +284,7 @@ void search::iterate(int s)
 	b.lock();
 	for (int depth = 0; depth < max_depth; depth++)
 	{
-		move_t m = negascout(depth, -WEIGHT_KING, WEIGHT_KING);
+		move_t m = minimax(depth, -WEIGHT_KING, WEIGHT_KING);
 		if (timeout_flag && depth || IS_NULL_MOVE(m))
 			/*
 			 | Oops.  Either the alarm has interrupted this
@@ -318,9 +318,9 @@ void search::iterate(int s)
 }
 
 /*----------------------------------------------------------------------------*\
- |				  negascout()				      |
+ |				   minimax()				      |
 \*----------------------------------------------------------------------------*/
-move_t search::negascout(int depth, int alpha, int beta, bool try_null_move)
+move_t search::minimax(int depth, int alpha, int beta)
 {
 
 /*
@@ -331,23 +331,12 @@ move_t search::negascout(int depth, int alpha, int beta, bool try_null_move)
  | swaps the values of alpha and beta on each recursive call.
  |
  | On top of NegaMax, this method implements alpha-beta pruning.
- |
- | On top of alpha-beta pruning, this method implements the NegaScout algorithm.
- | NegaScout assumes the first node is in the principal variation and searches
- | this node with a full alpha-beta window.  NegaScout tests its assumption by
- | searching the rest of the nodes with a minimal (scout) window where alpha and
- | beta are close in value.  If the test fails, NegaScout assumes the node at
- | which it failed is in the principal variation and so on.  NegaScout works
- | best when there is good move ordering and typically yields a 10% performance
- | increase.
- |
- | On top of NegaScout, this method implements null-move pruning.
  */
 
 	/* Local variables: */
 	list<move_t> l;                 // From this position, the move list.
 	list<move_t>::iterator it;      // The iterator through the move list.
-	move_t m, null_move;            // From this position, the best move.
+	move_t m;                       // From this position, the best move.
 	int type = ALPHA;               // The score type: lower bound, upper bound, or exact value.
 	bool whose = b.get_whose();     // In this position, the color on move.
 	bitboard_t hash = b.get_hash(); // This position's hash.
@@ -396,17 +385,6 @@ move_t search::negascout(int depth, int alpha, int beta, bool try_null_move)
 	/* Increment the number of positions searched. */
 	nodes++;
 
-	/* Perform null-move pruning. */
-	if (depth >= R + 1 && try_null_move && !b.zugzwang())
-	{
-		SET_NULL_MOVE(null_move);
-		b.make(null_move);
-		null_move = negascout(depth - (R + 1), -beta, -beta + 1, false);
-		b.unmake();
-		if ((null_move.value = LESSER(-null_move.value, beta)) == beta)
-			return null_move;
-	}
-
 	/*
 	 | Generate and re-order the move list.  The board class already
 	 | generates the list in an order: pawn captures and promotions, knight
@@ -438,18 +416,7 @@ move_t search::negascout(int depth, int alpha, int beta, bool try_null_move)
 	for (it = l.begin(); !timeout_flag && it != l.end(); it++)
 	{
 		b.make(*it);
-		if (depth <= 0)
-			/* Base case. */
-			it->value = b.evaluate();
-		else
-		{
-			/* Recursive case: minimal (scout) alpha-beta window. */
-			if (type == EXACT)
-				it->value = -negascout(depth - 1, -alpha - 1, -alpha, true).value;
-			/* Recursive case: full alpha-beta window. */
-			if (type != EXACT || alpha < it->value && it->value < beta)
-				it->value = -negascout(depth - 1, -beta, -alpha, true).value;
-		}
+		it->value = depth <= 0 ? b.evaluate() : -minimax(depth - 1, -beta, -alpha).value;
 		b.unmake();
 
 		/* Perform alpha-beta pruning. */
