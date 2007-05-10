@@ -275,6 +275,8 @@ void search::iterate(int s)
 	clock_t start = clock();
 	if (s == THINKING)
 		timer_set(max_time);
+	move_t m;
+	SET_NULL_MOVE(m);
 
 	/*
 	 | Perform iterative deepening until the alarm has sounded (if we're
@@ -284,8 +286,7 @@ void search::iterate(int s)
 	b.lock();
 	for (int depth = 0; depth < max_depth; depth++)
 	{
-//		move_t m = minimax(depth, -WEIGHT_KING, WEIGHT_KING);
-		move_t m = mtdf(depth, 0);
+		m = mtdf(depth, m.value);
 		if (timeout_flag && depth || IS_NULL_MOVE(m))
 			/*
 			 | Oops.  Either the alarm has interrupted this
@@ -332,8 +333,8 @@ move_t search::mtdf(int depth, int guess)
 		if (m.value != lower)
 			beta = m.value;
 		else
-			beta = m.value + 1;
-		m = minimax(depth, beta - 1, beta);
+			beta = m.value + 100;
+		m = minimax(depth, beta - 100, beta);
 		if (m.value >= beta)
 			lower = m.value;
 		else
