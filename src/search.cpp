@@ -397,8 +397,7 @@ move_t search::negascout(int depth, int alpha, int beta, bool try_null_move)
 	nodes++;
 
 	/* Perform null-move pruning. */
-//	if (depth >= R + 1 && try_null_move && !b.zugzwang())
-	if (try_null_move && !b.zugzwang())
+	if (depth >= R + 1 && try_null_move && !b.zugzwang())
 	{
 		SET_NULL_MOVE(null_move);
 		b.make(null_move);
