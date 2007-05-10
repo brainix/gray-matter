@@ -284,7 +284,8 @@ void search::iterate(int s)
 	b.lock();
 	for (int depth = 0; depth < max_depth; depth++)
 	{
-		move_t m = minimax(depth, -WEIGHT_KING, WEIGHT_KING);
+//		move_t m = minimax(depth, -WEIGHT_KING, WEIGHT_KING);
+		move_t m = mtdf(depth, 0);
 		if (timeout_flag && depth || IS_NULL_MOVE(m))
 			/*
 			 | Oops.  Either the alarm has interrupted this
@@ -315,6 +316,30 @@ void search::iterate(int s)
 		xboard_ptr->print_resignation();
 	if (s == THINKING && search_status != QUITTING)
 		xboard_ptr->print_result(pv.front());
+}
+
+/*----------------------------------------------------------------------------*\
+ |				     mtdf()				      |
+\*----------------------------------------------------------------------------*/
+move_t search::mtdf(int depth, int guess)
+{
+	int lower = INT_MIN, upper = INT_MAX, beta;
+	move_t m;
+	SET_NULL_MOVE(m);
+	m.value = guess;
+	while (!timeout_flag && lower < upper)
+	{
+		if (m.value != lower)
+			beta = m.value;
+		else
+			beta = m.value + 1;
+		m = minimax(depth, beta - 1, beta);
+		if (m.value >= beta)
+			lower = m.value;
+		else
+			upper = m.value;
+	}
+	return m;
 }
 
 /*----------------------------------------------------------------------------*\
