@@ -266,6 +266,10 @@ void search::iterate(int s)
  | time) and pondering (on our opponent's time) since they're so similar.
  */
 
+	move_t m;
+	SET_NULL_MOVE(m);
+	static int guess[2] = {0, 0};
+
 	/*
 	 | Initialize the number of nodes searched, clear the history table, and
 	 | note the start time.  If we're to think, set the alarm.
@@ -275,8 +279,6 @@ void search::iterate(int s)
 	clock_t start = clock();
 	if (s == THINKING)
 		timer_set(max_time);
-	move_t m;
-	SET_NULL_MOVE(m);
 
 	/*
 	 | Perform iterative deepening until the alarm has sounded (if we're
@@ -286,7 +288,7 @@ void search::iterate(int s)
 	b.lock();
 	for (int depth = 0; depth < max_depth; depth++)
 	{
-		m = mtdf(depth, m.value);
+		m = mtdf(depth, guess[depth & 0x1]);
 		if (timeout_flag && depth || IS_NULL_MOVE(m))
 			/*
 			 | Oops.  Either the alarm has interrupted this
@@ -295,10 +297,11 @@ void search::iterate(int s)
 			 | position (and the game must've ended).
 			 */
 			break;
+		guess[depth & 0x1] = m.value;
 		extract(s);
 		if (output)
-			xboard_ptr->print_output(depth + 1, pv.front().value, (clock() - start) / CLOCKS_PER_SEC, nodes, pv);
-		if (pv.front().value == WEIGHT_KING || pv.front().value == -WEIGHT_KING)
+			xboard_ptr->print_output(depth + 1, m.value, (clock() - start) / CLOCKS_PER_SEC, nodes, pv);
+		if (m.value == WEIGHT_KING || m.value == -WEIGHT_KING)
 			/*
 			 | Oops.  The game will be over at this depth.  There's
 			 | no point in searching deeper.  Eyes on the prize.
@@ -313,10 +316,10 @@ void search::iterate(int s)
 	 */
 	if (s == THINKING)
 		timer_cancel();
-	if (pv.front().value == (THINKING ? -WEIGHT_KING : WEIGHT_KING))
+	if (m.value == (THINKING ? -WEIGHT_KING : WEIGHT_KING))
 		xboard_ptr->print_resignation();
 	if (s == THINKING && search_status != QUITTING)
-		xboard_ptr->print_result(pv.front());
+		xboard_ptr->print_result(m);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -328,6 +331,7 @@ move_t search::mtdf(int depth, int guess)
 	move_t m;
 	SET_NULL_MOVE(m);
 	m.value = guess;
+
 	while (!timeout_flag && lower < upper)
 	{
 		if (m.value != lower)
