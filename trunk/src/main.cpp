@@ -48,9 +48,8 @@ int main(int argc, char **argv)
 
 	/* Instantiate the classes. */
 	table t;
-	history h;
 	xboard x;
-	class search s(&t, &h, &x);
+	class search s(&t, &x);
 
 	/* Launch the event loop. */
 	x.loop(&s);
