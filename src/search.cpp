@@ -38,7 +38,7 @@ int search_status;      // ...the search status!  :-D
 /*----------------------------------------------------------------------------*\
  |				    search()				      |
 \*----------------------------------------------------------------------------*/
-search::search(table *t, history *h, xboard *x)
+search::search(table *t, xboard *x)
 {
 
 /* Constructor. */
@@ -48,7 +48,6 @@ search::search(table *t, history *h, xboard *x)
 	output = false;
 
 	table_ptr = t;
-	history_ptr = h;
 	xboard_ptr = x;
 
 	mutex_create(&timeout_mutex);
@@ -92,7 +91,6 @@ class search& search::operator=(const search& that)
 
 	b = that.b;
 	table_ptr = that.table_ptr;
-	history_ptr = that.history_ptr;
 	xboard_ptr = that.xboard_ptr;
 
 	return *this;
@@ -117,7 +115,6 @@ void search::handle()
 void search::clear() const
 {
 	table_ptr->clear();
-	history_ptr->clear();
 }
 
 /*----------------------------------------------------------------------------*\
@@ -268,13 +265,12 @@ void search::iterate(int s)
 
 	/*
 	 | Note the start time.  If we're to think, set the alarm.  Initialize
-	 | the number of nodes searched.  Clear the history table.
+	 | the number of nodes searched.
 	 */
 	clock_t start = clock();
 	if (s == THINKING)
 		timer_set(max_time);
 	nodes = 0;
-	history_ptr->clear();
 	move_t m;
 	SET_NULL_MOVE(m);
 	static int guess[COLORS] = {0, 0};
@@ -368,7 +364,6 @@ move_t search::minimax(int depth, int alpha, int beta)
 	list<move_t>::iterator it;      // The iterator through the move list.
 	move_t m;                       // From this position, the best move.
 	int type = ALPHA;               // The score type: lower bound, upper bound, or exact value.
-	bool whose = b.get_whose();     // In this position, the color on move.
 	bitboard_t hash = b.get_hash(); // This position's hash.
 
 	/*
@@ -415,32 +410,8 @@ move_t search::minimax(int depth, int alpha, int beta)
 	/* Increment the number of positions searched. */
 	nodes++;
 
-	/*
-	 | Generate and re-order the move list.  The board class already
-	 | generates the list in an order: pawn captures and promotions, knight
-	 | captures, bishop captures, rook captures, queen captures, king
-	 | captures, king moves, queen moves, rook moves, bishop moves, knight
-	 | moves, and pawn moves.  Here, we assign preliminary scores to the
-	 | moves, sort by those scores, and hope the STL's sort algorithm is
-	 | stable so as not to disturb the board class' move ordering.  ;-)
-	 */
+	/* Generate and re-order the move list. */
 	b.generate(l);
-	for (it = l.begin(); it != l.end(); it++)
-		if (it->old_x == m.old_x && it->old_y == m.old_y &&
-		    it->new_x == m.new_x && it->new_y == m.new_y &&
-		    it->promo == m.promo)
-			/*
-			 | According to the transposition table, a previous
-			 | search from this position determined this move to be
-			 | best.  In this search, this move could be good too.
-			 | Give it a high score to force it to the front of the
-			 | list to score it first to hopefully cause an earlier
-			 | cutoff.
-			 */
-			it->value = WEIGHT_KING;
-		else
-			it->value = history_ptr->probe(whose, *it);
-	l.sort(compare);
 
 	/* Score each move in the list. */
 	for (it = l.begin(); !timeout_flag && it != l.end(); it++)
@@ -466,11 +437,7 @@ move_t search::minimax(int depth, int alpha, int beta)
 	}
 
 	if (!timeout_flag)
-	{
 		table_ptr->store(hash, m, depth, type);
-		if (type == EXACT)
-			history_ptr->store(whose, m, depth);
-	}
 	return m;
 }
 
@@ -508,18 +475,4 @@ void search::extract(int s)
 		hint = pv.front();
 	else
 		SET_NULL_MOVE(hint);
-}
-
-/*----------------------------------------------------------------------------*\
- |				   compare()				      |
-\*----------------------------------------------------------------------------*/
-bool search::compare(move_t m1, move_t m2)
-{
-
-/*
- | Pass this method to l.sort() to sort the move list in descending order by
- | score.
- */
-
-	return m1.value > m2.value;
 }

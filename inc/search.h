@@ -43,14 +43,13 @@ using namespace std;
 
 /* Forward declarations: */
 class table;
-class history;
 class xboard;
 class board;
 
 class search
 {
 public:
-	search(table *t, history *h, xboard *x);
+	search(table *t, xboard *x);
 	~search();
 	search& operator=(const search& that);
 	static void handle();
@@ -72,14 +71,12 @@ private:
 
 	xboard *xboard_ptr;   // Chess Engine Communication Protocol object.
 	table *table_ptr;     // Transposition table object.
-	history *history_ptr; // History table object.
 	board b;              // Board representation object.
 
 	void iterate(int s);
 	move_t mtdf(int depth, int guess);
 	move_t minimax(int depth, int alpha, int beta);
 	void extract(int s);
-	static bool compare(move_t m1, move_t m2);
 };
 
 #endif
