@@ -357,8 +357,8 @@ move_t search::minimax(int depth, int alpha, int beta)
  | From the current position, search for the best move.  This method implements
  | the NegaMax algorithm.  NegaMax produces the same results as MiniMax but is
  | simpler to code.  Instead of juggling around two players, Max and Min,
- | NegaMax treats both players as Max and negates the scores and negates and
- | swaps the values of alpha and beta on each recursive call.
+ | NegaMax treats both players as Max and negates the scores on each recursive
+ | call.
  |
  | On top of NegaMax, this method implements alpha-beta pruning.
  */
