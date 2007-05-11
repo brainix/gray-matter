@@ -70,15 +70,15 @@ void table::clear()
 		data[index].hash = 0;
 		data[index].depth = 0;
 		SET_NULL_MOVE(data[index].move);
-		data[index].value[LOWER] = INT_MIN;
-		data[index].value[UPPER] = INT_MAX;
+		data[index].lower = INT_MIN;
+		data[index].upper = INT_MAX;
 	}
 }
 
 /*----------------------------------------------------------------------------*\
  |				 table::probe()				      |
 \*----------------------------------------------------------------------------*/
-bool table::probe(bitboard_t hash, int depth, move_t *move_ptr, int bound) const
+bool table::probe(bitboard_t hash, int depth, move_t *move_ptr, int type) const
 {
 	uint64_t index = hash % slots;
 	if (data[index].hash != hash || data[index].depth < depth)
@@ -87,14 +87,17 @@ bool table::probe(bitboard_t hash, int depth, move_t *move_ptr, int bound) const
 		return false;
 	}
 	*move_ptr = data[index].move;
-	move_ptr->value = data[index].value[bound];
+	if (type == LOWER)
+		move_ptr->value = data[index].lower;
+	if (type == UPPER)
+		move_ptr->value = data[index].upper;
 	return true;
 }
 
 /*----------------------------------------------------------------------------*\
  |				 table::store()				      |
 \*----------------------------------------------------------------------------*/
-void table::store(bitboard_t hash, int depth, move_t move, int bound)
+void table::store(bitboard_t hash, int depth, move_t move, int type)
 {
 	if (IS_NULL_MOVE(move))
 		return;
@@ -104,9 +107,15 @@ void table::store(bitboard_t hash, int depth, move_t move, int bound)
 	if (data[index].move != move)
 	{
 		data[index].move = move;
-		data[index].value[!bound] = !bound == LOWER ? INT_MIN : INT_MAX;
+		if (type == LOWER)
+			data[index].upper = INT_MAX;
+		if (type == UPPER)
+			data[index].lower = INT_MIN;
 	}
-	data[index].value[bound] = m.value;
+	if (type == LOWER || type == EXACT)
+		data[index].lower = m.value;
+	if (type == EXACT || type == UPPER)
+		data[index].upper = m.value;
 }
 
 /*----------------------------------------------------------------------------*\
