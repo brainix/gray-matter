@@ -38,9 +38,9 @@ table::table(int mb)
 	{
 		if ((slots = mb * MB / sizeof(xpos_slot_t)) == 0)
 			throw;
-		data = new xpos_slot_t *[POLICIES];
-		for (int policy = DEEP; policy <= FRESH; policy++)
-			data[policy] = new xpos_slot_t[slots / 2];
+		data = new xpos_slot_t *[BOUNDS];
+		for (int bound = LOWER; bound <= UPPER; bound++)
+			data[bound] = new xpos_slot_t[slots / 2];
 	}
 	catch (...)
 	{
@@ -56,8 +56,8 @@ table::~table()
 
 /* Destructor. */
 
-	for (int policy = DEEP; policy <= FRESH; policy++)
-		delete[] data[policy];
+	for (int bound = LOWER; bound <= UPPER; bound++)
+		delete[] data[bound];
 	delete[] data;
 }
 
@@ -69,73 +69,41 @@ void table::clear()
 
 /* Clear the transposition table. */
 
-	for (int policy = DEEP; policy <= FRESH; policy++)
-		for (uint64_t index = 0; index < slots / 2; index++)
+	for (int bound = LOWER; bound <= UPPER; bound++)
+		for (uint64_t index = 0; index < slots; index++)
 		{
-			data[policy][index].hash = 0;
-			SET_NULL_MOVE(data[policy][index].move);
-			data[policy][index].depth = 0;
-			data[policy][index].type = USELESS;
+			data[bound][index].hash = 0;
+			data[bound][index].depth = 0;
+			SET_NULL_MOVE(data[bound][index].move);
 		}
-#if DEBUG
-	hits = 0;
-	misses = 0;
-#endif
 }
 
 /*----------------------------------------------------------------------------*\
  |				 table::probe()				      |
 \*----------------------------------------------------------------------------*/
-int table::probe(bitboard_t hash, move_t *move_ptr, int depth, int alpha, int beta)
+bool table::probe(bitboard_t hash, int depth, move_t *move_ptr, int bound) const
 {
 	uint64_t index = hash % (slots / 2);
-	int type = USELESS;
-
-	SET_NULL_MOVE(*move_ptr);
-	for (int policy = DEEP; policy <= FRESH; policy++)
-		if (data[policy][index].hash == hash && data[policy][index].depth >= (unsigned) depth)
-		{
-			*move_ptr = data[policy][index].move;
-			if (data[policy][index].type == ALPHA && move_ptr->value >= alpha)
-			{
-				move_ptr->value = alpha;
-				type = ALPHA;
-			}
-			if (data[policy][index].type == BETA && move_ptr->value <= beta)
-			{
-				move_ptr->value = beta;
-				type = BETA;
-			}
-			if (data[policy][index].type == EXACT)
-				type = EXACT;
-		}
-#if DEBUG
-	if (type != USELESS)
-		hits++;
-	else
-		misses++;
-#endif
-	return type;
+	if (data[bound][index].hash != hash || data[bound][index].depth < depth)
+	{
+		SET_NULL_MOVE(*move_ptr);
+		return false;
+	}
+	*move_ptr = data[bound][index].move;
+	return true;
 }
 
 /*----------------------------------------------------------------------------*\
  |				 table::store()				      |
 \*----------------------------------------------------------------------------*/
-void table::store(bitboard_t hash, move_t move, int depth, int type)
+void table::store(bitboard_t hash, int depth, move_t move, int bound)
 {
-	uint64_t index = hash % (slots / 2);
-
 	if (IS_NULL_MOVE(move))
 		return;
-
-	for (int policy = DEEP; policy <= FRESH; policy++)
-		if (policy == FRESH || (unsigned) depth >= data[DEEP][index].depth)
-		{
-			data[policy][index].hash = hash;
-			data[policy][index].move = move;
-			data[policy][index].depth = depth;
-			data[policy][index].type = type;
-		}
+	uint64_t index = hash % (slots / 2);
+	data[bound][index].hash = hash;
+	data[bound][index].depth = depth;
+	data[bound][index].move = move;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -182,16 +150,12 @@ void pawn::clear()
 		data[index].hash = 0;
 		data[index].value = INT_MIN;
 	}
-#if DEBUG
-	hits = 0;
-	misses = 0;
-#endif
 }
 
 /*----------------------------------------------------------------------------*\
  |				 pawn::probe()				      |
 \*----------------------------------------------------------------------------*/
-int pawn::probe(bitboard_t hash, int *value_ptr)
+bool pawn::probe(bitboard_t hash, int *value_ptr) const
 {
 
 /*
@@ -203,13 +167,7 @@ int pawn::probe(bitboard_t hash, int *value_ptr)
 	uint64_t index = hash % slots;
 	bool found = data[index].hash == hash;
 	*value_ptr = found ? data[index].value : 0;
-#if DEBUG
-	if (found)
-		hits++;
-	else
-		misses++;
-#endif
-	return found ? EXACT : USELESS;
+	return found;
 }
 
 /*----------------------------------------------------------------------------*\

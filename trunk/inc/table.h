@@ -36,15 +36,11 @@ public:
 	table(int mb = XPOS_TABLE_MB);
 	~table();
 	void clear();
-	int probe(bitboard_t hash, move_t *move_ptr, int depth, int alpha = INT_MIN, int beta = INT_MAX);
-	void store(bitboard_t hash, move_t move, int depth, int type);
+	bool probe(bitboard_t hash, int depth, move_t *move_ptr, int bound) const;
+	void store(bitboard_t hash, int depth, move_t move, int bound);
 private:
 	uint64_t slots;
 	xpos_slot_t **data;
-#if DEBUG
-	int hits;
-	int misses;
-#endif
 };
 
 class pawn
@@ -53,15 +49,11 @@ public:
 	pawn(int mb = PAWN_TABLE_MB);
 	~pawn();
 	void clear();
-	int probe(bitboard_t hash, int *value_ptr);
+	bool probe(bitboard_t hash, int *value_ptr) const;
 	void store(bitboard_t hash, int value);
 private:
 	uint64_t slots;
 	pawn_slot_t *data;
-#if DEBUG
-	int hits;
-	int misses;
-#endif
 };
 
 #endif

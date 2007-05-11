@@ -363,8 +363,8 @@ move_t search::minimax(int depth, int alpha, int beta)
 	list<move_t> l;                 // From this position, the move list.
 	list<move_t>::iterator it;      // The iterator through the move list.
 	move_t m;                       // From this position, the best move.
-	int type = ALPHA;               // The score type: lower bound, upper bound, or exact value.
 	bitboard_t hash = b.get_hash(); // This position's hash.
+	int lower, upper;               //
 
 	/* Increment the number of positions searched. */
 	nodes++;
@@ -375,18 +375,17 @@ move_t search::minimax(int depth, int alpha, int beta)
 	 | this position, return the best move from our previous search.
 	 | Otherwise, if we can, reduce the size of our alpha-beta window.
 	 */
-	switch (table_ptr->probe(hash, &m, depth, alpha, beta))
+	if (table_ptr->probe(hash, depth, &m, UPPER))
 	{
-		case ALPHA:
-			if ((alpha = GREATER(alpha, m.value)) >= beta)
-				return m;
-			break;
-		case BETA:
-			if (alpha >= (beta = LESSER(beta, m.value)))
-				return m;
-			break;
-		case EXACT:
+		if (m.value <= alpha)
 			return m;
+		alpha = GREATER(alpha, m.value);
+	}
+	if (table_ptr->probe(hash, depth, &m, LOWER))
+	{
+		if (m.value >= beta)
+			return m;
+		beta = LESSER(beta, m.value);
 	}
 
 	/*
@@ -444,16 +443,18 @@ move_t search::minimax(int depth, int alpha, int beta)
 			break;
 		}
 		if (it->value > alpha)
-		{
 			alpha = it->value;
-			type = EXACT;
-		}
 		if (it == l.begin() || it->value > m.value)
 			m = *it;
 	}
 
 	if (!timeout_flag)
-		table_ptr->store(hash, m, depth, type);
+	{
+		if (m.value <= alpha)
+			table_ptr->store(hash, depth, m, UPPER);
+		if (m.value >= beta)
+			table_ptr->store(hash, depth, m, LOWER);
+	}
 	return m;
 }
 
