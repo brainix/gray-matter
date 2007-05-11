@@ -158,7 +158,7 @@ void pawn::clear()
 	for (uint64_t index = 0; index < slots; index++)
 	{
 		data[index].hash = 0;
-		data[index].value = INT_MIN;
+		data[index].value = SHRT_MIN;
 	}
 }
 

@@ -325,7 +325,7 @@ move_t search::mtdf(int depth, int guess)
 	move_t m;
 	SET_NULL_MOVE(m);
 	m.value = guess;
-	int lower = INT_MIN, upper = INT_MAX, beta;
+	int lower = SHRT_MIN, upper = SHRT_MAX, beta;
 
 	while (!timeout_flag && lower < upper)
 	{
