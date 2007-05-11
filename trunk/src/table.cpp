@@ -102,11 +102,7 @@ void table::store(bitboard_t hash, int depth, move_t move, int type)
 	uint64_t index = hash % slots;
 	data[index].hash = hash;
 	data[index].depth = depth;
-	if (data[index].move.old_x != move.old_x ||
-	    data[index].move.old_y != move.old_y ||
-	    data[index].move.new_x != move.new_x ||
-	    data[index].move.new_y != move.new_y ||
-	    data[index].move.promo != move.promo)
+	if (data[index].move != move)
 	{
 		data[index].move = move;
 		if (type == UPPER)
