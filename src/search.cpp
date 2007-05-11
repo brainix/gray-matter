@@ -273,8 +273,7 @@ void search::iterate(int s)
 	nodes = 0;
 	move_t m;
 	SET_NULL_MOVE(m);
-	static int guess[COLORS] = {0, 0};
-	int whose = b.get_whose();
+	int guess = 0;
 
 	/*
 	 | Perform iterative deepening until the alarm has sounded (if we're
@@ -284,7 +283,7 @@ void search::iterate(int s)
 	b.lock();
 	for (int depth = 0; depth < max_depth; depth++)
 	{
-		m = mtdf(depth, guess[whose + depth & 0x1]);
+		m = mtdf(depth, guess);
 		if (timeout_flag && depth || IS_NULL_MOVE(m))
 			/*
 			 | Oops.  Either the alarm has interrupted this
@@ -293,7 +292,7 @@ void search::iterate(int s)
 			 | position (and the game must've ended).
 			 */
 			break;
-		guess[whose + depth & 0x1] = m.value;
+		guess = m.value;
 		extract(s);
 		if (output)
 			xboard_ptr->print_output(depth + 1, m.value, (clock() - start) / CLOCKS_PER_SEC, nodes, pv);
@@ -399,12 +398,12 @@ move_t search::minimax(int depth, int alpha, int beta)
 			break;
 		default:
 			SET_NULL_MOVE(m);
-			m.value = -CONTEMPT;
+			m.value = CONTEMPT;
 			return m;
 		case CHECKMATE:
 		case ILLEGAL:
 			SET_NULL_MOVE(m);
-			m.value = -WEIGHT_KING;
+			m.value = WEIGHT_KING;
 			return m;
 	}
 
