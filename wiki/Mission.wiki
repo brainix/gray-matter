@@ -22,9 +22,7 @@
 
 === Long Term Goals (for the Project's Lifetime) ===
   * To nurture a community of hackers and chess players.
-  * To employ state-of-the-art techniques like:
-    * Parallel (multithreaded) move search, and
-    * Book learning.
+  * To parallelize the move search.
   * To earn a master-level rating.
 
 = Quotes =
