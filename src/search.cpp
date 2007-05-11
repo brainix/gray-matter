@@ -430,13 +430,14 @@ move_t search::minimax(int depth, int alpha, int beta)
 		b.unmake();
 
 		/* Perform alpha-beta pruning. */
-		alpha = GREATER(alpha, it->value);
-		if (alpha >= beta)
+		if ((alpha = GREATER(alpha, it->value)) >= beta)
 		{
 			it->value = alpha;
 			m = *it;
 			break;
 		}
+
+		/* Keep track of the best move so far. */
 		if (it == l.begin() || it->value > m.value)
 			m = *it;
 	}
