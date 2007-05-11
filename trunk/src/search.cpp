@@ -332,8 +332,8 @@ move_t search::mtdf(int depth, int guess)
 		if (m.value != lower)
 			beta = m.value;
 		else
-			beta = m.value + GRAIN;
-		m = minimax(depth, beta - GRAIN, beta);
+			beta = m.value + WEIGHT_INCREMENT;
+		m = minimax(depth, beta - WEIGHT_INCREMENT, beta);
 		if (m.value >= beta)
 			lower = m.value;
 		else
@@ -398,7 +398,7 @@ move_t search::minimax(int depth, int alpha, int beta)
 			break;
 		default:
 			SET_NULL_MOVE(m);
-			m.value = CONTEMPT;
+			m.value = WEIGHT_CONTEMPT;
 			return m;
 		case CHECKMATE:
 		case ILLEGAL:
