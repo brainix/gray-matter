@@ -14,8 +14,8 @@
 
 === Mid Term Goals (for the Next Year) ===
   * To nurture a community of hackers and chess players.
+  * ~~To implement MTD(f).~~
   * ~~To provide evidence for correctness of search.~~
-  * To implement quiescence search ~~and null move pruning~~.
   * For the engine to regularly checkmate its hackers.
   * To earn a respectable rating.
   * To identify a potential market for a chess engine and come up with a business plan.
