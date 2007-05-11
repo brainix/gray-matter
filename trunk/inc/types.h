@@ -118,7 +118,7 @@ typedef struct xpos_slot
 typedef struct pawn_slot
 {
 	bitboard_t hash; // Zobrist hash key.
-	int value;       //
+	int16_t value;   // Evaluation.
 } __attribute__((packed)) pawn_slot_t;
 
 #endif
