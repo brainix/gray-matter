@@ -360,10 +360,10 @@ move_t search::minimax(int depth, int alpha, int beta)
  */
 
 	/* Local variables: */
+	bitboard_t hash = b.get_hash(); // This position's hash.
 	list<move_t> l;                 // From this position, the move list.
 	list<move_t>::iterator it;      // The iterator through the move list.
 	move_t m;                       // From this position, the best move.
-	bitboard_t hash = b.get_hash(); // This position's hash.
 
 	/* Increment the number of positions searched. */
 	nodes++;
@@ -435,14 +435,13 @@ move_t search::minimax(int depth, int alpha, int beta)
 		b.unmake();
 
 		/* Perform alpha-beta pruning. */
-		if (it->value >= beta)
+		alpha = GREATER(alpha, it->value);
+		if (alpha >= beta)
 		{
-			it->value = beta;
+			it->value = alpha;
 			m = *it;
 			break;
 		}
-		if (it->value > alpha)
-			alpha = it->value;
 		if (it == l.begin() || it->value > m.value)
 			m = *it;
 	}
