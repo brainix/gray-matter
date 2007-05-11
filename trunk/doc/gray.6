@@ -8,7 +8,7 @@
 .\"	Or, if that doesn't work:
 .\"		groff -man -Tascii gray.6|less
 .\" ---------------------------------------------------------------------------
-.Dd May 5, 2007
+.Dd May 11, 2007
 .Os POSIX
 .Dt GRAY 6
 .\" ---------------------------------------------------------------------------
@@ -24,8 +24,8 @@
 is a chess engine; it can play a game of chess.  It isn't very strong but is a
 good learning and teaching tool.  Its authors aim to write readable,
 understandable, and hackable code.  It's written in C++ and employs good
-object-oriented practices.  It uses rotated bitboards, a NegaScout move search,
-and a transposition table.
+object-oriented practices.  It uses an MTD(f) move search, rotated bitboards,
+and a cross-platform multithreading library.
 .Pp
 Gray Matter doesn't have its own interface.  However, it conforms to the Chess
 Engine Communication Protocol and runs under XBoard.
