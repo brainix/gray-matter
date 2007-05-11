@@ -409,22 +409,18 @@ move_t search::minimax(int depth, int alpha, int beta)
 
 	/* Generate and re-order the move list. */
 	b.generate(l);
-	for (it = l.begin(); it != l.end(); it++)
-		if (it->old_x == m.old_x && it->old_y == m.old_y &&
-		    it->new_x == m.new_x && it->new_y == m.new_y &&
-		    it->promo == m.promo)
-		{
-			/*
-			 | According to the transposition table, a previous
-			 | search from this position determined this move to be
-			 | best.  In this search, this move could be good too.
-			 | Place this move at the front of the list to score it
-			 | first to hopefully cause an earlier cutoff.
-			 */
-			l.erase(it);
-			l.push_front(m);
-			break;
-		}
+	if ((it = find(l.begin(), l.end(), m)) != l.end())
+	{
+		/*
+		 | According to the transposition table, a previous search from
+		 | this position determined this move to be best.  In this
+		 | search, this move could be good too.  Place this move at the
+		 | front of the list to score it first to hopefully cause an
+		 | earlier cutoff.
+		 */
+		l.erase(it);
+		l.push_front(m);
+	}
 
 	/* Score each move in the list. */
 	for (it = l.begin(); !timeout_flag && it != l.end(); it++)
