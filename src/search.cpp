@@ -332,8 +332,8 @@ move_t search::mtdf(int depth, int guess)
 		if (m.value != lower)
 			beta = m.value;
 		else
-			beta = m.value + 100;
-		m = minimax(depth, beta - 100, beta);
+			beta = m.value + GRAIN;
+		m = minimax(depth, beta - GRAIN, beta);
 		if (m.value >= beta)
 			lower = m.value;
 		else
