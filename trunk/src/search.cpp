@@ -364,7 +364,6 @@ move_t search::minimax(int depth, int alpha, int beta)
 	list<move_t>::iterator it;      // The iterator through the move list.
 	move_t m;                       // From this position, the best move.
 	bitboard_t hash = b.get_hash(); // This position's hash.
-	int lower, upper;               //
 
 	/* Increment the number of positions searched. */
 	nodes++;
