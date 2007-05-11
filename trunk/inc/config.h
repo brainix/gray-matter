@@ -178,8 +178,9 @@
 
 /* Transposition table entry types: */
 #define LOWER		0 // The value represents a lower bound.
-#define UPPER		1 // The value represents an upper bound.
-#define BOUNDS		2
+#define EXACT		1 // The value represents an exact MiniMax value.
+#define UPPER		2 // The value represents an upper bound.
+#define ENTRY_TYPES	3
 
 /* Search statuses: */
 #define IDLING		0 // Masturbating.

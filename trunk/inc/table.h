@@ -36,8 +36,8 @@ public:
 	table(int mb = XPOS_TABLE_MB);
 	~table();
 	void clear();
-	bool probe(bitboard_t hash, int depth, move_t *move_ptr, int bound) const;
-	void store(bitboard_t hash, int depth, move_t move, int bound);
+	bool probe(bitboard_t hash, int depth, move_t *move_ptr, int type) const;
+	void store(bitboard_t hash, int depth, move_t move, int type);
 private:
 	uint64_t slots;
 	xpos_slot_t *data;
