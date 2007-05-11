@@ -271,9 +271,8 @@ void search::iterate(int s)
 	if (s == THINKING)
 		timer_set(max_time);
 	nodes = 0;
-	move_t m;
+	move_t m, tmp;
 	SET_NULL_MOVE(m);
-	int guess = 0;
 
 	/*
 	 | Perform iterative deepening until the alarm has sounded (if we're
@@ -283,8 +282,12 @@ void search::iterate(int s)
 	b.lock();
 	for (int depth = 0; depth < max_depth; depth++)
 	{
-		m = mtdf(depth, guess);
-		if (timeout_flag && depth || IS_NULL_MOVE(m))
+#if ALGORITHM == ALPHA_BETA
+		tmp = minimax(depth, SHRT_MIN, SHRT_MAX);
+#elif ALGORITHM == MTDF
+		tmp = mtdf(depth, m.value);
+#endif
+		if (timeout_flag && depth || IS_NULL_MOVE(tmp))
 			/*
 			 | Oops.  Either the alarm has interrupted this
 			 | iteration (and the results are incomplete and
@@ -292,7 +295,7 @@ void search::iterate(int s)
 			 | position (and the game must've ended).
 			 */
 			break;
-		guess = m.value;
+		m = tmp;
 		extract(s);
 		if (output)
 			xboard_ptr->print_output(depth + 1, m.value, (clock() - start) / CLOCKS_PER_SEC, nodes, pv);
