@@ -100,6 +100,7 @@ typedef struct move
 		new_x = that.new_x;
 		new_y = that.new_y;
 		promo = that.promo;
+		value = that.value;
 		return *this;
 	};
 } __attribute__((packed)) move_t;
