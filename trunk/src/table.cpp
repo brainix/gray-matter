@@ -117,9 +117,9 @@ void table::store(bitboard_t hash, int depth, move_t move, int type)
 			data[index].lower = INT_MIN;
 	}
 	if (type == LOWER || type == EXACT)
-		data[index].lower = m.value;
+		data[index].lower = move.value;
 	if (type == EXACT || type == UPPER)
-		data[index].upper = m.value;
+		data[index].upper = move.value;
 }
 
 /*----------------------------------------------------------------------------*\
