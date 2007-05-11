@@ -93,6 +93,15 @@ typedef struct move
 		       this->new_x != that.new_x || this->new_y != that.new_y ||
 		       this->promo != that.promo;
 	};
+	struct move& operator=(const struct move& that)
+	{
+		old_x = that.old_x;
+		old_y = that.old_y;
+		new_x = that.new_x;
+		new_y = that.new_y;
+		promo = that.promo;
+		return *this;
+	};
 } __attribute__((packed)) move_t;
 
 /*
