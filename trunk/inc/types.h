@@ -81,11 +81,17 @@ typedef struct move
 	unsigned promo   :  3; // Pawn promotion information.
 	unsigned padding :  1; // Unused.
 	  signed value   : 16; // Negamax score.
-	bool operator==(const move_t that)
+	bool operator==(const struct move that) const
 	{
 		return this->old_x == that.old_x && this->old_y == that.old_y &&
 		       this->new_x == that.new_x && this->new_y == that.new_y &&
 		       this->promo == that.promo;
+	};
+	bool operator!=(const struct move that) const
+	{
+		return this->old_x != that.old_x || this->old_y != that.old_y ||
+		       this->new_x != that.new_x || this->new_y != that.new_y ||
+		       this->promo != that.promo;
 	};
 } __attribute__((packed)) move_t;
 
