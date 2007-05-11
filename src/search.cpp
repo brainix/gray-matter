@@ -406,7 +406,7 @@ move_t search::minimax(int depth, int alpha, int beta)
 		case CHECKMATE:
 		case ILLEGAL:
 			SET_NULL_MOVE(m);
-			m.value = WEIGHT_KING;
+			m.value = -WEIGHT_KING;
 			return m;
 	}
 
