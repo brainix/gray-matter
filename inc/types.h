@@ -95,9 +95,8 @@ typedef struct move
 typedef struct xpos_slot
 {
 	bitboard_t hash; // Zobrist hash key.
+	uint32_t depth;  // Depth.
 	move_t move;     // Best move.
-	uint16_t depth;  // Depth.
-	uint16_t type;   // Type (useless, alpha, beta, or exact value).
 } __attribute__((packed)) xpos_slot_t;
 
 /*

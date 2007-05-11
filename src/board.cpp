@@ -336,7 +336,7 @@ int board::evaluate_pawn() const
 	 | (Apologies to Aske Plaat.)  If we've already evaluated this pawn
 	 | structure, return our previous evaluation.
 	 */
-	if (pawn_table.probe(pawn_hash, &sum) == EXACT)
+	if (pawn_table.probe(pawn_hash, &sum))
 		goto end;
 
 	for (int color = WHITE; color <= BLACK; color++)

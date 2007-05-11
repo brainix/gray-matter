@@ -177,11 +177,9 @@
 #define POLICIES	2
 
 /* Transposition table entry types: */
-#define USELESS		0 // No stored entry, or a stored entry for a different position (used to detect hash collisions).
-#define ALPHA		1 // The stored entry is for the queried position, and the value represents a lower bound.
-#define BETA		2 // The stored entry is for the queried position, and the value represents an upper bound.
-#define EXACT		3 // The stored entry is for the queried position, and the value represents the exact MiniMax value.
-#define ENTRY_TYPES	4
+#define LOWER		0 // The value represents a lower bound.
+#define UPPER		1 // The value represents an upper bound.
+#define BOUNDS		2
 
 /* Search statuses: */
 #define IDLING		0 // Masturbating.
