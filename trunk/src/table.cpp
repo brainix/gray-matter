@@ -38,9 +38,7 @@ table::table(int mb)
 	{
 		if ((slots = mb * MB / sizeof(xpos_slot_t)) == 0)
 			throw;
-		data = new xpos_slot_t *[BOUNDS];
-		for (int bound = LOWER; bound <= UPPER; bound++)
-			data[bound] = new xpos_slot_t[slots / 2];
+		data = new xpos_slot_t[slots];
 	}
 	catch (...)
 	{
@@ -56,8 +54,6 @@ table::~table()
 
 /* Destructor. */
 
-	for (int bound = LOWER; bound <= UPPER; bound++)
-		delete[] data[bound];
 	delete[] data;
 }
 
@@ -69,13 +65,14 @@ void table::clear()
 
 /* Clear the transposition table. */
 
-	for (int bound = LOWER; bound <= UPPER; bound++)
-		for (uint64_t index = 0; index < slots; index++)
-		{
-			data[bound][index].hash = 0;
-			data[bound][index].depth = 0;
-			SET_NULL_MOVE(data[bound][index].move);
-		}
+	for (uint64_t index = 0; index < slots; index++)
+	{
+		data[index].hash = 0;
+		data[index].depth = 0;
+		SET_NULL_MOVE(data[index].move);
+		data[index].value[LOWER] = INT_MIN;
+		data[index].value[UPPER] = INT_MAX;
+	}
 }
 
 /*----------------------------------------------------------------------------*\
@@ -83,13 +80,14 @@ void table::clear()
 \*----------------------------------------------------------------------------*/
 bool table::probe(bitboard_t hash, int depth, move_t *move_ptr, int bound) const
 {
-	uint64_t index = hash % (slots / 2);
-	if (data[bound][index].hash != hash || data[bound][index].depth < depth)
+	uint64_t index = hash % slots;
+	if (data[index].hash != hash || data[index].depth < depth)
 	{
 		SET_NULL_MOVE(*move_ptr);
 		return false;
 	}
-	*move_ptr = data[bound][index].move;
+	*move_ptr = data[index].move;
+	move_ptr->value = data[index].value[bound];
 	return true;
 }
 
@@ -100,10 +98,15 @@ void table::store(bitboard_t hash, int depth, move_t move, int bound)
 {
 	if (IS_NULL_MOVE(move))
 		return;
-	uint64_t index = hash % (slots / 2);
-	data[bound][index].hash = hash;
-	data[bound][index].depth = depth;
-	data[bound][index].move = move;
+	uint64_t index = hash % slots;
+	data[index].hash = hash;
+	data[index].depth = depth;
+	if (data[index].move != move)
+	{
+		data[index].move = move;
+		data[index].value[!bound] = !bound == LOWER ? INT_MIN : INT_MAX;
+	}
+	data[index].value[bound] = m.value;
 }
 
 /*----------------------------------------------------------------------------*\

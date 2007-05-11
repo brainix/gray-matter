@@ -40,7 +40,7 @@ public:
 	void store(bitboard_t hash, int depth, move_t move, int bound);
 private:
 	uint64_t slots;
-	xpos_slot_t **data;
+	xpos_slot_t *data;
 };
 
 class pawn
