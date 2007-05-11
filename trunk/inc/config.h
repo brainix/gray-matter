@@ -63,18 +63,21 @@
 #define WEIGHT_KING		10300
 
 /* Values of pawn formations: */
-#define WEIGHT_ISOLATED		    0
-#define WEIGHT_DOUBLED		    0
-#define WEIGHT_BACKWARD		    0
-#define WEIGHT_PASSED		    0
+#define WEIGHT_ISOLATED		  -25
+#define WEIGHT_DOUBLED		  -25
+#define WEIGHT_BACKWARD		  -25
+#define WEIGHT_PASSED		   25
 
 /* Values of castling statuses: */
-#define WEIGHT_CANT_CASTLE	    0
+#define WEIGHT_CANT_CASTLE	  -25
 #define WEIGHT_CAN_CASTLE	    0
-#define WEIGHT_HAS_CASTLED	    0
+#define WEIGHT_HAS_CASTLED	   50
 
 /* How much we hate our opponent: */
 #define CONTEMPT		  900
+
+/* */
+#define GRAIN			   25
 
 
 
