@@ -42,10 +42,11 @@
 \*----------------------------------------------------------------------------*/
 
 /* All of the values in this section must be >= 1. */
-#define NUM_CPUS	 1 // The number of CPUs.
-#define XPOS_TABLE_MB	64 // The transposition table size (in MB).
-#define PAWN_TABLE_MB	 1 // The pawn table size (in MB).
-#define DEPTH		16 // The maximum search depth (in plies).
+#define ALGORITHM	      MTDF // The move search algorithm (either ALPHA_BETA or MTDF).
+#define NUM_CPUS	         1 // The number of CPUs.
+#define XPOS_TABLE_MB	        64 // The transposition table size (in MB).
+#define PAWN_TABLE_MB	         1 // The pawn table size (in MB).
+#define DEPTH		        16 // The maximum search depth (in plies).
 
 
 
@@ -91,19 +92,23 @@
  | chosen sane values for the preceeding settings.
  */
 
-#if (NUM_CPUS < 1)
+#if ALGORITHM != ALPHA_BETA && ALGORITHM != MTDF
+#error "In inc/config.h, ALGORITHM must be either ALPHA_BETA or MTDF."
+#endif
+
+#if NUM_CPUS < 1
 #error "In inc/config.h, NUM_CPUS must be >= 1."
 #endif
 
-#if (XPOS_TABLE_MB < 1)
+#if XPOS_TABLE_MB < 1
 #error "In inc/config.h, XPOS_TABLE_MB must be >= 1."
 #endif
 
-#if (PAWN_TABLE_MB < 1)
+#if PAWN_TABLE_MB < 1
 #error "In inc/config.h, PAWN_TABLE_MB must be >= 1."
 #endif
 
-#if (DEPTH < 1)
+#if DEPTH < 1
 #error "In inc/config.h, DEPTH must be >= 1."
 #endif
 
@@ -185,6 +190,11 @@
 #define EXACT		1 // The value represents an exact MiniMax value.
 #define UPPER		2 // The value represents an upper bound.
 #define ENTRY_TYPES	3
+
+/* Search algorithms: */
+#define ALPHA_BETA	0 // Alpha-beta pruning on top of NegaMax.
+#define MTDF		1 // MTD(f) on top of alpha-beta pruning on top of NegaMax.
+#define ALGORITHMS	2
 
 /* Search statuses: */
 #define IDLING		0 // Masturbating.
