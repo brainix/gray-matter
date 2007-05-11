@@ -29,6 +29,7 @@
 using namespace std;
 
 /* C++ stuff: */
+#include <algorithm>
 #include <list>
 
 /* Default Gray Matter stuff: */
