@@ -283,11 +283,7 @@ void search::iterate(int s)
 	b.lock();
 	for (int depth = 0; depth < max_depth; depth++)
 	{
-#if ALGORITHM == ALPHA_BETA
-		tmp = minimax(depth, -INFINITY, +INFINITY);
-#elif ALGORITHM == MTDF
 		tmp = mtdf(depth, m.value);
-#endif
 		if (timeout_flag && depth || IS_NULL_MOVE(tmp))
 			/*
 			 | Oops.  Either the alarm has interrupted this
