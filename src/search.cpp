@@ -325,6 +325,12 @@ void search::iterate(int s)
 \*----------------------------------------------------------------------------*/
 move_t search::mtdf(int depth, int guess)
 {
+
+/*
+ | From the current position, search for the best move.  This method implements
+ | the MTD(f) algorithm.
+ */
+
 	move_t m;
 	SET_NULL_MOVE(m);
 	m.value = guess;
@@ -366,6 +372,7 @@ move_t search::minimax(int depth, int alpha, int beta)
 	list<move_t> l;                 // From this position, the move list.
 	list<move_t>::iterator it;      // The iterator through the move list.
 	move_t m;                       // From this position, the best move.
+	int status;                     // In this position, whether or not the game is over.
 
 	/* Increment the number of positions searched. */
 	nodes++;
@@ -391,23 +398,30 @@ move_t search::minimax(int depth, int alpha, int beta)
 
 	/*
 	 | If this position is terminal (the end of the game), there's no legal
-	 | move.  All we have to do is determine if the game is drawn or lost.
+	 | move.  All we have to do is determine if the game is lost or drawn.
 	 | Check for this case.  Subtle!  We couldn't have just won because our
 	 | opponent moved last.
 	 */
-	switch (b.get_status(false))
+	if ((status = b.get_status(false)) != IN_PROGRESS)
 	{
-		case IN_PROGRESS:
-			break;
-		default:
-			SET_NULL_MOVE(m);
-			m.value = WEIGHT_CONTEMPT;
-			return m;
-		case CHECKMATE:
-		case ILLEGAL:
-			SET_NULL_MOVE(m);
-			m.value = -WEIGHT_KING;
-			return m;
+		/*
+		 | Subtle!
+		 |
+		 | If this position is a mate:
+		 |     We want to encourage players to mate.  ;-)  That's why
+		 |     we score this position as -WEIGHT_KING.  Therefore, when
+		 |     the NegaMax recursion unrolls, we score the move that
+		 |     leads to this position as +WEIGHT_KING.
+		 |
+		 | If this position is a draw:
+		 |     We want to discourage players from forcing a premature
+		 |     draw.  That's why we score this position as +WEIGHT_CONTEMPT.
+		 |     Therefore, when the NegaMax recursion unrolls, we score
+		 |     the move that leads to this position as -WEIGHT_CONTEMPT.
+		 */
+		SET_NULL_MOVE(m);
+		m.value = status == ILLEGAL || status == CHECKMATE ? -WEIGHT_KING : WEIGHT_CONTEMPT;
+		return m;
 	}
 
 	/* Generate and re-order the move list. */
@@ -445,13 +459,10 @@ move_t search::minimax(int depth, int alpha, int beta)
 			m = *it;
 	}
 
-	if (!timeout_flag)
-	{
-		if (m.value <= alpha)
-			table_ptr->store(hash, depth, m, UPPER);
-		if (m.value >= beta)
-			table_ptr->store(hash, depth, m, LOWER);
-	}
+	if (!timeout_flag && m.value <= alpha)
+		table_ptr->store(hash, depth, m, UPPER);
+	if (!timeout_flag && m.value >= beta)
+		table_ptr->store(hash, depth, m, LOWER);
 	return m;
 }
 

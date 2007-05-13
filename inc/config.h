@@ -54,32 +54,33 @@
 \*----------------------------------------------------------------------------*/
 
 /* Values of material (in centipawns): */
-#define WEIGHT_PAWN		  100
-#define WEIGHT_KNIGHT		  300
-#define WEIGHT_BISHOP		  300
-#define WEIGHT_ROOK		  500
-#define WEIGHT_QUEEN		  900
-#define WEIGHT_KING		10300
+#define WEIGHT_PAWN			  100
+#define WEIGHT_KNIGHT			  300
+#define WEIGHT_BISHOP			  300
+#define WEIGHT_ROOK			  500
+#define WEIGHT_QUEEN			  900
+#define WEIGHT_KING			10300
 
 /* Values of pawn formations: */
-#define WEIGHT_ISOLATED		  -25
-#define WEIGHT_DOUBLED		  -25
-#define WEIGHT_BACKWARD		  -25
-#define WEIGHT_PASSED		   25
+#define WEIGHT_ISOLATED			  -25
+#define WEIGHT_DOUBLED			  -25
+#define WEIGHT_BACKWARD			  -25
+#define WEIGHT_PASSED			   25
 
 /* Values of castling statuses: */
-#define WEIGHT_CANT_CASTLE	  -25
-#define WEIGHT_CAN_CASTLE	    0
-#define WEIGHT_HAS_CASTLED	   50
+#define WEIGHT_CANT_CASTLE		  -25
+#define WEIGHT_CAN_CASTLE		    0
+#define WEIGHT_HAS_CASTLED		   50
 
 /* How much we hate our opponent: */
-#define WEIGHT_CONTEMPT		  900
+#define WEIGHT_CONTEMPT			  900
 
 /*
- | The absolute value of the smallest of all of the previous WEIGHT_* values -
- | the increment by which MTD(f) shifts the alpha-beta window:
+ | The absolute value of the difference between the closest two of all of the
+ | preceeding WEIGHT_* values - the increment by which MTD(f) shifts the alpha-
+ | beta window:
  */
-#define WEIGHT_INCREMENT	   25
+#define WEIGHT_INCREMENT		   25
 
 
 
@@ -204,14 +205,14 @@
 #define SEARCH_STATS	4
 
 /* Convenient bitboards: */
-#define CENTER		0x0000001818000000ULL // 4 center squares.
+#define CENTER		0x0000001818000000ULL //  4 center squares.
 #define EXPANDED_CENTER	0x00003C3C3C3C0000ULL // 16 center squares.
 #define PRINCIPAL_DIAGS	0x8142241818244281ULL // 16 principal diagonal squares.
 #define WHITE_SIDE	0x00000000FFFFFFFFULL // 32 white side squares.
 #define BLACK_SIDE	0xFFFFFFFF00000000ULL // 32 black side squares.
 #define WHITE_SQUARES	0x55AA55AA55AA55AAULL // 32 white squares.
 #define BLACK_SQUARES	0xAA55AA55AA55AA55ULL // 32 black squares.
-#define CORNERS		0x8100000000000081ULL // 4 corner squares.
+#define CORNERS		0x8100000000000081ULL //  4 corner squares.
 
 /* Memory units: */
 #define  B		1           // Byte.

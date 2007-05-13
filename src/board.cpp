@@ -792,7 +792,7 @@ int board::perft(int depth)
 		return 1;
 
 	/* Recursive case. */
-	generate(l);
+	generate(l, true);
 	for (it = l.begin(); it != l.end(); it++)
 	{
 		make(*it);
