@@ -14,7 +14,7 @@
 
 === Mid Term Goals (for the Next Year) ===
   * To nurture a community of hackers and chess players.
-  * ~~To implement [http://www.cs.vu.nl/~aske/mtdf.html MTD(_f_)].~~
+  * ~~To implement [http://www.cs.vu.nl/~aske/mtdf.html MTD(f)].~~
   * ~~To provide evidence for correctness of search.~~
   * For the engine to regularly checkmate its hackers.
   * To earn a respectable rating.
