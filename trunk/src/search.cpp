@@ -43,7 +43,7 @@ search::search(table *t, xboard *x)
 
 /* Constructor. */
 
-	max_time = INT_MAX;
+	max_time = INFINITY;
 	max_depth = DEPTH;
 	output = false;
 
@@ -283,7 +283,7 @@ void search::iterate(int s)
 	for (int depth = 0; depth < max_depth; depth++)
 	{
 #if ALGORITHM == ALPHA_BETA
-		tmp = minimax(depth, SHRT_MIN, SHRT_MAX);
+		tmp = minimax(depth, -INFINITY, +INFINITY);
 #elif ALGORITHM == MTDF
 		tmp = mtdf(depth, m.value);
 #endif
@@ -334,7 +334,7 @@ move_t search::mtdf(int depth, int guess)
 	move_t m;
 	SET_NULL_MOVE(m);
 	m.value = guess;
-	int upper = SHRT_MAX, lower = SHRT_MIN, beta;
+	int upper = +INFINITY, lower = -INFINITY, beta;
 
 	while (!timeout_flag && upper > lower)
 	{
@@ -370,8 +370,8 @@ move_t search::minimax(int depth, int alpha, int beta)
 	/* Local variables: */
 	bitboard_t hash = b.get_hash(); // This position's hash.
 	move_t m;                       // From this position, the best move.
-	int upper = SHRT_MAX;           // For this position, the upper bound on the MiniMax value.
-	int lower = SHRT_MIN;           // For this position, the lower bound on the MiniMax value.
+	int upper = +INFINITY;          // For this position, the upper bound on the MiniMax value.
+	int lower = -INFINITY;          // For this position, the lower bound on the MiniMax value.
 	int status;                     // In this position, whether or not the game is over.
 	list<move_t> l;                 // From this position, the move list.
 	list<move_t>::iterator it;      // The iterator through the move list.

@@ -70,8 +70,8 @@ void table::clear()
 		data[index].hash = 0;
 		data[index].depth = 0;
 		SET_NULL_MOVE(data[index].move);
-		data[index].move.value = SHRT_MAX;
-		data[index].lower = SHRT_MIN;
+		data[index].move.value = +INFINITY;
+		data[index].lower = -INFINITY;
 	}
 }
 
@@ -106,9 +106,9 @@ void table::store(bitboard_t hash, int depth, move_t move, int type)
 	{
 		data[index].move = move;
 		if (type == UPPER)
-			data[index].lower = SHRT_MIN;
+			data[index].lower = -INFINITY;
 		if (type == LOWER)
-			data[index].move.value = SHRT_MAX;
+			data[index].move.value = +INFINITY;
 	}
 	if (type == UPPER || type == EXACT)
 		data[index].move.value = move.value;
@@ -158,7 +158,7 @@ void pawn::clear()
 	for (uint64_t index = 0; index < slots; index++)
 	{
 		data[index].hash = 0;
-		data[index].value = SHRT_MIN;
+		data[index].value = -INFINITY;
 	}
 }
 

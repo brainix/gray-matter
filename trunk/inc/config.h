@@ -215,3 +215,5 @@
 #define MB		(1024 * KB) // Megabyte.
 #define GB		(1024 * MB) // Gigabyte.
 #define TB		(1024 * GB) // Terabyte.
+
+#define INFINITY	32767
