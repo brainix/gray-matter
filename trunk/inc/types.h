@@ -70,29 +70,39 @@ typedef struct state
 
 /*
  | This structure describes a move.  It contains the from and to coordinates,
- | pawn promotion information, and the negamax score.
+ | the pawn promotion information, and the MiniMax score.  We use a bitfield to
+ | tightly pack this information into 32 bits because some of our methods return
+ | this structure (rather than a pointer to this structure or other similar
+ | ugliness).
  */
 typedef struct move
 {
-	unsigned old_x   :  3; // From x coordinate.
-	unsigned old_y   :  3; // From y coordinate.
-	unsigned new_x   :  3; // To x coordinate.
-	unsigned new_y   :  3; // To y coordinate.
-	unsigned promo   :  3; // Pawn promotion information.
-	unsigned padding :  1; // Unused.
-	  signed value   : 16; // Negamax score.
+	unsigned old_x   :  3; // From x coordinate.              3 bits
+	unsigned old_y   :  3; // From y coordinate.           +  3 bits
+	unsigned new_x   :  3; // To x coordinate.             +  3 bits
+	unsigned new_y   :  3; // To y coordinate.             +  3 bits
+	unsigned promo   :  3; // Pawn promotion information.  +  3 bits
+	unsigned padding :  1; // Unused.                      +  1 bit
+	  signed value   : 16; // Negamax score.               + 16 bits
+	                       //                              = 32 bits
+
+	/* Overloaded equality test operator. */
 	bool operator==(const struct move that) const
 	{
 		return this->old_x == that.old_x && this->old_y == that.old_y &&
 		       this->new_x == that.new_x && this->new_y == that.new_y &&
 		       this->promo == that.promo;
 	};
+
+	/* Overloaded inequality test operator. */
 	bool operator!=(const struct move that) const
 	{
 		return this->old_x != that.old_x || this->old_y != that.old_y ||
 		       this->new_x != that.new_x || this->new_y != that.new_y ||
 		       this->promo != that.promo;
 	};
+
+	/* Overloaded assignment operator. */
 	struct move& operator=(const struct move& that)
 	{
 		old_x = that.old_x;
@@ -112,23 +122,26 @@ typedef struct move
 #define SET_NULL_MOVE(m)	((m).promo = (m).new_y = (m).new_x = (m).old_y = (m).old_x = 0)
 
 /*
- | This structure describes a transposition table slot.
+ | This structure describes a transposition table slot.  We've specialized this
+ | to work well with MTD(f), which benefits when each slot contains both a lower
+ | and an upper bound on the MiniMax value.  We store the lower bound in
+ | move.value and the upper bound in upper.
  */
 typedef struct xpos_slot
 {
-	bitboard_t hash; // Zobrist hash key.
-	int16_t depth;   // Depth.
-	move_t move;     // Best move and lower bound.
-	int16_t upper;   // Upper bound.
-} __attribute__((packed)) xpos_slot_t;
+	bitboard_t hash;               // Zobrist hash key.              64 bits
+	int16_t depth;                 // Depth.                      +  16 bits
+	move_t move;                   // Best move and lower bound.  +  32 bits
+	int16_t upper;                 // Upper bound.                +  16 bits
+} __attribute__((packed)) xpos_slot_t; //                             = 128 bits
 
 /*
  | This structure describes a pawn table slot.
  */
 typedef struct pawn_slot
 {
-	bitboard_t hash; // Zobrist hash key.
-	int16_t value;   // Evaluation.
-} __attribute__((packed)) pawn_slot_t;
+	bitboard_t hash;               // Zobrist hash key.    64 bits
+	int16_t value;                 // Evaluation.        + 16 bits
+} __attribute__((packed)) pawn_slot_t; //                    = 80 bits
 
 #endif

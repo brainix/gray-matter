@@ -30,6 +30,10 @@
 #include "config.h"
 #include "types.h"
 
+/*----------------------------------------------------------------------------*\
+ |			      Transposition Table			      |
+\*----------------------------------------------------------------------------*/
+
 class table
 {
 public:
@@ -39,9 +43,13 @@ public:
 	bool probe(bitboard_t hash, int depth, move_t *move_ptr, int type) const;
 	void store(bitboard_t hash, int depth, move_t move, int type);
 private:
-	uint64_t slots;
-	xpos_slot_t *data;
+	uint64_t slots;    // The number of slots in the transposition table.
+	xpos_slot_t *data; // The actual slots in the transposition table.
 };
+
+/*----------------------------------------------------------------------------*\
+ |				   Pawn Table				      |
+\*----------------------------------------------------------------------------*/
 
 class pawn
 {
@@ -52,8 +60,8 @@ public:
 	bool probe(bitboard_t hash, int *value_ptr) const;
 	void store(bitboard_t hash, int value);
 private:
-	uint64_t slots;
-	pawn_slot_t *data;
+	uint64_t slots;    // The number of slots in the pawn table.
+	pawn_slot_t *data; // The actual slots in the pawn table.
 };
 
 #endif
