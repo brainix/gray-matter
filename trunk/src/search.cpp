@@ -459,10 +459,13 @@ move_t search::minimax(int depth, int alpha, int beta)
 			m = *it;
 	}
 
-	if (!timeout_flag && m.value <= alpha)
-		table_ptr->store(hash, depth, m, UPPER);
-	if (!timeout_flag && m.value >= beta)
-		table_ptr->store(hash, depth, m, LOWER);
+	if (!timeout_flag)
+	{
+		if (m.value <= alpha)
+			table_ptr->store(hash, depth, m, UPPER);
+		if (m.value >= beta)
+			table_ptr->store(hash, depth, m, LOWER);
+	}
 	return m;
 }
 
