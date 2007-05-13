@@ -42,11 +42,10 @@
 \*----------------------------------------------------------------------------*/
 
 /* All of the values in this section must be >= 1. */
-#define ALGORITHM	      MTDF // The move search algorithm (either ALPHA_BETA or MTDF).
-#define NUM_CPUS	         1 // The number of CPUs.
-#define XPOS_TABLE_MB	        64 // The transposition table size (in MB).
-#define PAWN_TABLE_MB	         1 // The pawn table size (in MB).
-#define DEPTH		        16 // The maximum search depth (in plies).
+#define NUM_CPUS	 1 // The number of CPUs.
+#define XPOS_TABLE_MB	64 // The transposition table size (in MB).
+#define PAWN_TABLE_MB	 1 // The pawn table size (in MB).
+#define DEPTH		16 // The maximum search depth (in plies).
 
 
 
@@ -92,10 +91,6 @@
  | The following preprocessor directives are used to ensure that the user has
  | chosen sane values for the preceeding settings.
  */
-
-#if ALGORITHM != ALPHA_BETA && ALGORITHM != MTDF
-#error "In inc/config.h, ALGORITHM must be either ALPHA_BETA or MTDF."
-#endif
 
 #if NUM_CPUS < 1
 #error "In inc/config.h, NUM_CPUS must be >= 1."
@@ -187,11 +182,6 @@
 #define LOWER		2 // The value represents a lower bound.
 #define ENTRY_TYPES	3
 
-/* Search algorithms: */
-#define ALPHA_BETA	0 // Alpha-beta pruning on top of NegaMax.
-#define MTDF		1 // MTD(f) on top of alpha-beta pruning on top of NegaMax.
-#define ALGORITHMS	2
-
 /* Search statuses: */
 #define IDLING		0 // Masturbating.
 #define THINKING	1 // Thinking (on our own time).
@@ -216,4 +206,4 @@
 #define GB		(1024 * MB) // Gigabyte.
 #define TB		(1024 * GB) // Terabyte.
 
-#define INFINITY	32767
+#define INFINITY	32767 // Well, close enough.
