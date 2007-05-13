@@ -123,17 +123,17 @@ typedef struct move
 
 /*
  | This structure describes a transposition table slot.  We've specialized this
- | to work well with MTD(f), which benefits when each slot contains both a lower
- | and an upper bound on the MiniMax value.  We store the lower bound in
- | move.value and the upper bound in upper.
+ | to work well with MTD(f), which benefits when each slot contains both an
+ | upper and a lower bound on the MiniMax value.  We store the upper bound in
+ | move.value and the lower bound in lower.
  */
 typedef struct xpos_slot
 {
-	bitboard_t hash;               // Zobrist hash key.              64 bits
-	int16_t depth;                 // Depth.                      +  16 bits
-	move_t move;                   // Best move and lower bound.  +  32 bits
-	int16_t upper;                 // Upper bound.                +  16 bits
-} __attribute__((packed)) xpos_slot_t; //                             = 128 bits
+	bitboard_t hash; // Zobrist hash key for this position.     64 bits
+	int16_t depth;   // Depth to which we've searched.       +  16 bits
+	move_t move;     // Best move and upper bound.           +  32 bits
+	int16_t lower;   // Lower bound.                         +  16 bits
+} __attribute__((packed)) xpos_slot_t; //                        = 128 bits
 
 /*
  | This structure describes a pawn table slot.
