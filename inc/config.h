@@ -181,15 +181,10 @@
 #define BACK		1
 #define POSITIONS	2
 
-/* Transposition table entry replacement policies: */
-#define DEEP		0 // Only replace if same depth or deeper.
-#define FRESH		1 // Always replace.
-#define POLICIES	2
-
 /* Transposition table entry types: */
-#define LOWER		0 // The value represents a lower bound.
+#define UPPER		0 // The value represents an upper bound.
 #define EXACT		1 // The value represents an exact MiniMax value.
-#define UPPER		2 // The value represents an upper bound.
+#define LOWER		2 // The value represents a lower bound.
 #define ENTRY_TYPES	3
 
 /* Search algorithms: */
