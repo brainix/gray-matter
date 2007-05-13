@@ -334,19 +334,19 @@ move_t search::mtdf(int depth, int guess)
 	move_t m;
 	SET_NULL_MOVE(m);
 	m.value = guess;
-	int lower = SHRT_MIN, upper = SHRT_MAX, beta;
+	int upper = SHRT_MAX, lower = SHRT_MIN, beta;
 
-	while (!timeout_flag && lower < upper)
+	while (!timeout_flag && upper > lower)
 	{
-		if (m.value != lower)
-			beta = m.value;
-		else
+		if (m.value == lower)
 			beta = m.value + WEIGHT_INCREMENT;
-		m = minimax(depth, beta - WEIGHT_INCREMENT, beta);
-		if (m.value >= beta)
-			lower = m.value;
 		else
+			beta = m.value;
+		m = minimax(depth, beta - WEIGHT_INCREMENT, beta);
+		if (m.value < beta)
 			upper = m.value;
+		else
+			lower = m.value;
 	}
 	return m;
 }
@@ -369,10 +369,12 @@ move_t search::minimax(int depth, int alpha, int beta)
 
 	/* Local variables: */
 	bitboard_t hash = b.get_hash(); // This position's hash.
+	move_t m;                       // From this position, the best move.
+	int upper = SHRT_MAX;           // For this position, the upper bound on the MiniMax value.
+	int lower = SHRT_MIN;           // For this position, the lower bound on the MiniMax value.
+	int status;                     // In this position, whether or not the game is over.
 	list<move_t> l;                 // From this position, the move list.
 	list<move_t>::iterator it;      // The iterator through the move list.
-	move_t m;                       // From this position, the best move.
-	int status;                     // In this position, whether or not the game is over.
 
 	/* Increment the number of positions searched. */
 	nodes++;
@@ -384,17 +386,13 @@ move_t search::minimax(int depth, int alpha, int beta)
 	 | Otherwise, if we can, reduce the size of our alpha-beta window.
 	 */
 	if (table_ptr->probe(hash, depth, &m, UPPER))
-	{
-		if (m.value <= alpha)
+		if ((upper = m.value) <= alpha)
 			return m;
-		alpha = GREATER(alpha, m.value);
-	}
 	if (table_ptr->probe(hash, depth, &m, LOWER))
-	{
-		if (m.value >= beta)
+		if ((lower = m.value) >= beta)
 			return m;
-		beta = LESSER(beta, m.value);
-	}
+	alpha = GREATER(alpha, lower);
+	beta = LESSER(beta, upper);
 
 	/*
 	 | If this position is terminal (the end of the game), there's no legal
