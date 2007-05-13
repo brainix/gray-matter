@@ -273,6 +273,7 @@ void search::iterate(int s)
 	nodes = 0;
 	move_t m, tmp;
 	SET_NULL_MOVE(m);
+	m.value = 0;
 
 	/*
 	 | Perform iterative deepening until the alarm has sounded (if we're
@@ -338,15 +339,10 @@ move_t search::mtdf(int depth, int guess)
 
 	while (!timeout_flag && upper > lower)
 	{
-		if (m.value == lower)
-			beta = m.value + WEIGHT_INCREMENT;
-		else
-			beta = m.value;
+		beta = m.value + (m.value == upper ? 0 : WEIGHT_INCREMENT);
 		m = minimax(depth, beta - WEIGHT_INCREMENT, beta);
-		if (m.value < beta)
-			upper = m.value;
-		else
-			lower = m.value;
+		upper = m.value < beta ? m.value : upper;
+		lower = m.value < beta ? lower : m.value;
 	}
 	return m;
 }
@@ -447,8 +443,7 @@ move_t search::minimax(int depth, int alpha, int beta)
 		/* Perform alpha-beta pruning. */
 		if ((alpha = GREATER(alpha, it->value)) >= beta)
 		{
-			it->value = alpha;
-			m = *it;
+			(m = *it).value = alpha;
 			break;
 		}
 
