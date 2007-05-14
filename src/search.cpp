@@ -346,7 +346,7 @@ move_t search::mtdf(int depth, int guess)
 /*----------------------------------------------------------------------------*\
  |				   minimax()				      |
 \*----------------------------------------------------------------------------*/
-move_t search::minimax(int depth, int alpha, int beta, bool root)
+move_t search::minimax(int depth, int alpha, int beta)
 {
 
 /*
@@ -418,7 +418,7 @@ move_t search::minimax(int depth, int alpha, int beta, bool root)
 	}
 
 	/* Generate and re-order the move list. */
-	b.generate(l, root);
+	b.generate(l);
 	if ((it = find(l.begin(), l.end(), m)) != l.end())
 	{
 		/*
@@ -436,7 +436,7 @@ move_t search::minimax(int depth, int alpha, int beta, bool root)
 	for (it = l.begin(); !timeout_flag && it != l.end(); it++)
 	{
 		b.make(*it);
-		it->value = depth <= 0 ? b.evaluate() : -minimax(depth - 1, -beta, -tmp_alpha, false).value;
+		it->value = depth <= 0 ? b.evaluate() : -minimax(depth - 1, -beta, -tmp_alpha).value;
 		b.unmake();
 
 		/* Perform alpha-beta pruning. */
