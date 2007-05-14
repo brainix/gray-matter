@@ -344,7 +344,7 @@ move_t search::mtdf(int depth, int guess)
 			upper = m.value;
 		else
 			lower = m.value;
-	} while (!timeout_flag && lower < upper)
+	} while (!timeout_flag && lower < upper);
 	return m;
 }
 
