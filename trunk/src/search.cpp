@@ -295,7 +295,7 @@ void search::iterate(int s)
 		m = tmp_move;
 		extract(s);
 		if (output)
-			xboard_ptr->print_output(depth + 1, m.value, (clock() - start) / CLOCKS_PER_SEC, nodes, pv);
+			xboard_ptr->print_output(depth, m.value, (clock() - start) / CLOCKS_PER_SEC, nodes, pv);
 		if (m.value == WEIGHT_KING || m.value == -WEIGHT_KING)
 			/*
 			 | Oops.  The game will be over at this depth.  There's
