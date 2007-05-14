@@ -206,4 +206,4 @@
 #define GB		(1024 * MB) // Gigabyte.
 #define TB		(1024 * GB) // Terabyte.
 
-#define INFINITY	32767 // Well, close enough.
+#define INFINITY	32767 // Well, close enough.  ;-)
