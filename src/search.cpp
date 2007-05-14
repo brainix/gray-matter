@@ -333,13 +333,18 @@ move_t search::mtdf(int depth, int guess)
 	m.value = guess;
 	int upper = +INFINITY, lower = -INFINITY, beta;
 
-	while (!timeout_flag && upper > lower)
+	do
 	{
-		beta = m.value + (m.value != (lower ? 0 : WEIGHT_INCREMENT));
+		if (m.value == lower)
+			beta = m.value + WEIGHT_INCREMENT;
+		else
+			beta = m.value;
 		m = minimax(depth, beta - WEIGHT_INCREMENT, beta);
-		upper = m.value < beta ? m.value : upper;
-		lower = m.value < beta ? lower : m.value;
-	}
+		if (m.value < beta)
+			upper = m.value;
+		else
+			lower = m.value;
+	} while (!timeout_flag && lower < upper)
 	return m;
 }
 
