@@ -99,8 +99,6 @@ bool table::probe(bitboard_t hash, int depth, move_t *move_ptr, int type) const
 \*----------------------------------------------------------------------------*/
 void table::store(bitboard_t hash, int depth, move_t move, int type)
 {
-	if (IS_NULL_MOVE(move))
-		return;
 	uint64_t index = hash % slots;
 	data[index].hash = hash;
 	data[index].depth = depth;

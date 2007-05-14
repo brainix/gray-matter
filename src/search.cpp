@@ -281,7 +281,7 @@ void search::iterate(int s)
 	 | reached the maximum depth (either way).
 	 */
 	b.lock();
-	for (int depth = 0; depth < max_depth; depth++)
+	for (int depth = 1; depth <= max_depth; depth++)
 	{
 		tmp_move = mtdf(depth, m.value);
 		if (timeout_flag && depth || IS_NULL_MOVE(tmp_move))
@@ -395,6 +395,17 @@ move_t search::minimax(int depth, int alpha, int beta)
 	beta = LESSER(beta, upper);
 
 	/*
+	 | If we've reached the maximum search depth, this is a leaf node.
+	 */
+	if (depth <= 0)
+	{
+		SET_NULL_MOVE(m);
+		m.value = b.evaluate();
+		table_ptr->store(hash, depth, m, EXACT);
+		return m;
+	}
+
+	/*
 	 | If this position is terminal (the end of the game), there's no legal
 	 | move.  All we have to do is determine if the game is lost or drawn.
 	 | Check for this case.  Subtle!  We couldn't have just won because our
@@ -418,7 +429,13 @@ move_t search::minimax(int depth, int alpha, int beta)
 		 |     the move that leads to this position as -WEIGHT_CONTEMPT.
 		 */
 		SET_NULL_MOVE(m);
-		m.value = status == ILLEGAL || status == CHECKMATE ? -WEIGHT_KING : WEIGHT_CONTEMPT;
+		switch (status)
+		{
+			default        : m.value = +WEIGHT_CONTEMPT; break;
+			case CHECKMATE : m.value = -WEIGHT_KING;     break;
+			case ILLEGAL   : m.value = -WEIGHT_KING;     break;
+		}
+		table_ptr->store(hash, depth, m, EXACT);
 		return m;
 	}
 
@@ -441,7 +458,7 @@ move_t search::minimax(int depth, int alpha, int beta)
 	for (it = l.begin(); !timeout_flag && it != l.end(); it++)
 	{
 		b.make(*it);
-		it->value = depth <= 0 ? b.evaluate() : -minimax(depth - 1, -beta, -tmp_alpha).value;
+		it->value = -minimax(depth - 1, -beta, -tmp_alpha).value;
 		b.unmake();
 
 		/* Perform alpha-beta pruning. */
