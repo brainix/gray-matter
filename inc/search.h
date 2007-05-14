@@ -76,7 +76,7 @@ private:
 
 	void iterate(int s);
 	move_t mtdf(int depth, int guess);
-	move_t minimax(int depth, int alpha, int beta);
+	move_t minimax(int depth, int alpha, int beta, bool root = true);
 	void extract(int s);
 };
 
