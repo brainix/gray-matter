@@ -175,15 +175,15 @@ void *search::start(void *arg)
 /* Think of this method as main() for the search thread. */
 
 	class search *search_ptr = (class search *) arg;
-	int tmp = search_status = IDLING;
+	int old_search_status = search_status = IDLING;
 
 	do
 	{
 		/* Wait for the status to change. */
 		mutex_lock(&search_mutex);
-		while (tmp == search_status)
+		while (old_search_status == search_status)
 			cond_wait(&search_cond, &search_mutex);
-		tmp = search_status;
+		old_search_status = search_status;
 		mutex_unlock(&search_mutex);
 
 		/* Do the requested work - idle, think, ponder, or quit. */
@@ -271,7 +271,7 @@ void search::iterate(int s)
 	if (s == THINKING)
 		timer_set(max_time);
 	nodes = 0;
-	move_t m, tmp;
+	move_t m, tmp_move;
 	SET_NULL_MOVE(m);
 	m.value = 0;
 
@@ -283,8 +283,8 @@ void search::iterate(int s)
 	b.lock();
 	for (int depth = 0; depth < max_depth; depth++)
 	{
-		tmp = mtdf(depth, m.value);
-		if (timeout_flag && depth || IS_NULL_MOVE(tmp))
+		tmp_move = mtdf(depth, m.value);
+		if (timeout_flag && depth || IS_NULL_MOVE(tmp_move))
 			/*
 			 | Oops.  Either the alarm has interrupted this
 			 | iteration (and the results are incomplete and
@@ -292,7 +292,7 @@ void search::iterate(int s)
 			 | position (and the game must've ended).
 			 */
 			break;
-		m = tmp;
+		m = tmp_move;
 		extract(s);
 		if (output)
 			xboard_ptr->print_output(depth + 1, m.value, (clock() - start) / CLOCKS_PER_SEC, nodes, pv);
@@ -364,7 +364,7 @@ move_t search::minimax(int depth, int alpha, int beta)
 	move_t m;                       // From this position, the best move.
 	int upper = +INFINITY;          // For this position, the upper bound on the MiniMax value.
 	int lower = -INFINITY;          // For this position, the lower bound on the MiniMax value.
-	int tmp;                        // Scratch variable for us to use.
+	int tmp_alpha;                  // Scratch variable for us to use so as to not clobber alpha.
 	int status;                     // In this position, whether or not the game is over.
 	list<move_t> l;                 // From this position, the move list.
 	list<move_t>::iterator it;      // The iterator through the move list.
@@ -386,7 +386,7 @@ move_t search::minimax(int depth, int alpha, int beta)
 	if (table_ptr->probe(hash, depth, &m, LOWER))
 		if ((lower = m.value) >= beta)
 			return m;
-	tmp = alpha = GREATER(alpha, lower);
+	tmp_alpha = alpha = GREATER(alpha, lower);
 	beta = LESSER(beta, upper);
 
 	/*
@@ -395,7 +395,7 @@ move_t search::minimax(int depth, int alpha, int beta)
 	 | Check for this case.  Subtle!  We couldn't have just won because our
 	 | opponent moved last.
 	 */
-	if ((status = b.get_status(false)) != IN_PROGRESS)
+	if ((status = b.get_status(true)) != IN_PROGRESS)
 	{
 		/*
 		 | Subtle!
@@ -418,7 +418,7 @@ move_t search::minimax(int depth, int alpha, int beta)
 	}
 
 	/* Generate and re-order the move list. */
-	b.generate(l);
+	b.generate(l, true);
 	if ((it = find(l.begin(), l.end(), m)) != l.end())
 	{
 		/*
@@ -436,13 +436,13 @@ move_t search::minimax(int depth, int alpha, int beta)
 	for (it = l.begin(); !timeout_flag && it != l.end(); it++)
 	{
 		b.make(*it);
-		it->value = depth <= 0 ? b.evaluate() : -minimax(depth - 1, -beta, -tmp).value;
+		it->value = depth <= 0 ? b.evaluate() : -minimax(depth - 1, -beta, -tmp_alpha).value;
 		b.unmake();
 
 		/* Perform alpha-beta pruning. */
-		if ((tmp = GREATER(tmp, it->value)) >= beta)
+		if ((tmp_alpha = GREATER(tmp_alpha, it->value)) >= beta)
 		{
-			(m = *it).value = tmp;
+			(m = *it).value = tmp_alpha;
 			break;
 		}
 
