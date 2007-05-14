@@ -364,6 +364,7 @@ move_t search::minimax(int depth, int alpha, int beta)
 	move_t m;                       // From this position, the best move.
 	int upper = +INFINITY;          // For this position, the upper bound on the MiniMax value.
 	int lower = -INFINITY;          // For this position, the lower bound on the MiniMax value.
+	int tmp;                        // Scratch variable for us to use.
 	int status;                     // In this position, whether or not the game is over.
 	list<move_t> l;                 // From this position, the move list.
 	list<move_t>::iterator it;      // The iterator through the move list.
@@ -385,7 +386,7 @@ move_t search::minimax(int depth, int alpha, int beta)
 	if (table_ptr->probe(hash, depth, &m, LOWER))
 		if ((lower = m.value) >= beta)
 			return m;
-	alpha = GREATER(alpha, lower);
+	tmp = alpha = GREATER(alpha, lower);
 	beta = LESSER(beta, upper);
 
 	/*
@@ -435,13 +436,13 @@ move_t search::minimax(int depth, int alpha, int beta)
 	for (it = l.begin(); !timeout_flag && it != l.end(); it++)
 	{
 		b.make(*it);
-		it->value = depth <= 0 ? b.evaluate() : -minimax(depth - 1, -beta, -alpha).value;
+		it->value = depth <= 0 ? b.evaluate() : -minimax(depth - 1, -beta, -tmp).value;
 		b.unmake();
 
 		/* Perform alpha-beta pruning. */
-		if ((alpha = GREATER(alpha, it->value)) >= beta)
+		if ((tmp = GREATER(tmp, it->value)) >= beta)
 		{
-			(m = *it).value = alpha;
+			(m = *it).value = tmp;
 			break;
 		}
 
