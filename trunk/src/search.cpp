@@ -443,17 +443,10 @@ move_t search::minimax(int depth, int alpha, int beta)
 		b.make(*it);
 		it->value = -minimax(depth - 1, -beta, -tmp_alpha).value;
 		b.unmake();
-
-		/* Perform alpha-beta pruning. */
-		if ((tmp_alpha = GREATER(tmp_alpha, it->value)) >= beta)
-		{
-			(m = *it).value = tmp_alpha;
+		if (it != l.begin() && it->value <= m.value)
+			continue;
+		if ((tmp_alpha = GREATER(tmp_alpha, (m = *it).value)) >= beta)
 			break;
-		}
-
-		/* Keep track of the best move so far. */
-		if (it == l.begin() || it->value > m.value)
-			m = *it;
 	}
 
 	if (!timeout_flag)
