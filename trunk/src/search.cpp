@@ -379,34 +379,6 @@ move_t search::minimax(int depth, int alpha, int beta)
 	nodes++;
 
 	/*
-	 | Before anything else, do some Research Re: search & Research.  ;-)
-	 | (Apologies to Aske Plaat.)  If we've already sufficiently examined
-	 | this position, return the best move from our previous search.
-	 | Otherwise, if we can, reduce the size of our alpha-beta window.
-	 */
-	if (table_ptr->probe(hash, depth, &m, UPPER))
-		if ((upper = m.value) <= alpha)
-			return m;
-	if (table_ptr->probe(hash, depth, &m, EXACT))
-		return m;
-	if (table_ptr->probe(hash, depth, &m, LOWER))
-		if ((lower = m.value) >= beta)
-			return m;
-	tmp_alpha = alpha = GREATER(alpha, lower);
-	beta = LESSER(beta, upper);
-
-	/*
-	 | If we've reached the maximum search depth, this is a leaf node.
-	 */
-	if (depth <= 0)
-	{
-		SET_NULL_MOVE(m);
-		m.value = b.evaluate();
-		table_ptr->store(hash, depth, m, EXACT);
-		return m;
-	}
-
-	/*
 	 | If this position is terminal (the end of the game), there's no legal
 	 | move.  All we have to do is determine if the game is lost or drawn.
 	 | Check for this case.  Subtle!  We couldn't have just won because our
@@ -436,6 +408,33 @@ move_t search::minimax(int depth, int alpha, int beta)
 			case CHECKMATE : m.value = -WEIGHT_KING;     break;
 			case ILLEGAL   : m.value = -WEIGHT_KING;     break;
 		}
+		return m;
+	}
+
+	/*
+	 | Before anything else, do some Research Re: search & Research.  ;-)
+	 | (Apologies to Aske Plaat.)  If we've already sufficiently examined
+	 | this position, return the best move from our previous search.
+	 | Otherwise, if we can, reduce the size of our alpha-beta window.
+	 */
+	if (table_ptr->probe(hash, depth, &m, UPPER))
+		if ((upper = m.value) <= alpha)
+			return m;
+	if (table_ptr->probe(hash, depth, &m, EXACT))
+		return m;
+	if (table_ptr->probe(hash, depth, &m, LOWER))
+		if ((lower = m.value) >= beta)
+			return m;
+	tmp_alpha = alpha = GREATER(alpha, lower);
+	beta = LESSER(beta, upper);
+
+	/*
+	 | If we've reached the maximum search depth, this is a leaf node.
+	 */
+	if (depth <= 0)
+	{
+		SET_NULL_MOVE(m);
+		m.value = b.evaluate();
 		table_ptr->store(hash, depth, m, EXACT);
 		return m;
 	}
