@@ -283,7 +283,8 @@ void search::iterate(int s)
 	b.lock();
 	for (int depth = 1; depth <= max_depth; depth++)
 	{
-		tmp_move = mtdf(depth, m.value);
+//		tmp_move = mtdf(depth, m.value);
+		tmp_move = minimax(depth, -INFINITY, +INFINITY);
 		if (timeout_flag && depth || IS_NULL_MOVE(tmp_move))
 			/*
 			 | Oops.  Either the alarm has interrupted this
