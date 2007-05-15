@@ -366,47 +366,49 @@ move_t search::minimax(int depth, int alpha, int beta)
  */
 
 	/* Local variables: */
-	bitboard_t hash = b.get_hash(); // This position's hash.
-	move_t m;                       // From this position, the best move.
-	int upper = +INFINITY;          // For this position, the upper bound on the MiniMax value.
-	int lower = -INFINITY;          // For this position, the lower bound on the MiniMax value.
-	int tmp_alpha;                  // Scratch variable for us to use so as to not clobber alpha.
-	int status;                     // In this position, whether or not the game is over.
-	list<move_t> l;                 // From this position, the move list.
-	list<move_t>::iterator it;      // The iterator through the move list.
+	int status = b.get_status(false); // In this position, whether or not the game is over.
+	move_t m;                         // From this position, the best move.
+	bitboard_t hash = b.get_hash();   // This position's hash.
+	int upper = +INFINITY;            // For this position, the upper bound on the MiniMax value.
+	int lower = -INFINITY;            // For this position, the lower bound on the MiniMax value.
+	int tmp_alpha;                    // Scratch variable for us to use so as to not clobber alpha.
+	list<move_t> l;                   // From this position, the move list.
+	list<move_t>::iterator it;        // The iterator through the move list.
 
 	/* Increment the number of positions searched. */
 	nodes++;
 
 	/*
 	 | If this position is terminal (the end of the game), there's no legal
-	 | move.  All we have to do is determine if the game is lost or drawn.
+	 | move.  All we have to do is determine if the game is drawn or lost.
 	 | Check for this case.  Subtle!  We couldn't have just won because our
 	 | opponent moved last.
 	 */
-	if ((status = b.get_status(false)) != IN_PROGRESS)
+	if (depth <= 0 || status != IN_PROGRESS)
 	{
 		/*
-		 | Subtle!
+		 | If this position is a draw:
+		 |     We want to discourage players from forcing a premature
+		 |     draw.  That's why we score this position as +WEIGHT_CONTEMPT.
+		 |     Therefore, when the NegaMax recursion unrolls, we score
+		 |     the move that leads to this position as -WEIGHT_CONTEMPT.
 		 |
 		 | If this position is a mate:
 		 |     We want to encourage players to mate.  ;-)  That's why
 		 |     we score this position as -WEIGHT_KING.  Therefore, when
 		 |     the NegaMax recursion unrolls, we score the move that
 		 |     leads to this position as +WEIGHT_KING.
-		 |
-		 | If this position is a draw:
-		 |     We want to discourage players from forcing a premature
-		 |     draw.  That's why we score this position as +WEIGHT_CONTEMPT.
-		 |     Therefore, when the NegaMax recursion unrolls, we score
-		 |     the move that leads to this position as -WEIGHT_CONTEMPT.
 		 */
 		SET_NULL_MOVE(m);
 		switch (status)
 		{
-			default        : m.value = +WEIGHT_CONTEMPT; break;
-			case CHECKMATE : m.value = -WEIGHT_KING;     break;
-			case ILLEGAL   : m.value = -WEIGHT_KING;     break;
+			case IN_PROGRESS  : m.value = -b.evaluate();    break;
+			case STALEMATE    : m.value = +WEIGHT_CONTEMPT; break;
+			case INSUFFICIENT : m.value = +WEIGHT_CONTEMPT; break;
+			case THREE        : m.value = +WEIGHT_CONTEMPT; break;
+			case FIFTY        : m.value = +WEIGHT_CONTEMPT; break;
+			case CHECKMATE    : m.value = -WEIGHT_KING;     break;
+			case ILLEGAL      : m.value = -WEIGHT_KING;     break;
 		}
 		return m;
 	}
@@ -427,17 +429,6 @@ move_t search::minimax(int depth, int alpha, int beta)
 			return m;
 	tmp_alpha = alpha = GREATER(alpha, lower);
 	beta = LESSER(beta, upper);
-
-	/*
-	 | If we've reached the maximum search depth, this is a leaf node.
-	 */
-	if (depth <= 0)
-	{
-		SET_NULL_MOVE(m);
-		m.value = b.evaluate();
-		table_ptr->store(hash, depth, m, EXACT);
-		return m;
-	}
 
 	/* Generate and re-order the move list. */
 	b.generate(l);
