@@ -442,14 +442,14 @@ move_t search::minimax(int depth, int alpha, int beta)
 	}
 
 	/* Score each move in the list. */
-	for (m.value = -INFINITY, it = l.begin(); !timeout_flag && it != l.end(); it++)
+	for (m.value = -INFINITY, it = l.begin(); it != l.end(); it++)
 	{
 		b.make(*it);
 		it->value = -minimax(depth - 1, -beta, -tmp_alpha).value;
 		b.unmake();
-		if (it->value <= m.value)
-			continue;
-		if ((tmp_alpha = GREATER(tmp_alpha, (m = *it).value)) >= beta)
+		if (it->value > m.value)
+			tmp_alpha = GREATER(tmp_alpha, (m = *it).value);
+		if (timeout_flag || m.value >= beta)
 			break;
 	}
 
