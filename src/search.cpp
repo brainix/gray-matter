@@ -349,10 +349,12 @@ move_t search::minimax(int depth, int alpha, int beta)
 
 /*
  | From the current position, search for the best move.  This method implements
- | the NegaMax algorithm.  NegaMax produces the same results as MiniMax but is
- | simpler to code.  Instead of juggling around two players, Max and Min,
- | NegaMax treats both players as Max and negates the scores on each recursive
- | call.
+ | the MiniMax algorithm.
+ |
+ | On top of MiniMax, this method implements NegaMax.  NegaMax produces the same
+ | results as MiniMax but is simpler to code.  Instead of juggling around two
+ | players, Max and Min, NegaMax treats both players as Max and negates the
+ | scores on each recursive call.
  |
  | On top of NegaMax, this method implements alpha-beta pruning.
  */
@@ -371,10 +373,12 @@ move_t search::minimax(int depth, int alpha, int beta)
 	nodes++;
 
 	/*
-	 | If this position is terminal (the end of the game), there's no legal
-	 | move.  All we have to do is determine if the game is drawn or lost.
-	 | Check for this case.  Subtle!  We couldn't have just won because our
-	 | opponent moved last.
+	 | If we've reached the maximum search depth, this node is a leaf - all
+	 | we have to do is apply the static evaluator.  If this position is
+	 | terminal (the end of the game), there's no legal move - all we have
+	 | to do is determine if the game is drawn or lost.  (Subtle!  We
+	 | couldn't have just won because our opponent moved last.)  Check for
+	 | these cases.
 	 */
 	if (depth <= 0 || status != IN_PROGRESS)
 	{
