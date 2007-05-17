@@ -61,15 +61,15 @@
 #define WEIGHT_KING			10300
 
 /* Values of pawn formations: */
-#define WEIGHT_ISOLATED			  -25
-#define WEIGHT_DOUBLED			  -25
-#define WEIGHT_BACKWARD			  -25
-#define WEIGHT_PASSED			   25
+#define WEIGHT_ISOLATED			  -10
+#define WEIGHT_DOUBLED			  -10
+#define WEIGHT_BACKWARD			  -10
+#define WEIGHT_PASSED			   10
 
 /* Values of castling statuses: */
-#define WEIGHT_CANT_CASTLE		  -25
+#define WEIGHT_CANT_CASTLE		  -20
 #define WEIGHT_CAN_CASTLE		    0
-#define WEIGHT_HAS_CASTLED		   50
+#define WEIGHT_HAS_CASTLED		   40
 
 /* How much we hate our opponent: */
 #define WEIGHT_CONTEMPT			  900
@@ -79,7 +79,7 @@
  | preceeding WEIGHT_* values - the increment by which MTD(f) shifts the alpha-
  | beta window:
  */
-#define WEIGHT_INCREMENT		   25
+#define WEIGHT_INCREMENT		   10
 
 
 

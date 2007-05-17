@@ -43,8 +43,8 @@ public:
 	bool probe(bitboard_t hash, int depth, int type, move_t *move_ptr) const;
 	void store(bitboard_t hash, int depth, int type, move_t move);
 private:
-	uint64_t slots;    // The number of slots in the transposition table.
-	xpos_slot_t *data; // The actual slots in the transposition table.
+	uint64_t slots;    // The number of slots.
+	xpos_slot_t *data; // The slots themselves.
 };
 
 /*----------------------------------------------------------------------------*\
@@ -60,8 +60,8 @@ public:
 	bool probe(bitboard_t hash, int *value_ptr) const;
 	void store(bitboard_t hash, int value);
 private:
-	uint64_t slots;    // The number of slots in the pawn table.
-	pawn_slot_t *data; // The actual slots in the pawn table.
+	uint64_t slots;    // The number of slots.
+	pawn_slot_t *data; // The slots themselves.
 };
 
 #endif
