@@ -83,7 +83,7 @@ typedef struct move
 	unsigned new_y   :  3; // To y coordinate.             +  3 bits
 	unsigned promo   :  3; // Pawn promotion information.  +  3 bits
 	unsigned padding :  1; // Unused.                      +  1 bit
-	  signed value   : 16; // Negamax score.               + 16 bits
+	  signed value   : 16; // MiniMax score.               + 16 bits
 	                       //                              = 32 bits
 
 	/* Overloaded equality test operator. */
@@ -122,18 +122,15 @@ typedef struct move
 #define SET_NULL_MOVE(m)	((m).promo = (m).new_y = (m).new_x = (m).old_y = (m).old_x = 0)
 
 /*
- | This structure describes a transposition table slot.  We've specialized this
- | to work well with MTD(f), which benefits when each slot contains both an
- | upper and a lower bound on the MiniMax value.  We store the upper bound in
- | move.value and the lower bound in lower.
+ | This structure describes a transposition table slot.
  */
 typedef struct xpos_slot
 {
-	bitboard_t hash;               // Zobrist hash key.              64 bits
-	uint8_t depth[ENTRY_TYPES];    // Depth of our search.        +  16 bits
-	move_t move;                   // Best move and upper bound.  +  32 bits
-	int16_t lower;                 // Lower bound.                +  16 bits
-} __attribute__((packed)) xpos_slot_t; //                             = 128 bits
+	bitboard_t hash;               // Zobrist hash key.           64 bits
+	uint16_t depth;                // Depth of our search.     +  16 bits
+	uint16_t type;                 // Upper, exact, or lower.  +  16 bits
+	move_t move;                   // Best move and score.     +  32 bits
+} __attribute__((packed)) xpos_slot_t; //                          = 128 bits
 
 /*
  | This structure describes a pawn table slot.
@@ -141,7 +138,7 @@ typedef struct xpos_slot
 typedef struct pawn_slot
 {
 	bitboard_t hash;               // Zobrist hash key.    64 bits
-	int16_t value;                 // Evaluation.        + 16 bits
+	int16_t value;                 // Score.             + 16 bits
 } __attribute__((packed)) pawn_slot_t; //                    = 80 bits
 
 #endif

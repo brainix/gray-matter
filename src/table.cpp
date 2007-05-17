@@ -68,59 +68,39 @@ void table::clear()
 	for (uint64_t index = 0; index < slots; index++)
 	{
 		data[index].hash = 0;
-		data[index].depth[UPPER] = 0;
-		data[index].depth[LOWER] = 0;
+		data[index].depth = 0;
+		data[index].type = USELESS;
 		SET_NULL_MOVE(data[index].move);
-		data[index].move.value = +INFINITY;
-		data[index].lower = -INFINITY;
+		data[index].move.value = 0;
 	}
 }
 
 /*----------------------------------------------------------------------------*\
  |				 table::probe()				      |
 \*----------------------------------------------------------------------------*/
-bool table::probe(bitboard_t hash, int depth, move_t *move_ptr, int type) const
+bool table::probe(bitboard_t hash, int depth, int type, move_t *move_ptr) const
 {
 	uint64_t index = hash % slots;
-
 	if (data[index].hash != hash)
 	{
 		SET_NULL_MOVE(*move_ptr);
+		move_ptr->value = 0;
 		return false;
 	}
 	*move_ptr = data[index].move;
-	if (type == LOWER)
-		move_ptr->value = data[index].lower;
-	return data[index].depth[type] >= depth;
+	return data[index].depth >= depth && (data[index].type == EXACT || data[index].type == type);
 }
 
 /*----------------------------------------------------------------------------*\
  |				 table::store()				      |
 \*----------------------------------------------------------------------------*/
-void table::store(bitboard_t hash, int depth, move_t move, int type)
+void table::store(bitboard_t hash, int depth, int type, move_t move)
 {
 	uint64_t index = hash % slots;
-	bool replace_hash = data[index].hash != hash;
-	bool replace_move = replace_hash || GREATER(data[index].depth[UPPER], data[index].depth[LOWER]) <= depth;
-
-	if (replace_hash)
-	{
-		data[index].hash = hash;
-		data[index].depth[!type] = 0;
-		data[index].move.value = +INFINITY;
-		data[index].lower = -INFINITY;
-	}
-	data[index].depth[type] = depth;
-	if (replace_move)
-	{
-		int tmp = data[index].move.value;
-		data[index].move = move;
-		data[index].move.value = tmp;
-	}
-	if (type == UPPER)
-		data[index].move.value = move.value;
-	if (type == LOWER)
-		data[index].lower = move.value;
+	data[index].hash = hash;
+	data[index].depth = depth;
+	data[index].type = type;
+	data[index].move = move;
 }
 
 /*----------------------------------------------------------------------------*\
