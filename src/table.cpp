@@ -68,12 +68,11 @@ void table::clear()
 	for (uint64_t index = 0; index < slots; index++)
 	{
 		data[index].hash = 0;
-		for (int type = UPPER; type <= LOWER; type++)
-		{
-			data[index].depth[type] = 0;
-			SET_NULL_MOVE(data[index].move[type]);
-			data[index].move[type].value = type == UPPER ? +INFINITY : -INFINITY;
-		}
+		data[index].depth[UPPER] = 0;
+		data[index].depth[LOWER] = 0;
+		SET_NULL_MOVE(data[index].move);
+		data[index].move.value = +INFINITY;
+		data[index].lower = -INFINITY;
 	}
 }
 
@@ -90,6 +89,8 @@ bool table::probe(bitboard_t hash, int depth, move_t *move_ptr, int type) const
 		return false;
 	}
 	*move_ptr = data[index].move[type];
+	if (type == LOWER)
+		move_ptr->value = data[index].lower;
 	return data[index].depth[type] >= depth;
 }
 
@@ -99,16 +100,27 @@ bool table::probe(bitboard_t hash, int depth, move_t *move_ptr, int type) const
 void table::store(bitboard_t hash, int depth, move_t move, int type)
 {
 	uint64_t index = hash % slots;
+	bool replace_hash = data[index].hash != hash;
+	bool replace_move = replace_hash || GREATER(data[index].depth[UPPER], data[index].depth[LOWER]) <= depth;
 
-	if (data[index].hash != hash)
+	if (replace_hash)
 	{
 		data[index].hash = hash;
 		data[index].depth[!type] = 0;
-		SET_NULL_MOVE(data[index].move[!type]);
-		data[index].move[!type].value = !type == UPPER ? +INFINITY : -INFINITY;
+		data[index].move.value = +INFINITY;
+		data[index].lower = -INFINITY;
 	}
 	data[index].depth[type] = depth;
-	data[index].move[type] = move;
+	if (replace_move)
+	{
+		int tmp = data[index].move.value;
+		data[index].move = move;
+		data[index].move.value = tmp;
+	}
+	if (type == UPPER)
+		data[index].move.value = move.value;
+	if (type == LOWER)
+		data[index].lower = move.value;
 }
 
 /*----------------------------------------------------------------------------*\
