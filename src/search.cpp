@@ -415,12 +415,12 @@ move_t search::minimax(int depth, int alpha, int beta)
 	 | this position, return the best move from our previous search.
 	 | Otherwise, if we can, reduce the size of our alpha-beta window.
 	 */
-	if (table_ptr->probe(hash, depth, UPPER, &m))
+	if (table_ptr->probe(hash, 0, UPPER, &m))
 		if ((upper = m.value) <= alpha)
 			return m;
 	if (table_ptr->probe(hash, depth, EXACT, &m))
 		return m;
-	if (table_ptr->probe(hash, depth, LOWER, &m))
+	if (table_ptr->probe(hash, 0, LOWER, &m))
 		if ((lower = m.value) >= beta)
 			return m;
 	tmp_alpha = alpha = GREATER(alpha, lower);
