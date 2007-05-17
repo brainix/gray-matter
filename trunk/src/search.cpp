@@ -418,8 +418,6 @@ move_t search::minimax(int depth, int alpha, int beta)
 	if (table_ptr->probe(hash, depth, &m, UPPER))
 		if ((upper = m.value) <= alpha)
 			return m;
-	if (table_ptr->probe(hash, depth, &m, EXACT))
-		return m;
 	if (table_ptr->probe(hash, depth, &m, LOWER))
 		if ((lower = m.value) >= beta)
 			return m;
@@ -457,9 +455,7 @@ move_t search::minimax(int depth, int alpha, int beta)
 	{
 		if (m.value <= alpha)
 			table_ptr->store(hash, depth, m, UPPER);
-		else if (m.value > alpha && m.value < beta)
-			table_ptr->store(hash, depth, m, EXACT);
-		else if (m.value >= beta)
+		if (m.value >= beta)
 			table_ptr->store(hash, depth, m, LOWER);
 	}
 	return m;
