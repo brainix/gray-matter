@@ -415,10 +415,12 @@ move_t search::minimax(int depth, int alpha, int beta)
 	 | this position, return the best move from our previous search.
 	 | Otherwise, if we can, reduce the size of our alpha-beta window.
 	 */
-	if (table_ptr->probe(hash, depth, &m, UPPER))
+	if (table_ptr->probe(hash, depth, UPPER, &m))
 		if ((upper = m.value) <= alpha)
 			return m;
-	if (table_ptr->probe(hash, depth, &m, LOWER))
+	if (table_ptr->probe(hash, depth, EXACT, &m))
+		return m;
+	if (table_ptr->probe(hash, depth, LOWER, &m))
 		if ((lower = m.value) >= beta)
 			return m;
 	tmp_alpha = alpha = GREATER(alpha, lower);
@@ -454,9 +456,11 @@ move_t search::minimax(int depth, int alpha, int beta)
 	if (!timeout_flag)
 	{
 		if (m.value <= alpha)
-			table_ptr->store(hash, depth, m, UPPER);
-		if (m.value >= beta)
-			table_ptr->store(hash, depth, m, LOWER);
+			table_ptr->store(hash, depth, UPPER, m);
+		else if (m.value > alpha && m.value < beta)
+			table_ptr->store(hash, depth, EXACT, m);
+		else if (m.value >= beta)
+			table_ptr->store(hash, depth, LOWER, m);
 	}
 	return m;
 }
@@ -473,10 +477,8 @@ void search::extract(int s)
 	pv.clear();
 
 	/* Get the principal variation. */
-	while (table_ptr->probe(b.get_hash(), 0, &m, UPPER) && b.get_status(true) == IN_PROGRESS)
+	for (table_ptr->probe(b.get_hash(), 0, EXACT, &m); !IS_NULL_MOVE(m) && b.get_status(true) == IN_PROGRESS; table_ptr->probe(b.get_hash(), 0, EXACT, &m))
 	{
-		if (IS_NULL_MOVE(m))
-			break;
 		pv.push_back(m);
 		b.make(m);
 		if (pv.size() == (unsigned) max_depth)

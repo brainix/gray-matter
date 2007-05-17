@@ -40,8 +40,8 @@ public:
 	table(int mb = XPOS_TABLE_MB);
 	~table();
 	void clear();
-	bool probe(bitboard_t hash, int depth, move_t *move_ptr, int type) const;
-	void store(bitboard_t hash, int depth, move_t move, int type);
+	bool probe(bitboard_t hash, int depth, int type, move_t *move_ptr) const;
+	void store(bitboard_t hash, int depth, int type, move_t move);
 private:
 	uint64_t slots;    // The number of slots in the transposition table.
 	xpos_slot_t *data; // The actual slots in the transposition table.
