@@ -65,17 +65,13 @@ void table::clear()
 
 /* Clear the transposition table. */
 
-	bitboard_t info;
-	xpos_info_t *info_ptr = (xpos_info_t *) &info;
-	info_ptr->depth = 0;
-	SET_NULL_MOVE(info_ptr->move);
-	info_ptr->move.value = +INFINITY;
-	info_ptr->lower = -INFINITY;
-
 	for (uint64_t index = 0; index < slots; index++)
 	{
 		data[index].hash = 0;
-		data[index].info = info;
+		data[index].depth = 0;
+		SET_NULL_MOVE(data[index].move);
+		data[index].move.value = +INFINITY;
+		data[index].lower = -INFINITY;
 	}
 }
 
@@ -85,19 +81,17 @@ void table::clear()
 bool table::probe(bitboard_t hash, int depth, move_t *move_ptr, int type) const
 {
 	uint64_t index = hash % slots;
-	xpos_info_t *info_ptr = (xpos_info_t *) &data[index].info;
-
-	if (data[index].hash ^ data[index].info != hash)
+	if (data[index].hash != hash)
 	{
 		SET_NULL_MOVE(*move_ptr);
 		return false;
 	}
-	*move_ptr = info_ptr->move;
-	if (type == EXACT && info_ptr->move.value != info_ptr->lower)
+	*move_ptr = data[index].move;
+	if (type == EXACT && data[index].move.value != data[index].lower)
 		return false;
 	if (type == LOWER)
-		move_ptr->value = info_ptr->lower;
-	return info_ptr->depth >= depth;
+		move_ptr->value = data[index].lower;
+	return data[index].depth >= depth;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -106,20 +100,20 @@ bool table::probe(bitboard_t hash, int depth, move_t *move_ptr, int type) const
 void table::store(bitboard_t hash, int depth, move_t move, int type)
 {
 	uint64_t index = hash % slots;
-	bitboard_t info;
-	xpos_info_t *old_info_ptr = (xpos_info_t *) &data[index].info;
-	xpos_info_t *new_info_ptr = (xpos_info_t *) &info;
-	bool hash_match = data[index].hash ^ data[index].info == hash;
-	bool upper = type == UPPER || type == EXACT;
-	bool lower = type == EXACT || type == LOWER;
-
-	new_info_ptr->depth = hash_match ? LESSER(old_info_ptr->depth, depth) : depth;
-	new_info_ptr->move = move;
-	new_info_ptr->move.value = upper ? move.value : hash_match ? old_info_ptr->move.value : +INFINITY;
-	new_info_ptr->lower = lower ? move.value : hash_match ? old_info_ptr->move.value : -INFINITY;
-
-	data[index].hash = hash ^ info;
-	data[index].info = info;
+	data[index].hash = hash;
+	data[index].depth = depth;
+	if (data[index].move != move)
+	{
+		data[index].move = move;
+		if (type == UPPER)
+			data[index].lower = -INFINITY;
+		if (type == LOWER)
+			data[index].move.value = +INFINITY;
+	}
+	if (type == UPPER || type == EXACT)
+		data[index].move.value = move.value;
+	if (type == EXACT || type == LOWER)
+		data[index].lower = move.value;
 }
 
 /*----------------------------------------------------------------------------*\

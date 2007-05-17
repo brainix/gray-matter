@@ -127,18 +127,12 @@ typedef struct move
  | upper and a lower bound on the MiniMax value.  We store the upper bound in
  | move.value and the lower bound in lower.
  */
-
-typedef struct xpos_info
-{
-	int16_t depth;                 // Depth of our search.          16 bits
-	move_t move;                   // Best move and upper bound.  + 32 bits
-	int16_t lower;                 // Lower bound.                + 16 bits
-} __attribute__((packed)) xpos_info_t; //                             = 64 bits
-
 typedef struct xpos_slot
 {
 	bitboard_t hash;               // Zobrist hash key.              64 bits
-	bitboard_t info;               // Info.                          64 bits
+	int16_t depth;                 // Depth of our search.        +  16 bits
+	move_t move;                   // Best move and upper bound.  +  32 bits
+	int16_t lower;                 // Lower bound.                +  16 bits
 } __attribute__((packed)) xpos_slot_t; //                             = 128 bits
 
 /*
