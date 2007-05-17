@@ -81,6 +81,7 @@ void table::clear()
 bool table::probe(bitboard_t hash, int depth, move_t *move_ptr, int type) const
 {
 	uint64_t index = hash % slots;
+
 	if (data[index].hash != hash)
 	{
 		SET_NULL_MOVE(*move_ptr);
@@ -100,15 +101,15 @@ bool table::probe(bitboard_t hash, int depth, move_t *move_ptr, int type) const
 void table::store(bitboard_t hash, int depth, move_t move, int type)
 {
 	uint64_t index = hash % slots;
+	bool match = data[index].hash == hash && data[index].move == move;
+
 	data[index].hash = hash;
-	data[index].depth = depth;
-	if (data[index].move != move)
+	data[index].depth = match && type != EXACT ? LESSER(data[index].depth, depth) : depth;
+	if (!match)
 	{
 		data[index].move = move;
-		if (type == UPPER)
-			data[index].lower = -INFINITY;
-		if (type == LOWER)
-			data[index].move.value = +INFINITY;
+		data[index].move.value = +INFINITY;
+		data[index].lower = -INFINITY;
 	}
 	if (type == UPPER || type == EXACT)
 		data[index].move.value = move.value;
