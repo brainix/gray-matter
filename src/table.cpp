@@ -66,7 +66,7 @@ void table::clear()
 /* Clear the transposition table. */
 
 	bitboard_t info;
-	xpos_info_t *info_ptr = &info;
+	xpos_info_t *info_ptr = (xpos_info_t *) &info;
 	info_ptr->depth = 0;
 	SET_NULL_MOVE(info_ptr->move);
 	info_ptr->move.value = +INFINITY;
@@ -85,7 +85,7 @@ void table::clear()
 bool table::probe(bitboard_t hash, int depth, move_t *move_ptr, int type) const
 {
 	uint64_t index = hash % slots;
-	xpos_info_t *info_ptr = &data[index].info;
+	xpos_info_t *info_ptr = (xpos_info_t *) &data[index].info;
 
 	if (data[index].hash ^ data[index].info != hash)
 	{
@@ -106,16 +106,17 @@ bool table::probe(bitboard_t hash, int depth, move_t *move_ptr, int type) const
 void table::store(bitboard_t hash, int depth, move_t move, int type)
 {
 	uint64_t index = hash % slots;
-	xpos_info_t *info_ptr = &data[index].info;
+	bitboard_t info;
+	xpos_info_t *old_info_ptr = (xpos_info_t *) &data[index].info;
+	xpos_info_t *new_info_ptr = (xpos_info_t *) &info;
 	bool hash_match = data[index].hash ^ data[index].info == hash;
 	bool upper = type == UPPER || type == EXACT;
 	bool lower = type == EXACT || type == LOWER;
-	xpos_info_t info;
 
-	info.depth = hash_match ? LESSER(info_ptr->depth, depth) : depth;
-	info.move = move;
-	info.move.value = upper ? move.value : hash_match ? info_ptr->move.value : +INFINITY;
-	info.lower = lower ? move.value : hash_match ? info_ptr->move.value : -INFINITY;
+	new_info_ptr->depth = hash_match ? LESSER(old_info_ptr->depth, depth) : depth;
+	new_info_ptr->move = move;
+	new_info_ptr->move.value = upper ? move.value : hash_match ? old_info_ptr->move.value : +INFINITY;
+	new_info_ptr->lower = lower ? move.value : hash_match ? old_info_ptr->move.value : -INFINITY;
 
 	data[index].hash = hash ^ info;
 	data[index].info = info;
