@@ -129,11 +129,11 @@ typedef struct move
  */
 typedef struct xpos_slot
 {
-	bitboard_t hash; // Zobrist hash key for this position.     64 bits
-	int16_t depth;   // Depth to which we've searched.       +  16 bits
-	move_t move;     // Best move and upper bound.           +  32 bits
-	int16_t lower;   // Lower bound.                         +  16 bits
-} __attribute__((packed)) xpos_slot_t; //                        = 128 bits
+	bitboard_t hash;               // Zobrist hash key.              64 bits
+	int16_t depth;                 // Depth of our search.        +  16 bits
+	move_t move;                   // Best move and upper bound.  +  32 bits
+	int16_t lower;                 // Lower bound.                +  16 bits
+} __attribute__((packed)) xpos_slot_t; //                             = 128 bits
 
 /*
  | This structure describes a pawn table slot.
