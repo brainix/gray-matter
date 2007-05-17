@@ -88,7 +88,7 @@ bool table::probe(bitboard_t hash, int depth, move_t *move_ptr, int type) const
 		SET_NULL_MOVE(*move_ptr);
 		return false;
 	}
-	*move_ptr = data[index].move[type];
+	*move_ptr = data[index].move;
 	if (type == LOWER)
 		move_ptr->value = data[index].lower;
 	return data[index].depth[type] >= depth;
