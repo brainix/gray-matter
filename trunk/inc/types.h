@@ -132,7 +132,7 @@ typedef struct xpos_slot
 	bitboard_t hash;               // Zobrist hash key.              64 bits
 	uint8_t depth[ENTRY_TYPES];    // Depth of our search.        +  16 bits
 	move_t move;                   // Best move and upper bound.  +  32 bits
-	uint16_t lower;                // Lower bound.                +  16 bits
+	int16_t lower;                 // Lower bound.                +  16 bits
 } __attribute__((packed)) xpos_slot_t; //                             = 128 bits
 
 /*
