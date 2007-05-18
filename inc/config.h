@@ -177,10 +177,10 @@
 #define POSITIONS	2
 
 /* Transposition table entry types: */
-#define USELESS		0 // The value is useless.
-#define UPPER		1 // The value represents an upper bound.
-#define EXACT		2 // The value represents an exact MiniMax value.
-#define LOWER		3 // The value represents a lower bound.
+#define USELESS		0 // The score is useless.
+#define UPPER		1 // The score represents an upper bound.
+#define EXACT		2 // The score represents an exact MiniMax value.
+#define LOWER		3 // The score represents a lower bound.
 #define ENTRY_TYPES	4
 
 /* Search statuses: */

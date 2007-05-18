@@ -331,7 +331,7 @@ move_t search::mtdf(int depth, int guess)
 	m.value = guess;
 	int upper = +INFINITY, lower = -INFINITY, beta;
 
-	while (!timeout_flag && upper > lower)
+	while (upper > lower && !timeout_flag)
 	{
 		beta = m.value + (m.value == lower) * WEIGHT_INCREMENT;
 		m = minimax(depth, beta - WEIGHT_INCREMENT, beta);
@@ -356,15 +356,17 @@ move_t search::minimax(int depth, int alpha, int beta)
  | players, Max and Min, NegaMax treats both players as Max and negates the
  | scores on each recursive call.
  |
- | On top of NegaMax, this method implements alpha-beta pruning.
+ | On top of NegaMax, this method implements AlphaBeta.
+ |
+ | On top of AlphaBeta pruning, this method implements FailSoft.
  */
 
 	/* Local variables: */
 	int status = b.get_status(false); // In this position, whether or not the game is over.
 	move_t m;                         // From this position, the best move.
 	bitboard_t hash = b.get_hash();   // This position's hash.
-	int upper = +INFINITY;            // For this position, the upper bound on the MiniMax value.
-	int lower = -INFINITY;            // For this position, the lower bound on the MiniMax value.
+	int upper = +INFINITY;            // For this position, the upper bound on the MiniMax score.
+	int lower = -INFINITY;            // For this position, the lower bound on the MiniMax score.
 	int tmp_alpha;                    // Scratch variable for us to use so as to not clobber alpha.
 	list<move_t> l;                   // From this position, the move list.
 	list<move_t>::iterator it;        // The iterator through the move list.
@@ -415,12 +417,12 @@ move_t search::minimax(int depth, int alpha, int beta)
 	 | this position, return the best move from our previous search.
 	 | Otherwise, if we can, reduce the size of our alpha-beta window.
 	 */
-	if (table_ptr->probe(hash, 0, UPPER, &m))
+	if (table_ptr->probe(hash, depth, UPPER, &m))
 		if ((upper = m.value) <= alpha)
 			return m;
 	if (table_ptr->probe(hash, depth, EXACT, &m))
 		return m;
-	if (table_ptr->probe(hash, 0, LOWER, &m))
+	if (table_ptr->probe(hash, depth, LOWER, &m))
 		if ((lower = m.value) >= beta)
 			return m;
 	tmp_alpha = alpha = GREATER(alpha, lower);
@@ -449,7 +451,7 @@ move_t search::minimax(int depth, int alpha, int beta)
 		b.unmake();
 		if (it->value > m.value)
 			tmp_alpha = GREATER(tmp_alpha, (m = *it).value);
-		if (timeout_flag || m.value >= beta)
+		if (m.value >= beta || timeout_flag)
 			break;
 	}
 
