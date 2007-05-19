@@ -1,3 +1,6 @@
+#summary A good unit test and benchmark for a chess engine's move generator.
+#labels Phase-Implementation
+
 A chess engine is difficult to test and debug, in part because of the huge [http://en.wikipedia.org/wiki/Game_tree move trees].  In midgame, the average branching factor is 35, so, for a search of n plies, the (unpruned) move tree contains 35^n^ nodes.
 
 `perft()` makes for a good unit test and benchmark for a chess engine's move generator.  From a given chess position, `perft()` expands the move tree to a given depth and counts and returns the number leaf nodes.  This count reprents the number of possible positions after the given number of moves.  From various positions, and to various depths, if your `perft()` values match the expected values, you can be more confident in (although not certain of) the correctness of your move generator.
