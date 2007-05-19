@@ -1,0 +1,46 @@
+A chess engine is difficult to test and debug, in part because of the huge [http://en.wikipedia.org/wiki/Game_tree move trees].  In midgame, the average branching factor is 35, so, for a search of n plies, the (unpruned) move tree contains 35^n^ nodes.
+
+`perft()` makes for a good unit test and benchmark for a chess engine's move generator.  From a given chess position, `perft()` expands the move tree to a given depth and counts and returns the number leaf nodes.  This count reprents the number of possible positions after the given number of moves.  From various positions, and to various depths, if your `perft()` values match the expected values, you can be more confident in (although not certain of) the correctness of your move generator.
+
+Here's a way to visualize `perft()`.  When the game starts, it's white's move.  White could advance any of her 8 pawns 1 or 2 squares (which makes for 16 possible positions), or her king-side knight to A3 or C3 or her queen-side knight to F3 or H3 (which makes for an additional 4 possible positions).  Therefore, after white's first move, the board must be in one of 20 possible positions.  Therefore, `perft(1) = 20`.  Likewise, black's possible first moves mirror white's.  Therefore, after black's first move, the board must be in 20 {{{*}}} 20 = 400 possible positions.  Therefore, `perft(2) = 400`.
+
+Here's my code from Gray Matter:
+
+{{{
+int board::perft(int depth)
+{
+        list<move_t> l;
+        list<move_t>::iterator it;
+        int nodes = 0;
+
+        /* Base case: leaf node. */
+        if (depth == 0)
+                return 1;
+
+        /* Recursive case: interior node. */
+        generate(l, true);
+        for (it = l.begin(); it != l.end(); it++)
+        {
+                make(*it);
+                nodes += perft(depth - 1);
+                unmake();
+        }
+        return nodes;
+}
+}}}
+
+Here's a table of the expected `perft()` values:
+
+|| *Depth* || *`perft()` Value* ||
+|| 1 || 20 ||
+|| 2 || 400 ||
+|| 3 || 8902 ||
+|| 4 || 197281 ||
+|| 5 || 4865609 ||
+|| 6 || 119060324 ||
+|| 7 || 3195901860 ||
+|| 8 || 84998978956 ||
+|| 9 || 2439530234167 ||
+|| 10 || 69352859712417 ||
+
+The name _perft_ comes from one of [http://www.cis.uab.edu/hyatt/craftydoc.html Crafty's commands], and Jonathan Pettersson's [http://mediocrechess.blogspot.com/2007/01/guide-perft-scores.html blog post] inspired me to implement `perft()` in Gray Matter.
