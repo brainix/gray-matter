@@ -46,4 +46,4 @@ Here's a table of the expected `perft()` values:
 || 9 || 2439530234167 ||
 || 10 || 69352859712417 ||
 
-The name _perft_ comes from one of [http://www.cis.uab.edu/hyatt/craftydoc.html Crafty's commands], and Jonathan Pettersson's [http://mediocrechess.blogspot.com/2007/01/guide-perft-scores.html blog post] inspired me to implement `perft()` in Gray Matter.
+The name _perft_ comes from one of [http://www.cis.uab.edu/hyatt/craftydoc.html Crafty's commands], and Jonathan Pettersson's [http://mediocrechess.blogspot.com/2007/01/guide-perft-scores.html blog post] inspired me to implement `perft()` in [http://gray-matter.googlecode.com/svn/trunk/src/board.cpp Gray Matter's board class].
