@@ -1,0 +1,20 @@
+#summary Alpha-beta pruning.
+#labels Phase-Implementation
+
+<p><i>Alpha-beta pruning</i> is generally one of the first complex things that chess engine developers have to implement.</p>
+
+<h2>Rules</h2>
+
+<p>Let&rsquo;s play a game.  In this game, there are several wallets in front of you.  Each wallet contains bills of differing values.  You have to pick one wallet to hand to your enemy.  Your enemy, in turn, has to pick one of that wallet&rsquo;s bills to hand back to you.</p>
+
+<h2>Strategy</h2>
+
+<p>Your enemy will always hand you the smallest bill that she can, so you should hand her the wallet with the largest smallest bill.  In fact, to you, each wallet is worth only as much as its smallest bill.  The question is: to find the wallet with the largest smallest bill, do you have to look through every wallet, at every single bill?</p>
+
+<p>The answer is: no.  Look at each of the first wallet&rsquo;s bills.  Remember the value of the smallest bill &mdash; call this value <i>alpha</i>.  <i>Alpha</i> represents the value of the largest smallest bill that you&rsquo;ve seen so far.  Put the first wallet in your pocket.</p>
+
+<p>Start looking through the second wallet.  If you see a bill valued &le; <i>alpha</i>: immediately throw that second wallet in the trash (without even looking at the rest of its bills, because you know that the second wallet cannot have a larger smallest bill than the first wallet).  Otherwise (if you get through the second wallet without seeing a bill valued &le; <i>alpha</i>): throw the first wallet in the trash, set <i>alpha</i> to the value of the second wallet&rsquo;s smallest bill, and put the second wallet in your pocket (because the second wallet&rsquo;s smallest bill is larger than the first wallet&rsquo;s).  Repeat this paragraph for each remaining wallet.</p>
+
+<p>At the end of this process, the best wallet is in your pocket and the rest of the wallets are in the trash.  Take the wallet out of your pocket and hand it to your enemy.  Be sure that she&rsquo;ll hand the bill valued <i>alpha</i> back to you.</p>
+
+<p>Bruce Moreland&rsquo;s <a href="http://www.seanet.com/~brucemo/topics/alphabeta.htm">discussion</a> of alpha-beta pruning inspired mine.</p>
