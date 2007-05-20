@@ -356,9 +356,10 @@ move_t search::minimax(int depth, int alpha, int beta)
  | players, Max and Min, NegaMax treats both players as Max and negates the
  | scores on each recursive call.
  |
- | On top of NegaMax, this method implements AlphaBeta.
+ | On top of NegaMax, this method implements AlphaBeta.  AlphaBeta produces the
+ | same results as NegaMax but far more efficiently.
  |
- | On top of AlphaBeta pruning, this method implements FailSoft.
+ | On top of AlphaBeta, this method implements FailSoft.
  */
 
 	/* Local variables: */

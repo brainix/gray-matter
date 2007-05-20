@@ -336,8 +336,7 @@ DWORD timer_handler(LPVOID arg)
 end:
 	if (timer_id != INVALID_HANDLE_VALUE)
 		CloseHandle(timer_id);
-	timer_thread = INVALID_HANDLE_VALUE;
-	thread_exit();
+	thread_destroy(&timer_thread);
 	return 0;
 }
 #endif
