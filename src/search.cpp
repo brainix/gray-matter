@@ -359,7 +359,8 @@ move_t search::minimax(int depth, int alpha, int beta)
  | On top of NegaMax, this method implements AlphaBeta.  AlphaBeta produces the
  | same results as NegaMax but far more efficiently.
  |
- | On top of AlphaBeta, this method implements FailSoft.
+ | On top of AlphaBeta, this method implements FailSoft.  FailSoft returns more
+ | information than AlphaBeta.
  |
  | On top of FailSoft, this method implements Enhanced Transposition Cutoffs
  | (ETC, hereafter).
@@ -460,7 +461,8 @@ move_t search::minimax(int depth, int alpha, int beta)
 			if (!etc)
 				continue;
 			it->value = m.value;
-			return *it;
+			m = *it;
+			goto end;
 		}
 
 	/* Score each move in the list. */
@@ -472,9 +474,10 @@ move_t search::minimax(int depth, int alpha, int beta)
 		if (it->value > m.value)
 			tmp_alpha = GREATER(tmp_alpha, (m = *it).value);
 		if (m.value >= beta || timeout_flag)
-			break;
+			goto end;
 	}
 
+end:
 	if (!timeout_flag)
 	{
 		if (m.value <= alpha)
