@@ -1,5 +1,5 @@
 #summary An alpha-beta pruning example game.
-#labels Phase-Implementation
+#labels Phase-Design,Phase-Implementation
 
 _Alpha-beta pruning_ is generally one of the first complex things that chess engine developers have to implement.
 
