@@ -1,0 +1,4 @@
+#summary What to do when the opponent is on move.
+#labels Phase-Design,Phase-Implementation
+
+_Pondering_ is what a chess engine does when its opponent is on move.  The most intuitive approach is for the engine to do exactly what it'd do if it were on move - from the current position, to search for the (opponent's) best move.  That way, after the opponent has moved, when the engine is on move again, its transposition table will already be filled with many useful evaluations and it'll search through the first few plies very quickly.
