@@ -1,5 +1,5 @@
 #summary A good unit test and benchmark for the move generator.
-#labels Phase-Implementation
+#labels Phase-Design,Phase-Implementation
 
 A chess engine is difficult to test and debug, in part because of the huge [http://en.wikipedia.org/wiki/Game_tree move trees].  In midgame, the average branching factor is 35, so, for a search of n plies, the (unpruned) move tree contains 35^n^ nodes.
 
