@@ -5,8 +5,10 @@
 
 = Details =
 
+  * *Bitboard* - A data structure, an unsigned 64-bit integer, in which each bit corresponds to a square on the chess board.
+
   * *Pondering* - What the engine does when its opponent is on move.  For a more detailed description, click [Pondering here].  See *Thinking*.
 
-  * *Principal Variation* - A series of best moves from the current position to a given depth.  The principal variation always begins with a move for the color on move.  For example, at the start of the game, the principal variation consists of white's best move, black's best response, white's best counter-response, black's best counter-counter-response, and so on.
+  * *Principal Variation* - A series of best moves from the current position to a given depth.  The principal variation always begins with a move for the color on move.  For example, at the start of the game, the principal variation consists of white's best move, black's best response, white's best counter-response, black's best counter-counter-response, and so on.  See *Thinking*.
 
   * *Thinking* - What the engine does when it's on move.  When the engine thinks, it generates a principal variation.  See *Principal Variation*, *Pondering*.
