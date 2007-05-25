@@ -5,7 +5,7 @@
 
 = Details =
 
-  * *BitBoard* - A data structure, an unsigned 64-bit integer, in which each bit corresponds to a square on the chess board.
+  * *!BitBoard* - A data structure, an unsigned 64-bit integer, in which each bit corresponds to a square on the chess board.
 
   * *Pondering* - What the engine does when its opponent is on move.  For a more detailed description, click [Pondering here].  See *Thinking*.
 
