@@ -4,5 +4,7 @@
 = Introduction =
 
 = Details =
-  * *Pondering* - What the engine does when its opponent is on move.  See *Thinking*.
+
+  * *Pondering* - What the engine does when its opponent is on move.  For a more detailed description, click [Pondering here].  See *Thinking*.
+
   * *Thinking* - What the engine does when it's on move.  See *Pondering*.
