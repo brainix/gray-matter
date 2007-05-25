@@ -37,9 +37,9 @@
  |
  | A single bitboard can't represent the entire state of the board.  A single
  | bit can only hold a value of 0 or 1 - enough to describe the absence or
- | presence of a piece on a square, but not enough to describe a piece's color
- | or type.  We therefore need 12 bitboards to represent the entire state of the
- | board:
+ | presence of a piece on a square, but not enough to describe the piece's color
+ | or type.  Therefore, we need 12 bitboards to represent the entire state of
+ | the board:
  |
  |		· white pawns		· black pawns
  |		· white knights		· black knights

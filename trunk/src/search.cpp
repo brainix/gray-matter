@@ -361,9 +361,6 @@ move_t search::minimax(int depth, int alpha, int beta)
  |
  | On top of AlphaBeta, this method implements FailSoft.  FailSoft returns more
  | information than AlphaBeta.
- |
- | On top of FailSoft, this method implements Enhanced Transposition Cutoffs
- | (ETC, hereafter).
  */
 
 	/* Local variables: */
@@ -375,7 +372,6 @@ move_t search::minimax(int depth, int alpha, int beta)
 	int tmp_alpha;                    // Scratch variable for us to use so as to not clobber alpha.
 	list<move_t> l;                   // From this position, the move list.
 	list<move_t>::iterator it;        // The iterator through the move list.
-	bool etc = false;                 // Whether or not we've found an ETC.
 
 	/* Increment the number of positions searched. */
 	nodes++;
@@ -449,22 +445,6 @@ move_t search::minimax(int depth, int alpha, int beta)
 		l.push_front(m);
 	}
 
-	/* ETC. */
-	if (depth >= 2)
-		for (it = l.begin(); it != l.end(); it++)
-		{
-			b.make(*it);
-			if (table_ptr->probe(b.get_hash(), depth - 1, LOWER, &m))
-				if (m.value >= beta)
-					etc = true;
-			b.unmake();
-			if (!etc)
-				continue;
-			it->value = m.value;
-			m = *it;
-			goto end;
-		}
-
 	/* Score each move in the list. */
 	for (m.value = -INFINITY, it = l.begin(); it != l.end(); it++)
 	{
@@ -474,10 +454,9 @@ move_t search::minimax(int depth, int alpha, int beta)
 		if (it->value > m.value)
 			tmp_alpha = GREATER(tmp_alpha, (m = *it).value);
 		if (m.value >= beta || timeout_flag)
-			goto end;
+			break;
 	}
 
-end:
 	if (!timeout_flag)
 	{
 		if (m.value <= alpha)
