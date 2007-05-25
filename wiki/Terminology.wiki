@@ -5,7 +5,7 @@
 
 = Details =
 
-  * *!BitBoard* - A data structure, an unsigned 64-bit integer, in which each bit corresponds to a square on the chess board.
+  * *!BitBoard* - A data structure, an unsigned 64-bit integer, in which each bit corresponds to a square on the chess board.  A single BitBoard can't represent the entire state of the board.  A single bit can only hold a value of 0 or 1 - enough to describe the absence or presence of a piece on a square, but not enough to describe the piece's color or type.  Therefore, we need 12 bitboards to represent the entire state of the board: white pawns, white knights, white bishops, white rooks, white queens, white kings, black pawns, black knights, black bishops, black rooks, black queens, and black kings.
 
   * *Pondering* - What the engine does when its opponent is on move.  For a more detailed description, click [Pondering here].  See *Thinking*.
 
