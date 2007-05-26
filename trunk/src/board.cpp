@@ -1531,16 +1531,17 @@ int board::find(bitboard_t b) const
 //	int shift = b > 0xFFFFFFFFULL ? 32 : 0;
 //	return ffs(b >> shift) + shift;
 //#elif defined(WINDOWS)
-	static const bitboard_t debruijn = 0x03F79D71B4CB0A90ULL;
-	static const int index[64] = { 1,  2, 49,  3, 58, 50, 29,  4,
-	                              62, 59, 51, 43, 39, 30, 18,  5,
-	                              63, 56, 60, 37, 54, 52, 44, 23,
-	                              46, 40, 34, 31, 25, 19, 13,  6,
-	                              64, 48, 57, 28, 61, 42, 38, 17,
-	                              55, 36, 53, 22, 45, 33, 24, 12,
-	                              47, 27, 41, 16, 35, 21, 32, 11,
-	                              26, 15, 20, 10, 14,  9,  8,  7};
-	return b ? index[(b & -b) * debruijn >> 58] : 0;
+	static const uint32_t debruijn = 0x077CB531;
+	static int index[32];
+	static bool first_time = true;
+	if (first_time)
+	{
+		for (int j = 0; j <= 31; j++)
+			index[debruijn << j >> 27] = j;
+		first_time = false;
+	}
+	int shift = b > 0xFFFFFFFFULL ? 32 : 0;
+	return (b >>= shift) ? index[(b & -b) * debruijn >> 27] + shift : 0;
 //#endif
 }
 
