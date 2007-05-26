@@ -26,7 +26,7 @@
 #include "gray.h"
 #include "board.h"
 
-/* This array maps coordinates between rotated bitboards. */
+/* This array maps coordinates between rotated BitBoards. */
 static int coord[MAPS][ANGLES][8][8][COORDS] =
 {
 	/* From 0° to 45° left: */
@@ -493,7 +493,7 @@ void board::make(move_t m)
 
 /* Make a move. */
 
-	/* Save the current state, rotated bitboards, and hash keys. */
+	/* Save the current state, rotated BitBoards, and hash keys. */
 	states.push_back(state);
 	for (int angle = L45; angle <= R90; angle++)
 		for (int color = WHITE; color <= COLORS; color++)
@@ -643,7 +643,7 @@ end:
 	state.whose = !state.whose;
 	hash ^= key_whose;
 
-	/* Update the rotated bitboards. */
+	/* Update the rotated BitBoards. */
 	for (int angle = L45; angle <= R90; angle++)
 		rotation[angle][COLORS] = rotation[angle][WHITE] | rotation[angle][BLACK];
 }
@@ -656,7 +656,7 @@ void board::unmake()
 
 /* Take back the last move. */
 
-	/* Restore the previous state, rotated bitboards, and hash keys. */
+	/* Restore the previous state, rotated BitBoards, and hash keys. */
 	state = states.back();
 	states.pop_back();
 	for (int angle = R90; angle >= L45; angle--)
@@ -849,7 +849,7 @@ void board::init_state()
 void board::init_rotation()
 {
 
-/* Initialize the rotated bitboards. */
+/* Initialize the rotated BitBoards. */
 
 	for (int angle = L45; angle <= R90; angle++)
 		for (int color = WHITE; color <= COLORS; color++)
@@ -1213,7 +1213,7 @@ void board::precomp_king() const
 
 	/*
 	 | Imagine an empty board except for a king at (x, y).  Mark the king's
-	 | legal moves in the bitboard squares_king[x][y].
+	 | legal moves in the BitBoard squares_king[x][y].
 	 */
 	for (int y = 0; y <= 7; y++)
 		for (int x = 0; x <= 7; x++)
@@ -1282,7 +1282,7 @@ void board::precomp_knight() const
 
 	/*
 	 | Imagine an empty board except for a knight at (x, y).  Mark the
-	 | knight's legal moves in the bitboard squares_knight[x][y].
+	 | knight's legal moves in the BitBoard squares_knight[x][y].
 	 */
 	for (int y = 0; y <= 7; y++)
 		for (int x = 0; x <= 7; x++)
@@ -1503,7 +1503,7 @@ bool board::fifty() const
 int board::count(bitboard_t b) const
 {
 
-/* Count the number of pieces in a bitboard. */
+/* Count the number of pieces in a BitBoard. */
 
 	static const int table[] = {0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4};
 	int sum = 0;
@@ -1583,7 +1583,7 @@ int board::find_32(int32_t signed_num) const
 bitboard_t board::rotate(bitboard_t b1, int map, int angle) const
 {
 
-/* Rotate a bitboard. */
+/* Rotate a BitBoard. */
 
 	bitboard_t b2 = 0;
 

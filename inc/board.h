@@ -46,7 +46,7 @@ class pawn_table;
 #define ON_MOVE			(state.whose)
 #define OFF_MOVE		(!state.whose)
 
-/* These macros manipulate bits in bitboards. */
+/* These macros manipulate bits in BitBoards. */
 #define BIT_IDX(x, y)		((y) * 8 + (x))
 #define BIT_MSK(x, y)		(1ULL << BIT_IDX(x, y))
 #define BIT_GET(b, x, y)	((b) >> BIT_IDX(x, y) & 1)
@@ -55,8 +55,8 @@ class pawn_table;
 #define BIT_MOV(b, x1, y1, x2, y2) \
 				((b) ^= BIT_MSK(x1, y1) | BIT_MSK(x2, y2))
 
-/* These macros manipulate rows in 0° rotated bitboards and columns in 90°
- * rotated bitboards. */
+/* These macros manipulate rows in 0° rotated BitBoards and columns in 90°
+ * rotated BitBoards. */
 #define ROW_NUM(x, y, a)	((a) == ZERO ? (y) : (x))
 #define ROW_LOC(x, y, a)	((a) == ZERO ? (x) : 7 - (y))
 #define ROW_IDX(n)		(BIT_IDX(0, n))
@@ -65,14 +65,14 @@ class pawn_table;
 #define ROW_CLR(b, n)		((b) &= ~ROW_MSK(n))
 #define ROW_SET(b, n, r)	((b) |= (bitboard_t) (r) << ROW_IDX(n))
 
-/* These macros manipulate columns in 0° rotated bitboards and rows in 90°
- * rotated bitboards. */
+/* These macros manipulate columns in 0° rotated BitBoards and rows in 90°
+ * rotated BitBoards. */
 #define COL_IDX(n)		(BIT_IDX(n, 0))
 #define COL_MSK(n)		(0x0101010101010101ULL << COL_IDX(n))
 #define COL_CLR(b, n)		((b) &= ~COL_MSK(n))
 
-/* These macros manipulate adjacent bits in 45° rotated bitboards, which
- * correspond to diagonals in 0° and 90° rotated bitboards. */
+/* These macros manipulate adjacent bits in 45° rotated BitBoards, which
+ * correspond to diagonals in 0° and 90° rotated BitBoards. */
 #define DIAG_NUM(x, y, a)	((a) == L45 ? (x) + (y) : 7 - (x) + (y))
 #define DIAG_LOC(x, y, a)	(BIT_IDX(coord[MAP][a][x][y][X], coord[MAP][a][x][y][Y]) - diag_index[DIAG_NUM(x, y, a)])
 #define DIAG_LEN(n)		(8 - abs(7 - (n)))
@@ -82,10 +82,10 @@ class pawn_table;
 #define DIAG_CLR(b, n)		((b) &= ~DIAG_MSK(n))
 #define DIAG_SET(b, n, d)	((b) |= (bitboard_t) (d) << diag_index[n])
 
-/* This macro represents a bitboard which contains all of a color's pieces. */
+/* This macro represents a BitBoard which contains all of a color's pieces. */
 #define ALL(s, c)		((s).piece[c][PAWN] | (s).piece[c][KNIGHT] | (s).piece[c][BISHOP] | (s).piece[c][ROOK] | (s).piece[c][QUEEN] | (s).piece[c][KING])
 
-/* This macro finds the first set bit in a bitboard. */
+/* This macro finds the first set bit in a BitBoard. */
 #define FST(b)			(find_64(b) - 1)
 
 class board
@@ -119,8 +119,8 @@ public:
 private:
 	list<state_t> states;                           // Previous states.
 	state_t state;                                  // Current state.
-	list<bitboard_t> rotations[ANGLES][COLORS + 1]; // Previous rotated bitboards.
-	bitboard_t rotation[ANGLES][COLORS + 1];        // Current rotated bitboard.
+	list<bitboard_t> rotations[ANGLES][COLORS + 1]; // Previous rotated BitBoards.
+	bitboard_t rotation[ANGLES][COLORS + 1];        // Current rotated BitBoard.
 	list<bitboard_t> hashes;                        // Previous Zobrist hash keys.
 	bitboard_t hash;                                // Current Zobrist hash key.
 	list<bitboard_t> pawn_hashes;                   // Previous pawn hash keys.
@@ -151,7 +151,7 @@ private:
 	bool three() const;
 	bool fifty() const;
 
-	/* These methods manipulate bitboards. */
+	/* These methods manipulate BitBoards. */
 	int count(bitboard_t b) const;
 	int find_64(int64_t signed_num) const;
 	int find_32(int32_t signed_num) const;

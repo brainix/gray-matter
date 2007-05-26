@@ -30,15 +30,15 @@
 #include "config.h"
 
 /*
- | A bitboard is a brilliant data structure based on this observation: there
+ | A BitBoard is a brilliant data structure based on this observation: there
  | are 64 bits in an unsigned long long integer, there are 64 squares on a chess
- | board.  See where I'm going?  A bitboard is an unsigned 64-bit integer in
+ | board.  See where I'm going?  A BitBoard is an unsigned 64-bit integer in
  | which every bit corresponds to a square.
  |
- | A single bitboard can't represent the entire state of the board.  A single
+ | A single BitBoard can't represent the entire state of the board.  A single
  | bit can only hold a value of 0 or 1 - enough to describe the absence or
  | presence of a piece on a square, but not enough to describe the piece's color
- | or type.  Therefore, we need 12 bitboards to represent the entire state of
+ | or type.  Therefore, we need 12 BitBoards to represent the entire state of
  | the board:
  |
  |		· white pawns		· black pawns
@@ -48,7 +48,7 @@
  |		· white queens		· black queens
  |		· white kings		· black kings
  |
- | Gray Matter introduces a new data structure, a bitrow.  A bitrow is an
+ | Gray Matter introduces a new data structure, a BitRow.  A BitRow is an
  | unsigned 8-bit integer which represents up to 8 adjacent squares: a row in a
  | 0° bitboard, a column in a 90° bitboard, or a diagonal in a 45° bitboard.
  */
@@ -57,12 +57,12 @@ typedef uint8_t bitrow_t;
 
 /*
  | This structure describes the entire state of the board.  It contains the
- | aforementioned 12 bitboards along with castling statuses, en passant
+ | aforementioned 12 BitBoards along with castling statuses, en passant
  | vulnerability, and the color on move.
  */
 typedef struct state
 {
-	bitboard_t piece[COLORS][SHAPES]; // Aforementioned 12 bitboards.
+	bitboard_t piece[COLORS][SHAPES]; // Aforementioned 12 BitBoards.
 	int castle[COLORS][SIDES];        // Castling statuses.
 	int en_passant;                   // En passant vulnerability.
 	bool whose;                       // Color on move.
