@@ -1531,7 +1531,7 @@ int board::find(bitboard_t b) const
 //	int shift = b > 0xFFFFFFFFULL ? 32 : 0;
 //	return ffs(b >> shift) + shift;
 //#elif defined(WINDOWS)
-	static const bitboard_t debruijn = 0x03F79D71B4CB0A90;
+	static const bitboard_t debruijn = 0x03F79D71B4CB0A90ULL;
 	static const int index[64] = { 1,  2, 49,  3, 58, 50, 29,  4,
 	                              62, 59, 51, 43, 39, 30, 18,  5,
 	                              63, 56, 60, 37, 54, 52, 44, 23,
