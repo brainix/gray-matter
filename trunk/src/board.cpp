@@ -1513,36 +1513,68 @@ int board::count(bitboard_t b) const
 	return sum;
 }
 
+/*
+ | These next two methods, we shamelessly yoinked from the GNU C Library,
+ | version 2.5, copyright © 1991-1998, the Free Software Foundation, originally
+ | written by Torbjorn Granlund <tege@sics.se>.
+ */
+
 /*----------------------------------------------------------------------------*\
- |				     find()				      |
+ |				   find_64()				      |
 \*----------------------------------------------------------------------------*/
-int board::find(bitboard_t b) const
+int board::find_64(int64_t signed_num) const
 {
 
 /*
  | Find the first (least significant) set bit in a 64-bit integer.  The return
- | value ranges from 0 (for no bit set) to 64 (for only the most significant bit
- | set).
+ | value ranges from 0 (for no bits set) to 64 (for only the most significant
+ | bit set).
  */
 
-//#if defined(LINUX)
-//	return ffsll(b);
-//#elif defined(OS_X)
-//	int shift = b > 0xFFFFFFFFULL ? 32 : 0;
-//	return ffs(b >> shift) + shift;
-//#elif defined(WINDOWS)
-	static const uint32_t debruijn = 0x077CB531;
-	static int index[32];
-	static bool first_time = true;
-	if (first_time)
+#if defined(OS_X) || defined(WINDOWS)
+	uint64_t unsigned_num = signed_num & -signed_num;
+	int shift = unsigned_num <= 0xFFFFFFFFULL ? 0 : 32;
+#endif
+
+#if defined(LINUX)
+	return ffsll(signed_num);
+#elif defined(OS_X)
+	return ffs(signed_num >> shift) + shift;
+#elif defined(WINDOWS)
+	return find_32(signed_num >> shift) + shift;
+#endif
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   find_32()				      |
+\*----------------------------------------------------------------------------*/
+int board::find_32(int32_t signed_num) const
+{
+
+/*
+ | Find the first (least significant) set bit in a 32-bit integer.  The return
+ | value ranges from 0 (for no bits set) to 32 (for only the most significant
+ | bit set).
+ */
+
+#if defined(LINUX) || defined(OS_X)
+	return ffs(signed_num);
+#elif defined(WINDOWS)
+	static const uint8_t table[] =
 	{
-		for (int j = 0; j <= 31; j++)
-			index[debruijn << j >> 27] = j;
-		first_time = false;
-	}
-	int shift = b > 0xFFFFFFFFULL ? 32 : 0;
-	return (b >>= shift) ? index[(b & -b) * debruijn >> 27] + shift : 0;
-//#endif
+		0,1,2,2,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,
+		6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,
+		7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+		7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+		8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,
+		8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,
+		8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,
+		8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8
+	};
+	uint32_t unsigned_num = signed_num & -signed_num;
+	int shift = unsigned_num <= 0xFFFF ? (unsigned_num <= 0xFF ? 0 : 8) : (unsigned_num <= 0xFFFFFF ?  16 : 24);
+	return table[unsigned_num >> shift] + shift;
+#endif
 }
 
 /*----------------------------------------------------------------------------*\
