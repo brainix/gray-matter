@@ -86,7 +86,7 @@ class pawn_table;
 #define ALL(s, c)		((s).piece[c][PAWN] | (s).piece[c][KNIGHT] | (s).piece[c][BISHOP] | (s).piece[c][ROOK] | (s).piece[c][QUEEN] | (s).piece[c][KING])
 
 /* This macro finds the first set bit in a BitBoard. */
-#define FST(b)			(find(b) - 1)
+#define FST(b)			(find_64(b) - 1)
 
 class board
 {
@@ -153,7 +153,8 @@ private:
 
 	/* These methods manipulate BitBoards. */
 	int count(bitboard_t b) const;
-	int find(bitboard_t b) const;
+	int find_64(int64_t signed_num) const;
+	int find_32(int32_t signed_num) const;
 	bitboard_t rotate(bitboard_t b1, int map, int angle) const;
 	uint64_t randomize() const;
 	void insert(int x, int y, bitboard_t b, int angle, list<move_t> &l, bool pos) const;
