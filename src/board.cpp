@@ -1522,7 +1522,7 @@ int board::count(bitboard_t b) const
 /*----------------------------------------------------------------------------*\
  |				   find_64()				      |
 \*----------------------------------------------------------------------------*/
-int board::find_64(int64_t signed_num) const
+int board::find_64(int64_t n) const
 {
 
 /*
@@ -1532,23 +1532,23 @@ int board::find_64(int64_t signed_num) const
  */
 
 #if defined(OS_X) || defined(WINDOWS)
-	uint64_t unsigned_num = signed_num & -signed_num;
-	int shift = unsigned_num <= 0xFFFFFFFFULL ? 0 : 32;
+	n &= -n;
+	int shift = n <= 0xFFFFFFFFULL ? 0 : 32;
 #endif
 
 #if defined(LINUX)
-	return ffsll(signed_num);
+	return ffsll(n);
 #elif defined(OS_X)
-	return ffs(signed_num >> shift) + shift;
+	return ffs(n >> shift) + shift;
 #elif defined(WINDOWS)
-	return find_32(signed_num >> shift) + shift;
+	return find_32(n >> shift) + shift;
 #endif
 }
 
 /*----------------------------------------------------------------------------*\
  |				   find_32()				      |
 \*----------------------------------------------------------------------------*/
-int board::find_32(int32_t signed_num) const
+int board::find_32(int32_t n) const
 {
 
 /*
@@ -1558,7 +1558,7 @@ int board::find_32(int32_t signed_num) const
  */
 
 #if defined(LINUX) || defined(OS_X)
-	return ffs(signed_num);
+	return ffs(n);
 #elif defined(WINDOWS)
 	static const uint8_t table[] =
 	{
@@ -1571,9 +1571,9 @@ int board::find_32(int32_t signed_num) const
 		8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,
 		8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8
 	};
-	uint32_t unsigned_num = signed_num & -signed_num;
-	int shift = unsigned_num <= 0xFFFF ? (unsigned_num <= 0xFF ? 0 : 8) : (unsigned_num <= 0xFFFFFF ?  16 : 24);
-	return table[unsigned_num >> shift] + shift;
+	n &= -n;
+	int shift = n <= 0xFFFF ? (n <= 0xFF ? 0 : 8) : (n <= 0xFFFFFF ?  16 : 24);
+	return table[n >> shift] + shift;
 #endif
 }
 
