@@ -1,8 +1,10 @@
 #summary What to do when the opponent is on move.
 #labels Phase-Design,Phase-Implementation
 
-Some terminology:  _Thinking_ is what a chess engine does when it's on move.  When the engine thinks, it generates a _principal variation_.  A principal variation is a series of best moves - the engine's best move, the opponent's best response, the engine's best counter-response, the opponent's best counter-counter-response, and so on - from the current position to a given depth.  _Pondering_ is what the engine does when its opponent is on move.
+Some terminology:  _Thinking_ is what a chess engine does when it's on move.  When the engine thinks, it generates a _principal variation_ (or _PV_).  A PV is a series of best moves - the engine's best move, the opponent's best response, the engine's best counter-response, the opponent's best counter-counter-response, and so on - from the current position to a given depth.  _Pondering_ is what the engine does when its opponent is on move.
 
-The most intuitive approach to pondering is for the engine to do exactly what it'd do if it were thinking - from the current position, to generate a principal variation starting with the opponent's best move.  That way, after the opponent has moved, when the engine is on move again, its transposition table will already be filled with many useful evaluations and it'll search through the first few plies very quickly.
+When the engine finishes thinking, the PV begins with the move that the engine will make followed by the move that the engine thinks that the opponent will make in response.  At this point, the engine pops the first move off of the PV and makes it on the board.  Now, the PV begins with the move that the engine thinks that the opponent will make.  The question is: what should the engine do next (while waiting for the opponent to move)?  How should it ponder?
+
+The most intuitive approach to pondering is for the engine to do exactly what it'd do if it were thinking - from the current position, to continue generating a PV but starting with the opponent's best move.  That way, when it's time for the engine to think again, its transposition table will be filled with many useful evaluations and it'll search through the first few plies very quickly.
 
 Bruce Moreland (of [http://www.seanet.com/~brucemo/chess.htm Gerbil and Ferret] fame) suggests a [http://www.seanet.com/~brucemo/topics/pondering.htm better way].
