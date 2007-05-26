@@ -153,8 +153,8 @@ private:
 
 	/* These methods manipulate BitBoards. */
 	int count(bitboard_t b) const;
-	int find_64(int64_t signed_num) const;
-	int find_32(int32_t signed_num) const;
+	int find_64(int64_t n) const;
+	int find_32(int32_t n) const;
 	bitboard_t rotate(bitboard_t b1, int map, int angle) const;
 	uint64_t randomize() const;
 	void insert(int x, int y, bitboard_t b, int angle, list<move_t> &l, bool pos) const;
