@@ -3,6 +3,6 @@
 
 Some terminology:  _Thinking_ is what a chess engine does when it's on move.  When the engine thinks, it generates a _principal variation_.  A principal variation is a series of best moves - the engine's best move, the opponent's best response, the engine's best counter-response, the opponent's best counter-counter-response, and so on - from the current position to a given depth.  _Pondering_ is what the engine does when its opponent is on move.
 
-The most intuitive approach to pondering is for the engine to do exactly what it'd do if it were on move - from the current position, to generate a principal variation starting with the opponent's best move.  That way, after the opponent has moved, when the engine is on move again, its transposition table will already be filled with many useful evaluations and it'll search through the first few plies very quickly.
+The most intuitive approach to pondering is for the engine to do exactly what it'd do if it were thinking - from the current position, to generate a principal variation starting with the opponent's best move.  That way, after the opponent has moved, when the engine is on move again, its transposition table will already be filled with many useful evaluations and it'll search through the first few plies very quickly.
 
 Bruce Moreland (of [http://www.seanet.com/~brucemo/chess.htm Gerbil and Ferret] fame) suggests a [http://www.seanet.com/~brucemo/topics/pondering.htm better way].
