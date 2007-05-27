@@ -30,6 +30,9 @@
 mutex_t timeout_mutex;  // The lock that protects...
 bool timeout_flag;      // ...the flag that determines when to stop thinking or pondering!  :-D
 
+mutex_t depth_mutex;    // The lock that protects...
+bool depth_flag;        // ...the flag that indicates when we've searched to the minimum depth!  :-D
+
 mutex_t search_mutex;   // The lock that protects...
 cond_t search_cond;     // ...the condition that controls...
 thread_t search_thread; // ...the search thread via...
@@ -52,6 +55,7 @@ search::search(table *t, xboard *x)
 
 	mutex_create(&timeout_mutex);
 	timer_function(handle);
+	mutex_create(&depth_mutex);
 	mutex_create(&search_mutex);
 	cond_create(&search_cond, NULL);
 	thread_create(&search_thread, (entry_t) start, this);
@@ -68,6 +72,7 @@ search::~search()
 
 	cond_destroy(&search_cond);
 	mutex_destroy(&search_mutex);
+	mutex_destroy(&depth_mutex);
 	mutex_destroy(&timeout_mutex);
 }
 
@@ -270,6 +275,10 @@ void search::iterate(int s)
 	clock_t start = clock();
 	if (s == THINKING)
 		timer_set(max_time);
+	mutex_lock(&depth_mutex);
+	depth_flag = false;
+	mutex_unlock(&depth_mutex);
+
 	nodes = 0;
 	move_t m, tmp_move;
 	SET_NULL_MOVE(m);
@@ -284,7 +293,10 @@ void search::iterate(int s)
 	for (int depth = 1; depth <= max_depth; depth++)
 	{
 		tmp_move = mtdf(depth, m.value);
-		if (timeout_flag && depth || IS_NULL_MOVE(tmp_move))
+		mutex_lock(&depth_mutex);
+		depth_flag = true;
+		mutex_unlock(&depth_mutex);
+		if (timeout_flag && depth_flag || IS_NULL_MOVE(tmp_move))
 			/*
 			 | Oops.  Either the alarm has interrupted this
 			 | iteration (and the results are incomplete and
@@ -331,7 +343,7 @@ move_t search::mtdf(int depth, int guess)
 	m.value = guess;
 	int upper = +INFINITY, lower = -INFINITY, beta;
 
-	while (upper > lower && !timeout_flag)
+	while (upper > lower && !(timeout_flag && depth_flag))
 	{
 		beta = m.value + (m.value == lower) * WEIGHT_INCREMENT;
 		m = minimax(depth, beta - WEIGHT_INCREMENT, beta);
@@ -453,11 +465,11 @@ move_t search::minimax(int depth, int alpha, int beta)
 		b.unmake();
 		if (it->value > m.value)
 			tmp_alpha = GREATER(tmp_alpha, (m = *it).value);
-		if (m.value >= beta || timeout_flag)
+		if (m.value >= beta || timeout_flag && depth_flag)
 			break;
 	}
 
-	if (!timeout_flag)
+	if (!(timeout_flag && depth_flag))
 	{
 		if (m.value <= alpha)
 			table_ptr->store(hash, depth, UPPER, m);
