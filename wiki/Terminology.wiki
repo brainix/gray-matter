@@ -7,6 +7,8 @@
 
   * *!BitBoard* - A data structure, an unsigned 64-bit integer, in which each bit corresponds to a square on the chess board.  A single !BitBoard can't represent the entire state of the board.  A single bit can only hold a value of 0 or 1 - enough to describe the absence or presence of a piece on a square, but not enough to describe the piece's color or type.  Therefore, we need 12 !BitBoards to represent the entire state of the board: white pawns, white knights, white bishops, white rooks, white queens, white kings, black pawns, black knights, black bishops, black rooks, black queens, and black kings.
 
+  * *Ply* - One move by one player.  The ply is used as a unit of depth.  For example, at the start of a game, a move tree that's 4 plies deep consists of white's possible moves, black's possible responses, white's possible counter-responses, and black's possible counter-counter-responses.
+
   * *Pondering* - What the engine does when its opponent is on move.  For a more detailed description, click [Pondering here].  See *Principal Variation*, *Thinking*.
 
   * *Principal Variation* or *PV* - A series of best moves from the current position to a given depth.  The PV always begins with a move for the color on move.  For example, at the start of the game, the PV consists of white's best move, black's best response, white's best counter-response, black's best counter-counter-response, and so on.  See *Pondering*, *Thinking*.
