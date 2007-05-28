@@ -54,6 +54,7 @@ public:
 	~search();
 	search& operator=(const search& that);
 	static void handle();
+	void move_now() const;
 	void clear() const;
 	move_t get_hint() const;
 	thread_t get_thread() const;

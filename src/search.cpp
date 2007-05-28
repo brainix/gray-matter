@@ -27,10 +27,8 @@
 #include "search.h"
 
 /* Global variables: */
-mutex_t timeout_mutex;  // The lock that protects...
-bool timeout_flag;      // ...the flag that determines when to stop thinking or pondering!  :-D
-
-mutex_t depth_mutex;    // The lock that protects...
+mutex_t flag_mutex;     // The lock that protects...
+bool timeout_flag;      // ...the flag that determines when to stop thinking or pondering and...
 bool depth_flag;        // ...the flag that indicates when we've searched to the minimum depth!  :-D
 
 mutex_t search_mutex;   // The lock that protects...
@@ -53,9 +51,8 @@ search::search(table *t, xboard *x)
 	table_ptr = t;
 	xboard_ptr = x;
 
-	mutex_create(&timeout_mutex);
+	mutex_create(&flag_mutex);
 	timer_function(handle);
-	mutex_create(&depth_mutex);
 	mutex_create(&search_mutex);
 	cond_create(&search_cond, NULL);
 	thread_create(&search_thread, (entry_t) start, this);
@@ -72,8 +69,7 @@ search::~search()
 
 	cond_destroy(&search_cond);
 	mutex_destroy(&search_mutex);
-	mutex_destroy(&depth_mutex);
-	mutex_destroy(&timeout_mutex);
+	mutex_destroy(&flag_mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -109,9 +105,22 @@ void search::handle()
 
 /* The alarm has sounded.  Handle it. */
 
-	mutex_lock(&timeout_mutex);
+	mutex_lock(&flag_mutex);
 	timeout_flag = true;
-	mutex_unlock(&timeout_mutex);
+	mutex_unlock(&flag_mutex);
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   move_now()				      |
+\*----------------------------------------------------------------------------*/
+void search::move_now() const
+{
+	if (search_status == THINKING)
+	{
+		mutex_lock(&flag_mutex);
+		timeout_flag = true;
+		mutex_unlock(&flag_mutex);
+	}
 }
 
 /*----------------------------------------------------------------------------*\
@@ -194,9 +203,9 @@ void *search::start(void *arg)
 		/* Do the requested work - idle, think, ponder, or quit. */
 		if (search_status == THINKING || search_status == PONDERING)
 		{
-			mutex_lock(&timeout_mutex);
+			mutex_lock(&flag_mutex);
 			timeout_flag = false;
-			mutex_unlock(&timeout_mutex);
+			mutex_unlock(&flag_mutex);
 			search_ptr->iterate(search_status);
 		}
 	} while (search_status != QUITTING);
@@ -240,9 +249,9 @@ void search::change(int s, const board& now)
  |	 12		start thinking
  */
 
-	mutex_lock(&timeout_mutex);
+	mutex_lock(&flag_mutex);
 	timeout_flag = true;
-	mutex_unlock(&timeout_mutex);
+	mutex_unlock(&flag_mutex);
 
 	if (s == THINKING || s == PONDERING)
 	{
@@ -275,9 +284,9 @@ void search::iterate(int s)
 	clock_t start = clock();
 	if (s == THINKING)
 		timer_set(max_time);
-	mutex_lock(&depth_mutex);
+	mutex_lock(&flag_mutex);
 	depth_flag = false;
-	mutex_unlock(&depth_mutex);
+	mutex_unlock(&flag_mutex);
 
 	nodes = 0;
 	move_t m, tmp_move;
@@ -293,9 +302,9 @@ void search::iterate(int s)
 	for (int depth = 1; depth <= max_depth; depth++)
 	{
 		tmp_move = mtdf(depth, m.value);
-		mutex_lock(&depth_mutex);
+		mutex_lock(&flag_mutex);
 		depth_flag = true;
-		mutex_unlock(&depth_mutex);
+		mutex_unlock(&flag_mutex);
 		if (timeout_flag && depth_flag || IS_NULL_MOVE(tmp_move))
 			/*
 			 | Oops.  Either the alarm has interrupted this
