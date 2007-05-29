@@ -355,7 +355,7 @@ move_t search::mtdf(int depth, int guess)
 	while (upper > lower && !(timeout_flag && depth_flag))
 	{
 		beta = m.value + (m.value == lower) * WEIGHT_INCREMENT;
-		m = minimax(depth, beta - WEIGHT_INCREMENT, beta);
+		m = minimax(depth, 0, beta - WEIGHT_INCREMENT, beta);
 		upper = m.value < beta ? m.value : upper;
 		lower = m.value < beta ? lower : m.value;
 	}
@@ -365,7 +365,7 @@ move_t search::mtdf(int depth, int guess)
 /*----------------------------------------------------------------------------*\
  |				   minimax()				      |
 \*----------------------------------------------------------------------------*/
-move_t search::minimax(int depth, int alpha, int beta)
+move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 {
 
 /*
@@ -470,7 +470,7 @@ move_t search::minimax(int depth, int alpha, int beta)
 	for (m.value = -INFINITY, it = l.begin(); it != l.end(); it++)
 	{
 		b.make(*it);
-		it->value = -minimax(depth - 1, -beta, -tmp_alpha).value;
+		it->value = -minimax(depth - 1, shallowness + 1, -beta, -tmp_alpha).value;
 		b.unmake();
 		if (it->value > m.value)
 			tmp_alpha = GREATER(tmp_alpha, (m = *it).value);
