@@ -452,7 +452,7 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 	beta = LESSER(beta, upper);
 
 	/* Generate and re-order the move list. */
-	b.generate(l);
+	b.generate(l, !shallowness);
 	if ((it = find(l.begin(), l.end(), m)) != l.end())
 	{
 		/*
