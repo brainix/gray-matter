@@ -440,19 +440,40 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 	 | this position, return the best move from our previous search.
 	 | Otherwise, if we can, reduce the size of our alpha-beta window.
 	 */
-	if (table_ptr->probe(hash, depth, UPPER, &m))
-		if ((upper = m.value) <= alpha)
+	if (shallowness)
+	{
+		if (table_ptr->probe(hash, depth, UPPER, &m))
+			if ((upper = m.value) <= alpha)
+				return m;
+		if (table_ptr->probe(hash, depth, EXACT, &m))
 			return m;
-	if (table_ptr->probe(hash, depth, EXACT, &m))
-		return m;
-	if (table_ptr->probe(hash, depth, LOWER, &m))
-		if ((lower = m.value) >= beta)
-			return m;
-	tmp_alpha = alpha = GREATER(alpha, lower);
-	beta = LESSER(beta, upper);
+		if (table_ptr->probe(hash, depth, LOWER, &m))
+			if ((lower = m.value) >= beta)
+				return m;
+		tmp_alpha = alpha = GREATER(alpha, lower);
+		beta = LESSER(beta, upper);
+	}
 
 	/* Generate and re-order the move list. */
 	b.generate(l, !shallowness);
+	if (l.empty())
+	{
+		/*
+		 | In this position, there are no legal moves.  The game must be
+		 | stalemated or checkmated.
+		 */
+		switch (b.get_status(true))
+		{
+			case IN_PROGRESS  : m.value = -b.evaluate();    break;
+			case STALEMATE    : m.value = +WEIGHT_CONTEMPT; break;
+			case INSUFFICIENT : m.value = +WEIGHT_CONTEMPT; break;
+			case THREE        : m.value = +WEIGHT_CONTEMPT; break;
+			case FIFTY        : m.value = +WEIGHT_CONTEMPT; break;
+			case CHECKMATE    : m.value = -WEIGHT_KING;     break;
+			case ILLEGAL      : m.value = -WEIGHT_KING;     break;
+		}
+		return m;
+	}
 	if ((it = find(l.begin(), l.end(), m)) != l.end())
 	{
 		/*
