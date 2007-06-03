@@ -382,6 +382,9 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
  |
  | On top of AlphaBeta, this method implements FailSoft.  FailSoft returns more
  | information than AlphaBeta.
+ |
+ | On top of FailSoft, this method implements Enhanced Transposition Cutoffs
+ | (ETC, hereafter).
  */
 
 	/* Local variables: */
@@ -485,6 +488,23 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 		 */
 		l.erase(it);
 		l.push_front(m);
+	}
+
+	/* Perform ETC. */
+	for (it = l.begin(); it != l.end(); it++)
+	{
+		bitboard_t tmp_hash;
+		move_t tmp_move;
+		b.make(*it);
+		tmp_hash = b.get_hash();
+		b.unmake();
+		if (table_ptr->probe(tmp_hash, depth, LOWER, &tmp_move))
+			if (tmp_move.value >= beta)
+			{
+				m = *it;
+				m.value = -tmp_move.value;
+				return m;
+			}
 	}
 
 	/* Score each move in the list. */
