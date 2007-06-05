@@ -100,7 +100,7 @@ class search& search::operator=(const search& that)
 /*----------------------------------------------------------------------------*\
  |				    handle()				      |
 \*----------------------------------------------------------------------------*/
-void search::handle()
+void search::handle() const
 {
 
 /* The alarm has sounded.  Handle it. */
@@ -454,7 +454,7 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 		beta = LESSER(beta, upper);
 	}
 
-	/* Generate and re-order the move list. */
+	/* Generate the move list. */
 	b.generate(l, !shallowness);
 	if (l.empty())
 	{
@@ -474,18 +474,18 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 		}
 		return m;
 	}
-	if ((it = find(l.begin(), l.end(), m)) != l.end())
-	{
+
+	/* Re-order the move list. */
+	for (it = l.begin(); it != l.end(); it++)
 		/*
 		 | According to the transposition table, a previous search from
 		 | this position determined this move to be best.  In this
-		 | search, this move could be good too.  Place this move at the
-		 | front of the list to score it first to hopefully cause an
-		 | earlier cutoff.
+		 | search, this move could be good too.  Give this move a high
+		 | score to force it to the front of the list to score it first
+		 | to hopefully cause an earlier cutoff.
 		 */
-		l.erase(it);
-		l.push_front(m);
-	}
+		it->value = *it == m ? WEIGHT_KING : 0;
+	sort(l.begin(), l.end(), compare);
 
 	/* Score each move in the list. */
 	for (m.value = -INFINITY, it = l.begin(); it != l.end(); it++)
@@ -509,6 +509,14 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 			table_ptr->store(hash, depth, LOWER, m);
 	}
 	return m;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   compare()				      |
+\*----------------------------------------------------------------------------*/
+bool search::compare(move_t m1, move_t m2) const
+{
+	return m1.value < m2.value;
 }
 
 /*----------------------------------------------------------------------------*\

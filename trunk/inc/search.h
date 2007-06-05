@@ -53,7 +53,7 @@ public:
 	search(table *t, xboard *x);
 	~search();
 	search& operator=(const search& that);
-	static void handle();
+	static void handle() const;
 	void move_now() const;
 	void clear() const;
 	move_t get_hint() const;
@@ -78,6 +78,7 @@ private:
 	void iterate(int s);
 	move_t mtdf(int depth, int guess);
 	move_t minimax(int depth, int shallowness, int alpha, int beta);
+	static bool compare(move_t m1, move_t m2) const;
 	void extract(int s);
 };
 
