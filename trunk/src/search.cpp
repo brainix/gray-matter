@@ -485,7 +485,7 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 		 | to hopefully cause an earlier cutoff.
 		 */
 		it->value = *it == m ? WEIGHT_KING : 0;
-	sort(l.begin(), l.end(), compare);
+	l.sort(compare);
 
 	/* Score each move in the list. */
 	for (m.value = -INFINITY, it = l.begin(); it != l.end(); it++)
