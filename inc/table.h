@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*\
- |	table.h - transposition and pawn table interfaces		      |
+ |	table.h - transposition, history, and pawn table interfaces	      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
@@ -45,6 +45,22 @@ public:
 private:
 	uint64_t slots;    // The number of slots.
 	xpos_slot_t *data; // The slots themselves.
+};
+
+/*----------------------------------------------------------------------------*\
+ |				 History Table				      |
+\*----------------------------------------------------------------------------*/
+
+class history
+{
+public:
+	history();
+	~history();
+	void clear();
+	int probe(bool color, move_t move) const;
+	void store(bool color, move_t move, int depth);
+private:
+	int *****data;
 };
 
 /*----------------------------------------------------------------------------*\
