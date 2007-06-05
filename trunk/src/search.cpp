@@ -39,7 +39,7 @@ int search_status;      // ...the search status!  :-D
 /*----------------------------------------------------------------------------*\
  |				    search()				      |
 \*----------------------------------------------------------------------------*/
-search::search(table *t, xboard *x)
+search::search(table *t, history *h, xboard *x)
 {
 
 /* Constructor. */
@@ -49,6 +49,7 @@ search::search(table *t, xboard *x)
 	output = false;
 
 	table_ptr = t;
+	history_ptr = h;
 	xboard_ptr = x;
 
 	mutex_create(&flag_mutex);
@@ -92,6 +93,7 @@ class search& search::operator=(const search& that)
 
 	b = that.b;
 	table_ptr = that.table_ptr;
+	history_ptr = that.history_ptr;
 	xboard_ptr = that.xboard_ptr;
 
 	return *this;
@@ -129,6 +131,7 @@ void search::move_now() const
 void search::clear() const
 {
 	table_ptr->clear();
+	history_ptr->clear();
 }
 
 /*----------------------------------------------------------------------------*\
@@ -385,9 +388,10 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
  */
 
 	/* Local variables: */
+	bool whose = b.get_whose();       // In this position, the color on move.
+	bitboard_t hash = b.get_hash();   // This position's hash.
 	int status = b.get_status(false); // In this position, whether or not the game is over.
 	move_t m;                         // From this position, the best move.
-	bitboard_t hash = b.get_hash();   // This position's hash.
 	int upper = +INFINITY;            // For this position, the upper bound on the MiniMax score.
 	int lower = -INFINITY;            // For this position, the lower bound on the MiniMax score.
 	int tmp_alpha = alpha;            // Scratch variable for us to use so as to not clobber alpha.
@@ -484,7 +488,7 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 		 | score to force it to the front of the list to score it first
 		 | to hopefully cause an earlier cutoff.
 		 */
-		it->value = *it == m ? WEIGHT_KING : 0;
+		it->value = *it == m ? WEIGHT_KING : history_ptr->probe(whose, *it);
 	l.sort(compare);
 
 	/* Score each move in the list. */
@@ -516,7 +520,7 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 \*----------------------------------------------------------------------------*/
 bool search::compare(move_t m1, move_t m2)
 {
-	return m1.value < m2.value;
+	return m1.value > m2.value;
 }
 
 /*----------------------------------------------------------------------------*\

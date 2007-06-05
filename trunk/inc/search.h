@@ -50,7 +50,7 @@ class board;
 class search
 {
 public:
-	search(table *t, xboard *x);
+	search(table *t, history *h, xboard *x);
 	~search();
 	search& operator=(const search& that);
 	static void handle();
@@ -64,16 +64,17 @@ public:
 	static void *start(void *arg);
 	void change(int s, const board& now);
 private:
-	list<move_t> pv;    // Principal variation.
-	move_t hint;        // Opponent's best move.
-	int max_time;       // Maximum search time.
-	int max_depth;      // Maximum search depth.
-	int nodes;          // Number of nodes searched.
-	bool output;        // Whether to print thinking output.
+	list<move_t> pv;      // Principal variation.
+	move_t hint;          // Opponent's best move.
+	int max_time;         // Maximum search time.
+	int max_depth;        // Maximum search depth.
+	int nodes;            // Number of nodes searched.
+	bool output;          // Whether to print thinking output.
 
-	xboard *xboard_ptr; // Chess Engine Communication Protocol object.
-	table *table_ptr;   // Transposition table object.
-	board b;            // Board representation object.
+	board b;              // Board representation object.
+	table *table_ptr;     // Transposition table object.
+	history *history_ptr; // History table object.
+	xboard *xboard_ptr;   // Chess Engine Communication Protocol object.
 
 	void iterate(int s);
 	move_t mtdf(int depth, int guess);
