@@ -209,6 +209,8 @@ void *search::start(void *arg)
 			mutex_lock(&flag_mutex);
 			timeout_flag = false;
 			mutex_unlock(&flag_mutex);
+			if (search_status == THINKING)
+				history_ptr->clear();
 			search_ptr->iterate(search_status);
 		}
 	} while (search_status != QUITTING);
