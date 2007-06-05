@@ -209,8 +209,6 @@ void *search::start(void *arg)
 			mutex_lock(&flag_mutex);
 			timeout_flag = false;
 			mutex_unlock(&flag_mutex);
-			if (search_status == THINKING)
-				history_ptr->clear();
 			search_ptr->iterate(search_status);
 		}
 	} while (search_status != QUITTING);
@@ -288,7 +286,10 @@ void search::iterate(int s)
 	 */
 	clock_t start = clock();
 	if (s == THINKING)
+	{
 		timer_set(max_time);
+		history_ptr->clear();
+	}
 	mutex_lock(&flag_mutex);
 	depth_flag = false;
 	mutex_unlock(&flag_mutex);
