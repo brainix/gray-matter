@@ -100,7 +100,7 @@ class search& search::operator=(const search& that)
 /*----------------------------------------------------------------------------*\
  |				    handle()				      |
 \*----------------------------------------------------------------------------*/
-void search::handle() const
+void search::handle()
 {
 
 /* The alarm has sounded.  Handle it. */
@@ -514,7 +514,7 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 /*----------------------------------------------------------------------------*\
  |				   compare()				      |
 \*----------------------------------------------------------------------------*/
-bool search::compare(move_t m1, move_t m2) const
+bool search::compare(move_t m1, move_t m2)
 {
 	return m1.value < m2.value;
 }
