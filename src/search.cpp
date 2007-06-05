@@ -514,6 +514,7 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 			table_ptr->store(hash, depth, EXACT, m);
 		else if (m.value >= beta)
 			table_ptr->store(hash, depth, LOWER, m);
+		history_ptr->store(whose, m, depth);
 	}
 	return m;
 }
