@@ -42,7 +42,10 @@ int search_status;      // ...the search status!  :-D
 search::search(table *t, history *h, xboard *x)
 {
 
-/* Constructor. */
+/*
+ | Constructor.  Important!  Seed the random number generator - issue
+ | srand(time(NULL)); - before instantiating this class!
+ */
 
 	max_time = INFINITY;
 	max_depth = DEPTH;
@@ -492,7 +495,8 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 		 | to hopefully cause an earlier cutoff.
 		 */
 		it->value = *it == m ? WEIGHT_KING : history_ptr->probe(whose, *it);
-	l.sort(compare);
+	l.sort(shuffle);
+	l.sort(descend);
 
 	/* Score each move in the list. */
 	for (m.value = -INFINITY, it = l.begin(); it != l.end(); it++)
@@ -520,9 +524,17 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 }
 
 /*----------------------------------------------------------------------------*\
- |				   compare()				      |
+ |				   shuffle()				      |
 \*----------------------------------------------------------------------------*/
-bool search::compare(move_t m1, move_t m2)
+bool search::shuffle(move_t m1, move_t m2)
+{
+	return rand() % 2;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   descend()				      |
+\*----------------------------------------------------------------------------*/
+bool search::descend(move_t m1, move_t m2)
 {
 	return m1.value > m2.value;
 }
