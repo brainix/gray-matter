@@ -495,7 +495,6 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 		 | to hopefully cause an earlier cutoff.
 		 */
 		it->value = *it == m ? WEIGHT_KING : history_ptr->probe(whose, *it);
-	l.sort(shuffle);
 	l.sort(descend);
 
 	/* Score each move in the list. */
