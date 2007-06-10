@@ -401,8 +401,6 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 	int upper = +INFINITY;            // For this position, the upper bound on the MiniMax score.
 	int lower = -INFINITY;            // For this position, the lower bound on the MiniMax score.
 	int tmp_alpha = alpha;            // Scratch variable for us to use so as to not clobber alpha.
-	list<move_t> l;                   // From this position, the move list.
-	list<move_t>::iterator it;        // The iterator through the move list.
 
 	/* Increment the number of positions searched. */
 	nodes++;
@@ -465,6 +463,8 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 	}
 
 	/* Generate the move list. */
+	list<move_t> l;            // From this position, the move list.
+	list<move_t>::iterator it; // The iterator through the move list.
 	b.generate(l, !shallowness);
 	if (l.empty())
 	{
