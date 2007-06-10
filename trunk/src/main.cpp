@@ -43,6 +43,8 @@ int main(int argc, char **argv);
 \*----------------------------------------------------------------------------*/
 int main(int argc, char **argv)
 {
+	/* TODO: Parse the command-line arguments. */
+
 	/* Seed the random number generator. */
 	srand(time(NULL));
 
