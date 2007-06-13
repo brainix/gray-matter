@@ -437,7 +437,7 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 			case THREE        : m.value = +WEIGHT_CONTEMPT; break;
 			case FIFTY        : m.value = +WEIGHT_CONTEMPT; break;
 			case CHECKMATE    : m.value = -WEIGHT_KING;     break;
-			case ILLEGAL      : m.value = +WEIGHT_CONTEMPT; break;
+			case ILLEGAL      : m.value = -WEIGHT_KING;     break;
 		}
 		return m;
 	}
