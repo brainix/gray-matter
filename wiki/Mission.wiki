@@ -18,7 +18,7 @@
   * ~~To provide evidence for correctness of search.~~
   * ~~For the engine to regularly checkmate its hackers.~~
   * To earn a respectable rating.
-  * To identify a potential market for a chess engine and come up with a business plan.
+  * To identify a potential market and come up with a business plan.
 
 === Long Term Goals (for the Project's Lifetime) ===
   * To nurture a community of hackers and chess players.
