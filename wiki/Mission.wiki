@@ -6,7 +6,7 @@
   * To nurture a community of hackers and chess players by:
     * ~~Cleaning up and commenting code, authoring [http://code.google.com/p/gray-matter/w/list documentation], maintaining a [http://chess-engine.blogspot.com/ blog],~~
     * ~~Automating [http://tim-mann.org/ics.html ICS] play,~~
-    * Setting up a testing box to run on [http://www.freechess.org/ FICS], and
+    * ~~Setting up a testing box~~ to run on [http://www.freechess.org/ FICS], and
     * ~~Making friends.~~
   * ~~To generate/accept all/only legal moves (including en passant and castling!) and correctly detect checkmate/stalemate.~~
   * To ~~adopt a version numbering standard and~~ provide builds.
