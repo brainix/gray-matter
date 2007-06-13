@@ -8,6 +8,9 @@
 # BSD is based on OS X.  If you insist on running BSD, set this to OS_X.  ;-)
 PLAT = LINUX
 
+# Your processor.
+ARCH = pentium3
+
 CXX  = g++
 LANG = -ansi
 WARN = -Wall -Werror
@@ -15,6 +18,7 @@ OPTI = -O3 -fomit-frame-pointer
 PREP = -D$(PLAT)
 LINK = -lpthread
 DIR  = -Iinc
+MACH = -march=$(ARCH)
 
 OBJS = bin/board.o   \
        bin/main.o    \
@@ -29,7 +33,7 @@ clean :
 	rm -f $(OBJS) bin/gray
 
 bin/%.o : src/%.cpp
-	$(CXX) -c -o $@ $< $(LANG) $(WARN) $(OPTI) $(PREP) $(DIR)
+	$(CXX) -c -o $@ $< $(LANG) $(WARN) $(OPTI) $(PREP) $(DIR) $(MACH)
 
 bin/gray : $(OBJS)
-	$(CXX) -o $@ $(LANG) $(WARN) $(OPTI) $(PREP) $(LINK) $(DIR) $(OBJS)
+	$(CXX) -o $@ $(LANG) $(WARN) $(OPTI) $(PREP) $(LINK) $(DIR) $(MACH) $(OBJS)
