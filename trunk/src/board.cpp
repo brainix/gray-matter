@@ -285,8 +285,6 @@ int board::evaluate() const
 
 	int sum = 0;
 
-	if (state.piece[OFF_MOVE][KING])
-		return WEIGHT_ILLEGAL;
 	sum += evaluate_material();
 	sum += evaluate_pawn();
 	sum += evaluate_king();
