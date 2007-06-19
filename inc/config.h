@@ -59,6 +59,7 @@
 #define WEIGHT_ROOK		500
 #define WEIGHT_QUEEN		900
 #define WEIGHT_KING		(9 * WEIGHT_QUEEN + 2 * WEIGHT_ROOK + 2 * WEIGHT_BISHOP + 2 * WEIGHT_KNIGHT)
+#define WEIGHT_ILLEGAL		(-WEIGHT_KING - WEIGHT_PAWN)
 
 /* Values of pawn formations: */
 #define WEIGHT_ISOLATED		-10

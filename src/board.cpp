@@ -283,12 +283,9 @@ int board::evaluate() const
  | perspective of the player who's just moved (the color that's off move).
  */
 
-	int sum = 0;
-
-	sum += evaluate_material();
-	sum += evaluate_pawn();
-	sum += evaluate_king();
-	return sum;
+	if (!state.piece[OFF_MOVE][KING])
+		return WEIGHT_ILLEGAL;
+	return evaluate_material() + evaluate_pawn() + evaluate_king();
 }
 
 /*----------------------------------------------------------------------------*\
@@ -310,7 +307,7 @@ int board::evaluate_material() const
 	for (int color = WHITE; color <= BLACK; color++)
 	{
 		sign = color == OFF_MOVE ? 1 : -1;
-		for (int shape = PAWN; shape <= QUEEN; shape++)
+		for (int shape = PAWN; shape <= KING; shape++)
 		{
 			coef = count(state.piece[color][shape]);
 			weight = weight_piece[shape];
@@ -415,6 +412,14 @@ int board::evaluate_king() const
 }
 
 /*----------------------------------------------------------------------------*\
+ |				    check()				      |
+\*----------------------------------------------------------------------------*/
+bool board::check() const
+{
+	return check(state.piece[ON_MOVE][KING], OFF_MOVE);
+}
+
+/*----------------------------------------------------------------------------*\
  |				   zugzwang()				      |
 \*----------------------------------------------------------------------------*/
 bool board::zugzwang() const
@@ -434,7 +439,7 @@ bool board::zugzwang() const
  | or not to try null-move pruning.
 */
 
-	if (check(state.piece[state.whose][KING], !state.whose))
+	if (check(state.piece[ON_MOVE][KING], OFF_MOVE))
 		/* The color that's on move is in check. */
 		return true;
 	for (int color = WHITE; color <= BLACK; color++)
