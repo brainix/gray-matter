@@ -13,7 +13,6 @@
   * To earn a provisional rating.
 
 === Mid Term Goals (for the Next Year) ===
-  * To nurture a community of hackers and chess players.
   * ~~To implement [http://www.cs.vu.nl/~aske/mtdf.html MTD(f)].~~
   * ~~To provide evidence for correctness of search.~~
   * ~~For the engine to regularly checkmate its hackers.~~
@@ -21,7 +20,6 @@
   * To identify a potential market and come up with a business plan.
 
 === Long Term Goals (for the Project's Lifetime) ===
-  * To nurture a community of hackers and chess players.
   * To parallelize the move search.
   * To earn a master-level rating.
 
