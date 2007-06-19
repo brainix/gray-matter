@@ -107,6 +107,7 @@ public:
 	int evaluate_material() const;
 	int evaluate_pawn() const;
 	int evaluate_king() const;
+	bool check() const;
 	bool zugzwang() const;
 
 	/* These methods generate, make, and take back moves. */
