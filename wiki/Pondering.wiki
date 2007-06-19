@@ -7,8 +7,10 @@ When the engine finishes thinking, the PV begins with the move that the engine w
 
 = The Naive Idea =
 
-The most intuitive approach to pondering is for the engine to do exactly what it'd do if it were thinking - from the current position, to continue generating a PV but starting with the opponent's best move.  That way, when it's time for the engine to think again, its transposition table will be filled with many useful evaluations and it'll search through the first few plies very quickly.
+The most intuitive approach to pondering is for the engine to do exactly what it'd do if it were thinking - from the current position, to continue generating a PV but starting with the opponent's best move.  That way, when it's time for the engine to think again, its transposition table will be filled with many useful values and it'll search through the first few plies very quickly.
 
 = The Better Idea =
 
 Bruce Moreland (of [http://www.seanet.com/~brucemo/chess.htm Gerbil and Ferret] fame) suggests a [http://www.seanet.com/~brucemo/topics/pondering.htm better way].
+
+= The Naive Idea Revisited =
