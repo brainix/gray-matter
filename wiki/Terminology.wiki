@@ -17,4 +17,4 @@
 
   * *Principal Variation* or *PV* - A series of best moves from the current position to a given depth.  The PV always begins with a move for the color on move.  For example, at the start of the game, the PV consists of white's best move, black's best response, white's best counter-response, black's best counter-counter-response, and so on.
 
-  * *Thinking* - What the engine does when it's on move.  When the engine thinks, it generates a PV.
+  * *Thinking* - What the engine does when it's on move.
