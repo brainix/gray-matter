@@ -513,7 +513,6 @@ void xboard::do_nopost() const
 int xboard::game_over()
 {
 	int status = b.get_status(true);
-
 	mutex_lock(&output_mutex);
 	switch (status)
 	{
