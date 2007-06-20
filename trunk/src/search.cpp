@@ -120,11 +120,12 @@ void search::handle()
 \*----------------------------------------------------------------------------*/
 void search::move_now() const
 {
-	if (search_status != THINKING)
-		return;
-	mutex_lock(&flag_mutex);
-	timeout_flag = true;
-	mutex_unlock(&flag_mutex);
+	if (search_status == THINKING)
+	{
+		mutex_lock(&flag_mutex);
+		timeout_flag = true;
+		mutex_unlock(&flag_mutex);
+	}
 }
 
 /*----------------------------------------------------------------------------*\
@@ -254,12 +255,10 @@ void search::change(int s, const board& now)
  |	 12		start thinking
  */
 
-	/* Force pondering timeout. */
 	mutex_lock(&flag_mutex);
 	timeout_flag = true;
 	mutex_unlock(&flag_mutex);
 
-	/* Grab board, set board position, release board. */
 	if (s == THINKING || s == PONDERING)
 	{
 		b.lock();
@@ -267,7 +266,6 @@ void search::change(int s, const board& now)
 		b.unlock();
 	}
 
-	/* Send thinking command. */
 	mutex_lock(&search_mutex);
 	search_status = s;
 	cond_signal(&search_cond);
@@ -399,12 +397,10 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 	bool whose = b.get_whose();       // In this position, the color on move.
 	bitboard_t hash = b.get_hash();   // This position's hash.
 	int status = b.get_status(false); // In this position, whether or not the game is over.
+	move_t m;                         // From this position, the best move.
 	int upper = +INFINITY;            // For this position, the upper bound on the MiniMax score.
 	int lower = -INFINITY;            // For this position, the lower bound on the MiniMax score.
 	int tmp_alpha = alpha;            // Scratch variable for us to use so as to not clobber alpha.
-	list<move_t> l;                   // From this position, the move list.
-	list<move_t>::iterator it;        // The iterator through the move list.
-	move_t m;                         // From this position, the best move.
 
 	/* Increment the number of positions searched. */
 	nodes++;
@@ -425,9 +421,24 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 		 |     draw.  That's why we score this position as +WEIGHT_CONTEMPT.
 		 |     Therefore, when the NegaMax recursion unrolls, we score
 		 |     the move that leads to this position as -WEIGHT_CONTEMPT.
+		 |
+		 | If this position is a mate:
+		 |     We want to encourage players to mate.  ;-)  That's why
+		 |     we score this position as -WEIGHT_KING.  Therefore, when
+		 |     the NegaMax recursion unrolls, we score the move that
+		 |     leads to this position as +WEIGHT_KING.
 		 */
 		SET_NULL_MOVE(m);
-		m.value = status == IN_PROGRESS ? -b.evaluate() : +WEIGHT_CONTEMPT;
+		switch (status)
+		{
+			case IN_PROGRESS  : m.value = -b.evaluate();    break;
+			case STALEMATE    : m.value = +WEIGHT_CONTEMPT; break;
+			case INSUFFICIENT : m.value = +WEIGHT_CONTEMPT; break;
+			case THREE        : m.value = +WEIGHT_CONTEMPT; break;
+			case FIFTY        : m.value = +WEIGHT_CONTEMPT; break;
+			case CHECKMATE    : m.value = -WEIGHT_KING;     break;
+			case ILLEGAL      : m.value = -WEIGHT_KING;     break;
+		}
 		return m;
 	}
 
@@ -451,8 +462,30 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 		beta = LESSER(beta, upper);
 	}
 
-	/* Generate and re-order the move list. */
-	b.generate(l);
+	/* Generate the move list. */
+	list<move_t> l;            // From this position, the move list.
+	list<move_t>::iterator it; // The iterator through the move list.
+	b.generate(l, !shallowness);
+	if (l.empty())
+	{
+		/*
+		 | In this position, there are no legal moves.  The game must be
+		 | stalemated or checkmated.
+		 */
+		switch (b.get_status(true))
+		{
+			case IN_PROGRESS  : m.value = -b.evaluate();    break;
+			case STALEMATE    : m.value = +WEIGHT_CONTEMPT; break;
+			case INSUFFICIENT : m.value = +WEIGHT_CONTEMPT; break;
+			case THREE        : m.value = +WEIGHT_CONTEMPT; break;
+			case FIFTY        : m.value = +WEIGHT_CONTEMPT; break;
+			case CHECKMATE    : m.value = -WEIGHT_KING;     break;
+			case ILLEGAL      : m.value = -WEIGHT_KING;     break;
+		}
+		return m;
+	}
+
+	/* Re-order the move list. */
 	for (it = l.begin(); it != l.end(); it++)
 		/*
 		 | According to the transposition table, a previous search from
@@ -482,9 +515,8 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 	{
 		SET_NULL_MOVE(m);
 		m.value = !b.check() ? +WEIGHT_CONTEMPT : -(WEIGHT_KING - shallowness * WEIGHT_PAWN);
-		return m;
 	}
-	if (!timeout_flag || !depth_flag)
+	else if (!(timeout_flag && depth_flag))
 	{
 		if (m.value <= alpha)
 			table_ptr->store(hash, depth, UPPER, m);
