@@ -404,7 +404,8 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 	int tmp_alpha = alpha;            // Scratch variable for us to use so as to not clobber alpha.
 	list<move_t> l;                   // From this position, the move list.
 	list<move_t>::iterator it;        // The iterator through the move list.
-	move_t m;                         // From this position, the best move.
+	move_t m, tmp_move;               // From this position, the best move.
+	bool cutoff = false;              //
 
 	/* Increment the number of positions searched. */
 	nodes++;
@@ -489,6 +490,14 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 
 	/* Re-order the move list. */
 	for (it = l.begin(); it != l.end(); it++)
+	{
+		b.make(*it);
+		if (table_ptr->probe(b.get_hash(), depth - 1, LOWER, &tmp_move))
+			if (tmp_move.value >= beta)
+				cutoff = true;
+		b.unmake();
+		if (cutoff)
+			return tmp_move;
 		/*
 		 | According to the transposition table, a previous search from
 		 | this position determined this move to be best.  In this
@@ -497,10 +506,11 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 		 | to hopefully cause an earlier cutoff.
 		 */
 		it->value = *it == m ? WEIGHT_KING : history_ptr->probe(whose, *it);
+	}
 	l.sort(descend);
 
 	/* Score each move in the list. */
-	for (m.value = -INFINITY, it = l.begin(); it != l.end(); it++)
+	for (SET_NULL_MOVE(m), m.value = -INFINITY, it = l.begin(); it != l.end(); it++)
 	{
 		b.make(*it);
 		it->value = -minimax(depth - 1, shallowness + 1, -beta, -tmp_alpha).value;
