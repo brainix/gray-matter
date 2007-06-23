@@ -37,3 +37,5 @@ This section contains quotes about Gray Matter and its hackers.
   * I had no problems compiling and playing it on my Linux box.  It's awesome! - Kyle Fitch
 
   * Gray matters! - Kati Freeman
+
+  * Well done on writing your chess engine.  I have already downloaded it and played with it a little bit - very nice. - Jim Ablett
