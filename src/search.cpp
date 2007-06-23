@@ -497,7 +497,10 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 				cutoff = true;
 		b.unmake();
 		if (cutoff)
-			return tmp_move;
+		{
+			it->value = tmp_move.value;
+			return *it;
+		}
 		/*
 		 | According to the transposition table, a previous search from
 		 | this position determined this move to be best.  In this
