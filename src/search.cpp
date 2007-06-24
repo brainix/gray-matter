@@ -285,11 +285,15 @@ void search::iterate(int s)
  | time) and pondering (on our opponent's time) since they're so similar.
  */
 
+	clock_t start;
+	int depth;
+	move_t m, tmp_move[2];
+
 	/*
 	 | Note the start time.  If we're to think, set the alarm.  Initialize
 	 | the number of nodes searched.
 	 */
-	clock_t start = clock();
+	start = clock();
 	if (s == THINKING)
 	{
 		timer_set(max_time);
@@ -298,11 +302,12 @@ void search::iterate(int s)
 	mutex_lock(&flag_mutex);
 	depth_flag = false;
 	mutex_unlock(&flag_mutex);
-
 	nodes = 0;
-	move_t m, tmp_move;
-	SET_NULL_MOVE(m);
-	m.value = 0;
+	for (depth = 0; depth <= 1; depth++)
+	{
+		SET_NULL_MOVE(tmp_move[depth]);
+		tmp_move[depth].value = 0;
+	}
 
 	/*
 	 | Perform iterative deepening until the alarm has sounded (if we're
@@ -310,13 +315,13 @@ void search::iterate(int s)
 	 | reached the maximum depth (either way).
 	 */
 	b.lock();
-	for (int depth = 1; depth <= max_depth; depth++)
+	for (depth = 1; depth <= max_depth; depth++)
 	{
-		tmp_move = mtdf(depth, m.value);
+		tmp_move[depth & 1] = mtdf(depth, tmp_move[depth & 1].value);
 		mutex_lock(&flag_mutex);
 		depth_flag = true;
 		mutex_unlock(&flag_mutex);
-		if (timeout_flag && depth_flag || IS_NULL_MOVE(tmp_move))
+		if (timeout_flag && depth_flag || IS_NULL_MOVE(tmp_move[depth & 1]))
 			/*
 			 | Oops.  Either the alarm has interrupted this
 			 | iteration (and the results are incomplete and
@@ -324,7 +329,7 @@ void search::iterate(int s)
 			 | position (and the game must've ended).
 			 */
 			break;
-		m = tmp_move;
+		m = tmp_move[depth & 1];
 		extract(s);
 		if (output)
 			xboard_ptr->print_output(depth, m.value, (clock() - start) / CLOCKS_PER_SEC, nodes, pv);
