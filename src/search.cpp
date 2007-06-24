@@ -27,9 +27,8 @@
 #include "search.h"
 
 /* Global variables: */
-mutex_t flag_mutex;     // The lock that protects...
-bool timeout_flag;      // ...the flag that determines when to stop thinking or pondering and...
-bool depth_flag;        // ...the flag that indicates when we've searched to the minimum depth!  :-D
+mutex_t timeout_mutex;  // The lock that protects...
+bool timeout_flag;      // ...the flag that determines when to stop thinking or pondering!  :-D
 
 mutex_t search_mutex;   // The lock that protects...
 cond_t search_cond;     // ...the condition that controls...
@@ -55,7 +54,7 @@ search::search(table *t, history *h, xboard *x)
 	history_ptr = h;
 	xboard_ptr = x;
 
-	mutex_create(&flag_mutex);
+	mutex_create(&timeout_mutex);
 	timer_function(handle);
 	mutex_create(&search_mutex);
 	cond_create(&search_cond, NULL);
@@ -73,7 +72,7 @@ search::~search()
 
 	cond_destroy(&search_cond);
 	mutex_destroy(&search_mutex);
-	mutex_destroy(&flag_mutex);
+	mutex_destroy(&timeout_mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -110,9 +109,9 @@ void search::handle()
 
 /* The alarm has sounded.  Handle it. */
 
-	mutex_lock(&flag_mutex);
+	mutex_lock(&timeout_mutex);
 	timeout_flag = true;
-	mutex_unlock(&flag_mutex);
+	mutex_unlock(&timeout_mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -122,9 +121,9 @@ void search::move_now() const
 {
 	if (search_status != THINKING)
 		return;
-	mutex_lock(&flag_mutex);
+	mutex_lock(&timeout_mutex);
 	timeout_flag = true;
-	mutex_unlock(&flag_mutex);
+	mutex_unlock(&timeout_mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -208,9 +207,9 @@ void *search::start(void *arg)
 		/* Do the requested work - idle, think, ponder, or quit. */
 		if (search_status == THINKING || search_status == PONDERING)
 		{
-			mutex_lock(&flag_mutex);
+			mutex_lock(&timeout_mutex);
 			timeout_flag = false;
-			mutex_unlock(&flag_mutex);
+			mutex_unlock(&timeout_mutex);
 			search_ptr->iterate(search_status);
 		}
 	} while (search_status != QUITTING);
@@ -255,9 +254,9 @@ void search::change(int s, const board& now)
  */
 
 	/* Force pondering timeout. */
-	mutex_lock(&flag_mutex);
+	mutex_lock(&timeout_mutex);
 	timeout_flag = true;
-	mutex_unlock(&flag_mutex);
+	mutex_unlock(&timeout_mutex);
 
 	/* Grab board, set board position, release board. */
 	if (s == THINKING || s == PONDERING)
@@ -287,7 +286,7 @@ void search::iterate(int s)
 
 	clock_t start;
 	int depth;
-	move_t m, tmp_move[2];
+	move_t guess[2], m;
 
 	/*
 	 | Note the start time.  If we're to think, set the alarm.  Initialize
@@ -299,14 +298,11 @@ void search::iterate(int s)
 		timer_set(max_time);
 		history_ptr->clear();
 	}
-	mutex_lock(&flag_mutex);
-	depth_flag = false;
-	mutex_unlock(&flag_mutex);
 	nodes = 0;
 	for (depth = 0; depth <= 1; depth++)
 	{
-		SET_NULL_MOVE(tmp_move[depth]);
-		tmp_move[depth].value = 0;
+		SET_NULL_MOVE(guess[depth]);
+		guess[depth].value = 0;
 	}
 
 	/*
@@ -317,11 +313,8 @@ void search::iterate(int s)
 	b.lock();
 	for (depth = 1; depth <= max_depth; depth++)
 	{
-		tmp_move[depth & 1] = mtdf(depth, tmp_move[depth & 1].value);
-		mutex_lock(&flag_mutex);
-		depth_flag = true;
-		mutex_unlock(&flag_mutex);
-		if (timeout_flag && depth_flag || IS_NULL_MOVE(tmp_move[depth & 1]))
+		guess[depth & 1] = mtdf(depth, guess[depth & 1].value);
+		if (timeout_flag || IS_NULL_MOVE(guess[depth & 1]))
 			/*
 			 | Oops.  Either the alarm has interrupted this
 			 | iteration (and the results are incomplete and
@@ -329,7 +322,7 @@ void search::iterate(int s)
 			 | position (and the game must've ended).
 			 */
 			break;
-		m = tmp_move[depth & 1];
+		m = guess[depth & 1];
 		extract(s);
 		if (output)
 			xboard_ptr->print_output(depth, m.value, (clock() - start) / CLOCKS_PER_SEC, nodes, pv);
@@ -368,7 +361,7 @@ move_t search::mtdf(int depth, int guess)
 	m.value = guess;
 	int upper = +INFINITY, lower = -INFINITY, beta;
 
-	while (upper > lower && !(timeout_flag && depth_flag))
+	while (upper > lower && !timeout_flag)
 	{
 		beta = m.value + (m.value == lower) * WEIGHT_INCREMENT;
 		m = minimax(depth, 0, beta - WEIGHT_INCREMENT, beta);
@@ -514,7 +507,7 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 			continue;
 		if (it->value > m.value)
 			tmp_alpha = GREATER(tmp_alpha, (m = *it).value);
-		if (m.value >= beta || timeout_flag && depth_flag)
+		if (m.value >= beta || timeout_flag)
 			break;
 	}
 
@@ -524,7 +517,7 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 		m.value = !b.check() ? +WEIGHT_CONTEMPT : -(WEIGHT_KING - shallowness * WEIGHT_PAWN);
 		return m;
 	}
-	if (!timeout_flag || !depth_flag)
+	if (!timeout_flag)
 	{
 		if (m.value <= alpha)
 			table_ptr->store(hash, depth, UPPER, m);
