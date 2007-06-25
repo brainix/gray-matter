@@ -431,24 +431,14 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 		 |     leads to this position as +WEIGHT_KING.
 		 */
 		SET_NULL_MOVE(m);
-		switch (status)
-		{
-			case IN_PROGRESS  : m.value = -b.evaluate();    break;
-			case STALEMATE    : m.value = +WEIGHT_CONTEMPT; break;
-			case INSUFFICIENT : m.value = +WEIGHT_CONTEMPT; break;
-			case THREE        : m.value = +WEIGHT_CONTEMPT; break;
-			case FIFTY        : m.value = +WEIGHT_CONTEMPT; break;
-			case CHECKMATE    : m.value = -WEIGHT_KING;     break;
-			case ILLEGAL      : m.value = -WEIGHT_KING;     break;
-		}
+		m.value = status == IN_PROGRESS ? -b.evaluate() : +WEIGHT_CONTEMPT;
 		return m;
 	}
 
 	/*
-	 | Before anything else, do some Research Re: search & Research.  ;-)
-	 | (Apologies to Aske Plaat.)  If we've already sufficiently examined
-	 | this position, return the best move from our previous search.
-	 | Otherwise, if we can, reduce the size of our alpha-beta window.
+	 | If we've already sufficiently examined this position, return the best
+	 | move from our previous search.  Otherwise, if we can, reduce the size
+	 | of our alpha-beta window.
 	 */
 	if (shallowness)
 	{
@@ -464,28 +454,8 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 		beta = LESSER(beta, upper);
 	}
 
-	/* Generate the move list. */
+	/* Generate and re-order the move list. */
 	b.generate(l, !shallowness);
-	if (l.empty())
-	{
-		/*
-		 | In this position, there are no legal moves.  The game must be
-		 | stalemated or checkmated.
-		 */
-		switch (b.get_status(true))
-		{
-			case IN_PROGRESS  : m.value = -b.evaluate();    break;
-			case STALEMATE    : m.value = +WEIGHT_CONTEMPT; break;
-			case INSUFFICIENT : m.value = +WEIGHT_CONTEMPT; break;
-			case THREE        : m.value = +WEIGHT_CONTEMPT; break;
-			case FIFTY        : m.value = +WEIGHT_CONTEMPT; break;
-			case CHECKMATE    : m.value = -WEIGHT_KING;     break;
-			case ILLEGAL      : m.value = -WEIGHT_KING;     break;
-		}
-		return m;
-	}
-
-	/* Re-order the move list. */
 	for (it = l.begin(); it != l.end(); it++)
 		/*
 		 | According to the transposition table, a previous search from
