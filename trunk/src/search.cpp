@@ -445,10 +445,9 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 	}
 
 	/*
-	 | Before anything else, do some Research Re: search & Research.  ;-)
-	 | (Apologies to Aske Plaat.)  If we've already sufficiently examined
-	 | this position, return the best move from our previous search.
-	 | Otherwise, if we can, reduce the size of our alpha-beta window.
+	 | If we've already sufficiently examined this position, return the best
+	 | move from our previous search.  Otherwise, if we can, reduce the size
+	 | of our alpha-beta window.
 	 */
 	if (shallowness)
 	{
