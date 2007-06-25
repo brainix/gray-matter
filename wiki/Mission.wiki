@@ -38,4 +38,6 @@ This section contains quotes about Gray Matter and its hackers.
 
   * Gray matters! - Kati Freeman
 
+  * Thanks!  In fact, your implementation caught some bugs in my pseudocode for ttables that we're now "hashing out", as it were, on our course email list.  So thanks much! - Bart Massey, Assoc. Prof. Computer Science, Portland State University
+
   * Well done on writing your chess engine.  I have already downloaded it and played with it a little bit - very nice. - Jim Ablett
