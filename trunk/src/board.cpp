@@ -284,7 +284,7 @@ int board::evaluate() const
  */
 
 	if (!state.piece[OFF_MOVE][KING])
-		return WEIGHT_ILLEGAL;
+		return -WEIGHT_ILLEGAL;
 	return evaluate_material() + evaluate_pawn() + evaluate_king();
 }
 
