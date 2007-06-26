@@ -439,15 +439,16 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 			case THREE        : m.value = +WEIGHT_CONTEMPT; break;
 			case FIFTY        : m.value = +WEIGHT_CONTEMPT; break;
 			case CHECKMATE    : m.value = -WEIGHT_KING;     break;
-			case ILLEGAL      : m.value = +WEIGHT_ILLEGAL;  break;
+			case ILLEGAL      : m.value = -WEIGHT_KING;     break;
 		}
 		return m;
 	}
 
 	/*
-	 | If we've already sufficiently examined this position, return the best
-	 | move from our previous search.  Otherwise, if we can, reduce the size
-	 | of our alpha-beta window.
+	 | Before anything else, do some Research Re: search & Research.  ;-)
+	 | (Apologies to Aske Plaat.)  If we've already sufficiently examined
+	 | this position, return the best move from our previous search.
+	 | Otherwise, if we can, reduce the size of our alpha-beta window.
 	 */
 	if (shallowness)
 	{
@@ -471,7 +472,6 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 		 | In this position, there are no legal moves.  The game must be
 		 | stalemated or checkmated.
 		 */
-		SET_NULL_MOVE(m);
 		switch (b.get_status(true))
 		{
 			case IN_PROGRESS  : m.value = -b.evaluate();    break;
@@ -480,7 +480,7 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 			case THREE        : m.value = +WEIGHT_CONTEMPT; break;
 			case FIFTY        : m.value = +WEIGHT_CONTEMPT; break;
 			case CHECKMATE    : m.value = -WEIGHT_KING;     break;
-			case ILLEGAL      : m.value = +WEIGHT_ILLEGAL;  break;
+			case ILLEGAL      : m.value = -WEIGHT_KING;     break;
 		}
 		return m;
 	}
@@ -503,7 +503,7 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 		b.make(*it);
 		it->value = -minimax(depth - 1, shallowness + 1, -beta, -tmp_alpha).value;
 		b.unmake();
-		if (it->value == -WEIGHT_ILLEGAL)
+		if (it->value == WEIGHT_ILLEGAL)
 			continue;
 		if (it->value > m.value)
 			tmp_alpha = GREATER(tmp_alpha, (m = *it).value);
