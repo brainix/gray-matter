@@ -38,7 +38,7 @@ int search_status;      // ...the search status!  :-D
 /*----------------------------------------------------------------------------*\
  |				    search()				      |
 \*----------------------------------------------------------------------------*/
-search::search(table *t, history *h, xboard *x)
+search::search(table *t, history *h, xboard *x, chess_clock *c)
 {
 
 /*
@@ -53,6 +53,7 @@ search::search(table *t, history *h, xboard *x)
 	table_ptr = t;
 	history_ptr = h;
 	xboard_ptr = x;
+	clock_ptr = c;
 
 	mutex_create(&timeout_mutex);
 	timer_function(handle);
@@ -97,6 +98,7 @@ class search& search::operator=(const search& that)
 	table_ptr = that.table_ptr;
 	history_ptr = that.history_ptr;
 	xboard_ptr = that.xboard_ptr;
+	clock_ptr = that.clock_ptr;
 
 	return *this;
 }
@@ -284,7 +286,6 @@ void search::iterate(int s)
  | time) and pondering (on our opponent's time) since they're so similar.
  */
 
-	clock_t start;
 	int depth;
 	move_t guess[2], m;
 
@@ -292,7 +293,7 @@ void search::iterate(int s)
 	 | Note the start time.  If we're to think, set the alarm.  Initialize
 	 | the number of nodes searched.
 	 */
-	start = clock();
+	clock_ptr->note_time();
 	if (s == THINKING)
 	{
 		timer_set(max_time);
@@ -325,7 +326,7 @@ void search::iterate(int s)
 		m = guess[depth & 1];
 		extract(s);
 		if (output)
-			xboard_ptr->print_output(depth, m.value, (clock() - start) / CLOCKS_PER_SEC, nodes, pv);
+			xboard_ptr->print_output(depth, m.value, clock_ptr->get_elapsed(), nodes, pv);
 		if (m.value == WEIGHT_KING || m.value == -WEIGHT_KING)
 			/*
 			 | Oops.  The game will be over at this depth.  There's

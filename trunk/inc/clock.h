@@ -31,13 +31,17 @@
 #include "types.h"
 #include "thread.h"
 
-class clock
+class chess_clock
 {
 public:
-	clock();
-	static void handle();
+	chess_clock();
+	void set_alarm() const;
+	static void sound_alarm() const;
+	void clear_alarm() const;
+	void note_time();
+	int get_elapsed() const;
 private:
-	int mode;
+	clock_t noted_time;
 };
 
 #endif
