@@ -57,7 +57,7 @@ void chess_clock::set_mode(int new_moves, int new_seconds, int new_increment)
 /*----------------------------------------------------------------------------*\
  |				  set_alarm()				      |
 \*----------------------------------------------------------------------------*/
-void chess_clock::set_alarm(int seconds) const
+void chess_clock::set_alarm(int seconds)
 {
 
 /* Set the alarm. */
