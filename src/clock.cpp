@@ -47,7 +47,7 @@ void chess_clock::set_alarm() const
 /*----------------------------------------------------------------------------*\
  |				 sound_alarm()				      |
 \*----------------------------------------------------------------------------*/
-void chess_clock::sound_alarm() const
+void chess_clock::sound_alarm()
 {
 
 /* The alarm has sounded.  Handle it. */
