@@ -77,9 +77,10 @@ void xboard::vomit(char *message) const
 /*----------------------------------------------------------------------------*\
  |				     loop()				      |
 \*----------------------------------------------------------------------------*/
-void xboard::loop(class search *s)
+void xboard::loop(class search *s, chess_clock *c)
 {
 	search_ptr = s;
+	clock_ptr = c;
 
 	for (fgets(buffer, 80, stdin); strncmp(buffer, "quit", 4); fgets(buffer, 80, stdin))
 	{
@@ -311,6 +312,7 @@ void xboard::do_level() const
 		;
 	int inc = str_to_num(p);
 	search_ptr->set_time(secs / (moves ? moves : 40) + inc);
+	clock_ptr->set_mode(secs, moves, inc);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -322,6 +324,7 @@ void xboard::do_st() const
 /* Set the maximum search time. */
 
 	search_ptr->set_time(str_to_num(&buffer[3]));
+	clock_ptr->set_mode(str_to_num(&buffer[3]), 1, 0);
 }
 
 /*----------------------------------------------------------------------------*\

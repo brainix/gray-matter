@@ -54,9 +54,9 @@ int main(int argc, char **argv)
 	history h;
 	xboard x;
 	chess_clock c;
-	class search s(&t, &h, &x, &c);
+	class search s(&t, &h, &c, &x);
 
 	/* Launch the event loop. */
-	x.loop(&s);
+	x.loop(&s, &c);
 	return 0;
 }

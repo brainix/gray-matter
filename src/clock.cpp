@@ -34,17 +34,35 @@ chess_clock::chess_clock()
 
 /* Constructor. */
 
+	set_mode(40, 300, 0);
 	timer_function(sound_alarm);
+	note_time();
 }
+
+/*----------------------------------------------------------------------------*\
+ |				   set_mode()				      |
+\*----------------------------------------------------------------------------*/
+void chess_clock::set_mode(int new_moves, int new_seconds, int new_increment)
+{
+	total_moves = new_moves;
+	total_seconds = new_seconds;
+	increment = new_increment;
+	remaining_moves = new_moves;
+	remaining_seconds = new_seconds;
+}
+
+/*----------------------------------------------------------------------------*\
+\*----------------------------------------------------------------------------*/
 
 /*----------------------------------------------------------------------------*\
  |				  set_alarm()				      |
 \*----------------------------------------------------------------------------*/
-void chess_clock::set_alarm() const
+void chess_clock::set_alarm(int seconds) const
 {
 
 /* Set the alarm. */
 
+	timer_set(seconds);
 }
 
 /*----------------------------------------------------------------------------*\

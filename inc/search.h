@@ -38,22 +38,22 @@ using namespace std;
 #include "thread.h"
 
 /* Extra Gray Matter stuff: */
-#include "table.h"
-#include "xboard.h"
-#include "clock.h"
 #include "board.h"
+#include "table.h"
+#include "clock.h"
+#include "xboard.h"
 
 /* Forward declarations: */
+class board;
 class table;
 class history;
-class xboard;
 class chess_clock;
-class board;
+class xboard;
 
 class search
 {
 public:
-	search(table *t, history *h, xboard *x, chess_clock *c);
+	search(table *t, history *h, chess_clock *c, xboard *x);
 	~search();
 	search& operator=(const search& that);
 	static void handle();
@@ -77,8 +77,8 @@ private:
 	board b;                // Board representation object.
 	table *table_ptr;       // Transposition table object.
 	history *history_ptr;   // History table object.
-	xboard *xboard_ptr;     // Chess Engine Communication Protocol object.
 	chess_clock *clock_ptr; // Chess clock object.
+	xboard *xboard_ptr;     // Chess Engine Communication Protocol object.
 
 	void iterate(int s);
 	move_t mtdf(int depth, int guess);
