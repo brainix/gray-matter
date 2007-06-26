@@ -40,6 +40,7 @@ using namespace std;
 /* Extra Gray Matter stuff: */
 #include "table.h"
 #include "xboard.h"
+#include "clock.h"
 #include "board.h"
 
 /* Forward declarations: */
