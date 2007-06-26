@@ -33,6 +33,7 @@
 /* Extra Gray Matter stuff: */
 #include "table.h"
 #include "xboard.h"
+#include "clock.h"
 #include "search.h"
 
 /* Function prototypes: */
@@ -52,7 +53,8 @@ int main(int argc, char **argv)
 	table t;
 	history h;
 	xboard x;
-	class search s(&t, &h, &x);
+	chess_clock c;
+	class search s(&t, &h, &x, &c);
 
 	/* Launch the event loop. */
 	x.loop(&s);
