@@ -39,10 +39,12 @@ using namespace std;
 /* Extra Gray Matter stuff: */
 #include "board.h"
 #include "search.h"
+#include "clock.h"
 
 /* Forward declarations: */
 class board;
 class search;
+class chess_clock;
 
 class xboard
 {
@@ -50,7 +52,7 @@ public:
 	xboard();
 	~xboard();
 	void vomit(char *message) const;
-	void loop(class search *s);
+	void loop(class search *s, chess_clock *c);
 	void print_output(int ply, int value, int time, int nodes, list<move_t> &pv) const;
 	void print_result(move_t m);
 	void print_resignation() const;
@@ -62,6 +64,7 @@ private:
 
 	board b;                  // Board representation object.
 	class search *search_ptr; // Move search object.
+	chess_clock *clock_ptr;   // Chess clock object.
 
 	void print_move(move_t m) const;
 	void do_xboard() const;

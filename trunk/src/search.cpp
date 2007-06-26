@@ -38,7 +38,7 @@ int search_status;      // ...the search status!  :-D
 /*----------------------------------------------------------------------------*\
  |				    search()				      |
 \*----------------------------------------------------------------------------*/
-search::search(table *t, history *h, xboard *x, chess_clock *c)
+search::search(table *t, history *h, chess_clock *c, xboard *x)
 {
 
 /*
@@ -52,8 +52,8 @@ search::search(table *t, history *h, xboard *x, chess_clock *c)
 
 	table_ptr = t;
 	history_ptr = h;
-	xboard_ptr = x;
 	clock_ptr = c;
+	xboard_ptr = x;
 
 	mutex_create(&timeout_mutex);
 	timer_function(handle);
@@ -97,8 +97,8 @@ class search& search::operator=(const search& that)
 	b = that.b;
 	table_ptr = that.table_ptr;
 	history_ptr = that.history_ptr;
-	xboard_ptr = that.xboard_ptr;
 	clock_ptr = that.clock_ptr;
+	xboard_ptr = that.xboard_ptr;
 
 	return *this;
 }
@@ -296,7 +296,7 @@ void search::iterate(int s)
 	clock_ptr->note_time();
 	if (s == THINKING)
 	{
-		timer_set(max_time);
+		clock_ptr->set_alarm(max_time);
 		history_ptr->clear();
 	}
 	nodes = 0;
