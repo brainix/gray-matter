@@ -106,6 +106,10 @@ void xboard::loop(class search *s, chess_clock *c)
 			do_st();
 		else if (!strncmp(buffer, "sd", 2))
 			do_sd();
+		else if (!strncmp(buffer, "time", 4))
+			do_time();
+		else if (!strncmp(buffer, "otim", 4))
+			do_otim();
 		else if (!strncmp(buffer, "usermove", 8))
 			do_usermove();
 		else if (!strncmp(buffer, "?", 1))
@@ -221,7 +225,7 @@ void xboard::do_protover() const
 	printf("feature ping=1\n");                     //
 	printf("feature playother=1\n");                //
 	printf("feature usermove=1\n");                 //
-	printf("feature time=0\n");                     //
+	printf("feature time=1\n");                     //
 	printf("feature draw=1\n");                     //
 	printf("feature sigint=0\n");                   //
 	printf("feature analyze=0\n");                  //
@@ -336,6 +340,20 @@ void xboard::do_sd() const
 /* Set the maximum search depth. */
 
 	search_ptr->set_depth(str_to_num(&buffer[3]));
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   do_time()				      |
+\*----------------------------------------------------------------------------*/
+void xboard::do_time() const
+{
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   do_otim()				      |
+\*----------------------------------------------------------------------------*/
+void xboard::do_otim() const
+{
 }
 
 /*----------------------------------------------------------------------------*\
