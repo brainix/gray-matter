@@ -79,6 +79,8 @@ private:
 	void do_level() const;
 	void do_st() const;
 	void do_sd() const;
+	void do_time() const;
+	void do_otim() const;
 	void do_usermove();
 	void do_question() const;
 	void do_ping();
