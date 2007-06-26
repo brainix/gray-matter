@@ -209,3 +209,8 @@
 #define TB		(1024 * GB) // Terabyte.
 
 #define INFINITY	32767 // Close enough.  ;-)
+
+/* Time control styles: */
+#define CONVENTIONAL	0 //
+#define INCREMENTAL	1 //
+#define SECS_PER_MOVE	2 //
