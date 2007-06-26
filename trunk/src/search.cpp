@@ -337,11 +337,11 @@ void search::iterate(int s)
 	b.unlock();
 
 	/*
-	 | If we've just finished thinking, clear the alarm and inform XBoard of
-	 | our favorite move.
+	 | If we've just finished thinking, cancel the alarm and inform XBoard
+	 | of our favorite move.
 	 */
 	if (s == THINKING)
-		timer_cancel();
+		clock_ptr->cancel_alarm();
 	if (s == THINKING && search_status != QUITTING)
 		xboard_ptr->print_result(m);
 }

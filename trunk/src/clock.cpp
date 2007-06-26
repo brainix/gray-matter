@@ -42,6 +42,9 @@ chess_clock::chess_clock()
 \*----------------------------------------------------------------------------*/
 void chess_clock::set_alarm() const
 {
+
+/* Set the alarm. */
+
 }
 
 /*----------------------------------------------------------------------------*\
@@ -50,15 +53,18 @@ void chess_clock::set_alarm() const
 void chess_clock::sound_alarm()
 {
 
-/* The alarm has sounded.  Handle it. */
+/* Sound the alarm. */
 
 }
 
 /*----------------------------------------------------------------------------*\
- |				 clear_alarm()				      |
+ |				 cancel_alarm()				      |
 \*----------------------------------------------------------------------------*/
-void chess_clock::clear_alarm() const
+void chess_clock::cancel_alarm() const
 {
+
+/* Cancel the alarm. */
+
 	timer_cancel();
 }
 
