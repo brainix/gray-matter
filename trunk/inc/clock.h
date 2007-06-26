@@ -36,7 +36,7 @@ class chess_clock
 public:
 	chess_clock();
 	void set_alarm() const;
-	static void sound_alarm() const;
+	static void sound_alarm();
 	void clear_alarm() const;
 	void note_time();
 	int get_elapsed() const;
