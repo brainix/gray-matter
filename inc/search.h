@@ -61,7 +61,6 @@ public:
 	void clear() const;
 	move_t get_hint() const;
 	thread_t get_thread() const;
-	void set_time(int t);
 	void set_depth(int d);
 	void set_output(bool o);
 	static void *start(void *arg);
@@ -69,7 +68,6 @@ public:
 private:
 	list<move_t> pv;        // Principal variation.
 	move_t hint;            // Opponent's best move.
-	int max_time;           // Maximum search time.
 	int max_depth;          // Maximum search depth.
 	int nodes;              // Number of nodes searched.
 	bool output;            // Whether to print thinking output.

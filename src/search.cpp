@@ -46,7 +46,6 @@ search::search(table *t, history *h, chess_clock *c, xboard *x)
  | srand(time(NULL)); - before instantiating this class!
  */
 
-	max_time = INFINITY;
 	max_depth = DEPTH;
 	output = false;
 
@@ -89,7 +88,6 @@ class search& search::operator=(const search& that)
 
 	pv = that.pv;
 	hint = that.hint;
-	max_time = that.max_time;
 	max_depth = that.max_depth;
 	nodes = that.nodes;
 	output = that.output;
@@ -151,17 +149,6 @@ move_t search::get_hint() const
 thread_t search::get_thread() const
 {
 	return search_thread;
-}
-
-/*----------------------------------------------------------------------------*\
- |				   set_time()				      |
-\*----------------------------------------------------------------------------*/
-void search::set_time(int t)
-{
-
-/* Set the maximum search time. */
-
-	max_time = t;
 }
 
 /*----------------------------------------------------------------------------*\
