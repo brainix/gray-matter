@@ -426,10 +426,10 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 		switch (status)
 		{
 			case IN_PROGRESS  : m.value = -b.evaluate();    break;
-			case STALEMATE    : m.value = -WEIGHT_CONTEMPT; break; // XXX: This should never happen.
-			case INSUFFICIENT : m.value = -WEIGHT_CONTEMPT; break;
-			case THREE        : m.value = -WEIGHT_CONTEMPT; break;
-			case FIFTY        : m.value = -WEIGHT_CONTEMPT; break;
+			case STALEMATE    : m.value = +WEIGHT_CONTEMPT; break; // XXX: This should never happen.
+			case INSUFFICIENT : m.value = +WEIGHT_CONTEMPT; break;
+			case THREE        : m.value = +WEIGHT_CONTEMPT; break;
+			case FIFTY        : m.value = +WEIGHT_CONTEMPT; break;
 			case CHECKMATE    : m.value = -WEIGHT_KING;     break; // XXX: This should never happen.
 			case ILLEGAL      : m.value = -WEIGHT_KING;     break; // XXX: This should never happen.
 		}
@@ -467,10 +467,10 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 		switch (b.get_status(true))
 		{
 			case IN_PROGRESS  : m.value = -b.evaluate();    break;
-			case STALEMATE    : m.value = -WEIGHT_CONTEMPT; break;
-			case INSUFFICIENT : m.value = -WEIGHT_CONTEMPT; break;
-			case THREE        : m.value = -WEIGHT_CONTEMPT; break;
-			case FIFTY        : m.value = -WEIGHT_CONTEMPT; break;
+			case STALEMATE    : m.value = +WEIGHT_CONTEMPT; break;
+			case INSUFFICIENT : m.value = +WEIGHT_CONTEMPT; break;
+			case THREE        : m.value = +WEIGHT_CONTEMPT; break;
+			case FIFTY        : m.value = +WEIGHT_CONTEMPT; break;
 			case CHECKMATE    : m.value = -WEIGHT_KING;     break;
 			case ILLEGAL      : m.value = -WEIGHT_KING;     break;
 		}
@@ -506,7 +506,7 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 	if (m.value == -INFINITY)
 	{
 		SET_NULL_MOVE(m);
-		m.value = !b.check() ? -WEIGHT_CONTEMPT : -(WEIGHT_KING - shallowness * WEIGHT_PAWN);
+		m.value = !b.check() ? +WEIGHT_CONTEMPT : -(WEIGHT_KING - shallowness * WEIGHT_PAWN);
 		return m;
 	}
 	if (!timeout_flag)
