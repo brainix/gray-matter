@@ -34,7 +34,10 @@ chess_clock::chess_clock()
 
 /* Constructor. */
 
-	set_mode(40, 300, 0);
+	total_moves = 40;
+	remaining_moves = 40;
+	remaining_csec = 5 * 60 * 100;
+	inc = 0;
 	timer_function(sound_alarm);
 	note_time();
 }
@@ -42,27 +45,31 @@ chess_clock::chess_clock()
 /*----------------------------------------------------------------------------*\
  |				   set_mode()				      |
 \*----------------------------------------------------------------------------*/
-void chess_clock::set_mode(int new_moves, int new_seconds, int new_increment)
+void chess_clock::set_mode(int new_moves, int new_csec, int new_inc)
 {
 	total_moves = new_moves;
-	total_seconds = new_seconds;
-	increment = new_increment;
 	remaining_moves = new_moves;
-	remaining_seconds = new_seconds;
+	remaining_csec = new_csec;
+	inc = new_inc;
 }
 
 /*----------------------------------------------------------------------------*\
+ |			    update_remaining_csec()			      |
 \*----------------------------------------------------------------------------*/
+void chess_clock::update_remaining_csec(int new_csec)
+{
+	remaining_csec = new_csec;
+}
 
 /*----------------------------------------------------------------------------*\
  |				  set_alarm()				      |
 \*----------------------------------------------------------------------------*/
-void chess_clock::set_alarm(int seconds)
+void chess_clock::set_alarm(int csec)
 {
 
 /* Set the alarm. */
 
-	timer_set(seconds);
+	timer_set(csec);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -103,7 +110,7 @@ void chess_clock::note_time()
 int chess_clock::get_elapsed() const
 {
 
-/* Return the number of seconds elapsed since the last noted time. */
+/* Return the number of centiseconds elapsed since the last noted time. */
 
 	return (clock() - noted_time) / CLOCKS_PER_SEC;
 }
