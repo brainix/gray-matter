@@ -56,6 +56,7 @@ search::search(table *t, history *h, chess_clock *c, xboard *x)
 
 	mutex_create(&timeout_mutex);
 	timer_function(handle);
+	clock_ptr->set_callback(handle);
 	mutex_create(&search_mutex);
 	cond_create(&search_cond, NULL);
 	thread_create(&search_thread, (entry_t) start, this);

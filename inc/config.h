@@ -201,6 +201,11 @@
 #define BLACK_SQUARES	0xAA55AA55AA55AA55ULL // 32 black squares.
 #define CORNERS		0x8100000000000081ULL //  4 corner squares.
 
+/* Time control styles: */
+#define CONVENTIONAL	0
+#define INCREMENTAL	1
+#define SECS_PER_MOVE	2
+
 /* Memory units: */
 #define  B		1           // Byte.
 #define KB		(1024 * B)  // Kilobyte.

@@ -39,6 +39,7 @@ public:
 	void update_remaining_secs(int color, int new_secs);
 	void dec_remaining_moves(int color);
 	void inc_remaining_moves(int color);
+	void set_callback(void (*function)()) const;
 	void set_alarm(int color);
 	static void sound_alarm();
 	void cancel_alarm() const;
