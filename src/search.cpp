@@ -289,11 +289,13 @@ void search::iterate(int s)
 	int depth;
 	move_t guess[2], m;
 
+	/* Grab the board. */
+	b.lock();
+
 	/*
 	 | Note the start time.  If we're to think, set the alarm.  Initialize
 	 | the number of nodes searched.
 	 */
-	b.lock();
 	clock_ptr->note_time();
 	if (s == THINKING)
 	{
@@ -335,6 +337,9 @@ void search::iterate(int s)
 			break;
 	}
 
+	/* Release the board. */
+	b.unlock();
+
 	/*
 	 | If we've just finished thinking, cancel the alarm and inform XBoard
 	 | of our favorite move.
@@ -343,7 +348,6 @@ void search::iterate(int s)
 		clock_ptr->cancel_alarm();
 	if (s == THINKING && search_status != QUITTING)
 		xboard_ptr->print_result(m);
-	b.unlock();
 }
 
 /*----------------------------------------------------------------------------*\
