@@ -35,20 +35,20 @@ class chess_clock
 {
 public:
 	chess_clock();
-	void set_mode(int new_moves, int new_secs, int new_inc);
-	void update_remaining_secs(int new_secs);
-	void dec_remaining_moves();
-	void inc_remaining_moves();
+	void set_mode(int color, int new_moves, int new_secs, int new_inc);
+	void update_remaining_secs(int color, int new_secs);
+	void dec_remaining_moves(int color);
+	void inc_remaining_moves(int color);
 	void set_alarm(int secs);
 	static void sound_alarm();
 	void cancel_alarm() const;
 	void note_time();
 	int get_elapsed() const;
 private:
-	int total_moves;
-	int remaining_moves;
-	int remaining_secs;
-	int inc;
+	int total_moves[COLORS];
+	int remaining_moves[COLORS];
+	int remaining_secs[COLORS];
+	int inc[COLORS];
 	clock_t noted_time;
 };
 
