@@ -299,7 +299,7 @@ void search::iterate(int s)
 	clock_ptr->note_time();
 	if (s == THINKING)
 	{
-		clock_ptr->set_alarm(max_time);
+		clock_ptr->set_alarm(b.get_whose());
 		history_ptr->clear();
 	}
 	nodes = 0;
