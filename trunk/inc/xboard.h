@@ -61,6 +61,7 @@ private:
 	bool ponder;              // Whether we're to ponder.
 	bool force;               // Whether we're in force mode.
 	bool draw;                // Whether our opponent has offered a draw.
+	bool sync;                // Whether to sync our clock with XBoard's.
 
 	board b;                  // Board representation object.
 	class search *search_ptr; // Move search object.
