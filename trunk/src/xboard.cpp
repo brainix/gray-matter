@@ -316,7 +316,7 @@ void xboard::do_level() const
 		;
 	int inc = str_to_num(p);
 	search_ptr->set_time(secs / (moves ? moves : 40) + inc);
-	clock_ptr->set_mode(secs * 100, moves, inc);
+	clock_ptr->set_mode(secs, moves, inc);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -328,7 +328,7 @@ void xboard::do_st() const
 /* Set the maximum search time. */
 
 	search_ptr->set_time(str_to_num(&buffer[3]));
-	clock_ptr->set_mode(str_to_num(&buffer[3]) * 100, 1, 0);
+	clock_ptr->set_mode(str_to_num(&buffer[3]), 1, 0);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -347,7 +347,7 @@ void xboard::do_sd() const
 \*----------------------------------------------------------------------------*/
 void xboard::do_time() const
 {
-	clock_ptr->update_remaining_csec(str_to_num(&buffer[5]));
+	clock_ptr->update_remaining_secs(str_to_num(&buffer[5]) / 100);
 }
 
 /*----------------------------------------------------------------------------*\
