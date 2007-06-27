@@ -353,7 +353,8 @@ void xboard::do_sd() const
 \*----------------------------------------------------------------------------*/
 void xboard::do_time() const
 {
-	clock_ptr->update_remaining_secs(b.get_whose(), str_to_num(&buffer[5]) / 100);
+	if (sync)
+		clock_ptr->update_remaining_secs(b.get_whose(), str_to_num(&buffer[5]) / 100);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -361,7 +362,8 @@ void xboard::do_time() const
 \*----------------------------------------------------------------------------*/
 void xboard::do_otim() const
 {
-	clock_ptr->update_remaining_secs(!b.get_whose(), str_to_num(&buffer[5]) / 100);
+	if (sync)
+		clock_ptr->update_remaining_secs(!b.get_whose(), str_to_num(&buffer[5]) / 100);
 }
 
 /*----------------------------------------------------------------------------*\
