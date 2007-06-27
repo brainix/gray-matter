@@ -87,12 +87,12 @@ void chess_clock::inc_remaining_moves(int color)
 /*----------------------------------------------------------------------------*\
  |				  set_alarm()				      |
 \*----------------------------------------------------------------------------*/
-void chess_clock::set_alarm(int secs)
+void chess_clock::set_alarm(int color)
 {
 
 /* Set the alarm. */
 
-	timer_set(secs);
+	timer_set(remaining_secs[color] / (remaining_moves[color] ? remaining_moves[color] : 40) + inc[color]);
 }
 
 /*----------------------------------------------------------------------------*\
