@@ -45,6 +45,13 @@ chess_clock::chess_clock()
 \*----------------------------------------------------------------------------*/
 void chess_clock::set_mode(int color, int new_moves, int new_secs, int new_inc)
 {
+
+/*
+ | Set the mode.  We allow different modes for white and black.  Modes are
+ | specified as a number of moves, which must be made in a number of seconds,
+ | with an increment of time added to the clock after each move.
+ */
+
 	total_moves[color] = new_moves;
 	remaining_moves[color] = new_moves;
 	remaining_secs[color] = new_secs;

@@ -293,6 +293,7 @@ void search::iterate(int s)
 	 | Note the start time.  If we're to think, set the alarm.  Initialize
 	 | the number of nodes searched.
 	 */
+	b.lock();
 	clock_ptr->note_time();
 	if (s == THINKING)
 	{
@@ -311,7 +312,6 @@ void search::iterate(int s)
 	 | thinking), our opponent has moved (if we're pondering), or we've
 	 | reached the maximum depth (either way).
 	 */
-	b.lock();
 	for (depth = 1; depth <= max_depth; depth++)
 	{
 		guess[depth & 1] = mtdf(depth, guess[depth & 1].value);
@@ -334,7 +334,6 @@ void search::iterate(int s)
 			 */
 			break;
 	}
-	b.unlock();
 
 	/*
 	 | If we've just finished thinking, cancel the alarm and inform XBoard
@@ -344,6 +343,7 @@ void search::iterate(int s)
 		clock_ptr->cancel_alarm();
 	if (s == THINKING && search_status != QUITTING)
 		xboard_ptr->print_result(m);
+	b.unlock();
 }
 
 /*----------------------------------------------------------------------------*\
