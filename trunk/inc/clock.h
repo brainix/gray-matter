@@ -36,7 +36,7 @@ class chess_clock
 public:
 	chess_clock();
 	void set_mode(int new_moves, int new_csec, int new_inc);
-	void update_remaining_csec();
+	void update_remaining_csec(int new_csec);
 	void set_alarm(int csec);
 	static void sound_alarm();
 	void cancel_alarm() const;
