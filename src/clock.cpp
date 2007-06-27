@@ -34,10 +34,8 @@ chess_clock::chess_clock()
 
 /* Constructor. */
 
-	total_moves = 40;
-	remaining_moves = 40;
-	remaining_secs = 5 * 60;
-	inc = 0;
+	for (int color = WHITE; color <= BLACK; color++)
+		set_mode(color, 40, 5 * 60, 0);
 	timer_function(sound_alarm);
 	note_time();
 }
@@ -45,38 +43,38 @@ chess_clock::chess_clock()
 /*----------------------------------------------------------------------------*\
  |				   set_mode()				      |
 \*----------------------------------------------------------------------------*/
-void chess_clock::set_mode(int new_moves, int new_secs, int new_inc)
+void chess_clock::set_mode(int color, int new_moves, int new_secs, int new_inc)
 {
-	total_moves = new_moves;
-	remaining_moves = new_moves;
-	remaining_secs = new_secs;
-	inc = new_inc;
+	total_moves[color] = new_moves;
+	remaining_moves[color] = new_moves;
+	remaining_secs[color] = new_secs;
+	inc[color] = new_inc;
 }
 
 /*----------------------------------------------------------------------------*\
  |			    update_remaining_secs()			      |
 \*----------------------------------------------------------------------------*/
-void chess_clock::update_remaining_secs(int new_secs)
+void chess_clock::update_remaining_secs(int color, int new_secs)
 {
-	remaining_secs = new_secs;
+	remaining_secs[color] = new_secs;
 }
 
 /*----------------------------------------------------------------------------*\
  |			     dec_remaining_moves()			      |
 \*----------------------------------------------------------------------------*/
-void chess_clock::dec_remaining_moves()
+void chess_clock::dec_remaining_moves(int color)
 {
-	if (--remaining_moves == 0)
-		remaining_moves = total_moves;
+	if (--remaining_moves[color] == 0)
+		remaining_moves[color] = total_moves[color];
 }
 
 /*----------------------------------------------------------------------------*\
  |			     inc_remaining_moves()			      |
 \*----------------------------------------------------------------------------*/
-void chess_clock::inc_remaining_moves()
+void chess_clock::inc_remaining_moves(int color)
 {
-	if (++remaining_moves > total_moves)
-		remaining_moves = 1;
+	if (++remaining_moves[color] > total_moves[color])
+		remaining_moves[color] = 1;
 }
 
 /*----------------------------------------------------------------------------*\

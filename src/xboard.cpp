@@ -167,6 +167,7 @@ void xboard::print_output(int ply, int value, int time, int nodes, list<move_t> 
 void xboard::print_result(move_t m)
 {
 	b.make(m);
+	clock_ptr->dec_remaining_moves(!b.get_whose());
 
 	mutex_lock(&output_mutex);
 	printf("move ");
@@ -316,7 +317,8 @@ void xboard::do_level() const
 		;
 	int inc = str_to_num(p);
 	search_ptr->set_time(secs / (moves ? moves : 40) + inc);
-	clock_ptr->set_mode(secs, moves, inc);
+	for (int color = WHITE; color <= BLACK; color++)
+		clock_ptr->set_mode(color, secs, moves, inc);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -328,7 +330,8 @@ void xboard::do_st() const
 /* Set the maximum search time. */
 
 	search_ptr->set_time(str_to_num(&buffer[3]));
-	clock_ptr->set_mode(str_to_num(&buffer[3]), 1, 0);
+	for (int color = WHITE; color <= BLACK; color++)
+		clock_ptr->set_mode(color, str_to_num(&buffer[3]), 1, 0);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -347,7 +350,7 @@ void xboard::do_sd() const
 \*----------------------------------------------------------------------------*/
 void xboard::do_time() const
 {
-	clock_ptr->update_remaining_secs(str_to_num(&buffer[5]) / 100);
+	clock_ptr->update_remaining_secs(b.get_whose(), str_to_num(&buffer[5]) / 100);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -355,6 +358,7 @@ void xboard::do_time() const
 \*----------------------------------------------------------------------------*/
 void xboard::do_otim() const
 {
+	clock_ptr->update_remaining_secs(!b.get_whose(), str_to_num(&buffer[5]) / 100);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -386,6 +390,7 @@ void xboard::do_usermove()
 	}
 
 	b.make(m);
+	clock_ptr->dec_remaining_moves(!b.get_whose());
 
 	/* Alright, so the move was legal.  Did it just end the game? */
 	if (game_over())
@@ -470,6 +475,7 @@ void xboard::do_undo()
 /* Take back one ply. */
 
 	b.unmake();
+	clock_ptr->inc_remaining_moves(b.get_whose());
 }
 
 /*----------------------------------------------------------------------------*\
@@ -482,6 +488,8 @@ void xboard::do_remove()
 
 	b.unmake();
 	b.unmake();
+	for (int color = WHITE; color <= BLACK; color++)
+		clock_ptr->inc_remaining_moves(color);
 	search_ptr->change(ponder ? PONDERING : IDLING, b);
 }
 
