@@ -78,7 +78,7 @@ private:
 	void do_go();
 	void do_playother();
 	void do_level() const;
-	void do_st() const;
+	void do_st();
 	void do_sd() const;
 	void do_time() const;
 	void do_otim() const;
