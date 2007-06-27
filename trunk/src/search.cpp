@@ -296,7 +296,7 @@ void search::iterate(int s)
 	clock_ptr->note_time();
 	if (s == THINKING)
 	{
-		clock_ptr->set_alarm(max_time);
+		clock_ptr->set_alarm(max_time * 100);
 		history_ptr->clear();
 	}
 	nodes = 0;
@@ -326,7 +326,7 @@ void search::iterate(int s)
 		m = guess[depth & 1];
 		extract(s);
 		if (output)
-			xboard_ptr->print_output(depth, m.value, clock_ptr->get_elapsed(), nodes, pv);
+			xboard_ptr->print_output(depth, m.value, clock_ptr->get_elapsed() / 100, nodes, pv);
 		if (m.value == WEIGHT_KING || m.value == -WEIGHT_KING)
 			/*
 			 | Oops.  The game will be over at this depth.  There's
