@@ -318,7 +318,6 @@ void xboard::do_level() const
 	while (*p++ != ' ')
 		;
 	int inc = str_to_num(p);
-	search_ptr->set_time(secs / (moves ? moves : 40) + inc);
 	for (int color = WHITE; color <= BLACK; color++)
 		clock_ptr->set_mode(color, moves, secs, inc);
 }
@@ -332,7 +331,6 @@ void xboard::do_st()
 /* Set the maximum search time. */
 
 	sync = false;
-	search_ptr->set_time(str_to_num(&buffer[3]));
 	for (int color = WHITE; color <= BLACK; color++)
 		clock_ptr->set_mode(color, str_to_num(&buffer[3]), 1, 0);
 }
