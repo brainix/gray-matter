@@ -45,6 +45,7 @@ xboard::xboard()
 	ponder = true;
 	force = false;
 	draw = false;
+	sync = true;
 
 	mutex_create(&output_mutex);
 }
@@ -260,6 +261,7 @@ void xboard::do_new()
 	ponder = true;
 	force = false;
 	draw = false;
+	sync = true;
 	b.set_board();
 	search_ptr->change(IDLING, b);
 	search_ptr->clear();
@@ -329,6 +331,7 @@ void xboard::do_st() const
 
 /* Set the maximum search time. */
 
+	sync = false;
 	search_ptr->set_time(str_to_num(&buffer[3]));
 	for (int color = WHITE; color <= BLACK; color++)
 		clock_ptr->set_mode(color, str_to_num(&buffer[3]), 1, 0);
