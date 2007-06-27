@@ -318,7 +318,7 @@ void xboard::do_level() const
 	int inc = str_to_num(p);
 	search_ptr->set_time(secs / (moves ? moves : 40) + inc);
 	for (int color = WHITE; color <= BLACK; color++)
-		clock_ptr->set_mode(color, secs, moves, inc);
+		clock_ptr->set_mode(color, moves, secs, inc);
 }
 
 /*----------------------------------------------------------------------------*\
