@@ -92,7 +92,7 @@ void chess_clock::set_alarm(int color)
 
 /* Set the alarm. */
 
-	timer_set(remaining_secs[color] / (remaining_moves[color] ? remaining_moves[color] : 40) + inc[color]);
+	timer_set(GREATER(remaining_secs[color] / (remaining_moves[color] ? remaining_moves[color] : 40) + inc[color], 1));
 }
 
 /*----------------------------------------------------------------------------*\
