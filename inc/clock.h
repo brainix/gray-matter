@@ -37,6 +37,8 @@ public:
 	chess_clock();
 	void set_mode(int new_moves, int new_secs, int new_inc);
 	void update_remaining_secs(int new_secs);
+	void dec_remaining_moves();
+	void inc_remaining_moves();
 	void set_alarm(int secs);
 	static void sound_alarm();
 	void cancel_alarm() const;

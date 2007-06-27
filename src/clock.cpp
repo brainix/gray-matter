@@ -62,6 +62,24 @@ void chess_clock::update_remaining_secs(int new_secs)
 }
 
 /*----------------------------------------------------------------------------*\
+ |			     dec_remaining_moves()			      |
+\*----------------------------------------------------------------------------*/
+void chess_clock::dec_remaining_moves()
+{
+	if (--remaining_moves == 0)
+		remaining_moves = total_moves;
+}
+
+/*----------------------------------------------------------------------------*\
+ |			     inc_remaining_moves()			      |
+\*----------------------------------------------------------------------------*/
+void chess_clock::inc_remaining_moves()
+{
+	if (++remaining_moves > total_moves)
+		remaining_moves = 1;
+}
+
+/*----------------------------------------------------------------------------*\
  |				  set_alarm()				      |
 \*----------------------------------------------------------------------------*/
 void chess_clock::set_alarm(int secs)
