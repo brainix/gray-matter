@@ -431,7 +431,7 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 			case THREE        : m.value = +WEIGHT_CONTEMPT; break;
 			case FIFTY        : m.value = +WEIGHT_CONTEMPT; break;
 			case CHECKMATE    : m.value = -WEIGHT_KING;     break; // XXX: This should never happen.
-			case ILLEGAL      : m.value = -WEIGHT_KING;     break; // XXX: This should never happen.
+			case ILLEGAL      : m.value = -WEIGHT_ILLEGAL;  break; // XXX: This should never happen.
 		}
 		return m;
 	}
@@ -472,7 +472,7 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 			case THREE        : m.value = +WEIGHT_CONTEMPT; break;
 			case FIFTY        : m.value = +WEIGHT_CONTEMPT; break;
 			case CHECKMATE    : m.value = -WEIGHT_KING;     break;
-			case ILLEGAL      : m.value = -WEIGHT_KING;     break;
+			case ILLEGAL      : m.value = -WEIGHT_ILLEGAL;  break;
 		}
 		return m;
 	}
@@ -495,7 +495,7 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 		b.make(*it);
 		it->value = -minimax(depth - 1, shallowness + 1, -beta, -tmp_alpha).value;
 		b.unmake();
-		if (it->value == WEIGHT_ILLEGAL || it->value == -WEIGHT_ILLEGAL)
+		if (it->value == -WEIGHT_ILLEGAL || it->value == WEIGHT_ILLEGAL)
 			continue;
 		if (it->value > m.value)
 			tmp_alpha = GREATER(tmp_alpha, (m = *it).value);
