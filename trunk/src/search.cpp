@@ -495,7 +495,7 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 		b.make(*it);
 		it->value = -minimax(depth - 1, shallowness + 1, -beta, -tmp_alpha).value;
 		b.unmake();
-		if (it->value == WEIGHT_ILLEGAL)
+		if (it->value == -WEIGHT_ILLEGAL)
 			continue;
 		if (it->value > m.value)
 			tmp_alpha = GREATER(tmp_alpha, (m = *it).value);
