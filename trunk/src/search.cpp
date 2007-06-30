@@ -386,13 +386,12 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
  */
 
 	/* Local variables: */
-	bitboard_t hash = b.get_hash();   // This position's hash.
 	bool whose = b.get_whose();       // In this position, the color on move.
+	bitboard_t hash = b.get_hash();   // This position's hash.
 	int status = b.get_status(false); // In this position, whether or not the game is over.
 	int upper = +INFINITY;            // For this position, the upper bound on the MiniMax score.
 	int lower = -INFINITY;            // For this position, the lower bound on the MiniMax score.
 	int tmp_alpha = alpha;            // Scratch variable for us to use so as to not clobber alpha.
-	bool etc = false;                 //
 	list<move_t> l;                   // From this position, the move list.
 	list<move_t>::iterator it;        // The iterator through the move list.
 	move_t m;                         // From this position, the best move.
@@ -480,19 +479,14 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 
 	/* Re-order the move list. */
 	for (it = l.begin(); it != l.end(); it++)
-	{
-		b.make(*it);
-		if (table_ptr->probe(b.get_hash(), depth - 1, LOWER, &m))
-			if (-m.value >= beta)
-				etc = true;
-		b.unmake();
-		if (etc)
-		{
-			it->value = -m.value;
-			return *it;
-		}
+		/*
+		 | According to the transposition table, a previous search from
+		 | this position determined this move to be best.  In this
+		 | search, this move could be good too.  Give this move a high
+		 | score to force it to the front of the list to score it first
+		 | to hopefully cause an earlier cutoff.
+		 */
 		it->value = *it == m ? WEIGHT_KING : history_ptr->probe(whose, *it);
-	}
 	l.sort(descend);
 
 	/* Score each move in the list. */
