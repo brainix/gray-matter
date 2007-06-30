@@ -283,7 +283,7 @@ int board::evaluate() const
  | perspective of the player who's just moved (the color that's off move).
  */
 
-	if (!state.piece[OFF_MOVE][KING])
+	if (!state.piece[ON_MOVE][KING])
 		return WEIGHT_ILLEGAL;
 	return evaluate_material() + evaluate_pawn() + evaluate_king();
 }
