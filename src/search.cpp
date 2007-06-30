@@ -392,6 +392,7 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 	int upper = +INFINITY;            // For this position, the upper bound on the MiniMax score.
 	int lower = -INFINITY;            // For this position, the lower bound on the MiniMax score.
 	int tmp_alpha = alpha;            // Scratch variable for us to use so as to not clobber alpha.
+	bool etc = false;                 //
 	list<move_t> l;                   // From this position, the move list.
 	list<move_t>::iterator it;        // The iterator through the move list.
 	move_t m;                         // From this position, the best move.
@@ -478,7 +479,7 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 	}
 
 	/* Re-order the move list. */
-	for (bool etc = false, it = l.begin(); it != l.end(); it++)
+	for (it = l.begin(); it != l.end(); it++)
 	{
 		b.make(*it);
 		if (table_ptr->probe(b.get_hash(), depth - 1, LOWER, &m))
