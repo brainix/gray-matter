@@ -73,7 +73,7 @@
 #define WEIGHT_HAS_CASTLED	 40
 
 /* How much we hate our opponent: */
-#define WEIGHT_CONTEMPT		900
+#define WEIGHT_CONTEMPT		300
 
 /*
  | The absolute value of the difference between the closest two of all of the
