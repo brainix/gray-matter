@@ -316,7 +316,7 @@ void search::iterate(int s)
 		extract(s);
 		if (output)
 			xboard_ptr->print_output(depth, m.value, clock_ptr->get_elapsed() * 100, nodes, pv);
-		if (m.value == +(WEIGHT_KING - depth * WEIGHT_PAWN) || m.value == -(WEIGHT_KING - depth * WEIGHT_PAWN))
+		if (ABS(m.value) >= WEIGHT_KING - DEPTH * WEIGHT_PAWN)
 			/*
 			 | Oops.  The game will be over at this depth.  There's
 			 | no point in searching deeper.  Eyes on the prize.
