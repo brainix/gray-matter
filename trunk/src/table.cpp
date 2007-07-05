@@ -111,7 +111,9 @@ void table::store(bitboard_t hash, int depth, int type, move_t move)
 		data[index].lower = 0;
 	}
 	data[index].depth[type] = depth;
-	data[index].move = move;
+	if (depth >= data[index].depth[!type])
+		data[index].move = move;
+	data[index].move.value = move.value;
 	if (type == LOWER)
 	{
 		data[index].move.value = upper;
