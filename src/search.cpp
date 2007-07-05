@@ -446,6 +446,8 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 		if (table_ptr->probe(hash, depth, UPPER, &m))
 			if ((upper = m.value) <= alpha)
 				return m;
+		if (table_ptr->probe(hash, depth, EXACT, &m))
+			return m;
 		if (table_ptr->probe(hash, depth, LOWER, &m))
 			if ((lower = m.value) >= beta)
 				return m;
@@ -490,6 +492,8 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 	{
 		if (m.value <= alpha)
 			table_ptr->store(hash, depth, UPPER, m);
+		else if (m.value > alpha && m.value < beta)
+			table_ptr->store(hash, depth, EXACT, m);
 		else if (m.value >= beta)
 			table_ptr->store(hash, depth, LOWER, m);
 		history_ptr->store(whose, m, depth);
@@ -525,7 +529,7 @@ void search::extract(int s)
 	pv.clear();
 
 	/* Get the principal variation. */
-	for (table_ptr->probe(b.get_hash(), 0, UPPER, &m); !IS_NULL_MOVE(m) && b.get_status(true) == IN_PROGRESS; table_ptr->probe(b.get_hash(), 0, UPPER, &m))
+	for (table_ptr->probe(b.get_hash(), 0, EXACT, &m); !IS_NULL_MOVE(m) && b.get_status(true) == IN_PROGRESS; table_ptr->probe(b.get_hash(), 0, EXACT, &m))
 	{
 		pv.push_back(m);
 		b.make(m);
