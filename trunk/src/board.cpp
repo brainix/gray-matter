@@ -1538,7 +1538,7 @@ int board::find_64(int64_t n) const
 
 #if defined(OS_X) || defined(WINDOWS)
 	n &= -n;
-	int shift = n <= 0xFFFFFFFFULL ? 0 : 32;
+	int shift = (uint64_t) n <= 0xFFFFFFFFULL ? 0 : 32;
 #endif
 
 #if defined(LINUX)
