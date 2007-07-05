@@ -68,10 +68,11 @@ void table::clear()
 	for (uint64_t index = 0; index < slots; index++)
 	{
 		data[index].hash = 0;
-		data[index].depth = 0;
-		data[index].type = USELESS;
+		data[index].depth[UPPER] = 0;
+		data[index].depth[LOWER] = 0;
 		SET_NULL_MOVE(data[index].move);
 		data[index].move.value = 0;
+		data[index].lower = 0;
 	}
 }
 
@@ -88,7 +89,9 @@ bool table::probe(bitboard_t hash, int depth, int type, move_t *move_ptr) const
 		return false;
 	}
 	*move_ptr = data[index].move;
-	return data[index].depth >= depth && (data[index].type == EXACT || data[index].type == type);
+	if (type == LOWER)
+		move_ptr->value = data[index].lower;
+	return data[index].depth[type] >= depth;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -97,10 +100,23 @@ bool table::probe(bitboard_t hash, int depth, int type, move_t *move_ptr) const
 void table::store(bitboard_t hash, int depth, int type, move_t move)
 {
 	uint64_t index = hash % slots;
-	data[index].hash = hash;
-	data[index].depth = depth;
-	data[index].type = type;
+	int upper = data[index].hash != hash ? 0 : data[index].move.value;
+	if (data[index].hash != hash)
+	{
+		data[index].hash = hash;
+		data[index].depth[UPPER] = 0;
+		data[index].depth[LOWER] = 0;
+		SET_NULL_MOVE(data[index].move);
+		data[index].move.value = 0;
+		data[index].lower = 0;
+	}
+	data[index].depth[type] = depth;
 	data[index].move = move;
+	if (type == LOWER)
+	{
+		data[index].move.value = upper;
+		data[index].move.lower = move.value;
+	}
 }
 
 /*----------------------------------------------------------------------------*\
