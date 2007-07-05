@@ -525,7 +525,7 @@ void search::extract(int s)
 	pv.clear();
 
 	/* Get the principal variation. */
-	for (table_ptr->probe(b.get_hash(), 0, UPPER, &m); !IS_NULL_MOVE(m) && b.get_status(true) == IN_PROGRESS; table_ptr->probe(b.get_hash(), 0, EXACT, &m))
+	for (table_ptr->probe(b.get_hash(), 0, UPPER, &m); !IS_NULL_MOVE(m) && b.get_status(true) == IN_PROGRESS; table_ptr->probe(b.get_hash(), 0, UPPER, &m))
 	{
 		pv.push_back(m);
 		b.make(m);
