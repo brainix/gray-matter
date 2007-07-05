@@ -289,6 +289,8 @@ void search::iterate(int s)
 		clock_ptr->set_alarm(b.get_whose());
 		history_ptr->clear();
 	}
+	if (s == PONDERING)
+		b.make(hint);
 	nodes = 0;
 	for (depth = 0; depth <= 1; depth++)
 	{
@@ -325,6 +327,8 @@ void search::iterate(int s)
 	}
 
 	/* Release the board. */
+	if (s == PONDERING)
+		b.unmake();
 	b.unlock();
 
 	/*
@@ -529,6 +533,8 @@ void search::extract(int s)
 	pv.clear();
 
 	/* Get the principal variation. */
+	if (s == PONDERING)
+		pv.push_front(hint);
 	for (table_ptr->probe(b.get_hash(), 0, EXACT, &m); !IS_NULL_MOVE(m) && b.get_status(true) == IN_PROGRESS; table_ptr->probe(b.get_hash(), 0, EXACT, &m))
 	{
 		pv.push_back(m);
@@ -540,13 +546,14 @@ void search::extract(int s)
 		b.unmake();
 
 	/* Get the hint. */
-	if (s == THINKING && pv.size() >= 2)
+	if (s == THINKING)
 	{
-		list<move_t>::iterator it = pv.begin();
-		hint = *++it;
+		if (pv.size() >= 2)
+		{
+			list<move_t>::iterator it = pv.begin();
+			hint = *++it;
+		}
+		else
+			SET_NULL_MOVE(hint);
 	}
-	else if (s == PONDERING && pv.size() >= 1)
-		hint = pv.front();
-	else
-		SET_NULL_MOVE(hint);
 }
