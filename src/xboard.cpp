@@ -332,7 +332,7 @@ void xboard::do_st()
 
 	sync = false;
 	for (int color = WHITE; color <= BLACK; color++)
-		clock_ptr->set_mode(color, str_to_num(&buffer[3]), 1, 0);
+		clock_ptr->set_mode(color, 1, str_to_num(&buffer[3]), 0);
 }
 
 /*----------------------------------------------------------------------------*\
