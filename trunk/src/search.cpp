@@ -317,7 +317,7 @@ void search::iterate(int s)
 		m = guess[depth & 1];
 		extract(s);
 		if (output)
-			xboard_ptr->print_output(depth, m.value, clock_ptr->get_elapsed() * 100, nodes, pv);
+			xboard_ptr->print_output(depth, (s == THINKING ? 1 : -1) * m.value, clock_ptr->get_elapsed() * 100, nodes, pv);
 		if (ABS(m.value) >= WEIGHT_KING - DEPTH * WEIGHT_PAWN)
 			/*
 			 | Oops.  The game will be over at this depth.  There's
