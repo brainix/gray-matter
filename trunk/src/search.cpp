@@ -289,8 +289,6 @@ void search::iterate(int s)
 		clock_ptr->set_alarm(b.get_whose());
 		history_ptr->clear();
 	}
-	if (s == PONDERING)
-		b.make(hint);
 	nodes = 0;
 	for (depth = 0; depth <= 1; depth++)
 	{
@@ -317,7 +315,7 @@ void search::iterate(int s)
 		m = guess[depth & 1];
 		extract(s);
 		if (output)
-			xboard_ptr->print_output(depth, (s == THINKING ? 1 : -1) * m.value, clock_ptr->get_elapsed() * 100, nodes, pv);
+			xboard_ptr->print_output(depth, m.value, clock_ptr->get_elapsed() * 100, nodes, pv);
 		if (ABS(m.value) >= WEIGHT_KING - DEPTH * WEIGHT_PAWN)
 			/*
 			 | Oops.  The game will be over at this depth.  There's
@@ -327,8 +325,6 @@ void search::iterate(int s)
 	}
 
 	/* Release the board. */
-	if (s == PONDERING)
-		b.unmake();
 	b.unlock();
 
 	/*
@@ -533,8 +529,6 @@ void search::extract(int s)
 	pv.clear();
 
 	/* Get the principal variation. */
-	if (s == PONDERING)
-		pv.push_front(hint);
 	for (table_ptr->probe(b.get_hash(), 0, EXACT, &m); !IS_NULL_MOVE(m) && b.get_status(true) == IN_PROGRESS; table_ptr->probe(b.get_hash(), 0, EXACT, &m))
 	{
 		pv.push_back(m);
@@ -546,14 +540,13 @@ void search::extract(int s)
 		b.unmake();
 
 	/* Get the hint. */
-	if (s == THINKING)
+	if (s == THINKING && pv.size() >= 2)
 	{
-		if (pv.size() >= 2)
-		{
-			list<move_t>::iterator it = pv.begin();
-			hint = *++it;
-		}
-		else
-			SET_NULL_MOVE(hint);
+		list<move_t>::iterator it = pv.begin();
+		hint = *++it;
 	}
+	else if (s == PONDERING && pv.size() >= 1)
+		hint = pv.front();
+	else
+		SET_NULL_MOVE(hint);
 }
