@@ -9,7 +9,7 @@
 PLAT = LINUX
 
 # Your processor.
-ARCH = pentium3
+ARCH = pentium4
 
 CXX  = g++
 LANG = -ansi
