@@ -366,7 +366,7 @@ move_t search::mtdf(int depth, int guess)
 /*----------------------------------------------------------------------------*\
  |				   minimax()				      |
 \*----------------------------------------------------------------------------*/
-move_t search::minimax(int depth, int shallowness, int alpha, int beta)
+move_t search::minimax(int depth, int shallowness, int alpha, int beta, bool try_null_move)
 {
 
 /*
@@ -392,6 +392,7 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 	int upper = +INFINITY;            // For this position, the upper bound on the MiniMax score.
 	int lower = -INFINITY;            // For this position, the lower bound on the MiniMax score.
 	int tmp_alpha = alpha;            // Scratch variable for us to use so as to not clobber alpha.
+	move_t null_move;                 //
 	list<move_t> l;                   // From this position, the move list.
 	list<move_t>::iterator it;        // The iterator through the move list.
 	move_t m;                         // From this position, the best move.
@@ -453,6 +454,17 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 				return m;
 		tmp_alpha = alpha = GREATER(alpha, lower);
 		beta = LESSER(beta, upper);
+	}
+
+	/* */
+	if (try_null_move)
+	{
+		SET_NULL_MOVE(null_move);
+		b.make(null_move);
+		null_move.value = -minimax(depth - R, shallowness + R, -beta, -beta + 1, false).value;
+		b.unmake();
+		if (null_move.value >= beta)
+			return null_move;
 	}
 
 	/* Generate and re-order the move list. */
