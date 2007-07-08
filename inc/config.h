@@ -46,7 +46,6 @@
 #define XPOS_TABLE_MB	64 // The transposition table size (in MB).
 #define PAWN_TABLE_MB	 1 // The pawn table size (in MB).
 #define DEPTH		16 // The maximum search depth (in plies).
-#define R		 2 //
 
 
 
