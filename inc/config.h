@@ -75,13 +75,6 @@
 /* How much we hate our opponent: */
 #define WEIGHT_CONTEMPT		300
 
-/*
- | The absolute value of the difference between the closest two of all of the
- | preceeding WEIGHT_* values - the increment by which MTD(f) shifts the alpha-
- | beta window:
- */
-#define WEIGHT_INCREMENT	 10
-
 
 
 /*----------------------------------------------------------------------------*\
