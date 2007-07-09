@@ -359,7 +359,7 @@ int timer_function(void (*function)())
 /*----------------------------------------------------------------------------*\
  |				  timer_set()				      |
 \*----------------------------------------------------------------------------*/
-int timer_set(int sec)
+int timer_set(int csec)
 {
 
 /* Set the alarm to sound after the specified number of seconds. */
@@ -368,15 +368,15 @@ int timer_set(int sec)
 	struct itimerval itimerval;
 	itimerval.it_interval.tv_sec = 0;
 	itimerval.it_interval.tv_usec = 0;
-	itimerval.it_value.tv_sec = sec;
-	itimerval.it_value.tv_usec = 0;
+	itimerval.it_value.tv_sec = csec / 100;
+	itimerval.it_value.tv_usec = csec % 100 * 10000;
 	return setitimer(ITIMER_REAL, &itimerval, NULL) == -1 ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
 	/* Is an alarm already pending? */
 	if (timer_thread != INVALID_HANDLE_VALUE)
 		/* Yes.  We can only set one alarm at a time.  :-( */
 		return CRITICAL;
-	unsigned int msec = sec * 1000;
+	unsigned int msec = csec * 10;
 	return thread_create(&timer_thread, (entry_t) timer_handler, &msec);
 #endif
 }
