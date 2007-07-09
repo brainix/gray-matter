@@ -46,7 +46,7 @@ chess_clock::chess_clock()
 /*----------------------------------------------------------------------------*\
  |				   set_mode()				      |
 \*----------------------------------------------------------------------------*/
-void chess_clock::set_mode(int color, int new_moves, int new_secs, int new_inc)
+void chess_clock::set_mode(int color, int new_moves, int new_csecs, int new_inc)
 {
 
 /*
@@ -57,16 +57,16 @@ void chess_clock::set_mode(int color, int new_moves, int new_secs, int new_inc)
 
 	total_moves[color] = new_moves;
 	remaining_moves[color] = new_moves;
-	remaining_secs[color] = new_secs;
+	remaining_csecs[color] = new_csecs;
 	inc[color] = new_inc;
 }
 
 /*----------------------------------------------------------------------------*\
- |			    update_remaining_secs()			      |
+ |			    update_remaining_csecs()			      |
 \*----------------------------------------------------------------------------*/
-void chess_clock::update_remaining_secs(int color, int new_secs)
+void chess_clock::update_remaining_csecs(int color, int new_csecs)
 {
-	remaining_secs[color] = new_secs;
+	remaining_csecs[color] = new_csecs;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -98,12 +98,12 @@ void chess_clock::set_callback(void (*new_function)()) const
 /*----------------------------------------------------------------------------*\
  |				  set_alarm()				      |
 \*----------------------------------------------------------------------------*/
-void chess_clock::set_alarm(int color)
+void chess_clock::set_alarm(int color) const
 {
 
 /* Set the alarm. */
 
-	timer_set(GREATER(remaining_secs[color] / (remaining_moves[color] ? remaining_moves[color] : 40) + inc[color], 1));
+	timer_set(GREATER(remaining_csecs[color] / (remaining_moves[color] ? remaining_moves[color] : 40) + inc[color], 1));
 }
 
 /*----------------------------------------------------------------------------*\
@@ -148,4 +148,26 @@ int chess_clock::get_elapsed() const
 /* Return the number of seconds elapsed since the last noted time. */
 
 	return (clock() - noted_time) / CLOCKS_PER_SEC;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				 swap_clocks()				      |
+\*----------------------------------------------------------------------------*/
+void chess_clock::swap_clocks()
+{
+	total_moves[BLACK] ^= total_moves[WHITE];
+	total_moves[WHITE] ^= total_moves[BLACK];
+	total_moves[BLACK] ^= total_moves[WHITE];
+
+	remaining_moves[BLACK] ^= remaining_moves[WHITE];
+	remaining_moves[WHITE] ^= remaining_moves[BLACK];
+	remaining_moves[BLACK] ^= remaining_moves[WHITE];
+
+	remaining_csecs[BLACK] ^= remaining_csecs[WHITE];
+	remaining_csecs[WHITE] ^= remaining_csecs[BLACK];
+	remaining_csecs[BLACK] ^= remaining_csecs[WHITE];
+
+	inc[BLACK] ^= inc[WHITE];
+	inc[WHITE] ^= inc[BLACK];
+	inc[BLACK] ^= inc[WHITE];
 }
