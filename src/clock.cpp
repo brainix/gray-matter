@@ -38,7 +38,7 @@ chess_clock::chess_clock()
 /* Constructor. */
 
 	for (int color = WHITE; color <= BLACK; color++)
-		set_mode(color, 40, 5 * 60, 0);
+		set_mode(color, 40, 5 * 60 * 100, 0);
 	timer_function(sound_alarm);
 	note_time();
 }
@@ -147,7 +147,7 @@ int chess_clock::get_elapsed() const
 
 /* Return the number of seconds elapsed since the last noted time. */
 
-	return (clock() - noted_time) / CLOCKS_PER_SEC;
+	return (clock() - noted_time) * 100 / CLOCKS_PER_SEC;
 }
 
 /*----------------------------------------------------------------------------*\

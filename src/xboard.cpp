@@ -318,7 +318,7 @@ void xboard::do_level() const
 		;
 	int inc = str_to_num(p);
 	for (int color = WHITE; color <= BLACK; color++)
-		clock_ptr->set_mode(color, moves, secs, inc);
+		clock_ptr->set_mode(color, moves, secs * 100, inc * 100);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -331,7 +331,7 @@ void xboard::do_st()
 
 	sync = false;
 	for (int color = WHITE; color <= BLACK; color++)
-		clock_ptr->set_mode(color, 1, str_to_num(&buffer[3]), 0);
+		clock_ptr->set_mode(color, 1, str_to_num(&buffer[3]) * 100, 0);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -351,7 +351,7 @@ void xboard::do_sd() const
 void xboard::do_time() const
 {
 	if (sync)
-		clock_ptr->update_remaining_csecs(b.get_whose(), str_to_num(&buffer[5]) / 100);
+		clock_ptr->update_remaining_csecs(b.get_whose(), str_to_num(&buffer[5]));
 }
 
 /*----------------------------------------------------------------------------*\
@@ -360,7 +360,7 @@ void xboard::do_time() const
 void xboard::do_otim() const
 {
 	if (sync)
-		clock_ptr->update_remaining_csecs(!b.get_whose(), str_to_num(&buffer[5]) / 100);
+		clock_ptr->update_remaining_csecs(!b.get_whose(), str_to_num(&buffer[5]));
 }
 
 /*----------------------------------------------------------------------------*\

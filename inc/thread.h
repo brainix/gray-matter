@@ -103,7 +103,7 @@ int cond_destroy(cond_t *cond);
 
 /* Function prototypes related to timers: */
 int timer_function(void (*function)());
-int timer_set(int sec);
+int timer_set(int csec);
 int timer_cancel();
 
 #endif
