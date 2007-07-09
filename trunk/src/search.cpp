@@ -355,8 +355,8 @@ move_t search::mtdf(int depth, int guess)
 
 	while (upper > lower && !timeout_flag)
 	{
-		beta = m.value + (m.value == lower) * WEIGHT_INCREMENT;
-		m = minimax(depth, 0, beta - WEIGHT_INCREMENT, beta);
+		beta = m.value + (m.value == lower ? 1 : 0);
+		m = minimax(depth, 0, beta - 1, beta);
 		upper = m.value < beta ? m.value : upper;
 		lower = m.value < beta ? lower : m.value;
 	}
