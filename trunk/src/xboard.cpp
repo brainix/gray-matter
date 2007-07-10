@@ -264,7 +264,7 @@ void xboard::do_new()
 	sync = true;
 	b.set_board();
 	search_ptr->change(IDLING, b);
-	search_ptr->set_depth(DEPTH);
+	search_ptr->set_depth(MAX_DEPTH);
 }
 
 /*----------------------------------------------------------------------------*\

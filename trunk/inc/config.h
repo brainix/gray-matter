@@ -45,7 +45,8 @@
 #define NUM_CPUS	 1 // The number of CPUs.
 #define XPOS_TABLE_MB	64 // The transposition table size (in MB).
 #define PAWN_TABLE_MB	 1 // The pawn table size (in MB).
-#define DEPTH		16 // The maximum search depth (in plies).
+#define MIN_DEPTH	 2 // The minimum search depth (in plies).
+#define MAX_DEPTH	16 // The maximum search depth (in plies).
 
 
 
@@ -73,7 +74,7 @@
 #define WEIGHT_HAS_CASTLED	 40
 
 /* How much we hate our opponent: */
-#define WEIGHT_CONTEMPT		300
+#define WEIGHT_CONTEMPT		100
 
 
 
@@ -98,8 +99,12 @@
 #error "In inc/config.h, PAWN_TABLE_MB must be >= 1."
 #endif
 
-#if DEPTH < 1
-#error "In inc/config.h, DEPTH must be >= 1."
+#if MIN_DEPTH < 1
+#error "In inc/config.h, MIN_DEPTH must be >= 1."
+#endif
+
+#if MAX_DEPTH < MIN_DEPTH
+#error "In inc/config.h, MAX_DEPTH must be >= MIN_DEPTH."
 #endif
 
 /* Piece colors: */

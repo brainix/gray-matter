@@ -28,7 +28,10 @@
 
 /* Global variables: */
 mutex_t timeout_mutex;  // The lock that protects...
-bool timeout_flag;      // ...the flag that determines when to stop thinking or pondering!  :-D
+bool timeout_flag;      // ...one flag that determines when to stop thinking or pondering!  :-D
+
+mutex_t depth_mutex;    // The lock that protects...
+bool depth_flag;        // ...the other flag that determines when to stop thinking or pondering!  :-D
 
 mutex_t search_mutex;   // The lock that protects...
 cond_t search_cond;     // ...the condition that controls...
@@ -46,7 +49,7 @@ search::search(table *t, history *h, chess_clock *c, xboard *x)
  | srand(time(NULL)); - before instantiating this class!
  */
 
-	max_depth = DEPTH;
+	max_depth = MAX_DEPTH;
 	output = false;
 
 	table_ptr = t;
@@ -55,6 +58,7 @@ search::search(table *t, history *h, chess_clock *c, xboard *x)
 	xboard_ptr = x;
 
 	mutex_create(&timeout_mutex);
+	mutex_create(&depth_mutex);
 	clock_ptr->set_callback(handle);
 	mutex_create(&search_mutex);
 	cond_create(&search_cond, NULL);
@@ -72,6 +76,7 @@ search::~search()
 
 	cond_destroy(&search_cond);
 	mutex_destroy(&search_mutex);
+	mutex_destroy(&depth_mutex);
 	mutex_destroy(&timeout_mutex);
 }
 
@@ -179,7 +184,11 @@ void search::set_output(bool o)
 void *search::start(void *arg)
 {
 
-/* Think of this method as main() for the search thread. */
+/*
+ | Think of this method as main() for the search thread.  Wait for the status to
+ | change, then do the requested work.  Rinse, lather, repeat, until XBoard
+ | commands us to quit.
+ */
 
 	class search *search_ptr = (class search *) arg;
 	int old_search_status = search_status = IDLING;
@@ -199,6 +208,9 @@ void *search::start(void *arg)
 			mutex_lock(&timeout_mutex);
 			timeout_flag = false;
 			mutex_unlock(&timeout_mutex);
+			mutex_lock(&depth_mutex);
+			depth_flag = false;
+			mutex_unlock(&depth_mutex);
 			search_ptr->iterate(search_status);
 		}
 	} while (search_status != QUITTING);
@@ -247,7 +259,10 @@ void search::change(int s, const board& now)
 	timeout_flag = true;
 	mutex_unlock(&timeout_mutex);
 
-	/* Grab board, set board position, release board. */
+	/*
+	 | Wait for the board, grab the board, set the board position, and
+	 | release the board.
+	 */
 	if (s == THINKING || s == PONDERING)
 	{
 		b.lock();
@@ -255,7 +270,7 @@ void search::change(int s, const board& now)
 		b.unlock();
 	}
 
-	/* Send thinking command. */
+	/* Send the command to think. */
 	mutex_lock(&search_mutex);
 	search_status = s;
 	cond_signal(&search_cond);
@@ -276,7 +291,7 @@ void search::iterate(int s)
 	int depth;
 	move_t guess[2], m;
 
-	/* Grab the board. */
+	/* Wait for the board, then grab the board. */
 	b.lock();
 
 	/*
@@ -304,7 +319,7 @@ void search::iterate(int s)
 	for (depth = 1; depth <= max_depth; depth++)
 	{
 		guess[depth & 1] = mtdf(depth, guess[depth & 1].value);
-		if (timeout_flag || IS_NULL_MOVE(guess[depth & 1]))
+		if (timeout_flag && depth_flag || IS_NULL_MOVE(guess[depth & 1]))
 			/*
 			 | Oops.  Either the alarm has interrupted this
 			 | iteration (and the results are incomplete and
@@ -316,12 +331,18 @@ void search::iterate(int s)
 		extract(s);
 		if (output)
 			xboard_ptr->print_output(depth, m.value, clock_ptr->get_elapsed(), nodes, pv);
-		if (ABS(m.value) >= WEIGHT_KING - DEPTH * WEIGHT_PAWN)
+		if (ABS(m.value) >= WEIGHT_KING - MAX_DEPTH)
 			/*
 			 | Oops.  The game will be over at this depth.  There's
 			 | no point in searching deeper.  Eyes on the prize.
 			 */
 			break;
+		if (depth == MIN_DEPTH)
+		{
+			mutex_lock(&depth_mutex);
+			depth_flag = true;
+			mutex_unlock(&depth_mutex);
+		}
 	}
 
 	/* Release the board. */
@@ -353,9 +374,9 @@ move_t search::mtdf(int depth, int guess)
 	m.value = guess;
 	int upper = +INFINITY, lower = -INFINITY, beta;
 
-	while (upper > lower && !timeout_flag)
+	while (upper > lower && (!timeout_flag || !depth_flag))
 	{
-		beta = m.value + (m.value == lower ? 1 : 0);
+		beta = m.value + (m.value == lower);
 		m = minimax(depth, 0, beta - 1, beta);
 		upper = m.value < beta ? m.value : upper;
 		lower = m.value < beta ? lower : m.value;
@@ -478,17 +499,17 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 			continue;
 		if (it->value > m.value)
 			tmp_alpha = GREATER(tmp_alpha, (m = *it).value);
-		if (m.value >= beta || timeout_flag)
+		if (m.value >= beta || timeout_flag && depth_flag)
 			break;
 	}
 
 	if (m.value == -INFINITY)
 	{
 		SET_NULL_MOVE(m);
-		m.value = !b.check() ? +WEIGHT_CONTEMPT : -(WEIGHT_KING - shallowness * WEIGHT_PAWN);
+		m.value = !b.check() ? +WEIGHT_CONTEMPT : -(WEIGHT_KING - shallowness);
 		return m;
 	}
-	if (!timeout_flag)
+	if (!timeout_flag || !depth_flag)
 	{
 		if (m.value <= alpha)
 			table_ptr->store(hash, depth, UPPER, m);
@@ -506,7 +527,17 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 \*----------------------------------------------------------------------------*/
 bool search::shuffle(move_t m1, move_t m2)
 {
-	return rand() % 2;
+
+/*
+ | Pass this method as the comparison function to l.sort() to randomize the move
+ | list.  This is a magnificent hack.
+ |
+ | Note: This hack wouldn't work for O(n²) list sort algorithms.  But if your
+ | STL's list sort algorithm is O(n²), you don't deserve for this hack to work
+ | anyway.
+ */
+
+	return rand() & 1;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -514,6 +545,12 @@ bool search::shuffle(move_t m1, move_t m2)
 \*----------------------------------------------------------------------------*/
 bool search::descend(move_t m1, move_t m2)
 {
+
+/*
+ | Pass this method as the comparison function to l.sort() to sort the move list
+ | from highest to lowest by score.
+ */
+
 	return m1.value > m2.value;
 }
 
