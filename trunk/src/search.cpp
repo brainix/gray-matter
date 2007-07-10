@@ -410,6 +410,7 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 	int tmp_alpha = alpha;            // Scratch variable for us to use so as to not clobber alpha.
 	list<move_t> l;                   // From this position, the move list.
 	list<move_t>::iterator it;        // The iterator through the move list.
+	bool found = false;               //
 	move_t m;                         // From this position, the best move.
 
 	/* Increment the number of positions searched. */
