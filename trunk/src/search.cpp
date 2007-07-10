@@ -289,7 +289,7 @@ void search::iterate(int s)
  */
 
 	int depth;
-	move_t guess[2], m;
+	move_t m, tmp;
 
 	/* Wait for the board, then grab the board. */
 	b.lock();
@@ -305,11 +305,6 @@ void search::iterate(int s)
 		history_ptr->clear();
 	}
 	nodes = 0;
-	for (depth = 0; depth <= 1; depth++)
-	{
-		SET_NULL_MOVE(guess[depth]);
-		guess[depth].value = 0;
-	}
 
 	/*
 	 | Perform iterative deepening until the alarm has sounded (if we're
@@ -318,8 +313,8 @@ void search::iterate(int s)
 	 */
 	for (depth = 1; depth <= max_depth; depth++)
 	{
-		guess[depth & 1] = mtdf(depth, guess[depth & 1].value);
-		if (timeout_flag && depth_flag || IS_NULL_MOVE(guess[depth & 1]))
+		tmp = minimax(depth, 0, INT_MIN, INT_MAX);
+		if (timeout_flag && depth_flag || IS_NULL_MOVE(tmp))
 			/*
 			 | Oops.  Either the alarm has interrupted this
 			 | iteration (and the results are incomplete and
@@ -327,7 +322,7 @@ void search::iterate(int s)
 			 | position (and the game must've ended).
 			 */
 			break;
-		m = guess[depth & 1];
+		m = tmp;
 		extract(s);
 		if (output)
 			xboard_ptr->print_output(depth, m.value, clock_ptr->get_elapsed(), nodes, pv);
@@ -493,7 +488,10 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 	for (m.value = -INFINITY, it = l.begin(); it != l.end(); it++)
 	{
 		b.make(*it);
-		it->value = -minimax(depth - 1, shallowness + 1, -beta, -tmp_alpha).value;
+		if (found)
+			it->value = -minimax(depth - 1, shallowness + 1, -tmp_alpha - 1, -tmp_alpha).value;
+		if (!found || tmp_alpha < it->value && it->value < beta)
+			it->value = -minimax(depth - 1, shallowness + 1, -beta, -tmp_alpha).value;
 		b.unmake();
 		if (it->value == -WEIGHT_ILLEGAL)
 			continue;
