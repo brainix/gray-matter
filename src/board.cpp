@@ -329,9 +329,8 @@ int board::evaluate_pawn() const
 	bitboard_t pawns, adj_files, adj_pawns, ranks;
 
 	/*
-	 | Before anything else, do some Research Re: search & Research.  ;-)
-	 | (Apologies to Aske Plaat.)  If we've already evaluated this pawn
-	 | structure, return our previous evaluation.
+	 | If we've already evaluated this pawn structure, return our previous
+	 | evaluation.
 	 */
 	if (pawn_table.probe(pawn_hash, &sum))
 		goto end;
@@ -376,6 +375,8 @@ int board::evaluate_pawn() const
 					ranks |= ROW_MSK(k);
 				if (!(state.piece[!color][PAWN] & adj_files & ranks))
 					sum += sign * WEIGHT_PASSED;
+
+				/* TODO: Reward pawn advancement. */
 			}
 		}
 	}
