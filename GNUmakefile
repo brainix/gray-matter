@@ -6,7 +6,7 @@
 
 # Your operating system.  This must be LINUX, OS_X, or WINDOWS.
 # BSD is based on OS X.  If you insist on running BSD, set this to OS_X.  ;-)
-PLAT = LINUX
+PLAT = OS_X
 
 # Your processor.
 ARCH = pentium4

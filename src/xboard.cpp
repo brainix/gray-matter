@@ -351,7 +351,7 @@ void xboard::do_sd() const
 void xboard::do_time() const
 {
 	if (sync)
-		clock_ptr->update_remaining_csecs(b.get_whose(), str_to_num(&buffer[5]));
+		clock_ptr->update_remaining_csecs(!b.get_whose(), str_to_num(&buffer[5]));
 }
 
 /*----------------------------------------------------------------------------*\
@@ -360,7 +360,7 @@ void xboard::do_time() const
 void xboard::do_otim() const
 {
 	if (sync)
-		clock_ptr->update_remaining_csecs(!b.get_whose(), str_to_num(&buffer[5]));
+		clock_ptr->update_remaining_csecs(b.get_whose(), str_to_num(&buffer[5]));
 }
 
 /*----------------------------------------------------------------------------*\
