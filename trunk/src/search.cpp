@@ -354,32 +354,6 @@ void search::iterate(int s)
 }
 
 /*----------------------------------------------------------------------------*\
- |				     mtdf()				      |
-\*----------------------------------------------------------------------------*/
-move_t search::mtdf(int depth, int guess)
-{
-
-/*
- | From the current position, search for the best move.  This method implements
- | the MTD(f) algorithm.
- */
-
-	move_t m;
-	SET_NULL_MOVE(m);
-	m.value = guess;
-	int upper = +INFINITY, lower = -INFINITY, beta;
-
-	while (upper > lower && (!timeout_flag || !depth_flag))
-	{
-		beta = m.value + (m.value == lower);
-		m = minimax(depth, 0, beta - 1, beta);
-		upper = m.value < beta ? m.value : upper;
-		lower = m.value < beta ? lower : m.value;
-	}
-	return m;
-}
-
-/*----------------------------------------------------------------------------*\
  |				   minimax()				      |
 \*----------------------------------------------------------------------------*/
 move_t search::minimax(int depth, int shallowness, int alpha, int beta)
@@ -496,8 +470,11 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 		b.unmake();
 		if (it->value == -WEIGHT_ILLEGAL)
 			continue;
-		if (it->value > m.value)
-			tmp_alpha = GREATER(tmp_alpha, (m = *it).value);
+		if (it->value > tmp_alpha)
+		{
+			tmp_alpha = (m = *it).value;
+			found = true;
+		}
 		if (m.value >= beta || timeout_flag && depth_flag)
 			break;
 	}
