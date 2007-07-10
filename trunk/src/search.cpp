@@ -289,7 +289,7 @@ void search::iterate(int s)
  */
 
 	int depth;
-	move_t m, tmp;
+	move_t guess[2], m;
 
 	/* Wait for the board, then grab the board. */
 	b.lock();
@@ -305,6 +305,11 @@ void search::iterate(int s)
 		history_ptr->clear();
 	}
 	nodes = 0;
+	for (depth = 0; depth <= 1; depth++)
+	{
+		SET_NULL_MOVE(guess[depth]);
+		guess[depth].value = 0;
+	}
 
 	/*
 	 | Perform iterative deepening until the alarm has sounded (if we're
@@ -313,8 +318,8 @@ void search::iterate(int s)
 	 */
 	for (depth = 1; depth <= max_depth; depth++)
 	{
-		tmp = minimax(depth, 0, INT_MIN, INT_MAX);
-		if (timeout_flag && depth_flag || IS_NULL_MOVE(tmp))
+		guess[depth & 1] = mtdf(depth, guess[depth & 1].value);
+		if (timeout_flag && depth_flag || IS_NULL_MOVE(guess[depth & 1]))
 			/*
 			 | Oops.  Either the alarm has interrupted this
 			 | iteration (and the results are incomplete and
@@ -322,7 +327,7 @@ void search::iterate(int s)
 			 | position (and the game must've ended).
 			 */
 			break;
-		m = tmp;
+		m = guess[depth & 1];
 		extract(s);
 		if (output)
 			xboard_ptr->print_output(depth, m.value, clock_ptr->get_elapsed(), nodes, pv);
@@ -351,6 +356,32 @@ void search::iterate(int s)
 		clock_ptr->cancel_alarm();
 	if (s == THINKING && search_status != QUITTING)
 		xboard_ptr->print_result(m);
+}
+
+/*----------------------------------------------------------------------------*\
+ |				     mtdf()				      |
+\*----------------------------------------------------------------------------*/
+move_t search::mtdf(int depth, int guess)
+{
+
+/*
+ | From the current position, search for the best move.  This method implements
+ | the MTD(f) algorithm.
+ */
+
+	move_t m;
+	SET_NULL_MOVE(m);
+	m.value = guess;
+	int upper = +INFINITY, lower = -INFINITY, beta;
+
+	while (upper > lower && (!timeout_flag || !depth_flag))
+	{
+		beta = m.value + (m.value == lower);
+		m = minimax(depth, 0, beta - 1, beta);
+		upper = m.value < beta ? m.value : upper;
+		lower = m.value < beta ? lower : m.value;
+	}
+	return m;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -384,7 +415,6 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 	int tmp_alpha = alpha;            // Scratch variable for us to use so as to not clobber alpha.
 	list<move_t> l;                   // From this position, the move list.
 	list<move_t>::iterator it;        // The iterator through the move list.
-	bool found = false;               //
 	move_t m;                         // From this position, the best move.
 
 	/* Increment the number of positions searched. */
@@ -463,18 +493,12 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 	for (m.value = -INFINITY, it = l.begin(); it != l.end(); it++)
 	{
 		b.make(*it);
-		if (found)
-			it->value = -minimax(depth - 1, shallowness + 1, -tmp_alpha - 1, -tmp_alpha).value;
-		if (!found || tmp_alpha < it->value && it->value < beta)
-			it->value = -minimax(depth - 1, shallowness + 1, -beta, -tmp_alpha).value;
+		it->value = -minimax(depth - 1, shallowness + 1, -beta, -tmp_alpha).value;
 		b.unmake();
 		if (it->value == -WEIGHT_ILLEGAL)
 			continue;
-		if (it->value > tmp_alpha)
-		{
-			tmp_alpha = (m = *it).value;
-			found = true;
-		}
+		if (it->value > m.value)
+			tmp_alpha = GREATER(tmp_alpha, (m = *it).value);
 		if (m.value >= beta || timeout_flag && depth_flag)
 			break;
 	}
