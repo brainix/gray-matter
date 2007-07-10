@@ -412,7 +412,7 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 	int status = b.get_status(false); // In this position, whether or not the game is over.
 	int upper = +INFINITY;            // For this position, the upper bound on the MiniMax score.
 	int lower = -INFINITY;            // For this position, the lower bound on the MiniMax score.
-	int tmp_alpha = alpha;            // Scratch variable for us to use so as to not clobber alpha.
+	int current = alpha;              // Scratch variable for us to use so as to not clobber alpha.
 	list<move_t> l;                   // From this position, the move list.
 	list<move_t>::iterator it;        // The iterator through the move list.
 	move_t m;                         // From this position, the best move.
@@ -472,7 +472,7 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 		if (table_ptr->probe(hash, depth, LOWER, &m))
 			if ((lower = m.value) >= beta)
 				return m;
-		tmp_alpha = alpha = GREATER(alpha, lower);
+		current = alpha = GREATER(alpha, lower);
 		beta = LESSER(beta, upper);
 	}
 
@@ -493,13 +493,13 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 	for (m.value = -INFINITY, it = l.begin(); it != l.end(); it++)
 	{
 		b.make(*it);
-		it->value = -minimax(depth - 1, shallowness + 1, -beta, -tmp_alpha).value;
+		it->value = -minimax(depth - 1, shallowness + 1, -beta, -current).value;
 		b.unmake();
 		if (it->value == -WEIGHT_ILLEGAL)
 			continue;
 		if (it->value > m.value)
-			tmp_alpha = GREATER(tmp_alpha, (m = *it).value);
-		if (m.value >= beta || timeout_flag && depth_flag)
+			current = GREATER(current, (m = *it).value);
+		if (it->value >= beta || timeout_flag && depth_flag)
 			break;
 	}
 
