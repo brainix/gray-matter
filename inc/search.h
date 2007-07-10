@@ -79,6 +79,7 @@ private:
 	xboard *xboard_ptr;     // Chess Engine Communication Protocol object.
 
 	void iterate(int s);
+	move_t mtdf(int depth, int guess);
 	move_t minimax(int depth, int shallowness, int alpha, int beta);
 	static bool shuffle(move_t m1, move_t m2);
 	static bool descend(move_t m1, move_t m2);
