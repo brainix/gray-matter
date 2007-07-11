@@ -1,0 +1,8 @@
+#summary How to compile and run on Linux.
+
+= Download and Compile =
+
+Type:
+  * *{{{svn checkout http://gray-matter.googlecode.com/svn/trunk/ gray-matter/}}}*
+  * *{{{cd gray-matter/}}}*
+  * *{{{gmake}}}*
