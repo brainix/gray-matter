@@ -103,7 +103,7 @@ void chess_clock::set_alarm(int color) const
 
 /* Set the alarm. */
 
-	timer_set(GREATER(remaining_csecs[color] / (remaining_moves[color] ? remaining_moves[color] : 40) + inc[color], 1));
+	timer_set(GREATER(remaining_csecs[color] / (remaining_moves[color] ? remaining_moves[color] : 40) + inc[color] - OVERHEAD, 1));
 }
 
 /*----------------------------------------------------------------------------*\

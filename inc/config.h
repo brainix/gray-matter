@@ -47,6 +47,7 @@
 #define PAWN_TABLE_MB	 1 // The pawn table size (in MB).
 #define MIN_DEPTH	 2 // The minimum search depth (in plies).
 #define MAX_DEPTH	16 // The maximum search depth (in plies).
+#define OVERHEAD	 1 //
 
 
 
@@ -105,6 +106,10 @@
 
 #if MAX_DEPTH < MIN_DEPTH
 #error "In inc/config.h, MAX_DEPTH must be >= MIN_DEPTH."
+#endif
+
+#if OVERHEAD < 1
+#error "In inc/config.h, OVERHEAD must be >= 1."
 #endif
 
 /* Piece colors: */
