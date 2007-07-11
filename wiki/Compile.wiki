@@ -1,4 +1,5 @@
 #summary How to compile and run on Linux.
+#labels Phase-Deploy
 
 = Download and Compile =
 
