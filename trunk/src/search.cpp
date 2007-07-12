@@ -478,6 +478,7 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 
 	/* Generate and re-order the move list. */
 	b.generate(l, !shallowness);
+	l.sort(shuffle);
 	for (it = l.begin(); it != l.end(); it++)
 		/*
 		 | According to the transposition table, a previous search from
