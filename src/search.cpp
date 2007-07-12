@@ -413,7 +413,6 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 	int upper = +INFINITY;            // For this position, the upper bound on the MiniMax score.
 	int lower = -INFINITY;            // For this position, the lower bound on the MiniMax score.
 	int current = alpha;              // Scratch variable for us to use so as to not clobber alpha.
-	move_t null_move;                 //
 	list<move_t> l;                   // From this position, the move list.
 	list<move_t>::iterator it;        // The iterator through the move list.
 	move_t m;                         // From this position, the best move.
@@ -476,14 +475,6 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 		current = alpha = GREATER(alpha, lower);
 		beta = LESSER(beta, upper);
 	}
-
-	/* */
-	SET_NULL_MOVE(null_move);
-	b.make(null_move);
-	null_move.value = LESSER(-minimax(depth - 3, shallowness + 3, -beta, -beta).value, beta);
-	b.unmake();
-	if (null_move.value == beta)
-		return null_move;
 
 	/* Generate and re-order the move list. */
 	b.generate(l, !shallowness);
