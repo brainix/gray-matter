@@ -1459,8 +1459,8 @@ bool board::insufficient() const
 	{
 		n_count += count(state.piece[color][KNIGHT]);
 		b_count += count(state.piece[color][BISHOP]);
-		b_array[color][WHITE] = count(state.piece[color][BISHOP] & WHITE_SQUARES);
-		b_array[color][BLACK] = count(state.piece[color][BISHOP] & BLACK_SQUARES);
+		b_array[color][WHITE] = count(state.piece[color][BISHOP] & SQUARES_WHITE);
+		b_array[color][BLACK] = count(state.piece[color][BISHOP] & SQUARES_BLACK);
 	}
 	return n_count + b_count <= 1 ||
 	       n_count == 0 && b_count == 2 && b_array[WHITE][WHITE] == b_array[BLACK][WHITE] && b_array[WHITE][BLACK] == b_array[BLACK][BLACK];
