@@ -410,8 +410,8 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 	bool whose = b.get_whose();       // In this position, the color on move.
 	bitboard_t hash = b.get_hash();   // This position's hash.
 	int status = b.get_status(false); // In this position, whether or not the game is over.
-//	int upper = +INFINITY;            // For this position, the upper bound on the MiniMax score.
-//	int lower = -INFINITY;            // For this position, the lower bound on the MiniMax score.
+	int upper = +INFINITY;            // For this position, the upper bound on the MiniMax score.
+	int lower = -INFINITY;            // For this position, the lower bound on the MiniMax score.
 	int current = alpha;              // Scratch variable for us to use so as to not clobber alpha.
 	list<move_t> l;                   // From this position, the move list.
 	list<move_t>::iterator it;        // The iterator through the move list.
@@ -464,16 +464,16 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 	 */
 	if (shallowness)
 	{
-//		if (table_ptr->probe(hash, depth, UPPER, &m))
-//			if ((upper = m.value) <= alpha)
-//				return m;
+		if (table_ptr->probe(hash, depth, UPPER, &m))
+			if ((upper = m.value) <= alpha)
+				return m;
 		if (table_ptr->probe(hash, depth, EXACT, &m))
 			return m;
-//		if (table_ptr->probe(hash, depth, LOWER, &m))
-//			if ((lower = m.value) >= beta)
-//				return m;
-//		current = alpha = GREATER(alpha, lower);
-//		beta = LESSER(beta, upper);
+		if (table_ptr->probe(hash, depth, LOWER, &m))
+			if ((lower = m.value) >= beta)
+				return m;
+		current = alpha = GREATER(alpha, lower);
+		beta = LESSER(beta, upper);
 	}
 
 	/* Generate and re-order the move list. */
@@ -512,12 +512,12 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 	}
 	if (!timeout_flag || !depth_flag)
 	{
-//		if (m.value <= alpha)
-//			table_ptr->store(hash, depth, UPPER, m);
-		if (m.value > alpha && m.value < beta)
+		if (m.value <= alpha)
+			table_ptr->store(hash, depth, UPPER, m);
+		else if (m.value > alpha && m.value < beta)
 			table_ptr->store(hash, depth, EXACT, m);
-//		if (m.value >= beta)
-//			table_ptr->store(hash, depth, LOWER, m);
+		else if (m.value >= beta)
+			table_ptr->store(hash, depth, LOWER, m);
 		history_ptr->store(whose, m, depth);
 	}
 	return m;
