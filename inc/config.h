@@ -147,7 +147,7 @@
 #define STALEMATE	1 // Drawn by stalemate.
 #define INSUFFICIENT	2 // Drawn by insufficient material.
 #define THREE		3 // Drawn by threefold repetition.
-#define FIFTY		4 // Drawn by the fifty move rule.
+#define FIFTY		4 // Drawn by fifty move rule.
 #define CHECKMATE	5 // Checkmated.
 #define ILLEGAL		6 // Post-checkmated (king captured).
 #define GAME_STATS	7
@@ -181,10 +181,10 @@
 #define POSITIONS	2
 
 /* Transposition table entry types: */
-#define USELESS		0 // The score is useless.
-#define UPPER		1 // The score represents an upper bound.
-#define EXACT		2 // The score represents an exact MiniMax value.
-#define LOWER		3 // The score represents a lower bound.
+#define USELESS		0 // Useless score.
+#define UPPER		1 // Upper bound.
+#define EXACT		2 // Exact MiniMax value.
+#define LOWER		3 // Lower bound.
 #define ENTRY_TYPES	4
 
 /* Search statuses: */
@@ -195,14 +195,16 @@
 #define SEARCH_STATS	4
 
 /* Convenient bitboards: */
-#define CENTER		0x0000001818000000ULL //  4 center squares.
-#define EXPANDED_CENTER	0x00003C3C3C3C0000ULL // 16 center squares.
-#define PRINCIPAL_DIAGS	0x8142241818244281ULL // 16 principal diagonal squares.
-#define WHITE_SIDE	0x00000000FFFFFFFFULL // 32 white side squares.
-#define BLACK_SIDE	0xFFFFFFFF00000000ULL // 32 black side squares.
-#define WHITE_SQUARES	0x55AA55AA55AA55AAULL // 32 white squares.
-#define BLACK_SQUARES	0xAA55AA55AA55AA55ULL // 32 black squares.
-#define CORNERS		0x8100000000000081ULL //  4 corner squares.
+#define SQUARES_CENTER		0x0000001818000000ULL //  4 center squares.
+#define SQUARES_EXPANDED_CENTER	0x00003C3C3C3C0000ULL // 16 center squares.
+#define SQUARES_PRINCIPAL_DIAG	0x8142241818244281ULL // 16 principal diagonal squares.
+#define SQUARES_WHITE_SIDE	0x00000000FFFFFFFFULL // 32 white side squares.
+#define SQUARES_BLACK_SIDE	0xFFFFFFFF00000000ULL // 32 black side squares.
+#define SQUARES_WHITE		0x55AA55AA55AA55AAULL // 32 white squares.
+#define SQUARES_BLACK		0xAA55AA55AA55AA55ULL // 32 black squares.
+#define SQUARES_QUEEN_SIDE	0x0F0F0F0F0F0F0F0FULL // 32 queen side squares.
+#define SQUARES_KING_SIDE	0xF0F0F0F0F0F0F0F0ULL // 32 king side squares.
+#define SQUARES_CORNER		0x8100000000000081ULL //  4 corner squares.
 
 /* Time control styles: */
 #define CONVENTIONAL	0
