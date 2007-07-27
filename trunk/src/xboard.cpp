@@ -180,11 +180,6 @@ void xboard::print_resignation() const
 \*----------------------------------------------------------------------------*/
 void xboard::print_move(move_t m) const
 {
-	/*
-	 | Subtle!  Other methods in this class lock and call this method.  If
-	 | we were to lock around the following output, at least without a
-	 | recursive lock, we'd deadlock.
-	 */
 	printf("%c%c", m.old_x + 'a', m.old_y + '1');
 	printf("%c%c", m.new_x + 'a', m.new_y + '1');
 	switch (m.promo)
