@@ -27,7 +27,6 @@
 #include "xboard.h"
 
 /* Global variables: */
-mutex_t output_mutex;
 
 /*----------------------------------------------------------------------------*\
  |				    xboard()				      |
@@ -46,8 +45,6 @@ xboard::xboard()
 	force = false;
 	draw = false;
 	sync = true;
-
-	mutex_create(&output_mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -57,8 +54,6 @@ xboard::~xboard()
 {
 
 /* Destructor. */
-
-	mutex_destroy(&output_mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -69,9 +64,7 @@ void xboard::vomit(char *message) const
 
 /* Houston, we have a problem... */
 
-	mutex_lock(&output_mutex);
 	printf("tellusererror %s\n", message);
-	mutex_unlock(&output_mutex);
 	exit(EXIT_FAILURE);
 }
 
@@ -135,9 +128,7 @@ void xboard::loop(class search *s, chess_clock *c)
 			do_nopost();
 		else
 		{
-			mutex_lock(&output_mutex);
 			printf("Error (unknown command): %s\n", buffer);
-			mutex_unlock(&output_mutex);
 		}
 	}
 	do_quit();
@@ -151,7 +142,6 @@ void xboard::print_output(int ply, int value, int time, int nodes, list<move_t> 
 
 /* Print thinking output. */
 
-	mutex_lock(&output_mutex);
 	printf("%d %d %d %d", ply, value, time, nodes);
 	for (list<move_t>::iterator it = pv.begin(); it != pv.end(); it++)
 	{
@@ -159,7 +149,6 @@ void xboard::print_output(int ply, int value, int time, int nodes, list<move_t> 
 		print_move(*it);
 	}
 	printf("\n");
-	mutex_unlock(&output_mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -170,11 +159,9 @@ void xboard::print_result(move_t m)
 	b.make(m);
 	clock_ptr->dec_remaining_moves(!b.get_whose());
 
-	mutex_lock(&output_mutex);
 	printf("move ");
 	print_move(m);
 	printf("\n");
-	mutex_unlock(&output_mutex);
 
 	int status = game_over();
 	search_ptr->change(ponder && status == IN_PROGRESS ? PONDERING : IDLING, b);
@@ -185,9 +172,7 @@ void xboard::print_result(move_t m)
 \*----------------------------------------------------------------------------*/
 void xboard::print_resignation() const
 {
-	mutex_lock(&output_mutex);
 	printf("%s\n", draw ? "offer draw" : "resign");
-	mutex_unlock(&output_mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -223,7 +208,6 @@ void xboard::do_xboard() const
 \*----------------------------------------------------------------------------*/
 void xboard::do_protover() const
 {
-	mutex_lock(&output_mutex);
 	printf("feature ping=1\n");                     //
 	printf("feature playother=1\n");                //
 	printf("feature usermove=1\n");                 //
@@ -235,7 +219,6 @@ void xboard::do_protover() const
 	printf("feature variants=\"normal\"\n");        //
 	printf("feature colors=0\n");                   //
 	printf("feature done=1\n");                     //
-	mutex_unlock(&output_mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -383,11 +366,9 @@ void xboard::do_usermove()
 	if (!test_move(m))
 	{
 		/* No!  The gypsy was trying to pull a fast one on us! */
-		mutex_lock(&output_mutex);
 		printf("Illegal move: ");
 		print_move(m);
 		printf("\n");
-		mutex_unlock(&output_mutex);
 		return;
 	}
 
@@ -437,9 +418,7 @@ void xboard::do_ping()
  */
 
 	buffer[1] = 'o';
-	mutex_lock(&output_mutex);
 	printf("%s\n", buffer);
-	mutex_unlock(&output_mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -461,11 +440,9 @@ void xboard::do_hint() const
 	move_t m = search_ptr->get_hint();
 	if (IS_NULL_MOVE(m))
 		return;
-	mutex_lock(&output_mutex);
 	printf("Hint: ");
 	print_move(m);
 	printf("\n");
-	mutex_unlock(&output_mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -546,7 +523,6 @@ int xboard::game_over()
 {
 	int status = b.get_status(true);
 
-	mutex_lock(&output_mutex);
 	switch (status)
 	{
 		case STALEMATE    : printf("1/2-1/2 {Stalemate}\n");                                              break;
@@ -555,7 +531,6 @@ int xboard::game_over()
 		case FIFTY        : printf("1/2-1/2 {Fifty move rule}\n");                                        break;
 		case CHECKMATE    : printf("%s mates}\n", !b.get_whose() == WHITE ? "1-0 {White" : "0-1 {Black"); break;
 	}
-	mutex_unlock(&output_mutex);
 	return status;
 }
 
