@@ -44,22 +44,44 @@ int main(int argc, char **argv);
 \*----------------------------------------------------------------------------*/
 int main(int argc, char **argv)
 {
-	/* TODO: Parse the command-line arguments. */
-	for (int c; (c = getopt(argc, argv, "")) != -1;)
+	int xpos_table_size = XPOS_TABLE_MB;
+	int pawn_table_size = PAWN_TABLE_MB;
+
+	/* Parse the command-line arguments. */
+	for (int c; (c = getopt(argc, argv, "x:p:")) != -1;)
 		switch (c)
 		{
+			case 'x':
+				if ((xpos_table_size = optarg) < 1)
+				{
+					printf("transposition table must be >= 1 MB\n");
+					exit(EXIT_FAILURE);
+				}
+				break;
+			case 'p':
+				if ((pawn_table_size = optarg) < 1)
+				{
+					printf("pawn table must be >= 1 MB\n");
+					exit(EXIT_FAILURE);
+				}
+				break;
 			default:
+				printf("unknown option: -%c\n", optopt);
 				exit(EXIT_FAILURE);
 				break;
 		}
 	if (optind < argc)
+	{
+		for (int index = optind; index < argc; index++)
+			printf("unknown non-option argument: %s\n", argv[optind]);
 		exit(EXIT_FAILURE);
+	}
 
 	/* Seed the random number generator. */
 	srand(time(NULL));
 
 	/* Instantiate the classes. */
-	table t;
+	table t(xpos_table_size);
 	history h;
 	xboard x;
 	chess_clock c;
