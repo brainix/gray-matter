@@ -36,11 +36,11 @@ table::table(int mb)
 
 	try
 	{
-		if ((slots = mb * MB / sizeof(xpos_slot_t)) == 0)
+		if ((slots = mb * MB / sizeof(xpos_slot_t) / 2) == 0)
 			throw;
 		data = new xpos_slot_t*[2];
 		for (int type = UPPER; type == UPPER || type == LOWER; type = LOWER)
-			data = new xpos_slot_t[type][slots / 2];
+			data = new xpos_slot_t[type][slots];
 	}
 	catch (...)
 	{
@@ -92,7 +92,7 @@ bool table::probe(bitboard_t hash, int depth, int type, move_t *move_ptr) const
 		return false;
 	}
 	*move_ptr = data[type][index].move;
-	return data[type][index].depth >= depth;
+	return data[type][index].depth >= (unsigned) depth;
 }
 
 /*----------------------------------------------------------------------------*\
