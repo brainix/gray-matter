@@ -43,8 +43,8 @@ public:
 	bool probe(bitboard_t hash, int depth, int type, move_t *move_ptr) const;
 	void store(bitboard_t hash, int depth, int type, move_t move);
 private:
-	uint64_t slots;     // The number of slots.
-	xpos_slot_t **data; // The slots themselves.
+	uint64_t slots;    // The number of slots.
+	xpos_slot_t *data; // The slots themselves.
 };
 
 /*----------------------------------------------------------------------------*\
