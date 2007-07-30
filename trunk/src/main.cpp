@@ -45,9 +45,9 @@ int main(int argc, char **argv);
 int main(int argc, char **argv)
 {
 	/* TODO: Parse the command-line arguments. */
-	int c;
-	while ((c = getopt(argc, argv, "")) != -1)
-		switch (c)
+	int n;
+	while ((n = getopt(argc, argv, "")) != -1)
+		switch (n)
 		{
 			default:
 				printf("unknown option: -%c\n", optopt);
