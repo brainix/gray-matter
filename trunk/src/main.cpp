@@ -45,20 +45,15 @@ int main(int argc, char **argv);
 int main(int argc, char **argv)
 {
 	/* TODO: Parse the command-line arguments. */
-	int n;
-	while ((n = getopt(argc, argv, "")) != -1)
-		switch (n)
+	for (int c; (c = getopt(argc, argv, "")) != -1;)
+		switch (c)
 		{
 			default:
-				printf("unknown option: -%c\n", optopt);
 				exit(EXIT_FAILURE);
 				break;
 		}
 	if (optind < argc)
-	{
-		printf("unknown non-option argument\n");
 		exit(EXIT_FAILURE);
-	}
 
 	/* Seed the random number generator. */
 	srand(time(NULL));
