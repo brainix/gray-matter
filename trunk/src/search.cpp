@@ -407,14 +407,15 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
  */
 
 	/* Local variables: */
-	bool whose = b.get_whose();               // In this position, the color on move.
-	bitboard_t hash = b.get_hash();           // This position's hash.
-	int status = b.get_status(false);         // In this position, whether or not the game is over.
-	int upper = +INFINITY, lower = -INFINITY; // For this position, the upper and lower bounds on the MiniMax score.
-	int current = alpha;                      // Scratch variable for us to use so as to not clobber alpha.
-	list<move_t> l;                           // From this position, the move list.
-	list<move_t>::iterator it;                // The iterator through the move list.
-	move_t m1, m2, m;                         // From this position, the best move.
+	bool whose = b.get_whose();       // In this position, the color on move.
+	bitboard_t hash = b.get_hash();   // This position's hash.
+	int status = b.get_status(false); // In this position, whether or not the game is over.
+	int upper = +INFINITY;            // For this position, the upper bound on the MiniMax score.
+	int lower = -INFINITY;            // For this position, the lower bound on the MiniMax score.
+	int current = alpha;              // Scratch variable for us to use so as to not clobber alpha.
+	list<move_t> l;                   // From this position, the move list.
+	list<move_t>::iterator it;        // The iterator through the move list.
+	move_t m;                         // From this position, the best move.
 
 	/* Increment the number of positions searched. */
 	nodes++;
@@ -463,12 +464,14 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 	 */
 	if (shallowness)
 	{
-		if (table_ptr->probe(hash, depth, UPPER, &m1))
-			if ((upper = m1.value) <= alpha)
-				return m1;
-		if (table_ptr->probe(hash, depth, LOWER, &m2))
-			if ((lower = m2.value) >= beta)
-				return m2;
+		if (table_ptr->probe(hash, depth, UPPER, &m))
+			if ((upper = m.value) <= alpha)
+				return m;
+		if (table_ptr->probe(hash, depth, EXACT, &m))
+			return m;
+		if (table_ptr->probe(hash, depth, LOWER, &m))
+			if ((lower = m.value) >= beta)
+				return m;
 		current = alpha = GREATER(alpha, lower);
 		beta = LESSER(beta, upper);
 	}
@@ -484,7 +487,7 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 		 | score to force it to the front of the list to score it first
 		 | to hopefully cause an earlier cutoff.
 		 */
-		it->value = *it == m1 || *it == m2 ? WEIGHT_KING : history_ptr->probe(whose, *it);
+		it->value = *it == m ? WEIGHT_KING : history_ptr->probe(whose, *it);
 	l.sort(descend);
 
 	/* Score each move in the list. */
@@ -511,6 +514,8 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 	{
 		if (m.value <= alpha)
 			table_ptr->store(hash, depth, UPPER, m);
+		else if (m.value > alpha && m.value < beta)
+			table_ptr->store(hash, depth, EXACT, m);
 		else if (m.value >= beta)
 			table_ptr->store(hash, depth, LOWER, m);
 		history_ptr->store(whose, m, depth);
@@ -562,7 +567,7 @@ void search::extract(int s)
 	pv.clear();
 
 	/* Get the principal variation. */
-	for (table_ptr->probe(b.get_hash(), 0, UPPER, &m); !IS_NULL_MOVE(m) && b.get_status(true) == IN_PROGRESS; table_ptr->probe(b.get_hash(), 0, UPPER, &m))
+	for (table_ptr->probe(b.get_hash(), 0, EXACT, &m); !IS_NULL_MOVE(m) && b.get_status(true) == IN_PROGRESS; table_ptr->probe(b.get_hash(), 0, EXACT, &m))
 	{
 		pv.push_back(m);
 		b.make(m);
