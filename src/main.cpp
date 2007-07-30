@@ -52,14 +52,14 @@ int main(int argc, char **argv)
 		switch (c)
 		{
 			case 'x':
-				if ((xpos_table_size = optarg) < 1)
+				if ((xpos_table_size = atoi(optarg)) < 1)
 				{
 					printf("transposition table must be >= 1 MB\n");
 					exit(EXIT_FAILURE);
 				}
 				break;
 			case 'p':
-				if ((pawn_table_size = optarg) < 1)
+				if ((pawn_table_size = atoi(optarg)) < 1)
 				{
 					printf("pawn table must be >= 1 MB\n");
 					exit(EXIT_FAILURE);
