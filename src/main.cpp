@@ -54,26 +54,30 @@ int main(int argc, char **argv)
 			case 'x':
 				if ((xpos_table_size = atoi(optarg)) < 1)
 				{
-					printf("transposition table must be >= 1 MB\n");
+					printf("error: transposition table must be >= 1 MB\n");
+					printf("aborting\n");
 					exit(EXIT_FAILURE);
 				}
 				break;
 			case 'p':
 				if ((pawn_table_size = atoi(optarg)) < 1)
 				{
-					printf("pawn table must be >= 1 MB\n");
+					printf("error: pawn table must be >= 1 MB\n");
+					printf("aborting\n");
 					exit(EXIT_FAILURE);
 				}
 				break;
 			default:
-				printf("unknown option: -%c\n", optopt);
+				printf("error: unknown option: -%c\n", optopt);
+				printf("aborting\n");
 				exit(EXIT_FAILURE);
 				break;
 		}
 	if (optind < argc)
 	{
 		for (int index = optind; index < argc; index++)
-			printf("unknown non-option argument: %s\n", argv[index]);
+			printf("error: unknown non-option argument: %s\n", argv[index]);
+		printf("aborting\n");
 		exit(EXIT_FAILURE);
 	}
 
