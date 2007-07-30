@@ -40,7 +40,7 @@ table::table(int mb)
 			throw;
 		data = new xpos_slot_t*[2];
 		for (int type = UPPER; type == UPPER || type == LOWER; type = LOWER)
-			data = new xpos_slot_t[type][slots];
+			data[type] = new xpos_slot_t[slots];
 	}
 	catch (...)
 	{
