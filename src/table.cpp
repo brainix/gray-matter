@@ -38,7 +38,9 @@ table::table(int mb)
 	{
 		if ((slots = mb * MB / sizeof(xpos_slot_t)) == 0)
 			throw;
-		data = new xpos_slot_t[slots];
+		data = new xpos_slot_t*[2];
+		for (int type = UPPER; type == UPPER || type == LOWER; type = LOWER)
+			data = new xpos_slot_t[type][slots / 2];
 	}
 	catch (...)
 	{
@@ -54,6 +56,8 @@ table::~table()
 
 /* Destructor. */
 
+	for (int type = UPPER; type == UPPER || type == LOWER; type = LOWER)
+		delete[] data[type];
 	delete[] data;
 }
 
@@ -65,14 +69,14 @@ void table::clear()
 
 /* Clear the transposition table. */
 
-	for (uint64_t index = 0; index < slots; index++)
-	{
-		data[index].hash = 0;
-		data[index].depth = 0;
-		data[index].type = USELESS;
-		SET_NULL_MOVE(data[index].move);
-		data[index].move.value = 0;
-	}
+	for (int type = UPPER; type == UPPER || type == LOWER; type = LOWER)
+		for (uint64_t index = 0; index < slots; index++)
+		{
+			data[type][index].hash = 0;
+			data[type][index].depth = 0;
+			SET_NULL_MOVE(data[type][index].move);
+			data[type][index].move.value = 0;
+		}
 }
 
 /*----------------------------------------------------------------------------*\
@@ -81,14 +85,14 @@ void table::clear()
 bool table::probe(bitboard_t hash, int depth, int type, move_t *move_ptr) const
 {
 	uint64_t index = hash % slots;
-	if (data[index].hash != hash)
+	if (data[type][index].hash != hash)
 	{
 		SET_NULL_MOVE(*move_ptr);
 		move_ptr->value = 0;
 		return false;
 	}
-	*move_ptr = data[index].move;
-	return data[index].depth >= depth && (data[index].type == EXACT || data[index].type == type);
+	*move_ptr = data[type][index].move;
+	return data[type][index].depth >= depth;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -97,10 +101,9 @@ bool table::probe(bitboard_t hash, int depth, int type, move_t *move_ptr) const
 void table::store(bitboard_t hash, int depth, int type, move_t move)
 {
 	uint64_t index = hash % slots;
-	data[index].hash = hash;
-	data[index].depth = depth;
-	data[index].type = type;
-	data[index].move = move;
+	data[type][index].hash = hash;
+	data[type][index].depth = depth;
+	data[type][index].move = move;
 }
 
 /*----------------------------------------------------------------------------*\
