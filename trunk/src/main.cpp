@@ -73,7 +73,7 @@ int main(int argc, char **argv)
 	if (optind < argc)
 	{
 		for (int index = optind; index < argc; index++)
-			printf("unknown non-option argument: %s\n", argv[optind]);
+			printf("unknown non-option argument: %s\n", argv[index]);
 		exit(EXIT_FAILURE);
 	}
 
