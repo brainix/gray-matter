@@ -47,8 +47,6 @@ int main(int argc, char **argv)
 	int xpos_table_size = XPOS_TABLE_MB;
 	char search_engine[32] = "MTDF";
 
-//	strncpy(search_engine, "MTDF", sizeof(search_engine));
-
 	/* Parse the command-line arguments. */
 	for (int c; (c = getopt(argc, argv, "x:s:")) != -1;)
 		switch (c)
@@ -61,10 +59,11 @@ int main(int argc, char **argv)
 				}
 				break;
 			case 's':
-				/* directly specifying which search engine to use */
+				/* Directly specifying which search engine to use. */
 				strncpy(search_engine, optarg, sizeof(search_engine));
-				if (strncasecmp(search_engine, "MTDF", 4) != 0) {
-					printf("unknown search engine: \"%s\"\n", optarg);
+				if (strncasecmp(search_engine, "MTDF", 4) != 0)
+				{
+					printf("unknown search engine: %s\n", optarg);
 					exit(EXIT_FAILURE);
 				}
 				break;

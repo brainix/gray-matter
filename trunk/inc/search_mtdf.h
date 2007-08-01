@@ -57,10 +57,7 @@ public:
 	search_mtdf(table *t, history *h, chess_clock *c, xboard *x);
 	~search_mtdf();
 	search_mtdf& operator=(const search_mtdf& that);
-
 private:
-	list<move_t> pv;        // Principal variation.
-
 	void iterate(int s);
 	move_t mtdf(int depth, int guess);
 	move_t minimax(int depth, int shallowness, int alpha, int beta);

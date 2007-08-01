@@ -23,8 +23,8 @@
  |	Boston MA 02111-1307
  */
 
-#ifndef _SEARCH_BASE_H
-#define _SEARCH_BASE_H
+#ifndef SEARCH_BASE_H
+#define SEARCH_BASE_H
 
 #include "board.h"
 #include "table.h"
@@ -55,6 +55,7 @@ protected:
 	virtual void start();            // C++ entry point for threads.
 	virtual void iterate(int s) = 0; // Force sub-classes to override.
 
+	list<move_t> pv;        // Principal variation.
 	move_t hint;            // Opponent's best move.
 	int max_depth;          // Maximum search depth.
 	int nodes;              // Number of nodes searched.
