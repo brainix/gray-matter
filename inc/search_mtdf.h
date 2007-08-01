@@ -38,6 +38,7 @@ using namespace std;
 #include "thread.h"
 
 /* Extra Gray Matter stuff: */
+#include "search_base.h"
 #include "board.h"
 #include "table.h"
 #include "clock.h"
@@ -50,33 +51,15 @@ class history;
 class chess_clock;
 class xboard;
 
-class search_mtdf
+class search_mtdf : public search_base
 {
 public:
 	search_mtdf(table *t, history *h, chess_clock *c, xboard *x);
 	~search_mtdf();
 	search_mtdf& operator=(const search_mtdf& that);
-	static void handle();
-	void move_now() const;
-	void clear() const;
-	move_t get_hint() const;
-	thread_t get_thread() const;
-	void set_depth(int d);
-	void set_output(bool o);
-	static void *start(void *arg);
-	void change(int s, const board& now);
+
 private:
 	list<move_t> pv;        // Principal variation.
-	move_t hint;            // Opponent's best move.
-	int max_depth;          // Maximum search depth.
-	int nodes;              // Number of nodes searched.
-	bool output;            // Whether to print thinking output.
-
-	board b;                // Board representation object.
-	table *table_ptr;       // Transposition table object.
-	history *history_ptr;   // History table object.
-	chess_clock *clock_ptr; // Chess clock object.
-	xboard *xboard_ptr;     // Chess Engine Communication Protocol object.
 
 	void iterate(int s);
 	move_t mtdf(int depth, int guess);

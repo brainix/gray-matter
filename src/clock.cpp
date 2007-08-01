@@ -27,7 +27,6 @@
 #include "clock.h"
 
 /* Global variables: */
-void (*function)();
 
 /*----------------------------------------------------------------------------*\
  |				 chess_clock()				      |
@@ -39,7 +38,7 @@ chess_clock::chess_clock()
 
 	for (int color = WHITE; color <= BLACK; color++)
 		set_mode(color, 40, 5 * 60 * 100, 0);
-	timer_function(sound_alarm);
+	timer_function(sound_alarm, this);
 	note_time();
 }
 
@@ -90,9 +89,10 @@ void chess_clock::inc_remaining_moves(int color)
 /*----------------------------------------------------------------------------*\
  |				 set_callback()				      |
 \*----------------------------------------------------------------------------*/
-void chess_clock::set_callback(void (*new_function)()) const
+void chess_clock::set_callback(clock_callback_t cb, void *data)
 {
-	function = new_function;
+	clock_callback = cb;
+	clock_callback_data = data;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -109,12 +109,14 @@ void chess_clock::set_alarm(int color) const
 /*----------------------------------------------------------------------------*\
  |				 sound_alarm()				      |
 \*----------------------------------------------------------------------------*/
-void chess_clock::sound_alarm()
+void chess_clock::sound_alarm(void *data)
 {
 
 /* Sound the alarm. */
 
-	(*function)();
+	chess_clock *clock = (chess_clock*)data;
+
+	clock->clock_callback(clock->clock_callback_data);
 }
 
 /*----------------------------------------------------------------------------*\

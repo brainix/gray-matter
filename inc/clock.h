@@ -31,6 +31,8 @@
 #include "types.h"
 #include "thread.h"
 
+typedef void (*clock_callback_t)(void *data);
+
 class chess_clock
 {
 public:
@@ -39,19 +41,22 @@ public:
 	void update_remaining_csecs(int color, int new_csecs);
 	void dec_remaining_moves(int color);
 	void inc_remaining_moves(int color);
-	void set_callback(void (*function)()) const;
+	void set_callback(clock_callback_t cb, void *data);
 	void set_alarm(int color) const;
-	static void sound_alarm();
 	void cancel_alarm() const;
 	void note_time();
 	int get_elapsed() const;
 	void swap_clocks();
 private:
+	static void sound_alarm(void *data);
+
 	int total_moves[COLORS];
 	int remaining_moves[COLORS];
 	int remaining_csecs[COLORS];
 	int inc[COLORS];
 	clock_t noted_time;
+	clock_callback_t clock_callback;
+	void *clock_callback_data;
 };
 
 #endif
