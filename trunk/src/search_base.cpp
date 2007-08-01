@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------*\
- |	search_base.cpp - move search base implementation				      |
+ |	search_base.cpp - move search base implementation		      |
  |									      |
- |	Copyright Â© 2005-2007, The Gray Matter Team, original authors.	      |
+ |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
 
 /*
@@ -67,7 +67,7 @@ search_base::~search_base()
 }
 
 /*----------------------------------------------------------------------------*\
- |				  operator=()				      |
+ |				       =				      |
 \*----------------------------------------------------------------------------*/
 class search_base& search_base::operator=(const search_base& that)
 {
@@ -209,7 +209,7 @@ void search_base::set_output(bool o)
 \*----------------------------------------------------------------------------*/
 void search_base::_handle(void *arg)
 {
-	((search_base*)arg)->handle();
+	((search_base *) arg)->handle();
 }
 
 /*----------------------------------------------------------------------------*\
@@ -239,7 +239,7 @@ void search_base::clear() const
 \*----------------------------------------------------------------------------*/
 void *search_base::_start(void *arg)
 {
-	((search_base*)arg)->start();
+	((search_base *) arg)->start();
 	return NULL;
 }
 
