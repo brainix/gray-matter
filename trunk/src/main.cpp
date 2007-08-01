@@ -50,7 +50,7 @@ int main(int argc, char **argv)
 //	strncpy(search_engine, "MTDF", sizeof(search_engine));
 
 	/* Parse the command-line arguments. */
-	for (int c; (c = getopt(argc, argv, "x:")) != -1;)
+	for (int c; (c = getopt(argc, argv, "x:s:")) != -1;)
 		switch (c)
 		{
 			case 'x':
