@@ -25,6 +25,9 @@
 
 #include "search_base.h"
 
+/*----------------------------------------------------------------------------*\
+ |				 search_base()				      |
+\*----------------------------------------------------------------------------*/
 search_base::search_base(table *t, history *h, chess_clock *c, xboard *x)
 {
 
@@ -49,6 +52,9 @@ search_base::search_base(table *t, history *h, chess_clock *c, xboard *x)
 	thread_create(&search_thread, (entry_t) _start, this);
 }
 
+/*----------------------------------------------------------------------------*\
+ |				 ~search_base()				      |
+\*----------------------------------------------------------------------------*/
 search_base::~search_base()
 {
 
@@ -60,6 +66,9 @@ search_base::~search_base()
 	mutex_destroy(&timeout_mutex);
 }
 
+/*----------------------------------------------------------------------------*\
+ |				  operator=()				      |
+\*----------------------------------------------------------------------------*/
 class search_base& search_base::operator=(const search_base& that)
 {
 
@@ -272,4 +281,3 @@ void search_base::start()
 
 	thread_destroy(NULL);
 }
-
