@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------*\
- |	search_base.h - move search base iterface				      |
+ |	search_base.h - move search base iterface			      |
  |									      |
- |	Copyright Â© 2005-2007, The Gray Matter Team, original authors.	      |
+ |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
 
 /*
@@ -49,13 +49,11 @@ public:
 
 protected:
 	virtual void clear() const;
-
-	static void _handle(void *arg); // proxy clock callback
-	virtual void handle();          // C++ clock callback
-	static void *_start(void *arg); // proxy entry point for threads
-	virtual void start();          // C++ entry point for threads
-
-	virtual void iterate(int s) = 0; // force sub-classes to override
+	static void _handle(void *arg);  // Proxy clock callback.
+	virtual void handle();           // C++ clock callback.
+	static void *_start(void *arg);  // Proxy entry point for threads.
+	virtual void start();            // C++ entry point for threads.
+	virtual void iterate(int s) = 0; // Force sub-classes to override.
 
 	move_t hint;            // Opponent's best move.
 	int max_depth;          // Maximum search depth.
@@ -81,9 +79,8 @@ protected:
 	thread_t search_thread; // ...the search thread via...
 	int search_status;      // ...the search status!  :-D
 
-	/* prevent class from being created with proper construction */
+	/* Prevent the class from being created without the proper construction. */
 	search_base();
 };
 
 #endif
-
