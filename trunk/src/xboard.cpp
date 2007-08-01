@@ -71,7 +71,7 @@ void xboard::vomit(char *message) const
 /*----------------------------------------------------------------------------*\
  |				     loop()				      |
 \*----------------------------------------------------------------------------*/
-void xboard::loop(class search *s, chess_clock *c)
+void xboard::loop(search_mtdf *s, chess_clock *c)
 {
 	search_ptr = s;
 	clock_ptr = c;

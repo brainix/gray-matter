@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*\
- |	search.cpp - move search implementation				      |
+ |	search_mtdf.cpp - move search implementation				      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
@@ -24,7 +24,7 @@
  */
 
 #include "gray.h"
-#include "search.h"
+#include "search_mtdf.h"
 
 /* Global variables: */
 mutex_t timeout_mutex;  // The lock that protects...
@@ -41,7 +41,7 @@ int search_status;      // ...the search status!  :-D
 /*----------------------------------------------------------------------------*\
  |				    search()				      |
 \*----------------------------------------------------------------------------*/
-search::search(table *t, history *h, chess_clock *c, xboard *x)
+search_mtdf::search_mtdf(table *t, history *h, chess_clock *c, xboard *x)
 {
 
 /*
@@ -67,9 +67,9 @@ search::search(table *t, history *h, chess_clock *c, xboard *x)
 }
 
 /*----------------------------------------------------------------------------*\
- |				   ~search()				      |
+ |				   ~search_mtdf()				      |
 \*----------------------------------------------------------------------------*/
-search::~search()
+search_mtdf::~search_mtdf()
 {
 
 /* Destructor. */
@@ -83,7 +83,7 @@ search::~search()
 /*----------------------------------------------------------------------------*\
  |				       =				      |
 \*----------------------------------------------------------------------------*/
-class search& search::operator=(const search& that)
+class search_mtdf& search_mtdf::operator=(const search_mtdf& that)
 {
 
 /* Overloaded assignment operator. */
@@ -109,7 +109,7 @@ class search& search::operator=(const search& that)
 /*----------------------------------------------------------------------------*\
  |				    handle()				      |
 \*----------------------------------------------------------------------------*/
-void search::handle()
+void search_mtdf::handle()
 {
 
 /* The alarm has sounded.  Handle it. */
@@ -122,7 +122,7 @@ void search::handle()
 /*----------------------------------------------------------------------------*\
  |				   move_now()				      |
 \*----------------------------------------------------------------------------*/
-void search::move_now() const
+void search_mtdf::move_now() const
 {
 	if (search_status != THINKING)
 		return;
@@ -134,7 +134,7 @@ void search::move_now() const
 /*----------------------------------------------------------------------------*\
  |				    clear()				      |
 \*----------------------------------------------------------------------------*/
-void search::clear() const
+void search_mtdf::clear() const
 {
 	table_ptr->clear();
 	history_ptr->clear();
@@ -143,7 +143,7 @@ void search::clear() const
 /*----------------------------------------------------------------------------*\
  |				   get_hint()				      |
 \*----------------------------------------------------------------------------*/
-move_t search::get_hint() const
+move_t search_mtdf::get_hint() const
 {
 	return hint;
 }
@@ -151,7 +151,7 @@ move_t search::get_hint() const
 /*----------------------------------------------------------------------------*\
  |				  get_thread()				      |
 \*----------------------------------------------------------------------------*/
-thread_t search::get_thread() const
+thread_t search_mtdf::get_thread() const
 {
 	return search_thread;
 }
@@ -159,7 +159,7 @@ thread_t search::get_thread() const
 /*----------------------------------------------------------------------------*\
  |				  set_depth()				      |
 \*----------------------------------------------------------------------------*/
-void search::set_depth(int d)
+void search_mtdf::set_depth(int d)
 {
 
 /* Set the maximum search depth. */
@@ -170,7 +170,7 @@ void search::set_depth(int d)
 /*----------------------------------------------------------------------------*\
  |				  set_output()				      |
 \*----------------------------------------------------------------------------*/
-void search::set_output(bool o)
+void search_mtdf::set_output(bool o)
 {
 
 /* Set whether to print thinking output. */
@@ -181,7 +181,7 @@ void search::set_output(bool o)
 /*----------------------------------------------------------------------------*\
  |				    start()				      |
 \*----------------------------------------------------------------------------*/
-void *search::start(void *arg)
+void *search_mtdf::start(void *arg)
 {
 
 /*
@@ -190,7 +190,7 @@ void *search::start(void *arg)
  | commands us to quit.
  */
 
-	class search *search_ptr = (class search *) arg;
+	search_mtdf *search_ptr = (search_mtdf *) arg;
 	int old_search_status = search_status = IDLING;
 
 	do
@@ -222,7 +222,7 @@ void *search::start(void *arg)
 /*----------------------------------------------------------------------------*\
  |				    change()				      |
 \*----------------------------------------------------------------------------*/
-void search::change(int s, const board& now)
+void search_mtdf::change(int s, const board& now)
 {
 
 /*
@@ -280,7 +280,7 @@ void search::change(int s, const board& now)
 /*----------------------------------------------------------------------------*\
  |				   iterate()				      |
 \*----------------------------------------------------------------------------*/
-void search::iterate(int s)
+void search_mtdf::iterate(int s)
 {
 
 /*
@@ -361,7 +361,7 @@ void search::iterate(int s)
 /*----------------------------------------------------------------------------*\
  |				     mtdf()				      |
 \*----------------------------------------------------------------------------*/
-move_t search::mtdf(int depth, int guess)
+move_t search_mtdf::mtdf(int depth, int guess)
 {
 
 /*
@@ -387,7 +387,7 @@ move_t search::mtdf(int depth, int guess)
 /*----------------------------------------------------------------------------*\
  |				   minimax()				      |
 \*----------------------------------------------------------------------------*/
-move_t search::minimax(int depth, int shallowness, int alpha, int beta)
+move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 {
 
 /*
@@ -522,7 +522,7 @@ move_t search::minimax(int depth, int shallowness, int alpha, int beta)
 /*----------------------------------------------------------------------------*\
  |				   shuffle()				      |
 \*----------------------------------------------------------------------------*/
-bool search::shuffle(move_t m1, move_t m2)
+bool search_mtdf::shuffle(move_t m1, move_t m2)
 {
 
 /*
@@ -540,7 +540,7 @@ bool search::shuffle(move_t m1, move_t m2)
 /*----------------------------------------------------------------------------*\
  |				   descend()				      |
 \*----------------------------------------------------------------------------*/
-bool search::descend(move_t m1, move_t m2)
+bool search_mtdf::descend(move_t m1, move_t m2)
 {
 
 /*
@@ -554,7 +554,7 @@ bool search::descend(move_t m1, move_t m2)
 /*----------------------------------------------------------------------------*\
  |				   extract()				      |
 \*----------------------------------------------------------------------------*/
-void search::extract(int s)
+void search_mtdf::extract(int s)
 {
 
 /* Extract the principal variation and hint from the transposition table. */
