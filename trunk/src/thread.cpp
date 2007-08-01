@@ -268,7 +268,8 @@ int cond_destroy(cond_t *cond)
 }
 
 /* Global variables: */
-void (*callback)();
+void (*callback)(void*);
+void *callback_data;
 #if defined(WINDOWS)
 thread_t timer_thread = INVALID_HANDLE_VALUE;
 #endif
@@ -283,7 +284,7 @@ void timer_handler(int num)
 /* On Linux and OS X, the alarm has sounded.  Call the previously specified
  * function. */
 
-	(*callback)();
+	(*callback)(callback_data);
 }
 #elif defined(WINDOWS)
 DWORD timer_handler(LPVOID arg)
@@ -330,7 +331,7 @@ DWORD timer_handler(LPVOID arg)
 		goto end;
 
 	/* Notify the other thread - call the previously specified function. */
-	(*callback)();
+	(*callback)(callback_data);
 
 	/* Exit the timer thread. */
 end:
@@ -344,7 +345,7 @@ end:
 /*----------------------------------------------------------------------------*\
  |				timer_function()			      |
 \*----------------------------------------------------------------------------*/
-int timer_function(void (*function)())
+int timer_function(void (*function)(void*), void *data)
 {
 
 /* Specify the function to be called once the alarm has sounded. */
@@ -353,6 +354,7 @@ int timer_function(void (*function)())
 	signal(SIGALRM, timer_handler);
 #endif
 	callback = function;
+	callback_data = data;
 	return SUCCESSFUL;
 }
 

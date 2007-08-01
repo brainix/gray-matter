@@ -23,6 +23,7 @@ MACH = -march=$(ARCH)
 OBJS = bin/board.o  \
        bin/clock.o  \
        bin/main.o   \
+       bin/search_base.o \
        bin/search_mtdf.o \
        bin/table.o  \
        bin/thread.o \

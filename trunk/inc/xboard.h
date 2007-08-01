@@ -38,12 +38,12 @@ using namespace std;
 
 /* Extra Gray Matter stuff: */
 #include "board.h"
-#include "search_mtdf.h"
+#include "search_base.h"
 #include "clock.h"
 
 /* Forward declarations: */
 class board;
-class search_mtdf;
+class search_base;
 class chess_clock;
 
 class xboard
@@ -52,7 +52,7 @@ public:
 	xboard();
 	~xboard();
 	void vomit(char *message) const;
-	void loop(search_mtdf *s, chess_clock *c);
+	void loop(search_base *s, chess_clock *c);
 	void print_output(int ply, int value, int time, int nodes, list<move_t> &pv) const;
 	void print_result(move_t m);
 	void print_resignation() const;
@@ -64,7 +64,7 @@ private:
 	bool sync;                // Whether to sync our clock with XBoard's.
 
 	board b;                  // Board representation object.
-	search_mtdf *search_ptr;  // Move search object.
+	search_base *search_ptr;  // Move search object.
 	chess_clock *clock_ptr;   // Chess clock object.
 
 	void print_move(move_t m) const;

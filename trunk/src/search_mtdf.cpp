@@ -27,43 +27,13 @@
 #include "search_mtdf.h"
 
 /* Global variables: */
-mutex_t timeout_mutex;  // The lock that protects...
-bool timeout_flag;      // ...one flag that determines when to stop thinking or pondering!  :-D
-
-mutex_t depth_mutex;    // The lock that protects...
-bool depth_flag;        // ...the other flag that determines when to stop thinking or pondering!  :-D
-
-mutex_t search_mutex;   // The lock that protects...
-cond_t search_cond;     // ...the condition that controls...
-thread_t search_thread; // ...the search thread via...
-int search_status;      // ...the search status!  :-D
 
 /*----------------------------------------------------------------------------*\
- |				    search()				      |
+ |				    search_mtdf()				      |
 \*----------------------------------------------------------------------------*/
-search_mtdf::search_mtdf(table *t, history *h, chess_clock *c, xboard *x)
+search_mtdf::search_mtdf(table *t, history *h, chess_clock *c, xboard *x) :
+	search_base(t, h, c, x)
 {
-
-/*
- | Constructor.  Important!  Seed the random number generator - issue
- | srand(time(NULL)); - before instantiating this class!
- */
-
-	max_depth = MAX_DEPTH;
-	output = false;
-
-	table_ptr = t;
-	history_ptr = h;
-	clock_ptr = c;
-	xboard_ptr = x;
-
-	mutex_create(&timeout_mutex);
-	mutex_create(&depth_mutex);
-	clock_ptr->set_callback(handle);
-	mutex_create(&search_mutex);
-	cond_create(&search_cond, NULL);
-	thread_create(&search_thread, (entry_t) start, this);
-
 }
 
 /*----------------------------------------------------------------------------*\
@@ -71,13 +41,6 @@ search_mtdf::search_mtdf(table *t, history *h, chess_clock *c, xboard *x)
 \*----------------------------------------------------------------------------*/
 search_mtdf::~search_mtdf()
 {
-
-/* Destructor. */
-
-	cond_destroy(&search_cond);
-	mutex_destroy(&search_mutex);
-	mutex_destroy(&depth_mutex);
-	mutex_destroy(&timeout_mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -88,193 +51,14 @@ class search_mtdf& search_mtdf::operator=(const search_mtdf& that)
 
 /* Overloaded assignment operator. */
 
+	search_base::operator=(that);
+
 	if (this == &that)
 		return *this;
 
 	pv = that.pv;
-	hint = that.hint;
-	max_depth = that.max_depth;
-	nodes = that.nodes;
-	output = that.output;
-
-	b = that.b;
-	table_ptr = that.table_ptr;
-	history_ptr = that.history_ptr;
-	clock_ptr = that.clock_ptr;
-	xboard_ptr = that.xboard_ptr;
 
 	return *this;
-}
-
-/*----------------------------------------------------------------------------*\
- |				    handle()				      |
-\*----------------------------------------------------------------------------*/
-void search_mtdf::handle()
-{
-
-/* The alarm has sounded.  Handle it. */
-
-	mutex_lock(&timeout_mutex);
-	timeout_flag = true;
-	mutex_unlock(&timeout_mutex);
-}
-
-/*----------------------------------------------------------------------------*\
- |				   move_now()				      |
-\*----------------------------------------------------------------------------*/
-void search_mtdf::move_now() const
-{
-	if (search_status != THINKING)
-		return;
-	mutex_lock(&timeout_mutex);
-	timeout_flag = true;
-	mutex_unlock(&timeout_mutex);
-}
-
-/*----------------------------------------------------------------------------*\
- |				    clear()				      |
-\*----------------------------------------------------------------------------*/
-void search_mtdf::clear() const
-{
-	table_ptr->clear();
-	history_ptr->clear();
-}
-
-/*----------------------------------------------------------------------------*\
- |				   get_hint()				      |
-\*----------------------------------------------------------------------------*/
-move_t search_mtdf::get_hint() const
-{
-	return hint;
-}
-
-/*----------------------------------------------------------------------------*\
- |				  get_thread()				      |
-\*----------------------------------------------------------------------------*/
-thread_t search_mtdf::get_thread() const
-{
-	return search_thread;
-}
-
-/*----------------------------------------------------------------------------*\
- |				  set_depth()				      |
-\*----------------------------------------------------------------------------*/
-void search_mtdf::set_depth(int d)
-{
-
-/* Set the maximum search depth. */
-
-	max_depth = d;
-}
-
-/*----------------------------------------------------------------------------*\
- |				  set_output()				      |
-\*----------------------------------------------------------------------------*/
-void search_mtdf::set_output(bool o)
-{
-
-/* Set whether to print thinking output. */
-
-	output = o;
-}
-
-/*----------------------------------------------------------------------------*\
- |				    start()				      |
-\*----------------------------------------------------------------------------*/
-void *search_mtdf::start(void *arg)
-{
-
-/*
- | Think of this method as main() for the search thread.  Wait for the status to
- | change, then do the requested work.  Rinse, lather, repeat, until XBoard
- | commands us to quit.
- */
-
-	search_mtdf *search_ptr = (search_mtdf *) arg;
-	int old_search_status = search_status = IDLING;
-
-	do
-	{
-		/* Wait for the status to change. */
-		mutex_lock(&search_mutex);
-		while (old_search_status == search_status)
-			cond_wait(&search_cond, &search_mutex);
-		old_search_status = search_status;
-		mutex_unlock(&search_mutex);
-
-		/* Do the requested work - idle, think, ponder, or quit. */
-		if (search_status == THINKING || search_status == PONDERING)
-		{
-			mutex_lock(&timeout_mutex);
-			timeout_flag = false;
-			mutex_unlock(&timeout_mutex);
-			mutex_lock(&depth_mutex);
-			depth_flag = false;
-			mutex_unlock(&depth_mutex);
-			search_ptr->iterate(search_status);
-		}
-	} while (search_status != QUITTING);
-
-	thread_destroy(NULL);
-	return NULL;
-}
-
-/*----------------------------------------------------------------------------*\
- |				    change()				      |
-\*----------------------------------------------------------------------------*/
-void search_mtdf::change(int s, const board& now)
-{
-
-/*
- | Synchronize the board to the position we're to search from (if necessary) and
- | change the search status (to idling, thinking, pondering, or quitting).
- |
- | Subtle!  start() and change() operate on the same search object (therefore
- | the same board object) but are called from different threads.  Unless we take
- | care to avoid this race condition, start() could ponder and go nuts on the
- | board while change() could simultaneously set the board to a different
- | position.  We avoid this naughty situation by using the search's timeout
- | mechanism and the board's locking mechanism to guarantee the events occur in
- | the following sequence:
- |
- |	time		search thread		I/O thread
- |	----		-------------		----------
- |	  0		grab board
- |	  1		start pondering
- |	  2					force pondering timeout
- |	  3					wait for board
- |	  4		stop pondering
- |	  5		release board
- |	  6		wait for command
- |	  7					grab board
- |	  8					set board position
- |	  9					release board
- |	 10					send thinking command
- |	 11		grab board
- |	 12		start thinking
- */
-
-	/* Force pondering timeout. */
-	mutex_lock(&timeout_mutex);
-	timeout_flag = true;
-	mutex_unlock(&timeout_mutex);
-
-	/*
-	 | Wait for the board, grab the board, set the board position, and
-	 | release the board.
-	 */
-	if (s == THINKING || s == PONDERING)
-	{
-		b.lock();
-		b = now;
-		b.unlock();
-	}
-
-	/* Send the command to think. */
-	mutex_lock(&search_mutex);
-	search_status = s;
-	cond_signal(&search_cond);
-	mutex_unlock(&search_mutex);
 }
 
 /*----------------------------------------------------------------------------*\
