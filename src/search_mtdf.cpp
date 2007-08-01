@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*\
- |	search_mtdf.cpp - move search implementation				      |
+ |	search_mtdf.cpp - move search implementation			      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
@@ -29,7 +29,7 @@
 /* Global variables: */
 
 /*----------------------------------------------------------------------------*\
- |				    search_mtdf()				      |
+ |				 search_mtdf()				      |
 \*----------------------------------------------------------------------------*/
 search_mtdf::search_mtdf(table *t, history *h, chess_clock *c, xboard *x) :
 	search_base(t, h, c, x)
@@ -37,7 +37,7 @@ search_mtdf::search_mtdf(table *t, history *h, chess_clock *c, xboard *x) :
 }
 
 /*----------------------------------------------------------------------------*\
- |				   ~search_mtdf()				      |
+ |				 ~search_mtdf()				      |
 \*----------------------------------------------------------------------------*/
 search_mtdf::~search_mtdf()
 {
@@ -53,11 +53,8 @@ class search_mtdf& search_mtdf::operator=(const search_mtdf& that)
 
 	if (this == &that)
 		return *this;
-
 	search_base::operator=(that);
-
 	pv = that.pv;
-
 	return *this;
 }
 
