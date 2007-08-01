@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*\
- |	search.h - move search interface				      |
+ |	search_mtdf.h - move search interface				      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
@@ -23,8 +23,8 @@
  |	Boston MA 02111-1307
  */
 
-#ifndef SEARCH_H
-#define SEARCH_H
+#ifndef SEARCH_MTDF_H
+#define SEARCH_MTDF_H
 
 using namespace std;
 
@@ -50,12 +50,12 @@ class history;
 class chess_clock;
 class xboard;
 
-class search
+class search_mtdf
 {
 public:
-	search(table *t, history *h, chess_clock *c, xboard *x);
-	~search();
-	search& operator=(const search& that);
+	search_mtdf(table *t, history *h, chess_clock *c, xboard *x);
+	~search_mtdf();
+	search_mtdf& operator=(const search_mtdf& that);
 	static void handle();
 	void move_now() const;
 	void clear() const;

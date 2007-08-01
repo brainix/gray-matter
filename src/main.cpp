@@ -34,7 +34,7 @@
 #include "table.h"
 #include "xboard.h"
 #include "clock.h"
-#include "search.h"
+#include "search_mtdf.h"
 
 /* Function prototypes: */
 int main(int argc, char **argv);
@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 	history h;
 	xboard x;
 	chess_clock c;
-	class search s(&t, &h, &c, &x);
+	search_mtdf s(&t, &h, &c, &x);
 
 	/* Launch the event loop. */
 	x.loop(&s, &c);
