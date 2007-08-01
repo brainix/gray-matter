@@ -44,26 +44,27 @@ int main(int argc, char **argv);
 \*----------------------------------------------------------------------------*/
 int main(int argc, char **argv)
 {
+	char search_engine[32] = "MTD(f)";
 	int xpos_table_size = XPOS_TABLE_MB;
-	char search_engine[32] = "MTDF";
 
 	/* Parse the command-line arguments. */
-	for (int c; (c = getopt(argc, argv, "x:s:")) != -1;)
+	for (int c; (c = getopt(argc, argv, "s:x:")) != -1;)
 		switch (c)
 		{
-			case 'x':
-				if ((xpos_table_size = atoi(optarg)) < 1)
+			case 's':
+				/* Specifying which search engine to use. */
+				strncpy(search_engine, optarg, sizeof(search_engine));
+				if (strncasecmp(search_engine, "MTD(f)", 6) != 0)
 				{
-					printf("transposition table must be >= 1 MB\n");
+					printf("unknown search engine: %s\n", optarg);
 					exit(EXIT_FAILURE);
 				}
 				break;
-			case 's':
-				/* Directly specifying which search engine to use. */
-				strncpy(search_engine, optarg, sizeof(search_engine));
-				if (strncasecmp(search_engine, "MTDF", 4) != 0)
+			case 'x':
+				/* Specifying the size of the transposition table. */
+				if ((xpos_table_size = atoi(optarg)) < 1)
 				{
-					printf("unknown search engine: %s\n", optarg);
+					printf("transposition table must be >= 1 MB\n");
 					exit(EXIT_FAILURE);
 				}
 				break;
@@ -88,9 +89,11 @@ int main(int argc, char **argv)
 	xboard x;
 	chess_clock c;
 
-	/* choose search engine and cast it as a generic version based on
-	 * the 'search_engine' cmdline option.  In this case we only have
-	 * one engine to choose from, so use MTDF */
+	/*
+	 | Based on the -s command-line option, choose the move search engine
+	 | and cast it as a generic version.  Thus far, we've only implemented
+	 | one move search engine, MTD(f).
+	 */
 	search_base *s = new search_mtdf(&t, &h, &c, &x);
 
 	/* Launch the event loop. */

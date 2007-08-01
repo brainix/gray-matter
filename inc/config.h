@@ -42,7 +42,6 @@
 \*----------------------------------------------------------------------------*/
 
 /* All of the values in this section must be >= 1. */
-#define NUM_CPUS	 1 // The number of CPUs.
 #define XPOS_TABLE_MB	64 // The transposition table size (in MB).
 #define PAWN_TABLE_MB	 1 // The pawn table size (in MB).
 #define MIN_DEPTH	 2 // The minimum search depth (in plies).
@@ -87,10 +86,6 @@
  | The following preprocessor directives are used to ensure that the user has
  | chosen sane values for the preceeding settings.
  */
-
-#if NUM_CPUS < 1
-#error "In inc/config.h, NUM_CPUS must be >= 1."
-#endif
 
 #if XPOS_TABLE_MB < 1
 #error "In inc/config.h, XPOS_TABLE_MB must be >= 1."
