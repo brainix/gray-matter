@@ -494,7 +494,7 @@ void board::generate(list<move_t> &l, bool only_legal_moves, bool only_captures)
 /*----------------------------------------------------------------------------*\
  |				     make()				      |
 \*----------------------------------------------------------------------------*/
-void board::make(move_t m)
+bool board::make(move_t m)
 {
 
 /* Make a move. */
@@ -652,6 +652,8 @@ end:
 	/* Update the rotated BitBoards. */
 	for (int angle = L45; angle <= R90; angle++)
 		rotation[angle][COLORS] = rotation[angle][WHITE] | rotation[angle][BLACK];
+
+	return true;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -680,7 +682,7 @@ void board::unmake()
 /*----------------------------------------------------------------------------*\
  |				     make()				      |
 \*----------------------------------------------------------------------------*/
-void board::make(char *p)
+bool board::make(char *p)
 {
 
 /*
@@ -696,8 +698,7 @@ void board::make(char *p)
 		m.new_x = (m.old_x = 4) + !strncmp(p, "O-O-O", 5) ? -2 : 2;
 		m.new_y = m.old_y = ON_MOVE ? 7 : 0;
 		m.promo = 0;
-		make(m);
-		return;
+		return make(m);
 	}
 
 	switch (*p)
@@ -766,22 +767,15 @@ void board::make(char *p)
 			}
 	}
 
-	try
-	{
-		if (old_x == -1 || old_y == -1 || new_x == -1 || new_y == -1 || promo == -1)
-			throw;
-	}
-	catch (...)
-	{
-	}
+	if (old_x == -1 || old_y == -1 || new_x == -1 || new_y == -1 || promo == -1)
+		return false;
 
 	m.old_x = old_x;
 	m.old_y = old_y;
 	m.new_x = new_x;
 	m.new_y = new_y;
 	m.promo = promo;
-	make(m);
-	return;
+	return make(m);
 }
 
 /*----------------------------------------------------------------------------*\

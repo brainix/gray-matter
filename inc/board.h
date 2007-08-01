@@ -112,9 +112,9 @@ public:
 
 	/* These methods generate, make, and take back moves. */
 	void generate(list<move_t> &l, bool only_legal_moves = false, bool only_captures = false);
-	void make(move_t m);
+	bool make(move_t m);
 	void unmake();
-	void make(char *p);
+	bool make(char *p);
 	int perft(int depth);
 
 private:
