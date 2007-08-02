@@ -33,6 +33,9 @@ using namespace std;
 #include "types.h"
 #include "thread.h"
 
+/* Extra Gray Matter stuff: */
+#include "board_base.h"
+
 class board_heuristic : public board_base
 {
 };
