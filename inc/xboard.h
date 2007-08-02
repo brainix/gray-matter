@@ -45,6 +45,7 @@ using namespace std;
 class board;
 class search_base;
 class chess_clock;
+class book;
 
 class xboard
 {
@@ -52,7 +53,7 @@ public:
 	xboard();
 	~xboard();
 	void vomit(char *message) const;
-	void loop(search_base *s, chess_clock *c);
+	void loop(search_base *s, chess_clock *c, book *o);
 	void print_output(int ply, int value, int time, int nodes, list<move_t> &pv) const;
 	void print_result(move_t m);
 	void print_resignation() const;
@@ -66,6 +67,7 @@ private:
 	board b;                  // Board representation object.
 	search_base *search_ptr;  // Move search object.
 	chess_clock *clock_ptr;   // Chess clock object.
+	book *book_ptr;           // Opening book object.
 
 	void print_move(move_t m) const;
 	void do_xboard() const;
