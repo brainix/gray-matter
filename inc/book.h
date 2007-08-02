@@ -40,7 +40,7 @@ using namespace std;
 #include "table.h"
 
 /* Forward declarations: */
-class board;
+class board_base;
 class table;
 
 class book
@@ -52,8 +52,8 @@ private:
 	char name[32];
 	ifstream file;
 
-	board b;            // Board representation object.
-	table *table_ptr;   // Transposition table object.
+	board_base b;     // Board representation object.
+	table *table_ptr; // Transposition table object.
 };
 
 #endif
