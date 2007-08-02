@@ -20,14 +20,15 @@ LINK = -lpthread
 DIR  = -Iinc
 MACH = -march=$(ARCH)
 
-OBJS = bin/board_base.o  \
-       bin/book.o        \
-       bin/clock.o       \
-       bin/main.o        \
-       bin/search_base.o \
-       bin/search_mtdf.o \
-       bin/table.o       \
-       bin/thread.o      \
+OBJS = bin/board_base.o      \
+       bin/board_heuristic.o \
+       bin/book.o            \
+       bin/clock.o           \
+       bin/main.o            \
+       bin/search_base.o     \
+       bin/search_mtdf.o     \
+       bin/table.o           \
+       bin/thread.o          \
        bin/xboard.o
 
 all : bin/gray
