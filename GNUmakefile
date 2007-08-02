@@ -20,7 +20,7 @@ LINK = -lpthread
 DIR  = -Iinc
 MACH = -march=$(ARCH)
 
-OBJS = bin/board.o       \
+OBJS = bin/board_base.o  \
        bin/book.o        \
        bin/clock.o       \
        bin/main.o        \

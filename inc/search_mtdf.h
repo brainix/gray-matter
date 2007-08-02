@@ -39,7 +39,7 @@ using namespace std;
 
 /* Extra Gray Matter stuff: */
 #include "search_base.h"
-#include "board.h"
+#include "board_base.h"
 #include "table.h"
 #include "clock.h"
 #include "xboard.h"
