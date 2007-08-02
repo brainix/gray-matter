@@ -29,9 +29,10 @@
 /*----------------------------------------------------------------------------*\
  |				     book()				      |
 \*----------------------------------------------------------------------------*/
-book::book(table *t)
+book::book(table *t, char *n)
 {
 	table_ptr = t;
+	strncpy(name, n, sizeof(name));
 }
 
 /*----------------------------------------------------------------------------*\
@@ -39,10 +40,10 @@ book::book(table *t)
 \*----------------------------------------------------------------------------*/
 void book::read()
 {
-	file.open(BOOK);
+	file.open(name);
 	if (file.fail())
 	{
-		printf("couldn't find open book: %s\n", BOOK);
+		printf("couldn't find open book: %s\n", name);
 		file.close();
 		return;
 	}

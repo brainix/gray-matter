@@ -46,15 +46,16 @@ int main(int argc, char **argv)
 {
 	char search_engine[32] = "MTD(f)";
 	int xpos_table_size = XPOS_TABLE_MB;
+	char file_name[32] = FILE_NAME;
 
 	/* Parse the command-line arguments. */
-	for (int c; (c = getopt(argc, argv, "s:x:")) != -1;)
+	for (int c; (c = getopt(argc, argv, "s:x:b:")) != -1;)
 		switch (c)
 		{
 			case 's':
 				/* Specifying which search engine to use. */
 				strncpy(search_engine, optarg, sizeof(search_engine));
-				if (strncasecmp(search_engine, "MTD(f)", 6) != 0)
+				if (strcmp(search_engine, "MTD(f)"))
 				{
 					printf("unknown search engine: %s\n", optarg);
 					exit(EXIT_FAILURE);
@@ -67,6 +68,10 @@ int main(int argc, char **argv)
 					printf("transposition table must be >= 1 MB\n");
 					exit(EXIT_FAILURE);
 				}
+				break;
+			case 'b':
+				/* Specifying the file name of the opening book. */
+				strncpy(file_name, optarg, sizeof(file_name));
 				break;
 			default:
 				printf("unknown option: -%c\n", optopt);
@@ -84,10 +89,10 @@ int main(int argc, char **argv)
 	srand(time(NULL));
 
 	/* Instantiate the classes. */
-	table t(xpos_table_size);
-	history h;
-	xboard x;
-	chess_clock c;
+	table t(xpos_table_size); // Transposition table object.
+	history h;                // History table object.
+	chess_clock c;            // Chess clock object.
+	xboard x;                 // Chess Engine Communication Protocol object.
 
 	/*
 	 | Based on the -s command-line option, choose the move search engine
@@ -95,6 +100,12 @@ int main(int argc, char **argv)
 	 | one move search engine, MTD(f).
 	 */
 	search_base *s = new search_mtdf(&t, &h, &c, &x);
+
+	/*
+	 | Based on the -b command-line option, choose the opening book file and
+	 | populate the transposition table.
+	 */
+	book o(&t, file_name);
 
 	/* Launch the event loop. */
 	x.loop(s, &c);

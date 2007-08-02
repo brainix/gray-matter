@@ -41,8 +41,9 @@
 /*----------------------------------------------------------------------------*\
 \*----------------------------------------------------------------------------*/
 
+#define FILE_NAME	"book.pgn" //
+
 /* All of the values in this section must be >= 1. */
-#define BOOK		"book.pgn" //
 #define XPOS_TABLE_MB	64         // The transposition table size (in MB).
 #define PAWN_TABLE_MB	 1         // The pawn table size (in MB).
 #define MIN_DEPTH	 2         // The minimum search depth (in plies).
