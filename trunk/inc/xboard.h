@@ -40,6 +40,7 @@ using namespace std;
 #include "board.h"
 #include "search_base.h"
 #include "clock.h"
+#include "book.h"
 
 /* Forward declarations: */
 class board;
