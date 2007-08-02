@@ -94,6 +94,7 @@ int main(int argc, char **argv)
 	history h;                // History table object.
 	chess_clock c;            // Chess clock object.
 	xboard x;                 // Chess Engine Communication Protocol object.
+	book o(&t, file_name);    // Opening book object.
 
 	/*
 	 | Based on the -s command-line option, choose the move search engine
@@ -102,13 +103,7 @@ int main(int argc, char **argv)
 	 */
 	search_base *s = new search_mtdf(&t, &h, &c, &x);
 
-	/*
-	 | Based on the -b command-line option, choose the opening book file and
-	 | populate the transposition table.
-	 */
-	book o(&t, file_name);
-
 	/* Launch the event loop. */
-	x.loop(s, &c);
+	x.loop(s, &c, &o);
 	return 0;
 }

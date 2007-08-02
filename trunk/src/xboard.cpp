@@ -71,10 +71,11 @@ void xboard::vomit(char *message) const
 /*----------------------------------------------------------------------------*\
  |				     loop()				      |
 \*----------------------------------------------------------------------------*/
-void xboard::loop(search_base *s, chess_clock *c)
+void xboard::loop(search_base *s, chess_clock *c, book *o)
 {
 	search_ptr = s;
 	clock_ptr = c;
+	book_ptr = o;
 
 	for (fgets(buffer, 80, stdin); strncmp(buffer, "quit", 4); fgets(buffer, 80, stdin))
 	{
@@ -243,6 +244,7 @@ void xboard::do_new()
 	b.set_board();
 	search_ptr->change(IDLING, b);
 	search_ptr->set_depth(MAX_DEPTH);
+	book_ptr->read();
 }
 
 /*----------------------------------------------------------------------------*\
