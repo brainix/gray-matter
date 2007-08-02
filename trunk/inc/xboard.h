@@ -43,7 +43,7 @@ using namespace std;
 #include "book.h"
 
 /* Forward declarations: */
-class board;
+class board_base;
 class search_base;
 class chess_clock;
 class book;
@@ -65,7 +65,7 @@ private:
 	bool draw;                // Whether our opponent has offered a draw.
 	bool sync;                // Whether to sync our clock with XBoard's.
 
-	board b;                  // Board representation object.
+	board_base b;             // Board representation object.
 	search_base *search_ptr;  // Move search object.
 	chess_clock *clock_ptr;   // Chess clock object.
 	book *book_ptr;           // Opening book object.
