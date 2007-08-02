@@ -119,7 +119,7 @@ move_t search_base::get_hint() const
 /*----------------------------------------------------------------------------*\
  |				    change()				      |
 \*----------------------------------------------------------------------------*/
-void search_base::change(int s, const board& now)
+void search_base::change(int s, const board_base& now)
 {
 
 /*
