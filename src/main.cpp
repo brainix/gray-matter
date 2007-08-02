@@ -32,9 +32,10 @@
 
 /* Extra Gray Matter stuff: */
 #include "table.h"
-#include "xboard.h"
 #include "clock.h"
+#include "xboard.h"
 #include "search_mtdf.h"
+#include "book.h"
 
 /* Function prototypes: */
 int main(int argc, char **argv);
