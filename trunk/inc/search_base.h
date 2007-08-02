@@ -26,7 +26,7 @@
 #ifndef SEARCH_BASE_H
 #define SEARCH_BASE_H
 
-#include "board.h"
+#include "board_base.h"
 #include "table.h"
 #include "clock.h"
 
@@ -51,8 +51,8 @@ protected:
 	virtual void clear() const;
 	static void _handle(void *arg);  // Proxy clock callback.
 	virtual void handle();           // C++ clock callback.
-	static void *_start(void *arg);  // Proxy entry point for threads.
-	virtual void start();            // C++ entry point for threads.
+	static void *_start(void *arg);  // Proxy thread entry point.
+	virtual void start();            // C++ thread entry point.
 	virtual void iterate(int s) = 0; // Force sub-classes to override.
 
 	list<move_t> pv;        // Principal variation.

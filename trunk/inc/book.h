@@ -36,7 +36,7 @@ using namespace std;
 #include "types.h"
 
 /* Extra Gray Matter stuff: */
-#include "board.h"
+#include "board_base.h"
 #include "table.h"
 
 /* Forward declarations: */

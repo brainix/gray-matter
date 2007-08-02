@@ -37,7 +37,7 @@ using namespace std;
 #include "thread.h"
 
 /* Extra Gray Matter stuff: */
-#include "board.h"
+#include "board_base.h"
 #include "search_base.h"
 #include "clock.h"
 #include "book.h"

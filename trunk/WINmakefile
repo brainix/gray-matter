@@ -14,7 +14,7 @@ OPTI   = -O3 -fomit-frame-pointer
 PREP   = -DWINDOWS
 DIR    = -Iinc
 
-OBJS = bin/board.o       \
+OBJS = bin/board_base.o  \
        bin/book.o        \
        bin/clock.o       \
        bin/main.o        \

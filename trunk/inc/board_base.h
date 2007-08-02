@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*\
- |	board.h - board representation interface			      |
+ |	board_base.h - board representation interface			      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
@@ -23,8 +23,8 @@
  |	Boston MA 02111-1307
  */
 
-#ifndef BOARD_H
-#define BOARD_H
+#ifndef BOARD_BASE_H
+#define BOARD_BASE_H
 
 using namespace std;
 
@@ -88,13 +88,13 @@ class pawn_table;
 /* This macro finds the first set bit in a BitBoard. */
 #define FST(b)			(find_64(b) - 1)
 
-class board
+class board_base
 {
 public:
 	/* These methods set information. */
-	board();
-	~board();
-	board& operator=(const board& that);
+	board_base();
+	~board_base();
+	board_base& operator=(const board_base& that);
 	void set_board();
 	void lock();
 	void unlock();
