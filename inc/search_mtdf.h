@@ -45,7 +45,8 @@ using namespace std;
 #include "xboard.h"
 
 /* Forward declarations: */
-class board;
+class search_base;
+class board_base;
 class table;
 class history;
 class chess_clock;
