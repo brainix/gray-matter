@@ -42,7 +42,7 @@ public:
 
 	virtual void move_now();
 	virtual move_t get_hint() const;
-	virtual void change(int s, const board& now);
+	virtual void change(int s, const board_base& now);
 	virtual thread_t get_thread() const;
 	virtual void set_depth(int d);
 	virtual void set_output(bool o);
@@ -61,7 +61,7 @@ protected:
 	int nodes;              // Number of nodes searched.
 	bool output;            // Whether to print thinking output.
 
-	board b;                // Board representation object.
+	board_base b;           // Board representation object.
 	table *table_ptr;       // Transposition table object.
 	history *history_ptr;   // History table object.
 	chess_clock *clock_ptr; // Chess clock object.
