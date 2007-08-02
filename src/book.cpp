@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*\
- |	opening.h - opening book interface				      |
+ |	book.cpp - opening book implementation				      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
@@ -23,37 +23,29 @@
  |	Boston MA 02111-1307
  */
 
-#ifndef OPENING_H
-#define OPENING_H
+#include "gray.h"
+#include "book.h"
 
-using namespace std;
-
-/* C++ stuff: */
-#include <fstream>
-
-/* Default Gray Matter stuff: */
-#include "config.h"
-#include "types.h"
-
-/* Extra Gray Matter stuff: */
-#include "board.h"
-#include "table.h"
-
-/* Forward declarations: */
-class board;
-class table;
-
-class opening
+/*----------------------------------------------------------------------------*\
+ |				     book()				      |
+\*----------------------------------------------------------------------------*/
+book::book(table *t)
 {
-public:
-	opening(xboard *x, table *t);
-	void read();
-private:
-	ifstream file;
+	table_ptr = t;
+}
 
-	board b;            // Board representation object.
-	xboard *xboard_ptr; // Chess Engine Communication Protocol object.
-	table *table_ptr;   // Transposition table object.
-};
+/*----------------------------------------------------------------------------*\
+ |				     read()				      |
+\*----------------------------------------------------------------------------*/
+void book::read()
+{
+	file.open(BOOK);
+	if (file.fail())
+	{
+		printf("couldn't find open book: %s\n", BOOK);
+		file.close();
+		return;
+	}
 
-#endif
+	file.close();
+}
