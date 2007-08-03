@@ -38,6 +38,7 @@ using namespace std;
 
 /* Extra Gray Matter stuff: */
 #include "board_base.h"
+#include "board_heuristic.h"
 #include "search_base.h"
 #include "clock.h"
 #include "book.h"
