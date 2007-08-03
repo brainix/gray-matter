@@ -25,3 +25,37 @@
 
 #include "gray.h"
 #include "board_heuristic.h"
+
+/*----------------------------------------------------------------------------*\
+ |			       board_heuristic()			      |
+\*----------------------------------------------------------------------------*/
+board_heuristic::board_heuristic() : board_base()
+{
+
+/* Constructor. */
+
+}
+
+/*----------------------------------------------------------------------------*\
+ |			       ~board_heuristic()			      |
+\*----------------------------------------------------------------------------*/
+board_heuristic::~board_heuristic()
+{
+
+/* Destructor. */
+
+}
+
+/*----------------------------------------------------------------------------*\
+ |				       =				      |
+\*----------------------------------------------------------------------------*/
+board_heuristic& board_heuristic::operator=(const board_heuristic& that)
+{
+
+/* Overloaded assignment operator. */
+
+	if (this == &that)
+		return *this;
+	board_base::operator=(that);
+	return *this;
+}
