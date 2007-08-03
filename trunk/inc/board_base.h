@@ -107,7 +107,7 @@ public:
 	virtual bool make(char *p);
 	virtual int perft(int depth);
 
-private:
+protected:
 	list<state_t> states;                           // Previous states.
 	state_t state;                                  // Current state.
 	list<bitboard_t> rotations[ANGLES][COLORS + 1]; // Previous rotated BitBoards.
