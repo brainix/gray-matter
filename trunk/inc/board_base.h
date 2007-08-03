@@ -97,6 +97,7 @@ public:
 	virtual bool get_whose() const;
 	virtual bitboard_t get_hash() const;
 	virtual int get_status(bool mate_test);
+	virtual int evaluate() const = 0;
 	virtual bool check() const;
 	virtual bool zugzwang() const;
 
@@ -149,9 +150,6 @@ protected:
 	virtual bitboard_t rotate(bitboard_t b1, int map, int angle) const;
 	virtual uint64_t randomize() const;
 	virtual void insert(int x, int y, bitboard_t b, int angle, list<move_t> &l, bool pos) const;
-
-protected:
-	virtual int evaluate() const = 0;
 };
 
 #endif
