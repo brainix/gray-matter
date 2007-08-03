@@ -27,6 +27,7 @@
 #define SEARCH_BASE_H
 
 #include "board_base.h"
+#include "board_heuristic.h"
 #include "table.h"
 #include "clock.h"
 
