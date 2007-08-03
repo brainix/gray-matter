@@ -61,7 +61,7 @@ protected:
 	int nodes;              // Number of nodes searched.
 	bool output;            // Whether to print thinking output.
 
-	board_base b;           // Board representation object.
+	board_base *board_ptr;  // Board representation object.
 	table *table_ptr;       // Transposition table object.
 	history *history_ptr;   // History table object.
 	chess_clock *clock_ptr; // Chess clock object.

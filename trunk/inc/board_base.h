@@ -36,12 +36,6 @@ using namespace std;
 #include "types.h"
 #include "thread.h"
 
-/* Extra Gray Matter stuff: */
-#include "table.h"
-
-/* Forward declarations: */
-class pawn_table;
-
 /* These macros represent the colors on and off move. */
 #define ON_MOVE			(state.whose)
 #define OFF_MOVE		(!state.whose)
@@ -103,10 +97,6 @@ public:
 	bool get_whose() const;
 	bitboard_t get_hash() const;
 	int get_status(bool mate_test);
-	int evaluate() const;
-	int evaluate_material() const;
-	int evaluate_pawn() const;
-	int evaluate_king() const;
 	bool check() const;
 	bool zugzwang() const;
 
@@ -159,6 +149,9 @@ private:
 	bitboard_t rotate(bitboard_t b1, int map, int angle) const;
 	uint64_t randomize() const;
 	void insert(int x, int y, bitboard_t b, int angle, list<move_t> &l, bool pos) const;
+
+protected:
+	virtual int evaluate() const = 0;
 };
 
 #endif
