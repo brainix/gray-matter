@@ -34,6 +34,7 @@
 #include "table.h"
 #include "clock.h"
 #include "xboard.h"
+#include "search_base.h"
 #include "search_mtdf.h"
 #include "book.h"
 

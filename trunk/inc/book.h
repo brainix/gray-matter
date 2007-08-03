@@ -37,6 +37,7 @@ using namespace std;
 
 /* Extra Gray Matter stuff: */
 #include "board_base.h"
+#include "board_heuristic.h"
 #include "table.h"
 
 /* Forward declarations: */
