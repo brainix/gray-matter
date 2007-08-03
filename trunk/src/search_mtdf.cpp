@@ -32,6 +32,9 @@
 search_mtdf::search_mtdf(table *t, history *h, chess_clock *c, xboard *x) :
 	search_base(t, h, c, x)
 {
+
+/* Constructor. */
+
 }
 
 /*----------------------------------------------------------------------------*\
@@ -39,12 +42,15 @@ search_mtdf::search_mtdf(table *t, history *h, chess_clock *c, xboard *x) :
 \*----------------------------------------------------------------------------*/
 search_mtdf::~search_mtdf()
 {
+
+/* Destructor. */
+
 }
 
 /*----------------------------------------------------------------------------*\
  |				       =				      |
 \*----------------------------------------------------------------------------*/
-class search_mtdf& search_mtdf::operator=(const search_mtdf& that)
+search_mtdf& search_mtdf::operator=(const search_mtdf& that)
 {
 
 /* Overloaded assignment operator. */
@@ -52,7 +58,6 @@ class search_mtdf& search_mtdf::operator=(const search_mtdf& that)
 	if (this == &that)
 		return *this;
 	search_base::operator=(that);
-	pv = that.pv;
 	return *this;
 }
 
