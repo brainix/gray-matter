@@ -35,6 +35,10 @@ using namespace std;
 
 /* Extra Gray Matter stuff: */
 #include "board_base.h"
+#include "table.h"
+
+/* Forward declarations: */
+class pawn_table;
 
 class board_heuristic : public board_base
 {
@@ -42,6 +46,11 @@ public:
 	board_heuristic();
 	~board_heuristic();
 	board_heuristic& operator=(const board_heuristic& that);
+	int evaluate() const;
+private:
+	int evaluate_material() const;
+	int evaluate_pawn() const;
+	int evaluate_king() const;
 };
 
 #endif

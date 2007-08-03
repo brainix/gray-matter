@@ -73,6 +73,7 @@ void xboard::vomit(char *message) const
 \*----------------------------------------------------------------------------*/
 void xboard::loop(search_base *s, chess_clock *c, book *o)
 {
+	board_ptr = new board_heuristic();
 	search_ptr = s;
 	clock_ptr = c;
 	book_ptr = o;
@@ -157,15 +158,15 @@ void xboard::print_output(int ply, int value, int time, int nodes, list<move_t> 
 \*----------------------------------------------------------------------------*/
 void xboard::print_result(move_t m)
 {
-	b.make(m);
-	clock_ptr->dec_remaining_moves(!b.get_whose());
+	board_ptr->make(m);
+	clock_ptr->dec_remaining_moves(!board_ptr->get_whose());
 
 	printf("move ");
 	print_move(m);
 	printf("\n");
 
 	int status = game_over();
-	search_ptr->change(ponder && status == IN_PROGRESS ? PONDERING : IDLING, b);
+	search_ptr->change(ponder && status == IN_PROGRESS ? PONDERING : IDLING, *board_ptr);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -241,8 +242,8 @@ void xboard::do_new()
 	force = false;
 	draw = false;
 	sync = true;
-	b.set_board();
-	search_ptr->change(IDLING, b);
+	board_ptr->set_board();
+	search_ptr->change(IDLING, *board_ptr);
 	search_ptr->set_depth(MAX_DEPTH);
 	book_ptr->read();
 }
@@ -253,7 +254,7 @@ void xboard::do_new()
 void xboard::do_quit() const
 {
 	thread_t thread = search_ptr->get_thread(); 
-	search_ptr->change(QUITTING, b);
+	search_ptr->change(QUITTING, *board_ptr);
 	thread_wait(&thread);
 }
 
@@ -263,7 +264,7 @@ void xboard::do_quit() const
 void xboard::do_force()
 {
 	force = true;
-	search_ptr->change(IDLING, b);
+	search_ptr->change(IDLING, *board_ptr);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -272,7 +273,7 @@ void xboard::do_force()
 void xboard::do_go()
 {
 	force = false;
-	search_ptr->change(THINKING, b);
+	search_ptr->change(THINKING, *board_ptr);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -281,7 +282,7 @@ void xboard::do_go()
 void xboard::do_playother()
 {
 	force = false;
-	search_ptr->change(ponder ? PONDERING : IDLING, b);
+	search_ptr->change(ponder ? PONDERING : IDLING, *board_ptr);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -331,7 +332,7 @@ void xboard::do_sd() const
 void xboard::do_time() const
 {
 	if (sync)
-		clock_ptr->update_remaining_csecs(!b.get_whose(), str_to_num(&buffer[5]));
+		clock_ptr->update_remaining_csecs(!board_ptr->get_whose(), str_to_num(&buffer[5]));
 }
 
 /*----------------------------------------------------------------------------*\
@@ -340,7 +341,7 @@ void xboard::do_time() const
 void xboard::do_otim() const
 {
 	if (sync)
-		clock_ptr->update_remaining_csecs(b.get_whose(), str_to_num(&buffer[5]));
+		clock_ptr->update_remaining_csecs(board_ptr->get_whose(), str_to_num(&buffer[5]));
 }
 
 /*----------------------------------------------------------------------------*\
@@ -369,14 +370,14 @@ void xboard::do_usermove()
 		return;
 	}
 
-	b.make(m);
-	clock_ptr->dec_remaining_moves(!b.get_whose());
+	board_ptr->make(m);
+	clock_ptr->dec_remaining_moves(!board_ptr->get_whose());
 
 	/* Alright, so the move was legal.  Did it just end the game? */
 	if (game_over())
 	{
 		/* Yes.  We're not to respond. */
-		search_ptr->change(IDLING, b);
+		search_ptr->change(IDLING, *board_ptr);
 		return;
 	}
 
@@ -392,7 +393,7 @@ void xboard::do_usermove()
 	 | Alright, so the move was legal, and it didn't just end the game, and
 	 | we're not in force mode.  Formulate a response.
 	 */
-	search_ptr->change(THINKING, b);
+	search_ptr->change(THINKING, *board_ptr);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -450,8 +451,8 @@ void xboard::do_undo()
 
 /* Take back one ply. */
 
-	b.unmake();
-	clock_ptr->inc_remaining_moves(b.get_whose());
+	board_ptr->unmake();
+	clock_ptr->inc_remaining_moves(board_ptr->get_whose());
 }
 
 /*----------------------------------------------------------------------------*\
@@ -462,11 +463,11 @@ void xboard::do_remove()
 
 /* Take back two plies. */
 
-	b.unmake();
-	b.unmake();
+	board_ptr->unmake();
+	board_ptr->unmake();
 	for (int color = WHITE; color <= BLACK; color++)
 		clock_ptr->inc_remaining_moves(color);
-	search_ptr->change(ponder ? PONDERING : IDLING, b);
+	search_ptr->change(ponder ? PONDERING : IDLING, *board_ptr);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -518,7 +519,7 @@ void xboard::do_nopost() const
 \*----------------------------------------------------------------------------*/
 int xboard::game_over()
 {
-	int status = b.get_status(true);
+	int status = board_ptr->get_status(true);
 
 	switch (status)
 	{
@@ -526,7 +527,7 @@ int xboard::game_over()
 		case INSUFFICIENT : printf("1/2-1/2 {Insufficient material}\n");                                  break;
 		case THREE        : printf("1/2-1/2 {Threefold repetition}\n");                                   break;
 		case FIFTY        : printf("1/2-1/2 {Fifty move rule}\n");                                        break;
-		case CHECKMATE    : printf("%s mates}\n", !b.get_whose() == WHITE ? "1-0 {White" : "0-1 {Black"); break;
+		case CHECKMATE    : printf("%s mates}\n", !board_ptr->get_whose() == WHITE ? "1-0 {White" : "0-1 {Black"); break;
 	}
 	return status;
 }
@@ -582,7 +583,7 @@ bool xboard::test_move(move_t m)
 
 	list<move_t> l;
 
-	b.generate(l, true);
+	board_ptr->generate(l, true);
 	for (list<move_t>::iterator it = l.begin(); it != l.end(); it++)
 		if (*it == m)
 			return true;

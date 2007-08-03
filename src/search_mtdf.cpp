@@ -76,7 +76,7 @@ void search_mtdf::iterate(int s)
 	move_t guess[2], m;
 
 	/* Wait for the board, then grab the board. */
-	b.lock();
+	board_ptr->lock();
 
 	/*
 	 | Note the start time.  If we're to think, set the alarm.  Initialize
@@ -85,7 +85,7 @@ void search_mtdf::iterate(int s)
 	clock_ptr->note_time();
 	if (s == THINKING)
 	{
-		clock_ptr->set_alarm(b.get_whose());
+		clock_ptr->set_alarm(board_ptr->get_whose());
 		history_ptr->clear();
 	}
 	nodes = 0;
@@ -130,7 +130,7 @@ void search_mtdf::iterate(int s)
 	}
 
 	/* Release the board. */
-	b.unlock();
+	board_ptr->unlock();
 
 	/*
 	 | If we've just finished thinking, cancel the alarm and inform XBoard
@@ -191,15 +191,15 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
  */
 
 	/* Local variables: */
-	bool whose = b.get_whose();       // In this position, the color on move.
-	bitboard_t hash = b.get_hash();   // This position's hash.
-	int status = b.get_status(false); // In this position, whether or not the game is over.
-	int upper = +INFINITY;            // For this position, the upper bound on the MiniMax score.
-	int lower = -INFINITY;            // For this position, the lower bound on the MiniMax score.
-	int current = alpha;              // Scratch variable for us to use so as to not clobber alpha.
-	list<move_t> l;                   // From this position, the move list.
-	list<move_t>::iterator it;        // The iterator through the move list.
-	move_t m;                         // From this position, the best move.
+	bool whose = board_ptr->get_whose();       // In this position, the color on move.
+	bitboard_t hash = board_ptr->get_hash();   // This position's hash.
+	int status = board_ptr->get_status(false); // In this position, whether or not the game is over.
+	int upper = +INFINITY;                     // For this position, the upper bound on the MiniMax score.
+	int lower = -INFINITY;                     // For this position, the lower bound on the MiniMax score.
+	int current = alpha;                       // Scratch variable for us to use so as to not clobber alpha.
+	list<move_t> l;                            // From this position, the move list.
+	list<move_t>::iterator it;                 // The iterator through the move list.
+	move_t m;                                  // From this position, the best move.
 
 	/* Increment the number of positions searched. */
 	nodes++;
@@ -230,13 +230,13 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 		SET_NULL_MOVE(m);
 		switch (status)
 		{
-			case IN_PROGRESS  : m.value = -b.evaluate();    break;
-			case STALEMATE    : m.value = +WEIGHT_CONTEMPT; break; // XXX: This should never happen.
-			case INSUFFICIENT : m.value = +WEIGHT_CONTEMPT; break;
-			case THREE        : m.value = +WEIGHT_CONTEMPT; break;
-			case FIFTY        : m.value = +WEIGHT_CONTEMPT; break;
-			case CHECKMATE    : m.value = -WEIGHT_KING;     break; // XXX: This should never happen.
-			case ILLEGAL      : m.value = -WEIGHT_ILLEGAL;  break; // XXX: This should never happen.
+			case IN_PROGRESS  : m.value = -board_ptr->evaluate(); break;
+			case STALEMATE    : m.value = +WEIGHT_CONTEMPT;       break; // XXX: This should never happen.
+			case INSUFFICIENT : m.value = +WEIGHT_CONTEMPT;       break;
+			case THREE        : m.value = +WEIGHT_CONTEMPT;       break;
+			case FIFTY        : m.value = +WEIGHT_CONTEMPT;       break;
+			case CHECKMATE    : m.value = -WEIGHT_KING;           break; // XXX: This should never happen.
+			case ILLEGAL      : m.value = -WEIGHT_ILLEGAL;        break; // XXX: This should never happen.
 		}
 		return m;
 	}
@@ -259,7 +259,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 	}
 
 	/* Generate and re-order the move list. */
-	b.generate(l, !shallowness);
+	board_ptr->generate(l, !shallowness);
 //	l.sort(shuffle);
 	for (it = l.begin(); it != l.end(); it++)
 		/*
@@ -275,9 +275,9 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 	/* Score each move in the list. */
 	for (m.value = -INFINITY, it = l.begin(); it != l.end(); it++)
 	{
-		b.make(*it);
+		board_ptr->make(*it);
 		it->value = -minimax(depth - 1, shallowness + 1, -beta, -current).value;
-		b.unmake();
+		board_ptr->unmake();
 		if (it->value == -WEIGHT_ILLEGAL)
 			continue;
 		if (it->value > m.value)
@@ -289,7 +289,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 	if (m.value == -INFINITY)
 	{
 		SET_NULL_MOVE(m);
-		m.value = !b.check() ? +WEIGHT_CONTEMPT : -(WEIGHT_KING - shallowness);
+		m.value = !board_ptr->check() ? +WEIGHT_CONTEMPT : -(WEIGHT_KING - shallowness);
 		return m;
 	}
 	if (!timeout_flag || !depth_flag)
@@ -347,15 +347,15 @@ void search_mtdf::extract(int s)
 	pv.clear();
 
 	/* Get the principal variation. */
-	for (table_ptr->probe(b.get_hash(), 0, EXACT, &m); !IS_NULL_MOVE(m) && b.get_status(true) == IN_PROGRESS; table_ptr->probe(b.get_hash(), 0, EXACT, &m))
+	for (table_ptr->probe(board_ptr->get_hash(), 0, EXACT, &m); !IS_NULL_MOVE(m) && board_ptr->get_status(true) == IN_PROGRESS; table_ptr->probe(board_ptr->get_hash(), 0, EXACT, &m))
 	{
 		pv.push_back(m);
-		b.make(m);
+		board_ptr->make(m);
 		if (pv.size() == (unsigned) max_depth)
 			break;
 	}
 	for (size_t j = 0; j < pv.size(); j++)
-		b.unmake();
+		board_ptr->unmake();
 
 	/* Get the hint. */
 	if (s == THINKING && pv.size() >= 2)

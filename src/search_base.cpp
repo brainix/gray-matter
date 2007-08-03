@@ -39,6 +39,7 @@ search_base::search_base(table *t, history *h, chess_clock *c, xboard *x)
 	max_depth = MAX_DEPTH;
 	output = false;
 
+	board_ptr = new board_heuristic();
 	table_ptr = t;
 	history_ptr = h;
 	clock_ptr = c;
@@ -82,7 +83,7 @@ class search_base& search_base::operator=(const search_base& that)
 	nodes = that.nodes;
 	output = that.output;
 
-	b = that.b;
+	*board_ptr = *that.board_ptr;
 	table_ptr = that.table_ptr;
 	history_ptr = that.history_ptr;
 	clock_ptr = that.clock_ptr;
@@ -162,9 +163,9 @@ void search_base::change(int s, const board_base& now)
 	 */
 	if (s == THINKING || s == PONDERING)
 	{
-		b.lock();
-		b = now;
-		b.unlock();
+		board_ptr->lock();
+		*board_ptr = now;
+		board_ptr->unlock();
 	}
 
 	/* Send the command to think. */
