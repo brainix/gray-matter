@@ -87,25 +87,25 @@ class board_base
 public:
 	/* These methods set information. */
 	board_base();
-	~board_base();
-	board_base& operator=(const board_base& that);
-	void set_board();
-	void lock();
-	void unlock();
+	virtual ~board_base();
+	virtual board_base& operator=(const board_base& that);
+	virtual void set_board();
+	virtual void lock();
+	virtual void unlock();
 
 	/* These methods get information. */
-	bool get_whose() const;
-	bitboard_t get_hash() const;
-	int get_status(bool mate_test);
-	bool check() const;
-	bool zugzwang() const;
+	virtual bool get_whose() const;
+	virtual bitboard_t get_hash() const;
+	virtual int get_status(bool mate_test);
+	virtual bool check() const;
+	virtual bool zugzwang() const;
 
 	/* These methods generate, make, and take back moves. */
-	void generate(list<move_t> &l, bool only_legal_moves = false, bool only_captures = false);
-	bool make(move_t m);
-	void unmake();
-	bool make(char *p);
-	int perft(int depth);
+	virtual void generate(list<move_t> &l, bool only_legal_moves = false, bool only_captures = false);
+	virtual bool make(move_t m);
+	virtual void unmake();
+	virtual bool make(char *p);
+	virtual int perft(int depth);
 
 private:
 	list<state_t> states;                           // Previous states.
@@ -119,36 +119,36 @@ private:
 	mutex_t mutex;				        // Lock.
 
 	/* These methods start up games. */
-	void init_state();
-	void init_rotation();
-	void init_hash();
-	void precomp_key() const;
+	virtual void init_state();
+	virtual void init_rotation();
+	virtual void init_hash();
+	virtual void precomp_key() const;
 
 	/* These methods generate moves. */
-	void generate_king(list<move_t> &l, bool only_captures = false) const;
-	void generate_queen(list<move_t> &l, bool only_captures = false) const;
-	void generate_rook(list<move_t> &l, bool only_captures = false) const;
-	void generate_bishop(list<move_t> &l, bool only_captures = false) const;
-	void generate_knight(list<move_t> &l, bool only_captures = false) const;
-	void generate_pawn(list<move_t> &l, bool only_captures = false) const;
-	void precomp_king() const;
-	void precomp_row() const;
-	void precomp_knight() const;
+	virtual void generate_king(list<move_t> &l, bool only_captures = false) const;
+	virtual void generate_queen(list<move_t> &l, bool only_captures = false) const;
+	virtual void generate_rook(list<move_t> &l, bool only_captures = false) const;
+	virtual void generate_bishop(list<move_t> &l, bool only_captures = false) const;
+	virtual void generate_knight(list<move_t> &l, bool only_captures = false) const;
+	virtual void generate_pawn(list<move_t> &l, bool only_captures = false) const;
+	virtual void precomp_king() const;
+	virtual void precomp_row() const;
+	virtual void precomp_knight() const;
 
 	/* These methods test for various conditions. */
-	int mate();
-	bool check(bitboard_t b1, bool color) const;
-	bool insufficient() const;
-	bool three() const;
-	bool fifty() const;
+	virtual int mate();
+	virtual bool check(bitboard_t b1, bool color) const;
+	virtual bool insufficient() const;
+	virtual bool three() const;
+	virtual bool fifty() const;
 
 	/* These methods manipulate BitBoards. */
-	int count(bitboard_t b) const;
-	int find_64(int64_t n) const;
-	int find_32(int32_t n) const;
-	bitboard_t rotate(bitboard_t b1, int map, int angle) const;
-	uint64_t randomize() const;
-	void insert(int x, int y, bitboard_t b, int angle, list<move_t> &l, bool pos) const;
+	virtual int count(bitboard_t b) const;
+	virtual int find_64(int64_t n) const;
+	virtual int find_32(int32_t n) const;
+	virtual bitboard_t rotate(bitboard_t b1, int map, int angle) const;
+	virtual uint64_t randomize() const;
+	virtual void insert(int x, int y, bitboard_t b, int angle, list<move_t> &l, bool pos) const;
 
 protected:
 	virtual int evaluate() const = 0;
