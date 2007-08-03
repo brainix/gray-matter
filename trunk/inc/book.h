@@ -52,8 +52,8 @@ private:
 	char name[32];
 	ifstream file;
 
-	board_base b;     // Board representation object.
-	table *table_ptr; // Transposition table object.
+	board_base *board_ptr; // Board representation object.
+	table *table_ptr;      // Transposition table object.
 };
 
 #endif

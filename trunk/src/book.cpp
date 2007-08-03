@@ -31,6 +31,7 @@
 \*----------------------------------------------------------------------------*/
 book::book(table *t, char *n)
 {
+	board_ptr = new board_heuristic();
 	table_ptr = t;
 	strncpy(name, n, sizeof(name));
 }
