@@ -277,7 +277,7 @@ int board_heuristic::evaluate_tempo() const
 	for (int color = WHITE; color <= BLACK; color++)
 	{
 		sign = color == OFF_MOVE ? 1 : -1;
-		for (int shape = KNIGHT; shape <= QUEEN; shape++)
+		for (int shape = PAWN; shape <= QUEEN; shape++)
 		{
 			bitboard_t b = state.piece[color][shape];
 			for (int n, x, y; (n = FST(b)) != -1; BIT_CLR(b, x, y))
