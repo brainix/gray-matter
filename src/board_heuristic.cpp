@@ -57,9 +57,8 @@ board_heuristic& board_heuristic::operator=(const board_heuristic& that)
 
 /* Overloaded assignment operator. */
 
-	if (this == &that)
-		return *this;
-	board_base::operator=(that);
+	if (this != &that)
+		board_base::operator=(that);
 	return *this;
 }
 
@@ -76,7 +75,7 @@ int board_heuristic::evaluate() const
 
 	if (!state.piece[ON_MOVE][KING])
 		return WEIGHT_ILLEGAL;
-	return evaluate_material() + evaluate_pawn() + evaluate_king();
+	return evaluate_material() + evaluate_pawn() + evaluate_king() + evaluate_tempo();
 }
 
 /*----------------------------------------------------------------------------*\
@@ -198,6 +197,96 @@ int board_heuristic::evaluate_king() const
 		{
 			weight = weight_castle[state.castle[color][side]];
 			sum += sign * weight;
+		}
+	}
+	return sum;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				evaluate_tempo()			      |
+\*----------------------------------------------------------------------------*/
+int board_heuristic::evaluate_tempo() const
+{
+
+/* Evaluate tempo. */
+
+	static const int tempo[SHAPES][8][8]
+	{
+		/* Pawn. */
+		{{0, 0, 1, 1, 2, 3, 4, 0},
+		 {0, 0, 1, 1, 2, 3, 4, 0},
+		 {0, 0, 1, 1, 2, 3, 4, 0},
+		 {0, 0, 1, 1, 2, 3, 4, 0},
+		 {0, 0, 1, 1, 2, 3, 4, 0},
+		 {0, 0, 1, 1, 2, 3, 4, 0},
+		 {0, 0, 1, 1, 2, 3, 4, 0},
+		 {0, 0, 1, 1, 2, 3, 4, 0}},
+
+		/* Knight. */
+		{{3, 2, 1, 2, 3, 4, 3, 4},
+		 {0, 3, 2, 3, 2, 3, 4, 4},
+		 {2, 2, 1, 2, 3, 3, 3, 4},
+		 {2, 1, 3, 2, 2, 3, 3, 4},
+		 {2, 1, 3, 2, 2, 3, 3, 4},
+		 {2, 2, 1, 2, 3, 3, 3, 4},
+		 {0, 3, 2, 3, 2, 3, 4, 4},
+		 {3, 2, 1, 2, 3, 4, 3, 4}},
+
+		/* Bishop. */
+		{{2, 2, 1, 2, 2, 1, 2, 2},
+		 {2, 1, 2, 2, 1, 2, 2, 2},
+		 {0, 2, 2, 1, 2, 2, 2, 2},
+		 {2, 1, 1, 2, 2, 2, 2, 2},
+		 {2, 1, 1, 2, 2, 2, 2, 2},
+		 {0, 2, 2, 1, 2, 2, 2, 2},
+		 {2, 1, 2, 2, 1, 2, 2, 2},
+		 {2, 2, 1, 2, 2, 1, 2, 2}},
+
+		/* Rook. */
+		{{0, 1, 1, 1, 1, 1, 1, 1},
+		 {1, 2, 2, 2, 2, 2, 2, 2},
+		 {1, 2, 2, 2, 2, 2, 2, 2},
+		 {1, 2, 2, 2, 2, 2, 2, 2},
+		 {1, 2, 2, 2, 2, 2, 2, 2},
+		 {1, 2, 2, 2, 2, 2, 2, 2},
+		 {1, 2, 2, 2, 2, 2, 2, 2},
+		 {0, 1, 1, 1, 1, 1, 1, 1}},
+
+		/* Queen. */
+		{{1, 2, 2, 1, 2, 2, 2, 2},
+		 {1, 2, 1, 2, 2, 2, 2, 2},
+		 {1, 1, 2, 2, 2, 2, 2, 2},
+		 {0, 1, 1, 1, 1, 1, 1, 1},
+		 {1, 1, 2, 2, 2, 2, 2, 2},
+		 {1, 2, 1, 2, 2, 2, 2, 2},
+		 {1, 2, 2, 1, 2, 2, 2, 2},
+		 {1, 2, 2, 2, 1, 2, 2, 2}},
+
+		/* King. */
+		{{3, 3, 3, 4, 4, 5, 6, 7},
+		 {2, 2, 3, 3, 4, 5, 6, 7},
+		 {1, 2, 2, 3, 4, 5, 6, 7},
+		 {1, 1, 2, 3, 4, 5, 6, 7},
+		 {0, 1, 2, 3, 4, 5, 6, 7},
+		 {1, 1, 2, 3, 4, 5, 6, 7},
+		 {1, 2, 2, 3, 4, 5, 6, 7},
+		 {2, 2, 3, 3, 4, 5, 6, 7}}
+	};
+	int sign, coef, sum = 0;
+
+	for (int color = WHITE; color <= BLACK; color++)
+	{
+		sign = color == OFF_MOVE ? 1 : -1;
+		for (int shape = PAWN; shape <= QUEEN; shape++)
+		{
+			bitboard_t b = state.piece[color][shape];
+			for (int n, x, y; (n = FST(b)) != -1; BIT_CLR(b, x, y))
+			{
+				x = n & 0x7;
+				y = n >> 3;
+				coef = tempo[shape][x][color == WHITE ? y : 7 - y];
+				sum += sign * coef * WEIGHT_TEMPO;
+			}
 		}
 	}
 	return sum;

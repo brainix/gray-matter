@@ -55,9 +55,8 @@ search_mtdf& search_mtdf::operator=(const search_mtdf& that)
 
 /* Overloaded assignment operator. */
 
-	if (this == &that)
-		return *this;
-	search_base::operator=(that);
+	if (this != &that)
+		search_base::operator=(that);
 	return *this;
 }
 
