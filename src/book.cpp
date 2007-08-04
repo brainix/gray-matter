@@ -41,6 +41,8 @@ book::book(table *t, char *n)
 \*----------------------------------------------------------------------------*/
 void book::read()
 {
+	table_ptr->clear();
+
 	file.open(name);
 	if (file.fail())
 	{
