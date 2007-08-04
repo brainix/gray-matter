@@ -210,7 +210,7 @@ int board_heuristic::evaluate_tempo() const
 
 /* Evaluate tempo. */
 
-	static const int tempo[SHAPES][8][8]
+	static const int tempo[SHAPES][8][8] =
 	{
 		/* Pawn. */
 		{{0, 0, 1, 1, 2, 3, 4, 0},
