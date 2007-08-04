@@ -49,7 +49,6 @@ public:
 	virtual void set_output(bool o);
 
 protected:
-	virtual void clear() const;
 	static void _handle(void *arg);  // Proxy clock callback.
 	virtual void handle();           // C++ clock callback.
 	static void *_start(void *arg);  // Proxy thread entry point.
