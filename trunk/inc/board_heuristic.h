@@ -51,6 +51,7 @@ private:
 	int evaluate_material() const;
 	int evaluate_pawn() const;
 	int evaluate_king() const;
+	int evaluate_tempo() const;
 };
 
 #endif
