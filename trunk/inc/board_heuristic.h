@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*\
- |	board_heuristic.h - board representation interface		      |
+ |	board_heuristic.h - heuristic evaluation interface		      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
