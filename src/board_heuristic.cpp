@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*\
- |	board_heuristic.cpp - board representation implementation	      |
+ |	board_heuristic.cpp - heuristic evaluation implementation	      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
