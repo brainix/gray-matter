@@ -7,7 +7,7 @@
 /*
  | This program is free software: you can redistribute it and/or modify it under
  | the terms of the GNU General Public License as published by the Free Software
- | Foundation; either version 3 of the License, or (at your option) any later
+ | Foundation, either version 3 of the License, or (at your option) any later
  | version.
  |
  | This program is distributed in the hope that it will be useful, but WITHOUT
@@ -52,30 +52,30 @@
 \*----------------------------------------------------------------------------*/
 
 /* Values of material (in centipawns): */
-#define WEIGHT_PAWN		100
-#define WEIGHT_KNIGHT		300
-#define WEIGHT_BISHOP		300
-#define WEIGHT_ROOK		500
-#define WEIGHT_QUEEN		900
-#define WEIGHT_KING		(9 * WEIGHT_QUEEN + 2 * WEIGHT_ROOK + 2 * WEIGHT_BISHOP + 2 * WEIGHT_KNIGHT)
-#define WEIGHT_ILLEGAL		(WEIGHT_KING + WEIGHT_PAWN)
+#define WEIGHT_PAWN		  100
+#define WEIGHT_KNIGHT		  300
+#define WEIGHT_BISHOP		  300
+#define WEIGHT_ROOK		  500
+#define WEIGHT_QUEEN		  900
+#define WEIGHT_KING		10000
+#define WEIGHT_ILLEGAL		20000
 
 /* Values of pawn formations: */
-#define WEIGHT_ISOLATED		-10
-#define WEIGHT_DOUBLED		-10
-#define WEIGHT_BACKWARD		-10
-#define WEIGHT_PASSED		 10
+#define WEIGHT_ISOLATED		  -10
+#define WEIGHT_DOUBLED		  -10
+#define WEIGHT_BACKWARD		  -10
+#define WEIGHT_PASSED		   10
 
 /* Values of castling statuses: */
-#define WEIGHT_CANT_CASTLE	-20
-#define WEIGHT_CAN_CASTLE	  0
-#define WEIGHT_HAS_CASTLED	 40
+#define WEIGHT_CANT_CASTLE	  -20
+#define WEIGHT_CAN_CASTLE	    0
+#define WEIGHT_HAS_CASTLED	   40
 
 /* Value of tempo: */
-#define WEIGHT_TEMPO		 33
+#define WEIGHT_TEMPO		   33
 
 /* How much we hate our opponent: */
-#define WEIGHT_CONTEMPT		100
+#define WEIGHT_CONTEMPT		  100
 
 
 
