@@ -341,7 +341,7 @@ end:
 /*----------------------------------------------------------------------------*\
  |				timer_function()			      |
 \*----------------------------------------------------------------------------*/
-int timer_function(void (*function)(void*), void *data)
+int timer_function(void (*function)(void *), void *data)
 {
 
 /* Specify the function to be called once the alarm has sounded. */

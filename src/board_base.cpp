@@ -513,10 +513,13 @@ end:
 /*----------------------------------------------------------------------------*\
  |				    unmake()				      |
 \*----------------------------------------------------------------------------*/
-void board_base::unmake()
+bool board_base::unmake()
 {
 
 /* Take back the last move. */
+
+	if (states.empty())
+		return false;
 
 	/* Restore the previous state, rotated BitBoards, and hash keys. */
 	state = states.back();
@@ -531,6 +534,7 @@ void board_base::unmake()
 	hashes.pop_back();
 	pawn_hash = pawn_hashes.back();
 	pawn_hashes.pop_back();
+	return true;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -721,11 +725,13 @@ void board_base::init_hash()
 
 /* Initialize the Zobrist hash. */
 
+	/* Clear the previous Zobrist hashes. */
 	hashes.clear();
 	hash = 0;
 	pawn_hashes.clear();
 	pawn_hash = 0;
 
+	/* Initialize the current Zobrist hash. */
 	for (int color = WHITE; color <= BLACK; color++)
 	{
 		for (int shape = PAWN; shape <= KING; shape++)

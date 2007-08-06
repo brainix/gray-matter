@@ -177,11 +177,12 @@
 #define POSITIONS	2
 
 /* Transposition table entry types: */
-#define USELESS		0 // Useless score.
+#define USELESS		0 // Useless.
 #define UPPER		1 // Upper bound.
-#define EXACT		2 // Exact MiniMax value.
-#define LOWER		3 // Lower bound.
-#define ENTRY_TYPES	4
+#define LOWER		2 // Lower bound.
+#define EXACT		3 // Exact MiniMax value.
+#define BOOK		4 // Prescribed by the opening book.
+#define ENTRY_TYPES	5
 
 /* Search statuses: */
 #define IDLING		0 // Masturbating.
