@@ -171,7 +171,7 @@ int board_heuristic::evaluate_knights() const
 		{2, 2, 1, 2, 3, 3, 3, 4},
 		{0, 3, 2, 3, 2, 3, 4, 4},
 		{3, 2, 1, 2, 3, 4, 3, 4}
-	}
+	};
 	int sign, coef, sum = 0;
 
 	for (int color = WHITE; color <= BLACK; color++)
@@ -212,7 +212,7 @@ int board_heuristic::evaluate_bishops() const
 		{0, 2, 2, 1, 2, 2, 2, 2},
 		{2, 1, 2, 2, 1, 2, 2, 2},
 		{2, 2, 1, 2, 2, 1, 2, 2}
-	}
+	};
 	int sign, coef, sum = 0;
 
 	for (int color = WHITE; color <= BLACK; color++)
@@ -253,7 +253,7 @@ int board_heuristic::evaluate_rooks() const
 		{1, 2, 2, 2, 2, 2, 2, 2},
 		{1, 2, 2, 2, 2, 2, 2, 2},
 		{0, 1, 1, 1, 1, 1, 1, 1}
-	}
+	};
 	int sign, coef, sum = 0;
 
 	for (int color = WHITE; color <= BLACK; color++)
@@ -294,7 +294,7 @@ int board_heuristic::evaluate_queens() const
 		{1, 2, 1, 2, 2, 2, 2, 2},
 		{1, 2, 2, 1, 2, 2, 2, 2},
 		{1, 2, 2, 2, 1, 2, 2, 2}
-	}
+	};
 	int sign, coef, sum = 0;
 
 	for (int color = WHITE; color <= BLACK; color++)
