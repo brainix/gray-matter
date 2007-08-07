@@ -166,7 +166,7 @@ move_t search_mtdf::mtdf(int depth, int guess)
 /*----------------------------------------------------------------------------*\
  |				   minimax()				      |
 \*----------------------------------------------------------------------------*/
-move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
+move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta, bool try_null_move)
 {
 
 /*
@@ -258,12 +258,15 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 	}
 
 	/* */
-	SET_NULL_MOVE(null_move);
-	board_ptr->make(null_move);
-	null_move.value = -minimax(depth - 1 - 2, shallowness + 1 + 2, -beta, -beta + 1).value;
-	board_ptr->unmake();
-	if (null_move.value >= beta)
-		return null_move;
+	if (try_null_move)
+	{
+		SET_NULL_MOVE(null_move);
+		board_ptr->make(null_move);
+		null_move.value = -minimax(depth - 1 - 2, shallowness + 1 + 2, -beta, -beta + 1, false).value;
+		board_ptr->unmake();
+		if (null_move.value >= beta)
+			return null_move;
+	}
 
 	/* Generate and re-order the move list. */
 	board_ptr->generate(l, !shallowness);
