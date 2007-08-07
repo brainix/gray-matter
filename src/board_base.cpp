@@ -283,12 +283,11 @@ bool board_base::zugzwang() const
 /*
  | Is the current position zugzwang?
  |
- | In most positions, there's at least one move that the color that's on move
- | could make to improve her lot.  In these normal positions, null-move pruning
- | works.  However, in certain positions, her best move would be to pass
- | (particularly in endgame).  These positions are called "zugzwang" (German for
- | "compelled to move").  In these zugzwang positions, null-move pruning doesn't
- | work.
+ | In most positions, there's at least one move the color on move could make to
+ | improve her lot.  In these normal positions, null-move pruning works.
+ | However, in certain positions, her best move would be to pass (particularly
+ | in endgame).  These positions are called "zugzwang" (German for "compelled to
+ | move").  In these zugzwang positions, null-move pruning doesn't work.
  |
  | The search class calls this method on a particular position to decide whether
  | or not to try null-move pruning.
@@ -641,6 +640,13 @@ bool board_base::make(char *p)
 \*----------------------------------------------------------------------------*/
 int board_base::perft(int depth)
 {
+
+/*
+ | From the current position, grow the move tree to the given depth and count
+ | the leaf nodes.  This may sound useless, but it makes for a good unit test
+ | and benchmark for the move generator.
+ */
+
 	list<move_t> l;
 	list<move_t>::iterator it;
 	int nodes = 0;
