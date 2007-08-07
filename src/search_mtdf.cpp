@@ -282,12 +282,14 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 			board_ptr->unmake();
 			if (current < beta)
 				continue;
-			it->value = current;
-			return *it;
+			(m = *it).value = current;
+			return m;
 		}
 
 	/* Score each move in the list. */
-	for (m.value = -INFINITY, it = l.begin(); it != l.end(); it++)
+	SET_NULL_MOVE(m);
+	m.value = -INFINITY;
+	for (it = l.begin(); it != l.end(); it++)
 	{
 		board_ptr->make(*it);
 		it->value = -minimax(depth - 1, shallowness + 1, -beta, -current).value;
