@@ -32,7 +32,7 @@ typedef void (*clock_callback_t)(void *data);
 class chess_clock
 {
 public:
-	chess_clock();
+	chess_clock(int o);
 	void set_mode(int color, int new_moves, int new_csecs, int new_inc);
 	void update_remaining_csecs(int color, int new_csecs);
 	void dec_remaining_moves(int color);
@@ -50,6 +50,7 @@ private:
 	int remaining_moves[COLORS];
 	int remaining_csecs[COLORS];
 	int inc[COLORS];
+	int overhead;
 	clock_t noted_time;
 	clock_callback_t clock_callback;
 	void *clock_callback_data;
