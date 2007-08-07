@@ -268,22 +268,20 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 	l.sort(descend);
 
 	/* */
-	for (it = l.begin(); it != l.end(); it++)
-	{
-		board_ptr->make(*it);
-		if (table_ptr->probe(board_ptr->get_hash(), depth - 1, UPPER, &m))
-			if (-m.value > current)
-				current = -m.value;
-		if (table_ptr->probe(board_ptr->get_hash(), depth - 1, LOWER, &m))
-			if (-m.value < beta)
-				beta = -m.value;
-		board_ptr->unmake();
-		if (current >= beta)
+	if (shallowness > 2)
+		for (it = l.begin(); it != l.end(); it++)
 		{
+			board_ptr->make(*it);
+			if (table_ptr->probe(board_ptr->get_hash(), depth - 1, LOWER, &m))
+				current = LESSER(current, -m.value);
+			if (table_ptr->probe(board_ptr->get_hash(), depth - 1, UPPER, &m))
+				beta = GREATER(beta, -m.value);
+			board_ptr->unmake();
+			if (current < beta)
+				continue;
 			it->value = current;
 			return *it;
 		}
-	}
 
 	/* Score each move in the list. */
 	for (m.value = -INFINITY, it = l.begin(); it != l.end(); it++)
