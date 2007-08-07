@@ -13,7 +13,7 @@
   * To earn a provisional rating.
 
 === Mid Term Goals (for the Next Year) ===
-  * To implement ~~[http://www.cs.vu.nl/~aske/mtdf.html MTD(f)],~~ ETC, null-move pruning, and quiescence search.
+  * To implement ~~[http://www.cs.vu.nl/~aske/mtdf.html MTD(f)], ETC,~~ null-move pruning, and quiescence search.
   * ~~To provide evidence for correctness of search.~~
   * ~~For the engine to regularly checkmate its hackers.~~
   * To earn a respectable rating.
