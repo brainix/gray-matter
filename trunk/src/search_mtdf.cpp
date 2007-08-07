@@ -116,7 +116,7 @@ void search_mtdf::iterate(int s)
 			 | no point in searching deeper.  Eyes on the prize.
 			 */
 			break;
-		if (depth == MIN_DEPTH)
+		if (depth >= MIN_DEPTH)
 		{
 			mutex_lock(&depth_mutex);
 			depth_flag = true;
@@ -266,6 +266,24 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 		 */
 		it->value = *it == m ? WEIGHT_KING : history_ptr->probe(whose, *it);
 	l.sort(descend);
+
+	/* */
+	for (it = l.begin(); it != l.end(); it++)
+	{
+		board_ptr->make(*it);
+		if (table_ptr->probe(board_ptr->get_hash(), depth - 1, UPPER, &m))
+			if (-m.value > current)
+				current = -m.value;
+		if (table_ptr->probe(board_ptr->get_hash(), depth - 1, LOWER, &m))
+			if (-m.value < beta)
+				beta = -m.value;
+		board_ptr->unmake();
+		if (current >= beta)
+		{
+			it->value = current;
+			return *it;
+		}
+	}
 
 	/* Score each move in the list. */
 	for (m.value = -INFINITY, it = l.begin(); it != l.end(); it++)
