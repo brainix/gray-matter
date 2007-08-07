@@ -42,14 +42,19 @@ int main(int argc, char **argv);
 \*----------------------------------------------------------------------------*/
 int main(int argc, char **argv)
 {
-	char search_engine[32] = "MTD(f)";
-	int xpos_table_size = XPOS_TABLE_MB;
 	char file_name[32] = FILE_NAME;
+	char search_engine[32] = SEARCH_ENGINE;
+	int xpos_table_mb = XPOS_TABLE_MB;
+	int overhead = OVERHEAD;
 
 	/* Parse the command-line arguments. */
-	for (int c; (c = getopt(argc, argv, "s:x:b:")) != -1;)
+	for (int c; (c = getopt(argc, argv, "b:s:x:o:")) != -1;)
 		switch (c)
 		{
+			case 'b':
+				/* Specifying the file name of the opening book. */
+				strncpy(file_name, optarg, sizeof(file_name));
+				break;
 			case 's':
 				/* Specifying which search engine to use. */
 				strncpy(search_engine, optarg, sizeof(search_engine));
@@ -61,17 +66,22 @@ int main(int argc, char **argv)
 				break;
 			case 'x':
 				/* Specifying the size of the transposition table. */
-				if ((xpos_table_size = atoi(optarg)) < 1)
+				if ((xpos_table_mb = atoi(optarg)) < 1)
 				{
 					printf("transposition table must be >= 1 MB\n");
 					exit(EXIT_FAILURE);
 				}
 				break;
-			case 'b':
-				/* Specifying the file name of the opening book. */
-				strncpy(file_name, optarg, sizeof(file_name));
+			case 'o':
+				/* Specifying the move search overhead. */
+				if ((overhead = atoi(optarg)) < 1)
+				{
+					printf("move search overhead must be >= 1 centisecond\n");
+					exit(EXIT_FAILURE);
+				}
 				break;
 			default:
+				/* Specifying the user doesn't know how to read. */
 				printf("unknown option: -%c\n", optopt);
 				exit(EXIT_FAILURE);
 				break;
@@ -87,11 +97,11 @@ int main(int argc, char **argv)
 	srand(time(NULL));
 
 	/* Instantiate the classes. */
-	table t(xpos_table_size); // Transposition table object.
-	history h;                // History table object.
-	chess_clock c;            // Chess clock object.
-	xboard x;                 // Chess Engine Communication Protocol object.
-	book o(&t, file_name);    // Opening book object.
+	table t(xpos_table_mb);  // Transposition table object.
+	history h;               // History table object.
+	chess_clock c(overhead); // Chess clock object.
+	xboard x;                // Chess Engine Communication Protocol object.
+	book o(&t, file_name);   // Opening book object.
 
 	/*
 	 | Based on the -s command-line option, choose the move search engine

@@ -27,13 +27,14 @@
 /*----------------------------------------------------------------------------*\
  |				 chess_clock()				      |
 \*----------------------------------------------------------------------------*/
-chess_clock::chess_clock()
+chess_clock::chess_clock(int o)
 {
 
 /* Constructor. */
 
 	for (int color = WHITE; color <= BLACK; color++)
 		set_mode(color, 40, 5 * 60 * 100, 0);
+	overhead = o;
 	timer_function(sound_alarm, this);
 	note_time();
 }
@@ -99,7 +100,7 @@ void chess_clock::set_alarm(int color) const
 
 /* Set the alarm. */
 
-	timer_set(GREATER(remaining_csecs[color] / (remaining_moves[color] ? remaining_moves[color] : 40) + inc[color] - OVERHEAD, 1));
+	timer_set(GREATER(remaining_csecs[color] / (remaining_moves[color] ? remaining_moves[color] : 40) + inc[color] - overhead, 1));
 }
 
 /*----------------------------------------------------------------------------*\
@@ -110,8 +111,7 @@ void chess_clock::sound_alarm(void *data)
 
 /* Sound the alarm. */
 
-	chess_clock *clock = (chess_clock*)data;
-
+	chess_clock *clock = (chess_clock *) data;
 	clock->clock_callback(clock->clock_callback_data);
 }
 
