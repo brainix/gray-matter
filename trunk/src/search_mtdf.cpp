@@ -263,7 +263,10 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 	null_move.value = -minimax(depth - 1 - 2, shallowness + 1 + 2, -beta, -beta + 1).value;
 	board_ptr->unmake();
 	if (null_move.value >= beta)
-		return beta;
+	{
+		null_move.value = beta;
+		return null_move;
+	}
 
 	/* Generate and re-order the move list. */
 	board_ptr->generate(l, !shallowness);
