@@ -183,6 +183,9 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
  |
  | On top of AlphaBeta, this method implements FailSoft.  FailSoft returns more
  | information than AlphaBeta.
+ |
+ | On top of FailSoft, this method implements Enhanced Transposition Cutoffs
+ | (ETC).
  */
 
 	/* Local variables: */
@@ -267,15 +270,15 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 		it->value = *it == m ? WEIGHT_KING : history_ptr->probe(whose, *it);
 	l.sort(descend);
 
-	/* */
+	/* Perform ETC. */
 	if (shallowness > 2)
 		for (it = l.begin(); it != l.end(); it++)
 		{
 			board_ptr->make(*it);
 			if (table_ptr->probe(board_ptr->get_hash(), depth - 1, LOWER, &m))
-				current = LESSER(current, -m.value);
+				current = GREATER(current, -m.value);
 			if (table_ptr->probe(board_ptr->get_hash(), depth - 1, UPPER, &m))
-				beta = GREATER(beta, -m.value);
+				beta = LESSER(beta, -m.value);
 			board_ptr->unmake();
 			if (current < beta)
 				continue;
