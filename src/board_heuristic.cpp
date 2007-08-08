@@ -320,16 +320,13 @@ int board_heuristic::evaluate_king() const
 	static const int weight[] = {WEIGHT_CAN_CASTLE,
 	                             WEIGHT_CANT_CASTLE,
 	                             WEIGHT_HAS_CASTLED};
-	int sign, weight, sum = 0;
+	int sign, sum = 0;
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
 		sign = color == OFF_MOVE ? 1 : -1;
 		for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
-		{
-			weight = weight[state.castle[color][side]];
-			sum += sign * weight;
-		}
+			sum += sign * weight[state.castle[color][side]];
 	}
 	return sum;
 }
