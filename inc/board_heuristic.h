@@ -44,12 +44,14 @@ public:
 	board_heuristic& operator=(const board_heuristic& that);
 	int evaluate() const;
 private:
-	int evaluate_pawns() const;
-	int evaluate_knights() const;
-	int evaluate_bishops() const;
-	int evaluate_rooks() const;
-	int evaluate_queens() const;
-	int evaluate_kings() const;
+	int evaluate_material() const;
+	int evaluate_tempo() const;
+	int evaluate_pawn() const;
+	int evaluate_knight() const;
+	int evaluate_bishop() const;
+	int evaluate_rook() const;
+	int evaluate_queen() const;
+	int evaluate_king() const;
 };
 
 #endif
