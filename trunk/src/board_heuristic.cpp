@@ -134,14 +134,9 @@ int board_heuristic::evaluate() const
 	if (!state.piece[ON_MOVE][KING])
 		return WEIGHT_ILLEGAL;
 
-	return evaluate_material() +
-	       evaluate_tempo()    +
-	       evaluate_pawn()     +
-	       evaluate_knight()   +
-	       evaluate_bishop()   +
-	       evaluate_rook()     +
-	       evaluate_queen()    +
-	       evaluate_king();
+	return evaluate_material() + evaluate_tempo()  + evaluate_pawn() +
+	       evaluate_knight()   + evaluate_bishop() + evaluate_rook() +
+	       evaluate_queen()    + evaluate_king();
 }
 
 /*----------------------------------------------------------------------------*\
