@@ -88,6 +88,17 @@ int board_heuristic::evaluate_pawns() const
 
 /* Evaluate pawns. */
 
+	static const uint8_t tempo[8][8] =
+	{
+		{0, 0, 1, 1, 2, 3, 4, 0},
+		{0, 0, 1, 1, 2, 3, 4, 0},
+		{0, 0, 1, 1, 2, 3, 4, 0},
+		{0, 0, 1, 1, 2, 3, 4, 0},
+		{0, 0, 1, 1, 2, 3, 4, 0},
+		{0, 0, 1, 1, 2, 3, 4, 0},
+		{0, 0, 1, 1, 2, 3, 4, 0},
+		{0, 0, 1, 1, 2, 3, 4, 0}
+	};
 	int sign, coef, sum;
 	bitboard_t pawns, adj_files, adj_pawns, ranks;
 
@@ -104,7 +115,7 @@ int board_heuristic::evaluate_pawns() const
 		for (int file = 0; file <= 7; file++)
 		{
 			pawns = state.piece[color][PAWN] & COL_MSK(file);
-			if ((coef = count(pawns)) == 0)
+			if (!(coef = count(pawns)))
 				/*
 				 | The current color has no pawn on the current
 				 | file.  Move to the next file.
@@ -141,9 +152,17 @@ int board_heuristic::evaluate_pawns() const
 					ranks |= ROW_MSK(k);
 				if (!(state.piece[!color][PAWN] & adj_files & ranks))
 					sum += sign * WEIGHT_PASSED;
-
-				/* TODO: Reward pawn advancement. */
 			}
+		}
+
+		/* Reward tempo. */
+		pawns = state.piece[color][PAWN];
+		for (int n, x, y; (n = FST(pawns)) != -1; BIT_CLR(pawns, x, y))
+		{
+			x = n & 0x7;
+			y = n >> 3;
+			coef = tempo[x][color == WHITE ? y : 7 - y];
+			sum += sign * coef * WEIGHT_TEMPO;
 		}
 	}
 
@@ -161,7 +180,7 @@ int board_heuristic::evaluate_knights() const
 
 /* Evaluate knights. */
 
-	static const int tempo[8][8] =
+	static const uint8_t tempo[8][8] =
 	{
 		{3, 2, 1, 2, 3, 4, 3, 4},
 		{0, 3, 2, 3, 2, 3, 4, 4},
@@ -202,7 +221,7 @@ int board_heuristic::evaluate_bishops() const
 
 /* Evaluate bishops. */
 
-	static const int tempo[8][8] =
+	static const uint8_t tempo[8][8] =
 	{
 		{2, 2, 1, 2, 2, 1, 2, 2},
 		{2, 1, 2, 2, 1, 2, 2, 2},
@@ -243,7 +262,7 @@ int board_heuristic::evaluate_rooks() const
 
 /* Evaluate rooks. */
 
-	static const int tempo[8][8] =
+	static const uint8_t tempo[8][8] =
 	{
 		{0, 1, 1, 1, 1, 1, 1, 1},
 		{1, 2, 2, 2, 2, 2, 2, 2},
@@ -284,7 +303,7 @@ int board_heuristic::evaluate_queens() const
 
 /* Evaluate queens. */
 
-	static const int tempo[8][8] =
+	static const uint8_t tempo[8][8] =
 	{
 		{1, 2, 2, 1, 2, 2, 2, 2},
 		{1, 2, 1, 2, 2, 2, 2, 2},
