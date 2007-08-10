@@ -78,7 +78,7 @@ typedef struct move
 	unsigned new_x   :  3; // To x coordinate.             +  3 bits
 	unsigned new_y   :  3; // To y coordinate.             +  3 bits
 	unsigned promo   :  3; // Pawn promotion information.  +  3 bits
-	unsigned padding :  1; // Unused.                      +  1 bit
+	unsigned padding :  1; // The Evil Bit.                +  1 bit
 	  signed value   : 16; // MiniMax score.               + 16 bits
 	                       //                              = 32 bits
 
