@@ -77,7 +77,7 @@ void table::clear()
 /*----------------------------------------------------------------------------*\
  |				 table::probe()				      |
 \*----------------------------------------------------------------------------*/
-bool table::probe(bitboard_t hash, int depth, int type, move_t *move_ptr) const
+bool table::probe(bitboard_t hash, int depth, int type, move_t *move_ptr)
 {
 	uint64_t index = hash % slots;
 	bool semi_found = data[index].hash == hash;
@@ -247,7 +247,7 @@ void pawn::clear()
 /*----------------------------------------------------------------------------*\
  |				 pawn::probe()				      |
 \*----------------------------------------------------------------------------*/
-bool pawn::probe(bitboard_t hash, int *value_ptr) const
+bool pawn::probe(bitboard_t hash, int *value_ptr)
 {
 
 /*

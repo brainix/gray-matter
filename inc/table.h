@@ -36,7 +36,7 @@ public:
 	table(int mb = XPOS_TABLE_MB);
 	~table();
 	void clear();
-	bool probe(bitboard_t hash, int depth, int type, move_t *move_ptr) const;
+	bool probe(bitboard_t hash, int depth, int type, move_t *move_ptr);
 	void store(bitboard_t hash, int depth, int type, move_t move);
 private:
 	uint64_t slots;     // The number of slots.
@@ -74,7 +74,7 @@ public:
 	pawn(int mb = PAWN_TABLE_MB);
 	~pawn();
 	void clear();
-	bool probe(bitboard_t hash, int *value_ptr) const;
+	bool probe(bitboard_t hash, int *value_ptr);
 	void store(bitboard_t hash, int value);
 private:
 	uint64_t slots;    // The number of slots.
