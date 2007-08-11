@@ -74,6 +74,8 @@ public:
 private:
 	uint64_t slots;    // The number of slots.
 	pawn_slot_t *data; // The slots themselves.
+	uint64_t hits;     //
+	uint64_t misses;   //
 };
 
 #endif

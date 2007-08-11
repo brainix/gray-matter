@@ -140,7 +140,7 @@
 #define REQS		2
 
 /* Game statuses: */
-#define IN_PROGRESS	0
+#define IN_PROGRESS	0 // Still in progress.
 #define STALEMATE	1 // Drawn by stalemate.
 #define INSUFFICIENT	2 // Drawn by insufficient material.
 #define THREE		3 // Drawn by threefold repetition.
