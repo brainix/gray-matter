@@ -117,7 +117,7 @@ void table::print_stats() const
 {
 	int semi_hit_percent = (int) (semi_hits * 100 / probes);
 	int hit_percent = (int) (hits * 100 / probes);
-	printf("telluser xpos table stats\nsemi hits: %d\nhits: %d\n", semi_hit_percent, hit_percent);
+	printf("telluser semi hits: %d hits: %d\n", semi_hit_percent, hit_percent);
 }
 #endif
 
@@ -301,6 +301,6 @@ void pawn::store(bitboard_t hash, int value)
 void pawn::print_stats() const
 {
 	int hit_percent = (int) (hits * 100 / probes);
-	printf("telluser pawn table stats\nhits: %d\n", hit_percent);
+	printf("telluser hits: %d\n", hit_percent);
 }
 #endif
