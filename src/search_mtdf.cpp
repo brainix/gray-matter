@@ -264,8 +264,8 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 		if (table_ptr->probe(hash, depth, LOWER, &m))
 			if ((lower = m.value) >= beta)
 				return m;
-		current = alpha = GREATER(alpha, lower);
-		beta = LESSER(beta, upper);
+//		current = alpha = GREATER(alpha, lower);
+//		beta = LESSER(beta, upper);
 	}
 
 	/* Generate and re-order the move list. */
@@ -284,20 +284,20 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 	l.sort(descend);
 
 	/* Perform ETC. */
-	if (shallowness > 2)
-		for (it = l.begin(); it != l.end(); it++)
-		{
-			board_ptr->make(*it);
-			if (table_ptr->probe(board_ptr->get_hash(), depth - 1, LOWER, &m))
-				current = GREATER(current, -m.value);
-			if (table_ptr->probe(board_ptr->get_hash(), depth - 1, UPPER, &m))
-				beta = LESSER(beta, -m.value);
-			board_ptr->unmake();
-			if (current < beta)
-				continue;
-			(m = *it).value = current;
-			return m;
-		}
+//	if (shallowness > 2)
+//		for (it = l.begin(); it != l.end(); it++)
+//		{
+//			board_ptr->make(*it);
+//			if (table_ptr->probe(board_ptr->get_hash(), depth - 1, LOWER, &m))
+//				current = GREATER(current, -m.value);
+//			if (table_ptr->probe(board_ptr->get_hash(), depth - 1, UPPER, &m))
+//				beta = LESSER(beta, -m.value);
+//			board_ptr->unmake();
+//			if (current < beta)
+//				continue;
+//			(m = *it).value = current;
+//			return m;
+//		}
 
 	/* Score each move in the list. */
 	SET_NULL_MOVE(m);
