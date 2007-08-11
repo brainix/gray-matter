@@ -134,7 +134,12 @@ void search_mtdf::iterate(int s)
 	if (s == THINKING)
 		clock_ptr->cancel_alarm();
 	if (s == THINKING && search_status != QUITTING)
+	{
 		xboard_ptr->print_result(m);
+#if DEBUG
+		table_ptr->print_stats();
+#endif
+	}
 }
 
 /*----------------------------------------------------------------------------*\
