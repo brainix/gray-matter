@@ -39,6 +39,7 @@
 
 #define FILE_NAME	"book.pgn" // The opening book file name.
 #define SEARCH_ENGINE	"MTD(f)"   // The default move search engine.
+#define DEBUG		false      // Whether to perform statistical analysis.
 
 /* All of the values in this section must be >= 1. */
 #define XPOS_TABLE_MB	64         // The transposition table size (in MB).
