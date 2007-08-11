@@ -203,6 +203,7 @@ pawn::pawn(int mb)
 	{
 	}
 	clear();
+	hits = misses = 0;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -246,6 +247,8 @@ bool pawn::probe(bitboard_t hash, int *value_ptr) const
 	uint64_t index = hash % slots;
 	bool found = data[index].hash == hash;
 	*value_ptr = found ? data[index].value : 0;
+	hits += found ? 1 : 0;
+	misses += found ? 0 : 1;
 	return found;
 }
 

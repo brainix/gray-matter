@@ -169,7 +169,16 @@ int board_heuristic::evaluate_material() const
 int board_heuristic::evaluate_tempo() const
 {
 
-/* Evaluate tempo. */
+/*
+ | Evaluate tempo.
+ |
+ | We define a piece's tempo as the minimum number of moves required to move it
+ | from its current position back to its starting position on an otherwise empty
+ | chess board.  Tempo is a measure of development; good chess players maximize
+ | their tempo and minimize their opponents' tempo.  I'm not sure this works
+ | perfectly yet, but it at least seems to prevent The Happy King Dance (TM)
+ | Gray Matter used to love so much.
+ */
 
 	int sign, coef, sum = 0;
 
@@ -198,7 +207,7 @@ int board_heuristic::evaluate_tempo() const
 int board_heuristic::evaluate_pawn() const
 {
 
-/* Evaluate pawn formation. */
+/* Evaluate pawn structure. */
 
 	int sign, coef, sum;
 	bitboard_t pawns, adj_files, adj_pawns, ranks;
@@ -219,7 +228,7 @@ int board_heuristic::evaluate_pawn() const
 			if (!(coef = count(pawns)))
 				/*
 				 | The current color has no pawn on the current
-				 | file.  Move to the next file.
+				 | file.  Move on to the next file.
 				 */
 				continue;
 			adj_files = 0;
@@ -266,7 +275,7 @@ end:
 int board_heuristic::evaluate_knight() const
 {
 
-/* Evaluate knight position. */
+/* TODO: evaluate knight position. */
 
 	return 0;
 }
@@ -277,7 +286,7 @@ int board_heuristic::evaluate_knight() const
 int board_heuristic::evaluate_bishop() const
 {
 
-/* Evaluate bishop position. */
+/* TODO: evaluate bishop position. */
 
 	return 0;
 }
@@ -288,7 +297,7 @@ int board_heuristic::evaluate_bishop() const
 int board_heuristic::evaluate_rook() const
 {
 
-/* Evaluate rook position. */
+/* TODO: evaluate rook position. */
 
 	return 0;
 }
@@ -299,7 +308,7 @@ int board_heuristic::evaluate_rook() const
 int board_heuristic::evaluate_queen() const
 {
 
-/* Evaluate queen position. */
+/* TODO: evaluate queen position. */
 
 	return 0;
 }
