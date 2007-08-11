@@ -40,6 +40,9 @@ table::table(int mb)
 	{
 	}
 	clear();
+#if DEBUG
+	probes = semi_hits = hits = 0;
+#endif
 }
 
 /*----------------------------------------------------------------------------*\
@@ -77,14 +80,21 @@ void table::clear()
 bool table::probe(bitboard_t hash, int depth, int type, move_t *move_ptr) const
 {
 	uint64_t index = hash % slots;
-	if (data[index].hash != hash)
+	bool semi_found = data[index].hash == hash;
+	bool found = semi_found && data[index].depth >= depth && (data[index].type == EXACT || data[index].type == type);
+#if DEBUG
+	probes++;
+	semi_hits += semi_found;
+	hits += found;
+#endif
+	if (!semi_found)
 	{
 		SET_NULL_MOVE(*move_ptr);
 		move_ptr->value = 0;
 		return false;
 	}
 	*move_ptr = data[index].move;
-	return data[index].depth >= depth && (data[index].type == EXACT || data[index].type == type);
+	return found;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -203,7 +213,9 @@ pawn::pawn(int mb)
 	{
 	}
 	clear();
-	hits = misses = 0;
+#if DEBUG
+	probes = hits = 0;
+#endif
 }
 
 /*----------------------------------------------------------------------------*\
@@ -246,9 +258,11 @@ bool pawn::probe(bitboard_t hash, int *value_ptr) const
 
 	uint64_t index = hash % slots;
 	bool found = data[index].hash == hash;
+#if DEBUG
+	probes++;
+	hits += found;
+#endif
 	*value_ptr = found ? data[index].value : 0;
-	hits += found ? 1 : 0;
-	misses += found ? 0 : 1;
 	return found;
 }
 
