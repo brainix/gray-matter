@@ -188,17 +188,13 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
  |
  | On top of AlphaBeta, this method implements FailSoft.  FailSoft returns more
  | information than AlphaBeta.
- |
- | On top of FailSoft, this method implements Enhanced Transposition Cutoffs
- | (ETC).
  */
 
 	/* Local variables that pertain to the current position: */
 	bool whose = board_ptr->get_whose();       // The color on move.
 	bitboard_t hash = board_ptr->get_hash();   // This position's hash.
 	int status = board_ptr->get_status(false); // Whether the game is over.
-	int upper = +INFINITY;                     // The upper bound.
-	int lower = -INFINITY;                     // The lower bound.
+	int upper = +INFINITY, lower = -INFINITY;  // The upper & lower bounds.
 	int current = alpha;                       // Scratch alpha variable.
 	list<move_t> l;                            // The move list.
 	list<move_t>::iterator it;                 // The iterator.
@@ -223,31 +219,9 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 		 |     draw.  That's why we score this position as +WEIGHT_CONTEMPT.
 		 |     Therefore, when the NegaMax recursion unrolls, we score
 		 |     the move that leads to this position as -WEIGHT_CONTEMPT.
-		 |
-		 | If this position is a mate:
-		 |     We want to encourage players to mate.  ;-)  That's why
-		 |     we score this position as -WEIGHT_KING.  Therefore, when
-		 |     the NegaMax recursion unrolls, we score the move that
-		 |     leads to this position as +WEIGHT_KING.
 		 */
 		SET_NULL_MOVE(m);
-		switch (status)
-		{
-			case IN_PROGRESS  : m.value = -board_ptr->evaluate();
-			                    break;
-			case STALEMATE    : m.value = +WEIGHT_CONTEMPT;
-			                    break;
-			case INSUFFICIENT : m.value = +WEIGHT_CONTEMPT;
-			                    break;
-			case THREE        : m.value = +WEIGHT_CONTEMPT;
-			                    break;
-			case FIFTY        : m.value = +WEIGHT_CONTEMPT;
-			                    break;
-			case CHECKMATE    : m.value = -WEIGHT_KING;
-			                    break;
-			case ILLEGAL      : m.value = -WEIGHT_ILLEGAL;
-			                    break;
-		}
+		m.value = status == IN_PROGRESS ? -board_ptr->evaluate() : status >= INSUFFICIENT && status <= FIFTY ? +WEIGHT_CONTEMPT : -WEIGHT_ILLEGAL;
 		return m;
 	}
 
@@ -264,13 +238,12 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 		if (table_ptr->probe(hash, depth, LOWER, &m))
 			if ((lower = m.value) >= beta)
 				return m;
-//		current = alpha = GREATER(alpha, lower);
-//		beta = LESSER(beta, upper);
+		current = alpha = GREATER(alpha, lower);
+		beta = LESSER(beta, upper);
 	}
 
 	/* Generate and re-order the move list. */
 	board_ptr->generate(l, !shallowness);
-//	l.sort(shuffle);
 	for (it = l.begin(); it != l.end(); it++)
 		/*
 		 | If according to the transposition table, a previous search
@@ -282,22 +255,6 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 		 */
 		it->value = *it == m ? WEIGHT_KING : history_ptr->probe(whose, *it);
 	l.sort(descend);
-
-	/* Perform ETC. */
-//	if (shallowness > 2)
-//		for (it = l.begin(); it != l.end(); it++)
-//		{
-//			board_ptr->make(*it);
-//			if (table_ptr->probe(board_ptr->get_hash(), depth - 1, LOWER, &m))
-//				current = GREATER(current, -m.value);
-//			if (table_ptr->probe(board_ptr->get_hash(), depth - 1, UPPER, &m))
-//				beta = LESSER(beta, -m.value);
-//			board_ptr->unmake();
-//			if (current < beta)
-//				continue;
-//			(m = *it).value = current;
-//			return m;
-//		}
 
 	/* Score each move in the list. */
 	SET_NULL_MOVE(m);
@@ -318,7 +275,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 	if (m.value == -INFINITY)
 	{
 		SET_NULL_MOVE(m);
-		m.value = !board_ptr->check() ? +WEIGHT_CONTEMPT : -(WEIGHT_KING - shallowness);
+		m.value = !board_ptr->check() ? +WEIGHT_CONTEMPT : -WEIGHT_KING + shallowness;
 		return m;
 	}
 	if (!timeout_flag || !depth_flag)
