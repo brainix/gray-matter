@@ -101,8 +101,8 @@
 #error "In inc/config.h, MIN_DEPTH must be >= 1."
 #endif
 
-#if MAX_DEPTH < MIN_DEPTH
-#error "In inc/config.h, MAX_DEPTH must be >= MIN_DEPTH."
+#if MIN_DEPTH >= MAX_DEPTH
+#error "In inc/config.h, MIN_DEPTH must be < MAX_DEPTH."
 #endif
 
 #if OVERHEAD < 1
