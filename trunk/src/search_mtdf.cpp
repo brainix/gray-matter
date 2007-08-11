@@ -145,7 +145,7 @@ move_t search_mtdf::mtdf(int depth, int guess)
 
 /*
  | From the current position, search for the best move.  This method implements
- | the MTD(f) algorithm.
+ | Aske Plaat's brilliant MTD(f) algorithm.
  */
 
 	move_t m;
@@ -188,16 +188,16 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
  | (ETC).
  */
 
-	/* Local variables: */
-	bool whose = board_ptr->get_whose();       // In this position, the color on move.
+	/* Local variables that pertain to the current position: */
+	bool whose = board_ptr->get_whose();       // The color on move.
 	bitboard_t hash = board_ptr->get_hash();   // This position's hash.
-	int status = board_ptr->get_status(false); // In this position, whether or not the game is over.
-	int upper = +INFINITY;                     // For this position, the upper bound on the MiniMax score.
-	int lower = -INFINITY;                     // For this position, the lower bound on the MiniMax score.
-	int current = alpha;                       // Scratch variable for us to use so as to not clobber alpha.
-	list<move_t> l;                            // From this position, the move list.
-	list<move_t>::iterator it;                 // The iterator through the move list.
-	move_t m;                                  // From this position, the best move.
+	int status = board_ptr->get_status(false); // Whether the game is over.
+	int upper = +INFINITY;                     // The upper bound.
+	int lower = -INFINITY;                     // The lower bound.
+	int current = alpha;                       // Scratch alpha variable.
+	list<move_t> l;                            // The move list.
+	list<move_t>::iterator it;                 // The iterator.
+	move_t m;                                  // The best move.
 
 	/* Increment the number of positions searched. */
 	nodes++;
@@ -228,13 +228,20 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 		SET_NULL_MOVE(m);
 		switch (status)
 		{
-			case IN_PROGRESS  : m.value = -board_ptr->evaluate(); break;
-			case STALEMATE    : m.value = +WEIGHT_CONTEMPT;       break; // XXX: This should never happen.
-			case INSUFFICIENT : m.value = +WEIGHT_CONTEMPT;       break;
-			case THREE        : m.value = +WEIGHT_CONTEMPT;       break;
-			case FIFTY        : m.value = +WEIGHT_CONTEMPT;       break;
-			case CHECKMATE    : m.value = -WEIGHT_KING;           break; // XXX: This should never happen.
-			case ILLEGAL      : m.value = -WEIGHT_ILLEGAL;        break; // XXX: This should never happen.
+			case IN_PROGRESS  : m.value = -board_ptr->evaluate();
+			                    break;
+			case STALEMATE    : m.value = +WEIGHT_CONTEMPT;
+			                    break;
+			case INSUFFICIENT : m.value = +WEIGHT_CONTEMPT;
+			                    break;
+			case THREE        : m.value = +WEIGHT_CONTEMPT;
+			                    break;
+			case FIFTY        : m.value = +WEIGHT_CONTEMPT;
+			                    break;
+			case CHECKMATE    : m.value = -WEIGHT_KING;
+			                    break;
+			case ILLEGAL      : m.value = -WEIGHT_ILLEGAL;
+			                    break;
 		}
 		return m;
 	}
@@ -261,11 +268,12 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 //	l.sort(shuffle);
 	for (it = l.begin(); it != l.end(); it++)
 		/*
-		 | According to the transposition table, a previous search from
-		 | this position determined this move to be best.  In this
-		 | search, this move could be good too.  Give this move a high
-		 | score to force it to the front of the list to score it first
-		 | to hopefully cause an earlier cutoff.
+		 | If according to the transposition table, a previous search
+		 | from this position determined this move to be best, then in
+		 | this search, this move could be good too - score this move
+		 | very highly to force it to the front of the list to score it
+		 | first to hopefully cause an earlier cutoff.  Otherwise, score
+		 | this move according to the history heuristic.
 		 */
 		it->value = *it == m ? WEIGHT_KING : history_ptr->probe(whose, *it);
 	l.sort(descend);
