@@ -110,6 +110,18 @@ void table::store(bitboard_t hash, int depth, int type, move_t move)
 }
 
 /*----------------------------------------------------------------------------*\
+ |			      table::print_stats()			      |
+\*----------------------------------------------------------------------------*/
+#if DEBUG
+void table::print_stats() const
+{
+	int semi_hit_percent = (int) (semi_hits * 100 / probes);
+	int hit_percent = (int) (hits * 100 / probes);
+	printf("telluser xpos table stats\nsemi hits: %d%\nhits: %d%\n", semi_hit_percent, hit_percent);
+}
+#endif
+
+/*----------------------------------------------------------------------------*\
  |			       history::history()			      |
 \*----------------------------------------------------------------------------*/
 history::history()
@@ -281,3 +293,14 @@ void pawn::store(bitboard_t hash, int value)
 	data[index].hash = hash;
 	data[index].value = value;
 }
+
+/*----------------------------------------------------------------------------*\
+ |			      pawn::print_stats()			      |
+\*----------------------------------------------------------------------------*/
+#if DEBUG
+void pawn::print_stats() const
+{
+	int hit_percent = (int) (hits * 100 / probes);
+	printf("telluser pawn table stats\nhits: %d%\n", hit_percent);
+}
+#endif

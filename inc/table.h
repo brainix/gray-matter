@@ -38,6 +38,9 @@ public:
 	void clear();
 	bool probe(bitboard_t hash, int depth, int type, move_t *move_ptr);
 	void store(bitboard_t hash, int depth, int type, move_t move);
+#if DEBUG
+	void print_stats() const;
+#endif
 private:
 	uint64_t slots;     // The number of slots.
 	xpos_slot_t *data;  // The slots themselves.
@@ -76,6 +79,9 @@ public:
 	void clear();
 	bool probe(bitboard_t hash, int *value_ptr);
 	void store(bitboard_t hash, int value);
+#if DEBUG
+	void print_stats() const;
+#endif
 private:
 	uint64_t slots;    // The number of slots.
 	pawn_slot_t *data; // The slots themselves.
