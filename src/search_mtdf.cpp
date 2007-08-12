@@ -94,7 +94,7 @@ void search_mtdf::iterate(int s)
 	 | thinking), our opponent has moved (if we're pondering), or we've
 	 | reached the maximum depth (either way).
 	 */
-	for (depth = 0; depth <= max_depth; depth++)
+	for (depth = 1; depth <= max_depth; depth++)
 	{
 		guess[depth & 1] = mtdf(depth, guess[depth & 1].value);
 		if (timeout_flag && depth_flag || IS_NULL_MOVE(guess[depth & 1]))
