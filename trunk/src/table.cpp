@@ -110,18 +110,6 @@ void table::store(bitboard_t hash, int depth, int type, move_t move)
 }
 
 /*----------------------------------------------------------------------------*\
- |			      table::print_stats()			      |
-\*----------------------------------------------------------------------------*/
-#if DEBUG
-void table::print_stats() const
-{
-	int semi_hit_percent = (int) (semi_hits * 100 / probes);
-	int hit_percent = (int) (hits * 100 / probes);
-	printf("telluser semi hits: %d hits: %d\n", semi_hit_percent, hit_percent);
-}
-#endif
-
-/*----------------------------------------------------------------------------*\
  |			       history::history()			      |
 \*----------------------------------------------------------------------------*/
 history::history()
