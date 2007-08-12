@@ -40,9 +40,6 @@ table::table(int mb)
 	{
 	}
 	clear();
-#if DEBUG
-	probes = semi_hits = hits = 0;
-#endif
 }
 
 /*----------------------------------------------------------------------------*\
@@ -82,11 +79,6 @@ bool table::probe(bitboard_t hash, int depth, int type, move_t *move_ptr)
 	uint64_t index = hash % slots;
 	bool semi_found = data[index].hash == hash;
 	bool found = semi_found && data[index].depth >= depth && (data[index].type == EXACT || data[index].type == type);
-#if DEBUG
-	probes++;
-	semi_hits += semi_found;
-	hits += found;
-#endif
 	if (!semi_found)
 	{
 		SET_NULL_MOVE(*move_ptr);
@@ -213,9 +205,6 @@ pawn::pawn(int mb)
 	{
 	}
 	clear();
-#if DEBUG
-	probes = hits = 0;
-#endif
 }
 
 /*----------------------------------------------------------------------------*\
@@ -258,10 +247,6 @@ bool pawn::probe(bitboard_t hash, int *value_ptr)
 
 	uint64_t index = hash % slots;
 	bool found = data[index].hash == hash;
-#if DEBUG
-	probes++;
-	hits += found;
-#endif
 	*value_ptr = found ? data[index].value : 0;
 	return found;
 }
@@ -281,14 +266,3 @@ void pawn::store(bitboard_t hash, int value)
 	data[index].hash = hash;
 	data[index].value = value;
 }
-
-/*----------------------------------------------------------------------------*\
- |			      pawn::print_stats()			      |
-\*----------------------------------------------------------------------------*/
-#if DEBUG
-void pawn::print_stats() const
-{
-	int hit_percent = (int) (hits * 100 / probes);
-	printf("telluser hits: %d\n", hit_percent);
-}
-#endif
