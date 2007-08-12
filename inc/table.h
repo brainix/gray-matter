@@ -40,7 +40,7 @@ public:
 	void store(bitboard_t hash, int depth, int type, move_t move);
 private:
 	uint64_t slots;     // The number of slots.
-	xpos_slot_t *data;  // The slots themselves.
+	xpos_slot_t **data;  // The slots themselves.
 };
 
 /*----------------------------------------------------------------------------*\

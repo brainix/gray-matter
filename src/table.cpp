@@ -32,9 +32,11 @@ table::table(int mb)
 
 	try
 	{
-		if ((slots = mb * MB / sizeof(xpos_slot_t)) == 0)
+		if ((slots = mb * MB / POLICIES / sizeof(xpos_slot_t)) == 0)
 			throw;
-		data = new xpos_slot_t[slots];
+		data = new xpos_slot_t*[POLICIES];
+		for (int policy = DEEP; policy <= FRESH; policy++)
+			data[policy] = new xpos_slot_t[slots];
 	}
 	catch (...)
 	{
@@ -50,6 +52,8 @@ table::~table()
 
 /* Destructor. */
 
+	for (int policy = DEEP; policy <= FRESH; policy++)
+		delete[] data[policy];
 	delete[] data;
 }
 
@@ -61,14 +65,15 @@ void table::clear()
 
 /* Clear the transposition table. */
 
-	for (uint64_t index = 0; index < slots; index++)
-	{
-		data[index].hash = 0;
-		data[index].depth = 0;
-		data[index].type = USELESS;
-		SET_NULL_MOVE(data[index].move);
-		data[index].move.value = 0;
-	}
+	for (int policy = DEEP; policy <= FRESH; policy++)
+		for (uint64_t index = 0; index < slots; index++)
+		{
+			data[policy][index].hash = 0;
+			data[policy][index].depth = 0;
+			data[policy][index].type = USELESS;
+			SET_NULL_MOVE(data[policy][index].move);
+			data[policy][index].move.value = 0;
+		}
 }
 
 /*----------------------------------------------------------------------------*\
@@ -77,16 +82,15 @@ void table::clear()
 bool table::probe(bitboard_t hash, int depth, int type, move_t *move_ptr)
 {
 	uint64_t index = hash % slots;
-	bool semi_found = data[index].hash == hash;
-	bool found = semi_found && data[index].depth >= depth && (data[index].type == EXACT || data[index].type == type);
-	if (!semi_found)
-	{
-		SET_NULL_MOVE(*move_ptr);
-		move_ptr->value = 0;
-		return false;
-	}
-	*move_ptr = data[index].move;
-	return found;
+	for (int policy = DEEP; policy <= FRESH; policy++)
+		if (data[policy][index].hash == hash)
+		{
+			*move_ptr = data[policy][index].move;
+			return data[policy][index].depth >= depth && (data[policy][index].type == EXACT || data[policy][index].type == type);
+		}
+	SET_NULL_MOVE(*move_ptr);
+	move_ptr->value = 0;
+	return false;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -95,10 +99,14 @@ bool table::probe(bitboard_t hash, int depth, int type, move_t *move_ptr)
 void table::store(bitboard_t hash, int depth, int type, move_t move)
 {
 	uint64_t index = hash % slots;
-	data[index].hash = hash;
-	data[index].depth = depth;
-	data[index].type = type;
-	data[index].move = move;
+	for (int policy = DEEP; policy <= FRESH; policy++)
+		if (depth >= data[policy][index].depth || policy == FRESH)
+		{
+			data[policy][index].hash = hash;
+			data[policy][index].depth = depth;
+			data[policy][index].type = type;
+			data[policy][index].move = move;
+		}
 }
 
 /*----------------------------------------------------------------------------*\

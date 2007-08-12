@@ -177,6 +177,11 @@
 #define BACK		1
 #define POSITIONS	2
 
+/* Transposition table entry replacement policies: */
+#define DEEP		0
+#define FRESH		1
+#define POLICIES	2
+
 /* Transposition table entry types: */
 #define USELESS		0 // Useless.
 #define UPPER		1 // Upper bound.
