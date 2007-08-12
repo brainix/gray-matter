@@ -93,9 +93,6 @@ public:
 	virtual bool get_whose() const;
 	virtual bitboard_t get_hash() const;
 	virtual int get_status(bool mate_test);
-#if DEBUG
-	virtual void print_stats() const = 0;
-#endif
 	virtual int evaluate() const = 0;
 	virtual bool check() const;
 	virtual bool zugzwang() const;

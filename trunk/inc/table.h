@@ -41,11 +41,6 @@ public:
 private:
 	uint64_t slots;     // The number of slots.
 	xpos_slot_t *data;  // The slots themselves.
-#if DEBUG
-	uint64_t probes;    // The total probe count.
-	uint64_t semi_hits; // The semi-successful probe count.
-	uint64_t hits;      // The successful probe count.
-#endif
 };
 
 /*----------------------------------------------------------------------------*\
@@ -76,16 +71,9 @@ public:
 	void clear();
 	bool probe(bitboard_t hash, int *value_ptr);
 	void store(bitboard_t hash, int value);
-#if DEBUG
-	void print_stats() const;
-#endif
 private:
 	uint64_t slots;    // The number of slots.
 	pawn_slot_t *data; // The slots themselves.
-#if DEBUG
-	uint64_t probes;   // The total probe count.
-	uint64_t hits;     // The successful probe count.
-#endif
 };
 
 #endif
