@@ -137,7 +137,7 @@ void search_mtdf::iterate(int s)
 	{
 		xboard_ptr->print_result(m);
 #if DEBUG
-		table_ptr->print_stats();
+		board_ptr->print_stats();
 #endif
 	}
 }

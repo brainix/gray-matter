@@ -121,6 +121,15 @@ board_heuristic& board_heuristic::operator=(const board_heuristic& that)
 }
 
 /*----------------------------------------------------------------------------*\
+ |				 print_stats()				      |
+\*----------------------------------------------------------------------------*/
+#if DEBUG
+void board_heuristic::print_stats() const
+{
+	pawn_table.print_stats();
+}
+#endif
+/*----------------------------------------------------------------------------*\
  |				   evaluate()				      |
 \*----------------------------------------------------------------------------*/
 int board_heuristic::evaluate() const

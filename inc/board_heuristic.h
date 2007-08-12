@@ -42,6 +42,9 @@ public:
 	board_heuristic();
 	~board_heuristic();
 	board_heuristic& operator=(const board_heuristic& that);
+#if DEBUG
+	void print_stats() const;
+#endif
 	int evaluate() const;
 private:
 	int evaluate_material() const;
