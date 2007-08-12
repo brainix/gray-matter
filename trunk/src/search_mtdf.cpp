@@ -74,15 +74,14 @@ void search_mtdf::iterate(int s)
 	board_ptr->lock();
 
 	/*
-	 | Note the start time.  If we're to think, set the alarm.  Initialize
-	 | the number of nodes searched.
+	 | Note the start time.  If we're to think, set the alarm.  (If we're to
+	 | ponder, there's no need to set the alarm.  We ponder indefinitely
+	 | until the opponent has moved.)  Initialize the number of nodes
+	 | searched.
 	 */
 	clock_ptr->note_time();
 	if (s == THINKING)
-	{
 		clock_ptr->set_alarm(board_ptr->get_whose());
-		history_ptr->clear();
-	}
 	nodes = 0;
 	for (depth = 0; depth <= 1; depth++)
 	{
@@ -95,7 +94,7 @@ void search_mtdf::iterate(int s)
 	 | thinking), our opponent has moved (if we're pondering), or we've
 	 | reached the maximum depth (either way).
 	 */
-	for (depth = 1; depth <= max_depth; depth++)
+	for (depth = 0; depth <= max_depth; depth++)
 	{
 		guess[depth & 1] = mtdf(depth, guess[depth & 1].value);
 		if (timeout_flag && depth_flag || IS_NULL_MOVE(guess[depth & 1]))
@@ -132,9 +131,11 @@ void search_mtdf::iterate(int s)
 	 | of our favorite move.
 	 */
 	if (s == THINKING)
+	{
 		clock_ptr->cancel_alarm();
-	if (s == THINKING && search_status != QUITTING)
-		xboard_ptr->print_result(m);
+		if (search_status != QUITTING)
+			xboard_ptr->print_result(m);
+	}
 }
 
 /*----------------------------------------------------------------------------*\

@@ -178,8 +178,8 @@
 #define POSITIONS	2
 
 /* Transposition table entry replacement policies: */
-#define DEEP		0
-#define FRESH		1
+#define DEEP		0 // Replace if same depth or deeper.
+#define FRESH		1 // Replace always.
 #define POLICIES	2
 
 /* Transposition table entry types: */
