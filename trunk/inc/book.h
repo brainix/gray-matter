@@ -43,10 +43,11 @@ class table;
 class book
 {
 public:
-	book(table *t, char *n);
+	book(table *t, char *n, int m);
 	void read();
 private:
 	char name[32];
+	int moves;
 	ifstream file;
 
 	board_base *board_ptr; // Board representation object.

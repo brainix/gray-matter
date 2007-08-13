@@ -42,20 +42,28 @@ int main(int argc, char **argv);
 \*----------------------------------------------------------------------------*/
 int main(int argc, char **argv)
 {
-	char file_name[32] = FILE_NAME;
+	char book_name[32] = BOOK_NAME;
+	int book_moves = BOOK_MOVES;
 	char search_engine[32] = SEARCH_ENGINE;
 	int xpos_table_mb = XPOS_TABLE_MB;
 	int overhead = OVERHEAD;
 
 	/* Parse the command-line arguments. */
-	for (int c; (c = getopt(argc, argv, "b:s:x:o:")) != -1;)
+	for (int c; (c = getopt(argc, argv, "n:m:e:x:o:")) != -1;)
 		switch (c)
 		{
-			case 'b':
+			case 'n':
 				/* Specifying the file name of the opening book. */
-				strncpy(file_name, optarg, sizeof(file_name));
+				strncpy(book_name, optarg, sizeof(book_name));
 				break;
-			case 's':
+			case 'm':
+				/* */
+				if ((book_moves = atoi(optarg)) < 0)
+				{
+					printf("number of book moves must be >= 0\n");
+					exit(EXIT_FAILURE);
+				}
+			case 'e':
 				/* Specifying which search engine to use. */
 				strncpy(search_engine, optarg, sizeof(search_engine));
 				if (strcmp(search_engine, "MTD(f)"))
@@ -97,11 +105,11 @@ int main(int argc, char **argv)
 	srand(time(NULL));
 
 	/* Instantiate the classes. */
-	table t(xpos_table_mb);  // Transposition table object.
-	history h;               // History table object.
-	chess_clock c(overhead); // Chess clock object.
-	xboard x;                // Chess Engine Communication Protocol object.
-	book o(&t, file_name);   // Opening book object.
+	table t(xpos_table_mb);            // Transposition table object.
+	history h;                         // History table object.
+	chess_clock c(overhead);           // Chess clock object.
+	xboard x;                          // Chess Engine Communication Protocol object.
+	book o(&t, book_name, book_moves); // Opening book object.
 
 	/*
 	 | Based on the -s command-line option, choose the move search engine

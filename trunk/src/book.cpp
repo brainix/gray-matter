@@ -25,11 +25,12 @@
 /*----------------------------------------------------------------------------*\
  |				     book()				      |
 \*----------------------------------------------------------------------------*/
-book::book(table *t, char *n)
+book::book(table *t, char *n, int m)
 {
 	board_ptr = new board_heuristic();
 	table_ptr = t;
 	strncpy(name, n, sizeof(name));
+	moves = m;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -38,6 +39,8 @@ book::book(table *t, char *n)
 void book::read()
 {
 	table_ptr->clear();
+	if (moves == 0)
+		return;
 
 	file.open(name);
 	if (file.fail())
@@ -46,6 +49,5 @@ void book::read()
 		file.close();
 		return;
 	}
-
 	file.close();
 }
