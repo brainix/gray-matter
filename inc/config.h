@@ -37,7 +37,8 @@
 /*----------------------------------------------------------------------------*\
 \*----------------------------------------------------------------------------*/
 
-#define FILE_NAME	"book.pgn" // The opening book file name.
+#define BOOK_NAME	"book.pgn" // The opening book file name.
+#define BOOK_MOVES	16         //
 #define SEARCH_ENGINE	"MTD(f)"   // The default move search engine.
 
 /* All of the values in this section must be >= 1. */
@@ -88,6 +89,10 @@
  | The following preprocessor directives are used to ensure that the user has
  | chosen sane values for the preceeding settings.
  */
+
+#if BOOK_MOVES < 0
+#error "In inc/config.h, BOOK_MOVES must be >= 0."
+#endif
 
 #if XPOS_TABLE_MB < 1
 #error "In inc/config.h, XPOS_TABLE_MB must be >= 1."
