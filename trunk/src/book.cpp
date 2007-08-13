@@ -45,7 +45,7 @@ void book::read()
 	file.open(name);
 	if (file.fail())
 	{
-		printf("couldn't find open book: %s\n", name);
+		cout << "couldn't find open book: " << name << endl;
 		file.close();
 		return;
 	}
