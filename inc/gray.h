@@ -39,6 +39,10 @@
 #include <time.h>
 #include <unistd.h>
 
+/* C++ stuff: */
+#include <fstream>
+#include <iostream>
+
 /* Convenience macros: */
 #define LESSER(j, k)	((j) < (k) ? (j) : (k))
 #define GREATER(j, k)	((j) > (k) ? (j) : (k))

@@ -19,12 +19,10 @@
  | this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* C stuff: */
-#include "gray.h"
-
 /* Default Gray Matter stuff: */
 #include "config.h"
 #include "types.h"
+#include "gray.h"
 
 /* Extra Gray Matter stuff: */
 #include "table.h"
@@ -60,7 +58,7 @@ int main(int argc, char **argv)
 				/* */
 				if ((book_moves = atoi(optarg)) < 0)
 				{
-					printf("number of book moves must be >= 0\n");
+					cout << "number of book moves must be >= 0" << endl;
 					exit(EXIT_FAILURE);
 				}
 			case 'e':
@@ -68,7 +66,7 @@ int main(int argc, char **argv)
 				strncpy(search_engine, optarg, sizeof(search_engine));
 				if (strcmp(search_engine, "MTD(f)"))
 				{
-					printf("unknown search engine: %s\n", optarg);
+					cout << "unknown search engine: " << optarg << endl;
 					exit(EXIT_FAILURE);
 				}
 				break;
@@ -76,7 +74,7 @@ int main(int argc, char **argv)
 				/* Specifying the size of the transposition table. */
 				if ((xpos_table_mb = atoi(optarg)) < 1)
 				{
-					printf("transposition table must be >= 1 MB\n");
+					cout << "transposition table must be >= 1 MB" << endl;
 					exit(EXIT_FAILURE);
 				}
 				break;
@@ -84,20 +82,20 @@ int main(int argc, char **argv)
 				/* Specifying the move search overhead. */
 				if ((overhead = atoi(optarg)) < 1)
 				{
-					printf("move search overhead must be >= 1 centisecond\n");
+					cout << "move search overhead must be >= 1 centisecond" << endl;
 					exit(EXIT_FAILURE);
 				}
 				break;
 			default:
 				/* Specifying the user doesn't know how to read. */
-				printf("unknown option: -%c\n", optopt);
+				cout << "unknown option: -", optopt << endl;
 				exit(EXIT_FAILURE);
 				break;
 		}
 	if (optind < argc)
 	{
 		for (int index = optind; index < argc; index++)
-			printf("unknown argument: %s\n", argv[index]);
+			cout << "unknown argument: " << argv[index] << endl;
 		exit(EXIT_FAILURE);
 	}
 
