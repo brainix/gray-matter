@@ -51,6 +51,8 @@ using namespace std;
 			 (c) == (int) '+' || (c) == (int) "#" || \
 			 (c) == (int) '=' || (c) == (int) ':' || \
 			 (c) == (int) '-')
+#define GAME_OVER(s)	(!strcmp((s), "1-0")     || !strcmp((s), "0-1") || \
+			 !strcmp((s), "1/2-1/2") || !strcmp((s), "*"))
 
 /* Forward declarations: */
 class board_base;
