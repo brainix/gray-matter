@@ -26,6 +26,7 @@ using namespace std;
 
 /* C++ stuff: */
 #include <fstream>
+#include <string>
 
 /* Default Gray Matter stuff: */
 #include "config.h"
@@ -36,7 +37,7 @@ using namespace std;
 #include "board_heuristic.h"
 #include "table.h"
 
-#define MAX_TOK_LEN	256
+#define MAX_TOKEN_LENGTH	256
 
 /* Token types: */
 #define TOKEN_UNKNOWN		0 // Unknown.
@@ -72,13 +73,13 @@ private:
 	table *table_ptr;      // Transposition table object.
 
 	void parse();
-	int tokenize(char *buffer);
-	bool tokenize_space(char *buffer);
-	bool tokenize_string(char *buffer);
-	bool tokenize_integer(char *buffer);
-	bool tokenize_punctuation(char *buffer);
-	bool tokenize_glyph(char *buffer);
-	bool tokenize_symbol(char *buffer);
+	int tokenize(string& token);
+	bool tokenize_space(string& token);
+	bool tokenize_string(string& token);
+	bool tokenize_integer(string& token);
+	bool tokenize_punctuation(string& token);
+	bool tokenize_glyph(string& token);
+	bool tokenize_symbol(string& token);
 };
 
 #endif

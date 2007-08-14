@@ -42,6 +42,7 @@
 /* C++ stuff: */
 #include <fstream>
 #include <iostream>
+#include <string>
 
 /* Convenience macros: */
 #define LESSER(j, k)	((j) < (k) ? (j) : (k))
