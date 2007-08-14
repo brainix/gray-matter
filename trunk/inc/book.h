@@ -46,8 +46,8 @@ using namespace std;
 #define TOK_NAG		4 // Numeric Annotation Glyph (NAG).
 #define TOK_SYM		5 // Symbol.
 
-#define IS_SYM(c)	(isalnum((c)) || (c) == '_' || (c) == '+' || \\
-			 (c) == "#"   || (c) == '=' || (c) == ':' || \\
+#define IS_SYM(c)	(isalnum((c)) || (c) == '_' || (c) == '+' || \
+			 (c) == "#"   || (c) == '=' || (c) == ':' || \
 			 (c) == '-')
 
 /* Forward declarations: */
