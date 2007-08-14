@@ -69,7 +69,7 @@ void book::parse()
 /*----------------------------------------------------------------------------*\
  |				   tokenize()				      |
 \*----------------------------------------------------------------------------*/
-int book::tokenize(char *buffer) const
+int book::tokenize(char *buffer)
 {
 	if ((buffer[0] = file.get()) == EOF)
 	{
@@ -94,7 +94,7 @@ int book::tokenize(char *buffer) const
 /*----------------------------------------------------------------------------*\
  |				tokenize_space()			      |
 \*----------------------------------------------------------------------------*/
-bool book::tokenize_space(char *buffer) const
+bool book::tokenize_space(char *buffer)
 {
 	int index = 1;
 	if (!isspace(buffer[index - 1]))
@@ -108,7 +108,7 @@ bool book::tokenize_space(char *buffer) const
 /*----------------------------------------------------------------------------*\
  |			       tokenize_string()			      |
 \*----------------------------------------------------------------------------*/
-bool book::tokenize_string(char *buffer) const
+bool book::tokenize_string(char *buffer)
 {
 	int index = 1;
 	if (buffer[index - 1] != '\"')
@@ -128,7 +128,7 @@ bool book::tokenize_string(char *buffer) const
 /*----------------------------------------------------------------------------*\
  |			       tokenize_integer()			      |
 \*----------------------------------------------------------------------------*/
-bool book::tokenize_integer(char *buffer) const
+bool book::tokenize_integer(char *buffer)
 {
 	int index = 1;
 	if (!isdigit(buffer[index - 1]))
@@ -142,7 +142,7 @@ bool book::tokenize_integer(char *buffer) const
 /*----------------------------------------------------------------------------*\
  |			     tokenize_punctuation()			      |
 \*----------------------------------------------------------------------------*/
-bool book::tokenize_punctuation(char *buffer) const
+bool book::tokenize_punctuation(char *buffer)
 {
 	if (buffer[0] != '.' && buffer[0] != '*' &&
 	    buffer[0] != '[' && buffer[0] != ']' &&
@@ -155,7 +155,7 @@ bool book::tokenize_punctuation(char *buffer) const
 /*----------------------------------------------------------------------------*\
  |				tokenize_glyph()			      |
 \*----------------------------------------------------------------------------*/
-bool book::tokenize_glyph(char *buffer) const
+bool book::tokenize_glyph(char *buffer)
 {
 	int index = 1;
 	if (buffer[index - 1] != '$')
@@ -169,7 +169,7 @@ bool book::tokenize_glyph(char *buffer) const
 /*----------------------------------------------------------------------------*\
  |			       tokenize_symbol()			      |
 \*----------------------------------------------------------------------------*/
-bool book::tokenize_symbol(char *buffer) const
+bool book::tokenize_symbol(char *buffer)
 {
 	int index = 1;
 	if (!isalnum(buffer[index - 1]))

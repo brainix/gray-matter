@@ -70,13 +70,13 @@ private:
 	table *table_ptr;      // Transposition table object.
 
 	void parse();
-	int tokenize(char *buffer) const;
-	bool tokenize_space(char *buffer) const;
-	bool tokenize_string(char *buffer) const;
-	bool tokenize_integer(char *buffer) const;
-	bool tokenize_punctuation(char *buffer) const;
-	bool tokenize_glyph(char *buffer) const;
-	bool tokenize_symbol(char *buffer) const;
+	int tokenize(char *buffer);
+	bool tokenize_space(char *buffer);
+	bool tokenize_string(char *buffer);
+	bool tokenize_integer(char *buffer);
+	bool tokenize_punctuation(char *buffer);
+	bool tokenize_glyph(char *buffer);
+	bool tokenize_symbol(char *buffer);
 };
 
 #endif
