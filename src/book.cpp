@@ -69,30 +69,50 @@ void book::parse()
 /*----------------------------------------------------------------------------*\
  |				   tokenize()				      |
 \*----------------------------------------------------------------------------*/
-bool book::tokenize(char *buffer)
+void book::tokenize(char *buffer)
 {
 	int index = 0;
 
 	if ((buffer[index++] = cin.get()) == EOF)
-		goto end_of_file;
+	{
+		buffer[index - 1] = '\0';
+		return;
+	}
 
 	if (buffer[index - 1] == '\"')
 		while (true)
 			if ((buffer[index++] = cin.get()) == EOF)
-				goto end_of_file;
+			{
+				buffer[index - 1] = '\0';
+				return;
+			}
 			else if (buffer[index - 1] == '\"')
-				goto end_of_token;
+			{
+				buffer[index++] = '\0';
+				return;
+			}
 
 	if (buffer[index - 1] == '.' || buffer[index - 1] == '*' ||
 	    buffer[index - 1] == '[' || buffer[index - 1] == ']' ||
 	    buffer[index - 1] == '<' || buffer[index - 1] == '>')
-		goto end_of_token;
+	{
+		buffer[index++] = '\0';
+		return;
+	}
 
-end_of_token:
-	buffer[index++] = '\0';
-	return true;
+	if (buffer[index - 1] == '$')
+	{
+		for (int c; isdigit(c = cin.peek()); cin.ignore(1))
+			buffer[index++] = c;
+		buffer[index++] = '\0';
+		return;
+	}
 
-end_of_file:
-	buffer[index - 1] = '\0';
-	return false;
+	if (isalnum(buffer[index - 1]))
+	{
+		for (int c; IS_SYMBOL_CHAR(c = cin.peek()); cin.ignore(1))
+			buffer[index++] = c;
+		buffer[index++] = '\0';
+		return;
+	}
 }
