@@ -38,10 +38,12 @@ book::book(table *t, char *n, int m)
 \*----------------------------------------------------------------------------*/
 void book::read()
 {
+	/* Clear the transposition table. */
 	table_ptr->clear();
 	if (moves == 0)
 		return;
 
+	/* Open the file. */
 	file.open(name);
 	if (file.fail())
 	{
@@ -49,5 +51,48 @@ void book::read()
 		file.close();
 		return;
 	}
+
+	/* Parse the input. */
+	parse();
+
+	/* Close the file. */
 	file.close();
+}
+
+/*----------------------------------------------------------------------------*\
+ |				    parse()				      |
+\*----------------------------------------------------------------------------*/
+void book::parse()
+{
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   tokenize()				      |
+\*----------------------------------------------------------------------------*/
+bool book::tokenize(char *buffer)
+{
+	int index = 0;
+
+	if ((buffer[index++] = cin.get()) == EOF)
+		goto end_of_file;
+
+	if (buffer[index - 1] == '\"')
+		while (true)
+			if ((buffer[index++] = cin.get()) == EOF)
+				goto end_of_file;
+			else if (buffer[index - 1] == '\"')
+				goto end_of_token;
+
+	if (buffer[index - 1] == '.' || buffer[index - 1] == '*' ||
+	    buffer[index - 1] == '[' || buffer[index - 1] == ']' ||
+	    buffer[index - 1] == '<' || buffer[index - 1] == '>')
+		goto end_of_token;
+
+end_of_token:
+	buffer[index++] = '\0';
+	return true;
+
+end_of_file:
+	buffer[index - 1] = '\0';
+	return false;
 }
