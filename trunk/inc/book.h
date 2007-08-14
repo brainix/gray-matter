@@ -38,6 +38,10 @@ using namespace std;
 
 #define MAX_TOKEN_LENGTH	256
 
+#define IS_SYMBOL_CHAR(c)	(isalnum((c)) || (c) == '_' || (c) == '+' || \\
+				 (c) == "#"   || (c) == '=' || (c) == ':' || \\
+				 (c) == '-')
+
 /* Forward declarations: */
 class board_base;
 class table;
@@ -56,7 +60,7 @@ private:
 	table *table_ptr;      // Transposition table object.
 
 	void parse();
-	bool tokenize(char *buffer);
+	void tokenize(char *buffer);
 };
 
 #endif
