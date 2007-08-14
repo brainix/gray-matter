@@ -69,68 +69,113 @@ void book::parse()
 /*----------------------------------------------------------------------------*\
  |				   tokenize()				      |
 \*----------------------------------------------------------------------------*/
-int book::tokenize(char *buffer)
+int book::tokenize(char *buffer) const
 {
-	int index = 0;
-
-	if ((buffer[index++] = file.get()) == EOF)
+	if ((buffer[0] = file.get()) == EOF)
 	{
-		buffer[index - 1] = '\0';
-		return UNKNOWN;
+		buffer[0] = '\0';
+		return TOKEN_UNKNOWN;
 	}
+	if (tokenize_space(buffer))
+		return TOKEN_SPACE;
+	if (tokenize_string(buffer))
+		return TOKEN_STRING;
+	if (tokenize_integer(buffer))
+		return TOKEN_INTEGER;
+	if (tokenize_punctuation(buffer))
+		return TOKEN_PUNCTUATION;
+	if (tokenize_glyph(buffer))
+		return TOKEN_GLYPH;
+	if (tokenize_symbol(buffer))
+		return TOKEN_SYMBOL;
+	return TOKEN_UNKNOWN;
+}
 
-	if (isspace(buffer[index - 1]))
-	{
-		for (int c; isspace(c = file.peek()); file.ignore())
-			buffer[index++] = c;
-		buffer[index++] = '\0';
-		return SPACE;
-	}
+/*----------------------------------------------------------------------------*\
+ |				tokenize_space()			      |
+\*----------------------------------------------------------------------------*/
+bool book::tokenize_space(char *buffer) const
+{
+	int index = 1;
+	if (!isspace(buffer[index - 1]))
+		return false;
+	for (int c; isspace(c = file.peek()); file.ignore())
+		buffer[index++] = c;
+	buffer[index++] = '\0';
+	return true;
+}
 
-	if (buffer[index - 1] == '\"')
-		while (true)
-			if ((buffer[index++] = file.get()) == EOF)
-			{
-				buffer[index - 1] = '\0';
-				return UNKNOWN;
-			}
-			else if (buffer[index - 1] == '\"')
-			{
-				buffer[index++] = '\0';
-				return TOK_STR;
-			}
+/*----------------------------------------------------------------------------*\
+ |			       tokenize_string()			      |
+\*----------------------------------------------------------------------------*/
+bool book::tokenize_string(char *buffer) const
+{
+	int index = 1;
+	if (buffer[index - 1] != '\"')
+		return false;
+	while (true)
+		if ((buffer[index++] = file.get()) == EOF)
+		{
+			buffer[index - 1] = '\0';
+			return false;
+		}
+		else if (buffer[index - 1] == '\"')
+			break;
+	buffer[index++] = '\0';
+	return true;
+}
 
-	if (isdigit(buffer[index - 1]))
-	{
-		for (int c; isdigit(c = file.peek()); file.ignore())
-			buffer[index++] = c;
-		buffer[index++] = '\0';
-		return TOK_INT;
-	}
+/*----------------------------------------------------------------------------*\
+ |			       tokenize_integer()			      |
+\*----------------------------------------------------------------------------*/
+bool book::tokenize_integer(char *buffer) const
+{
+	int index = 1;
+	if (!isdigit(buffer[index - 1]))
+		return false;
+	for (int c; isdigit(c = file.peek()); file.ignore())
+		buffer[index++] = c;
+	buffer[index++] = '\0';
+	return true;
+}
 
-	if (buffer[index - 1] == '.' || buffer[index - 1] == '*' ||
-	    buffer[index - 1] == '[' || buffer[index - 1] == ']' ||
-	    buffer[index - 1] == '<' || buffer[index - 1] == '>')
-	{
-		buffer[index++] = '\0';
-		return TOK_PUNC;
-	}
+/*----------------------------------------------------------------------------*\
+ |			     tokenize_punctuation()			      |
+\*----------------------------------------------------------------------------*/
+bool book::tokenize_punctuation(char *buffer) const
+{
+	if (buffer[0] != '.' && buffer[0] != '*' &&
+	    buffer[0] != '[' && buffer[0] != ']' &&
+	    buffer[0] != '<' && buffer[0] != '>')
+		return false;
+	buffer[1] = '\0';
+	return true;
+}
 
-	if (buffer[index - 1] == '$')
-	{
-		for (int c; isdigit(c = file.peek()); file.ignore())
-			buffer[index++] = c;
-		buffer[index++] = '\0';
-		return TOK_NAG;
-	}
+/*----------------------------------------------------------------------------*\
+ |				tokenize_glyph()			      |
+\*----------------------------------------------------------------------------*/
+bool book::tokenize_glyph(char *buffer) const
+{
+	int index = 1;
+	if (buffer[index - 1] != '$')
+		return false;
+	for (int c; isdigit(c = file.peek()); file.ignore())
+		buffer[index++] = c;
+	buffer[index++] = '\0';
+	return true;
+}
 
-	if (isalnum(buffer[index - 1]))
-	{
-		for (int c = file.peek(); IS_SYM(c); file.ignore(), c = file.peek())
-			buffer[index++] = c;
-		buffer[index++] = '\0';
-		return TOK_SYM;
-	}
-
-	return UNKNOWN;
+/*----------------------------------------------------------------------------*\
+ |			       tokenize_symbol()			      |
+\*----------------------------------------------------------------------------*/
+bool book::tokenize_symbol(char *buffer) const
+{
+	int index = 1;
+	if (!isalnum(buffer[index - 1]))
+		return false;
+	for (int c = file.peek(); IS_SYMBOL(c); file.ignore(), c = file.peek())
+		buffer[index++] = c;
+	buffer[index++] = '\0';
+	return true;
 }

@@ -39,15 +39,15 @@ using namespace std;
 #define MAX_TOK_LEN	256
 
 /* Token types: */
-#define UNKNOWN		0 // Unknown.
-#define SPACE		1 // Whitespace.
-#define TOK_STR		2 // String.
-#define TOK_INT		3 // Integer.
-#define TOK_PUNC	4 // Punctuation.
-#define TOK_NAG		5 // Numeric Annotation Glyph (NAG).
-#define TOK_SYM		6 // Symbol.
+#define TOKEN_UNKNOWN		0 // Unknown.
+#define TOKEN_SPACE		1 // Whitespace.
+#define TOKEN_STRING		2 // String.
+#define TOKEN_INTEGER		3 // Integer.
+#define TOKEN_PUNCTUATION	4 // Punctuation.
+#define TOKEN_GLYPH		5 // Numeric Annotation Glyph (NAG).
+#define TOKEN_SYMBOL		6 // Symbol.
 
-#define IS_SYM(c)	(isalnum((c))     || (c) == (int) '_' || \
+#define IS_SYMBOL(c)	(isalnum((c))     || (c) == (int) '_' || \
 			 (c) == (int) '+' || (c) == (int) "#" || \
 			 (c) == (int) '=' || (c) == (int) ':' || \
 			 (c) == (int) '-')
@@ -70,7 +70,13 @@ private:
 	table *table_ptr;      // Transposition table object.
 
 	void parse();
-	int tokenize(char *buffer);
+	int tokenize(char *buffer) const;
+	bool tokenize_space(char *buffer) const;
+	bool tokenize_string(char *buffer) const;
+	bool tokenize_integer(char *buffer) const;
+	bool tokenize_punctuation(char *buffer) const;
+	bool tokenize_glyph(char *buffer) const;
+	bool tokenize_symbol(char *buffer) const;
 };
 
 #endif
