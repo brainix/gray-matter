@@ -46,10 +46,10 @@ using namespace std;
 #define TOK_NAG		4 // Numeric Annotation Glyph (NAG).
 #define TOK_SYM		5 // Symbol.
 
-#define IS_SYM(c)	(isalnum((c))      || (char) (c) == '_' || \
-			 (char) (c) == '+' || (char) (c) == "#" || \
-			 (char) (c) == '=' || (char) (c) == ':' || \
-			 (char) (c) == '-')
+#define IS_SYM(c)	(isalnum((c))     || (c) == (int) '_' || \
+			 (c) == (int) '+' || (c) == (int) "#" || \
+			 (c) == (int) '=' || (c) == (int) ':' || \
+			 (c) == (int) '-')
 
 /* Forward declarations: */
 class board_base;

@@ -94,7 +94,7 @@ int book::tokenize(char *buffer)
 
 	if (isdigit(buffer[index - 1]))
 	{
-		for (int c; isdigit(c = file.peek()); file.ignore(1))
+		for (int c; isdigit(c = file.peek()); file.ignore())
 			buffer[index++] = c;
 		buffer[index++] = '\0';
 		return TOK_INT;
@@ -110,7 +110,7 @@ int book::tokenize(char *buffer)
 
 	if (buffer[index - 1] == '$')
 	{
-		for (int c; isdigit(c = file.peek()); file.ignore(1))
+		for (int c; isdigit(c = file.peek()); file.ignore())
 			buffer[index++] = c;
 		buffer[index++] = '\0';
 		return TOK_NAG;
@@ -118,7 +118,7 @@ int book::tokenize(char *buffer)
 
 	if (isalnum(buffer[index - 1]))
 	{
-		for (int c; IS_SYM(c = file.peek()); file.ignore(1))
+		for (int c = file.peek(); IS_SYM(c); file.ignore(), c = file.peek())
 			buffer[index++] = c;
 		buffer[index++] = '\0';
 		return TOK_SYM;
