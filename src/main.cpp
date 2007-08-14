@@ -88,7 +88,7 @@ int main(int argc, char **argv)
 				break;
 			default:
 				/* Specifying the user doesn't know how to read. */
-				cout << "unknown option: -", optopt << endl;
+				cout << "unknown option: -" << optopt << endl;
 				exit(EXIT_FAILURE);
 				break;
 		}
