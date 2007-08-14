@@ -72,10 +72,7 @@ void book::parse()
 int book::tokenize(char *buffer)
 {
 	if ((buffer[0] = file.get()) == EOF)
-	{
 		buffer[0] = '\0';
-		return TOKEN_UNKNOWN;
-	}
 	if (tokenize_space(buffer))
 		return TOKEN_SPACE;
 	if (tokenize_string(buffer))
