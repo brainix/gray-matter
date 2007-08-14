@@ -36,11 +36,19 @@ using namespace std;
 #include "board_heuristic.h"
 #include "table.h"
 
-#define MAX_TOKEN_LENGTH	256
+#define MAX_TOK_LEN	256
 
-#define IS_SYMBOL_CHAR(c)	(isalnum((c)) || (c) == '_' || (c) == '+' || \\
-				 (c) == "#"   || (c) == '=' || (c) == ':' || \\
-				 (c) == '-')
+/* Token types: */
+#define UNKNOWN		0 // Unknown.
+#define TOK_STR		1 // String.
+#define TOK_INT		2 // Integer.
+#define TOK_PUNC	3 // Punctuation.
+#define TOK_NAG		4 // Numeric Annotation Glyph (NAG).
+#define TOK_SYM		5 // Symbol.
+
+#define IS_SYM(c)	(isalnum((c)) || (c) == '_' || (c) == '+' || \\
+			 (c) == "#"   || (c) == '=' || (c) == ':' || \\
+			 (c) == '-')
 
 /* Forward declarations: */
 class board_base;
@@ -60,7 +68,7 @@ private:
 	table *table_ptr;      // Transposition table object.
 
 	void parse();
-	void tokenize(char *buffer);
+	int tokenize(char *buffer);
 };
 
 #endif

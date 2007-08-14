@@ -69,50 +69,60 @@ void book::parse()
 /*----------------------------------------------------------------------------*\
  |				   tokenize()				      |
 \*----------------------------------------------------------------------------*/
-void book::tokenize(char *buffer)
+int book::tokenize(char *buffer)
 {
 	int index = 0;
 
-	if ((buffer[index++] = cin.get()) == EOF)
+	if ((buffer[index++] = file.get()) == EOF)
 	{
 		buffer[index - 1] = '\0';
-		return;
+		return UNKNOWN;
 	}
 
 	if (buffer[index - 1] == '\"')
 		while (true)
-			if ((buffer[index++] = cin.get()) == EOF)
+			if ((buffer[index++] = file.get()) == EOF)
 			{
 				buffer[index - 1] = '\0';
-				return;
+				return UNKNOWN;
 			}
 			else if (buffer[index - 1] == '\"')
 			{
 				buffer[index++] = '\0';
-				return;
+				return TOK_STR;
 			}
+
+	if (isdigit(buffer[index - 1]))
+	{
+		for (int c; isdigit(c = file.peek()); file.ignore(1))
+			buffer[index++] = c;
+		buffer[index++] = '\0';
+		return TOK_INT;
+	}
 
 	if (buffer[index - 1] == '.' || buffer[index - 1] == '*' ||
 	    buffer[index - 1] == '[' || buffer[index - 1] == ']' ||
 	    buffer[index - 1] == '<' || buffer[index - 1] == '>')
 	{
 		buffer[index++] = '\0';
-		return;
+		return TOK_PUNC;
 	}
 
 	if (buffer[index - 1] == '$')
 	{
-		for (int c; isdigit(c = cin.peek()); cin.ignore(1))
+		for (int c; isdigit(c = file.peek()); file.ignore(1))
 			buffer[index++] = c;
 		buffer[index++] = '\0';
-		return;
+		return TOK_NAG;
 	}
 
 	if (isalnum(buffer[index - 1]))
 	{
-		for (int c; IS_SYMBOL_CHAR(c = cin.peek()); cin.ignore(1))
+		for (int c; IS_SYM(c = file.peek()); file.ignore(1))
 			buffer[index++] = c;
 		buffer[index++] = '\0';
-		return;
+		return TOK_SYM;
 	}
+
+	return UNKNOWN;
 }
