@@ -36,6 +36,8 @@ using namespace std;
 #include "board_heuristic.h"
 #include "table.h"
 
+#define MAX_TOKEN_LENGTH	256
+
 /* Forward declarations: */
 class board_base;
 class table;
@@ -52,6 +54,9 @@ private:
 
 	board_base *board_ptr; // Board representation object.
 	table *table_ptr;      // Transposition table object.
+
+	void parse();
+	bool tokenize(char *buffer);
 };
 
 #endif
