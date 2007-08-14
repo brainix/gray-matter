@@ -79,6 +79,14 @@ int book::tokenize(char *buffer)
 		return UNKNOWN;
 	}
 
+	if (isspace(buffer[index - 1]))
+	{
+		for (int c; isspace(c = file.peek()); file.ignore())
+			buffer[index++] = c;
+		buffer[index++] = '\0';
+		return SPACE;
+	}
+
 	if (buffer[index - 1] == '\"')
 		while (true)
 			if ((buffer[index++] = file.get()) == EOF)

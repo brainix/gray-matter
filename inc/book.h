@@ -40,11 +40,12 @@ using namespace std;
 
 /* Token types: */
 #define UNKNOWN		0 // Unknown.
-#define TOK_STR		1 // String.
-#define TOK_INT		2 // Integer.
-#define TOK_PUNC	3 // Punctuation.
-#define TOK_NAG		4 // Numeric Annotation Glyph (NAG).
-#define TOK_SYM		5 // Symbol.
+#define SPACE		1 // Whitespace.
+#define TOK_STR		2 // String.
+#define TOK_INT		3 // Integer.
+#define TOK_PUNC	4 // Punctuation.
+#define TOK_NAG		5 // Numeric Annotation Glyph (NAG).
+#define TOK_SYM		6 // Symbol.
 
 #define IS_SYM(c)	(isalnum((c))     || (c) == (int) '_' || \
 			 (c) == (int) '+' || (c) == (int) "#" || \
