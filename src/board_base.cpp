@@ -267,6 +267,14 @@ int board_base::get_status(bool mate_test)
 }
 
 /*----------------------------------------------------------------------------*\
+ |				get_num_moves()				      |
+\*----------------------------------------------------------------------------*/
+int board_base::get_num_moves() const
+{
+	return states.size();
+}
+
+/*----------------------------------------------------------------------------*\
  |				    check()				      |
 \*----------------------------------------------------------------------------*/
 bool board_base::check() const
@@ -537,26 +545,32 @@ bool board_base::unmake()
 }
 
 /*----------------------------------------------------------------------------*\
- |				     make()				      |
+ |				 san_to_coord()				      |
 \*----------------------------------------------------------------------------*/
-bool board_base::make(string& san)
+move_t board_base::san_to_coord(string& san)
 {
 
-/*
- | Convert a move from standard algebraic notation to coordinate notation, then
- | make the move.
- */
+/* Convert a move from standard algebraic notation to coordinate notation. */
 
 	int index = 0;
 	int shape = -1, old_x = -1, old_y = -1, new_x = -1, new_y = -1, promo = -1;
 	move_t m;
+
+	SET_NULL_MOVE(m);
+	m.value = 0;
 
 	if (san == "O-O-O" || san == "O-O")
 	{
 		m.new_x = (m.old_x = 4) + (san == "O-O-O" ? -2 : 2);
 		m.new_y = m.old_y = ON_MOVE ? 7 : 0;
 		m.promo = 0;
-		return make(m);
+		generate_king(l);
+		for (list<move_t>::iterator it = l.begin(); it != l.end(); it++)
+			if (m == *it)
+				return m;
+		SET_NULL_MOVE(m);
+		m.value = 0;
+		return m;
 	}
 
 	switch (san[index])
@@ -625,15 +639,15 @@ bool board_base::make(string& san)
 			}
 	}
 
-	if (old_x == -1 || old_y == -1 || new_x == -1 || new_y == -1 || promo == -1)
-		return false;
-
-	m.old_x = old_x;
-	m.old_y = old_y;
-	m.new_x = new_x;
-	m.new_y = new_y;
-	m.promo = promo;
-	return make(m);
+	if (old_x != -1 && old_y != -1 && new_x != -1 && new_y != -1 && promo != -1)
+	{
+		m.old_x = old_x;
+		m.old_y = old_y;
+		m.new_x = new_x;
+		m.new_y = new_y;
+		m.promo = promo;
+	}
+	return m;
 }
 
 /*----------------------------------------------------------------------------*\
