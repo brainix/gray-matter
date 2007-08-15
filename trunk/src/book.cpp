@@ -121,6 +121,8 @@ int book::tokenize(istream& stream, string& token)
 		return TOKEN_GLYPH;
 	if (tokenize_symbol(stream, token))
 		return TOKEN_SYMBOL;
+	while (!isspace(stream.peek()))
+		stream.ignore();
 	return TOKEN_UNKNOWN;
 }
 
