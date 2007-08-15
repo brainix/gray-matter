@@ -553,7 +553,7 @@ bool board_base::make(string& san)
 
 	if (san == "O-O-O" || san == "O-O")
 	{
-		m.new_x = (m.old_x = 4) + san == "O-O-O" ? -2 : 2;
+		m.new_x = (m.old_x = 4) + (san == "O-O-O" ? -2 : 2);
 		m.new_y = m.old_y = ON_MOVE ? 7 : 0;
 		m.promo = 0;
 		return make(m);
