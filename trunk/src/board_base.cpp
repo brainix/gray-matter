@@ -564,6 +564,7 @@ move_t board_base::san_to_coord(string& san)
 		m.new_x = (m.old_x = 4) + (san == "O-O-O" ? -2 : 2);
 		m.new_y = m.old_y = ON_MOVE ? 7 : 0;
 		m.promo = 0;
+		list<move_t> l;
 		generate_king(l);
 		for (list<move_t>::iterator it = l.begin(); it != l.end(); it++)
 			if (m == *it)
