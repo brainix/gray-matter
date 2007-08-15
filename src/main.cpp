@@ -46,48 +46,58 @@ int main(int argc, char **argv)
 	int xpos_table_mb = XPOS_TABLE_MB;
 	int overhead = OVERHEAD;
 
-	/* Parse the command-line arguments. */
+	// Parse the command-line arguments.
 	for (int c; (c = getopt(argc, argv, "n:m:e:x:o:")) != -1;)
 		switch (c)
 		{
 			case 'n':
-				/* Specifying the file name of the opening book. */
+				// Specifying the file name of the opening book.
 				strncpy(book_name, optarg, sizeof(book_name));
 				break;
 			case 'm':
-				/* */
+				// Specifying the number of moves to read per
+				// game in the opening book.
 				if ((book_moves = atoi(optarg)) < 0)
 				{
-					cout << "number of book moves must be >= 0" << endl;
+					cout << "number of book moves "
+					     << "must be >= 0"
+					     << endl;
 					exit(EXIT_FAILURE);
 				}
 			case 'e':
-				/* Specifying which search engine to use. */
+				// Specifying which move search engine to use.
 				strncpy(search_engine, optarg, sizeof(search_engine));
 				if (strcmp(search_engine, "MTD(f)"))
 				{
-					cout << "unknown search engine: " << optarg << endl;
+					cout << "unknown move search engine: "
+					     << optarg
+					     << endl;
 					exit(EXIT_FAILURE);
 				}
 				break;
 			case 'x':
-				/* Specifying the size of the transposition table. */
+				// Specifying the size of the transposition
+				// table.
 				if ((xpos_table_mb = atoi(optarg)) < 1)
 				{
-					cout << "transposition table must be >= 1 MB" << endl;
+					cout << "transposition table "
+					     << "must be >= 1 MB"
+					     << endl;
 					exit(EXIT_FAILURE);
 				}
 				break;
 			case 'o':
-				/* Specifying the move search overhead. */
+				// Specifying the move search overhead.
 				if ((overhead = atoi(optarg)) < 1)
 				{
-					cout << "move search overhead must be >= 1 centisecond" << endl;
+					cout << "move search overhead "
+					     << "must be >= 1 centisecond"
+					     << endl;
 					exit(EXIT_FAILURE);
 				}
 				break;
 			default:
-				/* Specifying the user doesn't know how to read. */
+				// Specifying the user doesn't know how to read.
 				cout << "unknown option: -" << optopt << endl;
 				exit(EXIT_FAILURE);
 				break;
@@ -106,7 +116,7 @@ int main(int argc, char **argv)
 	table t(xpos_table_mb);            // Transposition table object.
 	history h;                         // History table object.
 	chess_clock c(overhead);           // Chess clock object.
-	xboard x;                          // Chess Engine Communication Protocol object.
+	xboard x;                          // XBoard object.
 	book o(&t, book_name, book_moves); // Opening book object.
 
 	/*
