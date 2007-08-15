@@ -52,8 +52,8 @@ using namespace std;
 			 (c) == (int) '+' || (c) == (int) "#" || \
 			 (c) == (int) '=' || (c) == (int) ':' || \
 			 (c) == (int) '-')
-#define GAME_OVER(s)	(!strcmp((s), "1-0")     || !strcmp((s), "0-1") || \
-			 !strcmp((s), "1/2-1/2") || !strcmp((s), "*"))
+#define IS_GAME_OVER(t)	((t) == "1-0"     || (t) == "0-1" || \
+			 (t) == "1/2-1/2" || (t) == "*")
 
 /* Forward declarations: */
 class board_base;
@@ -62,24 +62,26 @@ class table;
 class book
 {
 public:
-	book(table *t, char *n, int m);
+	book(table *t, char *file_name, int n);
 	void read();
 private:
-	char name[32];
-	int moves;
-	ifstream file;
+	int num_moves;
+	list<string> tokens;
+	list<move_t> moves;
 
 	board_base *board_ptr; // Board representation object.
 	table *table_ptr;      // Transposition table object.
 
-	void parse();
-	int tokenize(string& token);
-	bool tokenize_space(string& token);
-	bool tokenize_string(string& token);
-	bool tokenize_integer(string& token);
-	bool tokenize_punctuation(string& token);
-	bool tokenize_glyph(string& token);
-	bool tokenize_symbol(string& token);
+	void populate_tokens(istream& stream);
+	void populate_moves();
+	void populate_table();
+	int tokenize(istream& stream, string& token);
+	bool tokenize_space(istream& stream, string& token);
+	bool tokenize_string(istream& stream, string& token);
+	bool tokenize_integer(istream& stream, string& token);
+	bool tokenize_punctuation(istream& stream, string& token);
+	bool tokenize_glyph(istream& stream, string& token);
+	bool tokenize_symbol(istream& stream, string& token);
 };
 
 #endif

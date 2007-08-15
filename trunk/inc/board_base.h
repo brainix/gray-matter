@@ -94,6 +94,7 @@ public:
 	virtual bool get_whose() const;
 	virtual bitboard_t get_hash() const;
 	virtual int get_status(bool mate_test);
+	virtual int get_num_moves() const;
 	virtual int evaluate() const = 0;
 	virtual bool check() const;
 	virtual bool zugzwang() const;
@@ -102,7 +103,7 @@ public:
 	virtual void generate(list<move_t> &l, bool only_legal_moves = false, bool only_captures = false);
 	virtual bool make(move_t m);
 	virtual bool unmake();
-	virtual bool make(string& san);
+	virtual move_t san_to_coord(string& san);
 	virtual int perft(int depth);
 
 protected:
