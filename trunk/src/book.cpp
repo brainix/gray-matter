@@ -66,6 +66,9 @@ void book::read()
 \*----------------------------------------------------------------------------*/
 void book::populate_tokens(istream& stream)
 {
+
+/* Based on the opening book PGN file stream, populate the token list. */
+
 	string token;
 
 	while (!stream.eof())
@@ -86,6 +89,9 @@ void book::populate_tokens(istream& stream)
 \*----------------------------------------------------------------------------*/
 void book::populate_moves()
 {
+
+/* Based on the token list, populate the move list. */
+
 	for (list<string>::iterator it = tokens.begin(); it != tokens.end(); it++)
 	{
 		moves.push_back(board_ptr->san_to_coord(*it));
@@ -102,6 +108,9 @@ void book::populate_moves()
 \*----------------------------------------------------------------------------*/
 void book::populate_table()
 {
+
+/* Based on the move list, populate the transposition table. */
+
 	for (list<move_t>::iterator it = moves.begin(); it != moves.end(); it++)
 		if (IS_NULL_MOVE(*it))
 			board_ptr->set_board();
@@ -122,7 +131,7 @@ int book::tokenize(istream& stream, string& token)
 
 /*
  | Forward past the stream's next token, save it (null terminated), and return
- | the its type.
+ | its type.
  */
 
 	if (tokenize_space(stream, token))
