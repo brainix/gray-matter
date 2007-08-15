@@ -95,8 +95,7 @@ void book::populate_table()
 {
 	for (list<move_t>::iterator it = moves.begin(); it != moves.end(); it++)
 		if (IS_NULL_MOVE(*it))
-			while (board_ptr->unmake())
-				;
+			board_ptr->set_board();
 		else
 			if (board_ptr->get_num_moves() < num_moves)
 			{
