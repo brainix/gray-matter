@@ -38,8 +38,8 @@
 \*----------------------------------------------------------------------------*/
 
 #define BOOK_NAME	"book.pgn" // The opening book file name.
-#define BOOK_MOVES	16         //
-#define SEARCH_ENGINE	"MTD(f)"   // The default move search engine.
+#define BOOK_MOVES	40         // The number of moves to read per game in the opening book.
+#define SEARCH_ENGINE	"MTD(f)"   // The move search engine.
 
 /* All of the values in this section must be >= 1. */
 #define XPOS_TABLE_MB	64         // The transposition table size (in MB).
