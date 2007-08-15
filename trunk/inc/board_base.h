@@ -26,6 +26,7 @@ using namespace std;
 
 /* C++ stuff: */
 #include <list>
+#include <string>
 
 /* Default Gray Matter stuff: */
 #include "config.h"
@@ -101,7 +102,7 @@ public:
 	virtual void generate(list<move_t> &l, bool only_legal_moves = false, bool only_captures = false);
 	virtual bool make(move_t m);
 	virtual bool unmake();
-	virtual bool make(char *p);
+	virtual bool make(string& san);
 	virtual int perft(int depth);
 
 protected:
