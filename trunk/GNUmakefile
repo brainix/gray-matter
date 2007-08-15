@@ -8,7 +8,11 @@
 # BSD is based on OS X.  If you insist on running BSD, set this to OS_X.  ;-)
 PLAT = LINUX
 
-# Your processor.
+# Your processor.  This must be i386, i486, i586, pentium, pentium-mmx, i686,
+# pentiumpro, pentium2, pentium3, pentium3m, pentium-m, pentium4, pentium4m,
+# prescott, nocona, k6, k6-2, k6-3, athlon, athlon-tbird, athlon-4, athlon-xp,
+# athlon-mp, k8, opteron, athlon64, athlon-fx, winchip-c6, winchip2, c3, or
+# c3-2.
 ARCH = pentium3
 
 CXX  = g++
