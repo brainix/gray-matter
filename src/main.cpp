@@ -19,12 +19,12 @@
  | this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* Default Gray Matter stuff: */
+// Default Gray Matter stuff:
 #include "config.h"
 #include "types.h"
 #include "gray.h"
 
-/* Extra Gray Matter stuff: */
+// Extra Gray Matter stuff:
 #include "table.h"
 #include "clock.h"
 #include "xboard.h"
@@ -32,7 +32,7 @@
 #include "search_mtdf.h"
 #include "book.h"
 
-/* Function prototypes: */
+// Function prototypes:
 int main(int argc, char **argv);
 
 /*----------------------------------------------------------------------------*\
@@ -104,29 +104,26 @@ int main(int argc, char **argv)
 		}
 	if (optind < argc)
 	{
-		for (int index = optind; index < argc; index++)
-			cout << "unknown argument: " << argv[index] << endl;
+		cout << "unknown argument: " << argv[optind] << endl;
 		exit(EXIT_FAILURE);
 	}
 
-	/* Seed the random number generator. */
+	// Seed the random number generator.
 	srand(time(NULL));
 
-	/* Instantiate the classes. */
+	// Instantiate the classes.
 	table t(xpos_table_mb);            // Transposition table object.
 	history h;                         // History table object.
 	chess_clock c(overhead);           // Chess clock object.
 	xboard x;                          // XBoard object.
 	book o(&t, book_name, book_moves); // Opening book object.
 
-	/*
-	 | Based on the -s command-line option, choose the move search engine
-	 | and cast it as a generic version.  Thus far, we've only implemented
-	 | one move search engine, MTD(f).
-	 */
+	// Based on the -s command-line option, choose the move search engine
+	// and cast it as a generic version.  Thus far, we've only implemented
+	// one move search engine, MTD(f).
 	search_base *s = new search_mtdf(&t, &h, &c, &x);
 
-	/* Launch the event loop. */
+	// Launch the event loop.
 	x.loop(s, &c, &o);
 	return 0;
 }

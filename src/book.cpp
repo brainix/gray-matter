@@ -27,6 +27,9 @@
 \*----------------------------------------------------------------------------*/
 book::book(table *t, string& file_name, int n)
 {
+
+/* Constructor. */
+
 	ifstream stream;
 
 	board_ptr = new board_heuristic();
@@ -116,6 +119,12 @@ void book::populate_table()
 \*----------------------------------------------------------------------------*/
 int book::tokenize(istream& stream, string& token)
 {
+
+/*
+ | Forward past the stream's next token, save it (null terminated), and return
+ | the its type.
+ */
+
 	if (tokenize_space(stream, token))
 		return TOKEN_SPACE;
 	if (tokenize_string(stream, token))
@@ -131,6 +140,7 @@ int book::tokenize(istream& stream, string& token)
 
 	while (!isspace(stream.peek()))
 		token += stream.get();
+	token += '\0';
 	return TOKEN_UNKNOWN;
 }
 
@@ -142,7 +152,7 @@ bool book::tokenize_space(istream& stream, string& token)
 
 /*
  | If the stream's next token is whitespace (as defined by the PGN
- | specification), forward past it in the stream, save it (null terminated), and
+ | specification), forward the stream past it, save it (null terminated), and
  | return true.  Otherwise, leave the stream untouched, save only the null
  | character, and return false.
  */
@@ -162,7 +172,7 @@ bool book::tokenize_string(istream& stream, string& token)
 
 /*
  | If the stream's next token is a string (as defined by the PGN specification),
- | forward past it in the stream, save it (null terminated), and return true.
+ | forward the stream past it, save it (null terminated), and return true.
  | Otherwise, leave the stream untouched, save only the null character, and
  | return false.
  */
@@ -193,7 +203,7 @@ bool book::tokenize_integer(istream& stream, string& token)
 
 /*
  | If the stream's next token is an integer (as defined by the PGN
- | specification), forward past it in the stream, save it (null terminated), and
+ | specification), forward the stream past it, save it (null terminated), and
  | return true.  Otherwise, leave the stream untouched, save only the null
  | character, and return false.
  */
@@ -213,7 +223,7 @@ bool book::tokenize_punctuation(istream& stream, string& token)
 
 /*
  | If the stream's next token is punctuation (as defined by the PGN
- | specification), forward past it in the stream, save it (null terminated), and
+ | specification), forward the stream past it, save it (null terminated), and
  | return true.  Otherwise, leave the stream untouched, save only the null
  | character, and return false.
  */
@@ -236,8 +246,8 @@ bool book::tokenize_glyph(istream& stream, string& token)
 {
 
 /*
- | If the stream's next token is a numeric annotation glyph (as defined by the
- | PGN specification), forward past it in the stream, save it (null terminated),
+ | If the stream's next token is a Numeric Annotation Glyph (as defined by the
+ | PGN specification), forward the stream past it, save it (null terminated),
  | and return true.  Otherwise, leave the stream untouched, save only the null
  | character, and return false.
  */
@@ -261,7 +271,7 @@ bool book::tokenize_symbol(istream& stream, string& token)
 
 /*
  | If the stream's next token is a symbol (as defined by the PGN specification),
- | forward past it in the stream, save it (null terminated), and return true.
+ | forward the stream past it, save it (null terminated), and return true.
  | Otherwise, leave the stream untouched, save only the null character, and
  | return false.
  */
