@@ -73,7 +73,10 @@ void search_mtdf::iterate(int s)
 	/* */
 	if (s == THINKING)
 		if (table_ptr->probe(board_ptr->get_hash(), MAX_DEPTH, BOOK, &m))
-			return m;
+		{
+			xboard_ptr->print_result(m);
+			return;
+		}
 
 	/* Wait for the board, then grab the board. */
 	board_ptr->lock();
