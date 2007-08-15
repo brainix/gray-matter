@@ -37,8 +37,6 @@ using namespace std;
 #include "board_heuristic.h"
 #include "table.h"
 
-#define MAX_TOKEN_LENGTH	256
-
 /* Token types: */
 #define TOKEN_UNKNOWN		0 // Unknown.
 #define TOKEN_SPACE		1 // Whitespace.
