@@ -539,7 +539,7 @@ bool board_base::unmake()
 /*----------------------------------------------------------------------------*\
  |				     make()				      |
 \*----------------------------------------------------------------------------*/
-bool board_base::make(char *p)
+bool board_base::make(string& san)
 {
 
 /*
@@ -547,58 +547,59 @@ bool board_base::make(char *p)
  | make the move.
  */
 
+	int index = 0;
 	int shape = -1, old_x = -1, old_y = -1, new_x = -1, new_y = -1, promo = -1;
 	move_t m;
 
-	if (!strncmp(p, "O-O-O", 5) || !strncmp(p, "O-O", 3))
+	if (san == "O-O-O" || san == "O-O")
 	{
-		m.new_x = (m.old_x = 4) + !strncmp(p, "O-O-O", 5) ? -2 : 2;
+		m.new_x = (m.old_x = 4) + san == "O-O-O" ? -2 : 2;
 		m.new_y = m.old_y = ON_MOVE ? 7 : 0;
 		m.promo = 0;
 		return make(m);
 	}
 
-	switch (*p)
+	switch (san[index])
 	{
-		case 'K' : p++; shape = KING;   break;
-		case 'Q' : p++; shape = QUEEN;  break;
-		case 'R' : p++; shape = ROOK;   break;
-		case 'B' : p++; shape = BISHOP; break;
-		case 'N' : p++; shape = KNIGHT; break;
-		case 'P' : p++; shape = PAWN;   break;
-		default  :      shape = PAWN;   break;
+		case 'K' : index++; shape = KING;   break;
+		case 'Q' : index++; shape = QUEEN;  break;
+		case 'R' : index++; shape = ROOK;   break;
+		case 'B' : index++; shape = BISHOP; break;
+		case 'N' : index++; shape = KNIGHT; break;
+		case 'P' : index++; shape = PAWN;   break;
+		default  :          shape = PAWN;   break;
 	}
 
-	if (*p == 'x')
-		p++;
+	if (san[index] == 'x')
+		index++;
 
-	if (*p >= 'a' && *p <= 'h')
-		new_x = *p++ - 'a';
+	if (san[index] >= 'a' && san[index] <= 'h')
+		new_x = san[index++] - 'a';
 
-	if (*p == 'x')
-		p++;
+	if (san[index] == 'x')
+		index++;
 
-	if (*p >= '1' && *p <= '8')
-		new_y = *p++ - '1';
+	if (san[index] >= '1' && san[index] <= '8')
+		new_y = san[index++] - '1';
 
-	if (*p == 'x')
-		p++;
+	if (san[index] == 'x')
+		index++;
 
-	if (*p >= 'a' && *p <= 'h')
+	if (san[index] >= 'a' && san[index] <= 'h')
 	{
 		old_x = new_x;
 		old_y = new_y;
-		new_x = *p++ - 'a';
-		new_y = *p++ - '1';
+		new_x = san[index++] - 'a';
+		new_y = san[index++] - '1';
 	}
 
-	if (*p == '=')
-		switch (*++p)
+	if (san[index] == '=')
+		switch (san[++index])
 		{
-			case 'Q' : p++; promo = QUEEN;  break;
-			case 'R' : p++; promo = ROOK;   break;
-			case 'B' : p++; promo = BISHOP; break;
-			case 'N' : p++; promo = KNIGHT; break;
+			case 'Q' : index++; promo = QUEEN;  break;
+			case 'R' : index++; promo = ROOK;   break;
+			case 'B' : index++; promo = BISHOP; break;
+			case 'N' : index++; promo = KNIGHT; break;
 		}
 	else
 		promo = 0;
