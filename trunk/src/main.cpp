@@ -40,9 +40,9 @@ int main(int argc, char **argv);
 \*----------------------------------------------------------------------------*/
 int main(int argc, char **argv)
 {
-	char book_name[32] = BOOK_NAME;
+	string book_name = BOOK_NAME;
 	int book_moves = BOOK_MOVES;
-	char search_engine[32] = SEARCH_ENGINE;
+	string search_engine = SEARCH_ENGINE;
 	int xpos_table_mb = XPOS_TABLE_MB;
 	int overhead = OVERHEAD;
 
@@ -52,7 +52,7 @@ int main(int argc, char **argv)
 		{
 			case 'n':
 				// Specifying the file name of the opening book.
-				strncpy(book_name, optarg, sizeof(book_name));
+				book_name = optarg;
 				break;
 			case 'm':
 				// Specifying the number of moves to read per
@@ -66,8 +66,8 @@ int main(int argc, char **argv)
 				}
 			case 'e':
 				// Specifying which move search engine to use.
-				strncpy(search_engine, optarg, sizeof(search_engine));
-				if (strcmp(search_engine, "MTD(f)"))
+				search_engine = optarg;
+				if (search_engine != "MTD(f)")
 				{
 					cout << "unknown move search engine: "
 					     << optarg

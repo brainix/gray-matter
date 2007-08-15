@@ -25,7 +25,7 @@
 /*----------------------------------------------------------------------------*\
  |				     book()				      |
 \*----------------------------------------------------------------------------*/
-book::book(table *t, char *file_name, int n)
+book::book(table *t, string& file_name, int n)
 {
 	ifstream stream;
 
@@ -34,7 +34,7 @@ book::book(table *t, char *file_name, int n)
 	num_moves = n;
 
 	/* Open the file. */
-	stream.open(file_name);
+	stream.open(file_name.c_str());
 	if (stream.fail())
 	{
 		stream.close();
