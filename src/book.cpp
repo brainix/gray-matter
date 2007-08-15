@@ -128,8 +128,9 @@ int book::tokenize(istream& stream, string& token)
 		return TOKEN_GLYPH;
 	if (tokenize_symbol(stream, token))
 		return TOKEN_SYMBOL;
+
 	while (!isspace(stream.peek()))
-		stream.ignore();
+		token += stream.get();
 	return TOKEN_UNKNOWN;
 }
 
@@ -138,6 +139,14 @@ int book::tokenize(istream& stream, string& token)
 \*----------------------------------------------------------------------------*/
 bool book::tokenize_space(istream& stream, string& token)
 {
+
+/*
+ | If the stream's next token is whitespace (as defined by the PGN
+ | specification), forward past it in the stream, save it (null terminated), and
+ | return true.  Otherwise, leave the stream untouched, save only the null
+ | character, and return false.
+ */
+
 	token.erase(0, token.length());
 	for (int c; isspace(c = stream.peek()); stream.ignore())
 		token += c;
@@ -150,6 +159,14 @@ bool book::tokenize_space(istream& stream, string& token)
 \*----------------------------------------------------------------------------*/
 bool book::tokenize_string(istream& stream, string& token)
 {
+
+/*
+ | If the stream's next token is a string (as defined by the PGN specification),
+ | forward past it in the stream, save it (null terminated), and return true.
+ | Otherwise, leave the stream untouched, save only the null character, and
+ | return false.
+ */
+
 	token.erase(0, token.length());
 	if (stream.peek() == '\"')
 		for (token += stream.get(); ; )
@@ -173,6 +190,14 @@ bool book::tokenize_string(istream& stream, string& token)
 \*----------------------------------------------------------------------------*/
 bool book::tokenize_integer(istream& stream, string& token)
 {
+
+/*
+ | If the stream's next token is an integer (as defined by the PGN
+ | specification), forward past it in the stream, save it (null terminated), and
+ | return true.  Otherwise, leave the stream untouched, save only the null
+ | character, and return false.
+ */
+
 	token.erase(0, token.length());
 	for (int c; isdigit(c = stream.peek()); stream.ignore())
 		token += c;
@@ -185,6 +210,14 @@ bool book::tokenize_integer(istream& stream, string& token)
 \*----------------------------------------------------------------------------*/
 bool book::tokenize_punctuation(istream& stream, string& token)
 {
+
+/*
+ | If the stream's next token is punctuation (as defined by the PGN
+ | specification), forward past it in the stream, save it (null terminated), and
+ | return true.  Otherwise, leave the stream untouched, save only the null
+ | character, and return false.
+ */
+
 	token.erase(0, token.length());
 	int c = stream.peek();
 	if (c == '.' || c == '*' || c == '[' || c == ']' || c == '<' || c == '>')
@@ -201,6 +234,14 @@ bool book::tokenize_punctuation(istream& stream, string& token)
 \*----------------------------------------------------------------------------*/
 bool book::tokenize_glyph(istream& stream, string& token)
 {
+
+/*
+ | If the stream's next token is a numeric annotation glyph (as defined by the
+ | PGN specification), forward past it in the stream, save it (null terminated),
+ | and return true.  Otherwise, leave the stream untouched, save only the null
+ | character, and return false.
+ */
+
 	token.erase(0, token.length());
 	if (stream.peek() == '$')
 	{
@@ -217,6 +258,14 @@ bool book::tokenize_glyph(istream& stream, string& token)
 \*----------------------------------------------------------------------------*/
 bool book::tokenize_symbol(istream& stream, string& token)
 {
+
+/*
+ | If the stream's next token is a symbol (as defined by the PGN specification),
+ | forward past it in the stream, save it (null terminated), and return true.
+ | Otherwise, leave the stream untouched, save only the null character, and
+ | return false.
+ */
+
 	token.erase(0, token.length());
 	if (isalnum(stream.peek()))
 		for (int c = stream.peek(); IS_SYMBOL(c); stream.ignore(), c = stream.peek())
