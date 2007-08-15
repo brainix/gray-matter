@@ -60,7 +60,7 @@ class table;
 class book
 {
 public:
-	book(table *t, char *file_name, int n);
+	book(table *t, string& file_name, int n);
 	void read();
 private:
 	int num_moves;
