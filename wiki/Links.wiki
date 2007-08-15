@@ -10,7 +10,7 @@
   * [http://www.gamedev.net/reference/programming/features/chess1/ Chess Programming] - Overviews of various concepts by François-Dominic Laramée, the author of Java Chess.
   * [http://www.tim-mann.org/xboard/engine-intf.html Chess Engine Communication Protocol] - How to interface an engine with an interface by Tim Mann, the author of XBoard.
   * [http://tim-mann.org/xboard/zippy.README Zippy README] - How to automate play on an Internet Chess Server by Tim Mann, the author of XBoard.
-  * [http://www.cybercom.net/~zbrad/Chess/pgnxml/PGN_Standard.txt Standard: Portable Game Notation Specification and Implementation Guide] - How to read and write PGN files (used to generate opening books and to save games) by Steven J. Edwards and the interested readers of the newsgroup rec.games.chess.
+  * [http://www.cybercom.net/~zbrad/Chess/pgnxml/PGN_Standard.txt PGN Specification] - How to read and write PGN files (used to generate opening books and to save games) by Steven J. Edwards and the interested readers of the newsgroup rec.games.chess.
 
   * [http://www.ascotti.org/programming/chess/Shannon%20-%20Programming%20a%20computer%20for%20playing%20chess.pdf Programming a Computer for Playing Chess] - The paper that started it all (in 1949!) by Claude E. Shannon, the father of modern digital communications and information theory.
 
