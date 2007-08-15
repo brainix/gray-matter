@@ -85,7 +85,14 @@ void book::populate_tokens(istream& stream)
 void book::populate_moves()
 {
 	for (list<string>::iterator it = tokens.begin(); it != tokens.end(); it++)
+	{
 		moves.push_back(board_ptr->san_to_coord(*it));
+		if (IS_NULL_MOVE(moves.back()))
+			board_ptr->set_board();
+		else
+			board_ptr->make(moves.back());
+	}
+	board_ptr->set_board();
 }
 
 /*----------------------------------------------------------------------------*\
@@ -102,6 +109,7 @@ void book::populate_table()
 				table_ptr->store(board_ptr->get_hash(), MAX_DEPTH, BOOK, *it);
 				board_ptr->make(*it);
 			}
+	board_ptr->set_board();
 }
 
 /*----------------------------------------------------------------------------*\
