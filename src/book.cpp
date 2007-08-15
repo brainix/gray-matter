@@ -69,13 +69,13 @@ void book::populate_tokens(istream& stream)
 	while (!stream.eof())
 		switch (tokenize(stream, token))
 		{
-			case TOKEN_SPACE       :                         break;
-			case TOKEN_STRING      :                         break;
-			case TOKEN_INTEGER     :                         break;
-			case TOKEN_PUNCTUATION :                         break;
-			case TOKEN_GLYPH       :                         break;
-			case TOKEN_SYMBOL      : tokens.push_back(token) break;
-			default                :                         break;
+			case TOKEN_SPACE       :                          break;
+			case TOKEN_STRING      :                          break;
+			case TOKEN_INTEGER     :                          break;
+			case TOKEN_PUNCTUATION :                          break;
+			case TOKEN_GLYPH       :                          break;
+			case TOKEN_SYMBOL      : tokens.push_back(token); break;
+			default                :                          break;
 		}
 }
 
