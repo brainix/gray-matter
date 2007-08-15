@@ -86,7 +86,7 @@ bool table::probe(bitboard_t hash, int depth, int type, move_t *move_ptr)
 		if (data[policy][index].hash == hash)
 		{
 			*move_ptr = data[policy][index].move;
-			return data[policy][index].depth >= depth && (data[policy][index].type == EXACT || data[policy][index].type == type);
+			return data[policy][index].depth >= depth && (data[policy][index].type == type || data[policy][index].type == EXACT || data[policy][index].type == BOOK);
 		}
 	SET_NULL_MOVE(*move_ptr);
 	move_ptr->value = 0;
