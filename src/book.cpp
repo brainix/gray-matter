@@ -37,7 +37,6 @@ book::book(table *t, char *file_name, int n)
 	stream.open(file_name);
 	if (stream.fail())
 	{
-		cout << "couldn't find opening book: " << file_name << endl;
 		stream.close();
 		return;
 	}
