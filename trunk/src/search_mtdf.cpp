@@ -70,6 +70,11 @@ void search_mtdf::iterate(int s)
 	int depth;
 	move_t guess[2], m;
 
+	/* */
+	if (s == THINKING)
+		if (table_ptr->probe(board_ptr->get_hash(), MAX_DEPTH, BOOK, &m))
+			return m;
+
 	/* Wait for the board, then grab the board. */
 	board_ptr->lock();
 
