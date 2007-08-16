@@ -36,20 +36,10 @@ book::book(table *t, string& file_name, int n)
 	table_ptr = t;
 	num_moves = n;
 
-	/* Open the file. */
-	stream.open(file_name.c_str());
-	if (stream.fail())
-	{
-		stream.close();
-		return;
-	}
-
-	/* Populate the token and move lists. */
-	populate_tokens(stream);
-	populate_games();
-
-	/* Close the file. */
-	stream.close();
+	stream.open(file_name.c_str()); // Open the file.
+	populate_tokens(stream);        // Populate the token list.
+	stream.close();                 // Close the file.
+	populate_games();               // Populate the game list.
 }
 
 /*----------------------------------------------------------------------------*\
@@ -70,17 +60,9 @@ void book::populate_tokens(istream& stream)
 
 	string token;
 
-	while (!stream.eof())
-		switch (tokenize(stream, token))
-		{
-			case TOKEN_SPACE       :                          break;
-			case TOKEN_STRING      :                          break;
-			case TOKEN_INTEGER     :                          break;
-			case TOKEN_PUNCTUATION :                          break;
-			case TOKEN_GLYPH       :                          break;
-			case TOKEN_SYMBOL      : tokens.push_back(token); break;
-			default                :                          break;
-		}
+	while (!stream.fail() && !stream.eof())
+		if (tokenize(stream, token) == TOKEN_SYMBOL)
+			tokens.push_back(token);
 }
 
 /*----------------------------------------------------------------------------*\
