@@ -50,8 +50,6 @@ using namespace std;
 			 (c) == (int) '+' || (c) == (int) "#" || \
 			 (c) == (int) '=' || (c) == (int) ':' || \
 			 (c) == (int) '-')
-#define IS_GAME_OVER(t)	((t) == "1-0"     || (t) == "0-1" || \
-			 (t) == "1/2-1/2" || (t) == "*")
 
 /* Forward declarations: */
 class board_base;
