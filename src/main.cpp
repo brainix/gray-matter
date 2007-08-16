@@ -104,6 +104,7 @@ int main(int argc, char **argv)
 		}
 	if (optind < argc)
 	{
+		// Specifying the user doesn't know how to read.
 		cout << "unknown argument: " << argv[optind] << endl;
 		exit(EXIT_FAILURE);
 	}

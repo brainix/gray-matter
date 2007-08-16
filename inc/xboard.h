@@ -63,7 +63,7 @@ private:
 	bool sync;               // Whether to sync our clock with XBoard's.
 
 	board_base *board_ptr;   // Board representation object.
-	search_base *search_ptr; // Move search object.
+	search_base *search_ptr; // Move search engine object.
 	chess_clock *clock_ptr;  // Chess clock object.
 	book *book_ptr;          // Opening book object.
 

@@ -22,8 +22,6 @@
 #include "gray.h"
 #include "xboard.h"
 
-/* Global variables: */
-
 /*----------------------------------------------------------------------------*\
  |				    xboard()				      |
 \*----------------------------------------------------------------------------*/
@@ -32,11 +30,11 @@ xboard::xboard()
 
 /* Constructor. */
 
-	/* Turn I/O buffering off. */
+	// Turn I/O buffering off.
 	setbuf(stdout, NULL);
 	setbuf(stdin, NULL);
 
-	/* Initialize the variables. */
+	// Initialize the variables.
 	ponder = true;
 	force = false;
 	draw = false;
@@ -50,6 +48,7 @@ xboard::~xboard()
 {
 
 /* Destructor. */
+
 }
 
 /*----------------------------------------------------------------------------*\
@@ -353,13 +352,13 @@ void xboard::do_usermove()
 
 	move_t m;
 
-	/* Was the move legal? */
+	// Was the move legal?
 	m.old_x = buffer[ 9] - 'a'; m.old_y = buffer[10] - '1';
 	m.new_x = buffer[11] - 'a'; m.new_y = buffer[12] - '1';
 	m.promo = char_to_shape(buffer[13]);
 	if (!test_move(m))
 	{
-		/* No!  The gypsy was trying to pull a fast one on us! */
+		// No!  The gypsy was trying to pull a fast one on us!
 		printf("Illegal move: ");
 		print_move(m);
 		printf("\n");
@@ -369,26 +368,22 @@ void xboard::do_usermove()
 	board_ptr->make(m);
 	clock_ptr->dec_remaining_moves(!board_ptr->get_whose());
 
-	/* Alright, so the move was legal.  Did it just end the game? */
+	// Alright, so the move was legal.  Did it just end the game?
 	if (game_over())
 	{
-		/* Yes.  We're not to respond. */
+		// Yes.  We're not to respond.
 		search_ptr->change(IDLING, *board_ptr);
 		return;
 	}
 
-	/*
-	 | Alright, so the move was legal, and it didn't just end the game.  Are
-	 | we in force mode?
-	 */
+	// Alright, so the move was legal, and it didn't just end the game.  Are
+	// we in force mode?
 	if (force)
-		/* Yes.  We're not to respond. */
+		// Yes.  We're not to respond.
 		return;
 
-	/*
-	 | Alright, so the move was legal, and it didn't just end the game, and
-	 | we're not in force mode.  Formulate a response.
-	 */
+	// Alright, so the move was legal, and it didn't just end the game, and
+	// we're not in force mode.  Formulate a response.
 	search_ptr->change(THINKING, *board_ptr);
 }
 
