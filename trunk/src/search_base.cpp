@@ -148,15 +148,13 @@ void search_base::change(int s, const board_base& now)
  |	 12		start thinking
  */
 
-	/* Force pondering timeout. */
+	// Force pondering timeout.
 	mutex_lock(&timeout_mutex);
 	timeout_flag = true;
 	mutex_unlock(&timeout_mutex);
 
-	/*
-	 | Wait for the board, grab the board, set the board position, and
-	 | release the board.
-	 */
+	// Wait for the board, grab the board, set the board position, and
+	// release the board.
 	if (s == THINKING || s == PONDERING)
 	{
 		board_ptr->lock();
@@ -164,7 +162,7 @@ void search_base::change(int s, const board_base& now)
 		board_ptr->unlock();
 	}
 
-	/* Send the command to think. */
+	// Send the command to think.
 	mutex_lock(&search_mutex);
 	search_status = s;
 	cond_signal(&search_cond);
@@ -247,14 +245,14 @@ void search_base::start()
 
 	do
 	{
-		/* Wait for the status to change. */
+		// Wait for the status to change.
 		mutex_lock(&search_mutex);
 		while (old_search_status == search_status)
 			cond_wait(&search_cond, &search_mutex);
 		old_search_status = search_status;
 		mutex_unlock(&search_mutex);
 
-		/* Do the requested work - idle, think, ponder, or quit. */
+		// Do the requested work - idle, think, ponder, or quit.
 		if (search_status == THINKING || search_status == PONDERING)
 		{
 			mutex_lock(&timeout_mutex);
@@ -268,4 +266,70 @@ void search_base::start()
 	} while (search_status != QUITTING);
 
 	thread_destroy(NULL);
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   shuffle()				      |
+\*----------------------------------------------------------------------------*/
+bool search_mtdf::shuffle(move_t m1, move_t m2)
+{
+
+/*
+ | Pass this method as the comparison function to l.sort() to randomize the move
+ | list.  This is a magnificent hack.
+ |
+ | Note: This hack wouldn't work for O(n²) list sort algorithms.  But if your
+ | STL's list sort algorithm is O(n²), you don't deserve for this hack to work
+ | anyway.
+ */
+
+	return rand() & 1;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   descend()				      |
+\*----------------------------------------------------------------------------*/
+bool search_mtdf::descend(move_t m1, move_t m2)
+{
+
+/*
+ | Pass this method as the comparison function to l.sort() to sort the move list
+ | from highest to lowest by score.
+ */
+
+	return m1.value > m2.value;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   extract()				      |
+\*----------------------------------------------------------------------------*/
+void search_base::extract(int s)
+{
+
+/* Extract the principal variation and hint from the transposition table. */
+
+	move_t m;
+	pv.clear();
+
+	// Get the principal variation.
+	for (table_ptr->probe(board_ptr->get_hash(), 0, EXACT, &m); !IS_NULL_MOVE(m) && board_ptr->get_status(true) == IN_PROGRESS; table_ptr->probe(board_ptr->get_hash(), 0, EXACT, &m))
+	{
+		pv.push_back(m);
+		board_ptr->make(m);
+		if (pv.size() == (unsigned) max_depth)
+			break;
+	}
+	for (size_t j = 0; j < pv.size(); j++)
+		board_ptr->unmake();
+
+	// Get the hint.
+	if (s == THINKING && pv.size() >= 2)
+	{
+		list<move_t>::iterator it = pv.begin();
+		hint = *++it;
+	}
+	else if (s == PONDERING && pv.size() >= 1)
+		hint = pv.front();
+	else
+		SET_NULL_MOVE(hint);
 }
