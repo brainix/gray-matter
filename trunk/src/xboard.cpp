@@ -124,9 +124,7 @@ void xboard::loop(search_base *s, chess_clock *c, book *o)
 		else if (!strncmp(buffer, "nopost", 6))
 			do_nopost();
 		else
-		{
-			printf("Error (unknown command): %s\n", buffer);
-		}
+			do_unknown();
 	}
 	do_quit();
 }
@@ -499,6 +497,14 @@ void xboard::do_nopost() const
 // Turn off thinking output.
 
 	search_ptr->set_output(false);
+}
+
+/*----------------------------------------------------------------------------*\
+ |				  do_unknown()				      |
+\*----------------------------------------------------------------------------*/
+void xboard::do_unknown() const
+{
+	printf("Error (unknown command): %s\n", buffer);
 }
 
 /*----------------------------------------------------------------------------*\
