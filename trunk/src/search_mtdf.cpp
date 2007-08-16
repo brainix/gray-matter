@@ -68,10 +68,11 @@ void search_mtdf::iterate(int s)
 	int depth;
 	move_t guess[2], m;
 
-	//
+	// For the current position, does the opening book recommend a move?
 	if (s == THINKING)
 		if (table_ptr->probe(board_ptr->get_hash(), MAX_DEPTH, BOOK, &m))
 		{
+			// Yes.  Just make the prescribed move.
 			xboard_ptr->print_result(m);
 			return;
 		}
@@ -141,7 +142,7 @@ move_t search_mtdf::mtdf(int depth, int guess)
 {
 
 // From the current position, search for the best move.  This method implements
-// Aske Plaat's brilliant MTD(f) algorithm.
+// the MTD(f) algorithm.
 
 	move_t m;
 	SET_NULL_MOVE(m);
@@ -215,11 +216,19 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 	if (shallowness)
 	{
 		if (table_ptr->probe(hash, depth, UPPER, &m))
+		{
 			if ((upper = m.value) <= alpha)
 				return m;
-		if (table_ptr->probe(hash, depth, LOWER, &m))
+		}
+		else if (table_ptr->probe(hash, depth, LOWER, &m))
+		{
 			if ((lower = m.value) >= beta)
 				return m;
+		}
+		else if (table_ptr->probe(hash, depth, EXACT, &m))
+			return m;
+		else if (table_ptr->probe(hash, depth, BOOK, &m))
+			return m;
 		current = alpha = GREATER(alpha, lower);
 		beta = LESSER(beta, upper);
 	}
@@ -252,10 +261,16 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 			break;
 	}
 
+	// Was there a legal move in the list?
 	if (m.value == -INFINITY)
 	{
+		// Nope, there was no legal move in the list.  The current
+		// position must either be stalemate or checkmate.  How can we
+		// tell which?  Easily.  If we're not in check, we're
+		// stalemated; if we're in check, we're checkmated.
 		SET_NULL_MOVE(m);
 		m.value = !board_ptr->check() ? +WEIGHT_CONTEMPT : -WEIGHT_KING + shallowness;
+		table_ptr->store(hash, depth, EXACT, m);
 		return m;
 	}
 	if (!timeout_flag || !depth_flag)

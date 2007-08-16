@@ -208,6 +208,9 @@ void board_base::set_board()
 \*----------------------------------------------------------------------------*/
 void board_base::lock()
 {
+
+// Wait for the board, then grab the board.
+
 	mutex_lock(&mutex);
 }
 
@@ -216,6 +219,9 @@ void board_base::lock()
 \*----------------------------------------------------------------------------*/
 void board_base::unlock()
 {
+
+// Release the board.
+
 	mutex_unlock(&mutex);
 }
 
