@@ -24,23 +24,23 @@
 
 using namespace std;
 
-/* C++ stuff: */
+// C++ stuff:
 #include <algorithm>
 #include <list>
 
-/* Default Gray Matter stuff: */
+// Default Gray Matter stuff:
 #include "config.h"
 #include "types.h"
 #include "thread.h"
 
-/* Extra Gray Matter stuff: */
+// Extra Gray Matter stuff:
 #include "search_base.h"
 #include "board_base.h"
 #include "table.h"
 #include "clock.h"
 #include "xboard.h"
 
-/* Forward declarations: */
+// Forward declarations:
 class search_base;
 class board_base;
 class table;

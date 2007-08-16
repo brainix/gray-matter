@@ -28,7 +28,7 @@
 int thread_create(thread_t *thread, entry_t entry, void *arg)
 {
 
-/* Create a thread. */
+// Create a thread.
 
 #if defined(LINUX) || defined(OS_X)
 	return pthread_create(thread, NULL, entry, arg) ? CRITICAL : SUCCESSFUL;
@@ -43,7 +43,7 @@ int thread_create(thread_t *thread, entry_t entry, void *arg)
 int thread_wait(thread_t *thread)
 {
 
-/* Wait for a thread to exit. */
+// Wait for a thread to exit.
 
 #if defined(LINUX) || defined(OS_X)
 	return pthread_join(*thread, NULL) ? CRITICAL : SUCCESSFUL;
@@ -58,10 +58,8 @@ int thread_wait(thread_t *thread)
 int thread_destroy(thread_t *thread)
 {
 
-/*
- | Destroy a thread.  If thread is NULL, destroy the calling thread.  Otherwise,
- | destroy the specified thread.
- */
+// Destroy a thread.  If thread is NULL, destroy the calling thread.  Otherwise,
+// destroy the specified thread.
 
 #if defined(LINUX) || defined(OS_X)
 	if (thread == NULL)
@@ -279,10 +277,8 @@ thread_t timer_thread = INVALID_HANDLE_VALUE;
 void timer_handler(int num)
 {
 
-/*
- | On Linux and OS X, the alarm has sounded.  Call the previously specified
- | function.
- */
+// On Linux and OS X, the alarm has sounded.  Call the previously specified
+// function.
 
 	(*callback)(callback_data);
 }
@@ -290,23 +286,21 @@ void timer_handler(int num)
 DWORD timer_handler(LPVOID arg)
 {
 
-/*
- | On Windows, Steve Ballmer is too busy throwing chairs to implement SIGALRM.
- | So, in order to replicate its functionality, we have to jump through these
- | hoops:
- |
- |	1. Create a timer thread.  Then, within the timer thread:
- |	2. Create an alarm.
- |	3. Set the alarm.
- |	4. Wait for the alarm to sound.
- |	5. Somehow notify the other thread.
- |	6. Exit the timer thread.
- |
- | This way, while the timer thread waits for the alarm to sound, the other
- | thread continues with its work.  At this point, the timer thread has already
- | been created, and this function is its entry point.  Think of this function
- | as the timer thread's main().
- */
+// On Windows, Steve Ballmer is too busy throwing chairs to implement SIGALRM.
+// So, in order to replicate its functionality, we have to jump through these
+// hoops:
+//
+//	1. Create a timer thread.  Then, within the timer thread:
+//	2. Create an alarm.
+//	3. Set the alarm.
+//	4. Wait for the alarm to sound.
+//	5. Somehow notify the other thread.
+//	6. Exit the timer thread.
+//
+// This way, while the timer thread waits for the alarm to sound, the other
+// thread continues with its work.  At this point, the timer thread has already
+// been created, and this function is its entry point.  Think of this function
+// as the timer thread's main().
 
 	unsigned long long msec = *((unsigned int *) arg); // Number of milli-
 	                                                   // seconds to wait
@@ -348,7 +342,7 @@ end:
 int timer_function(void (*function)(void *), void *data)
 {
 
-/* Specify the function to be called once the alarm has sounded. */
+// Specify the function to be called once the alarm has sounded.
 
 #if defined(LINUX) || defined(OS_X)
 	signal(SIGALRM, timer_handler);
@@ -364,7 +358,7 @@ int timer_function(void (*function)(void *), void *data)
 int timer_set(int csec)
 {
 
-/* Set the alarm to sound after the specified number of seconds. */
+// Set the alarm to sound after the specified number of seconds.
 
 #if defined(LINUX) || defined(OS_X)
 	struct itimerval itimerval;
@@ -389,7 +383,7 @@ int timer_set(int csec)
 int timer_cancel()
 {
 
-/* Cancel any pending alarm. */
+// Cancel any pending alarm.
 
 #if defined(LINUX) || defined(OS_X)
 	struct itimerval itimerval;

@@ -93,7 +93,7 @@ pawn pawn_table;
 board_heuristic::board_heuristic() : board_base()
 {
 
-/* Constructor. */
+// Constructor.
 
 }
 
@@ -103,7 +103,7 @@ board_heuristic::board_heuristic() : board_base()
 board_heuristic::~board_heuristic()
 {
 
-/* Destructor. */
+// Destructor.
 
 }
 
@@ -113,7 +113,7 @@ board_heuristic::~board_heuristic()
 board_heuristic& board_heuristic::operator=(const board_heuristic& that)
 {
 
-/* Overloaded assignment operator. */
+// Overloaded assignment operator.
 
 	if (this != &that)
 		board_base::operator=(that);
@@ -126,10 +126,8 @@ board_heuristic& board_heuristic::operator=(const board_heuristic& that)
 int board_heuristic::evaluate() const
 {
 
-/*
- | Evaluate the current state.  For simplicity's sake, evaluate from the
- | perspective of the player who's just moved (the color that's off move).
- */
+// Evaluate the current state.  For simplicity's sake, evaluate from the
+// perspective of the player who's just moved (the color that's off move).
 
 	if (!state.piece[ON_MOVE][KING])
 		return WEIGHT_ILLEGAL;
@@ -145,7 +143,7 @@ int board_heuristic::evaluate() const
 int board_heuristic::evaluate_material() const
 {
 
-/* Evaluate material. */
+// Evaluate material.
 
 	static const int weight[] = {WEIGHT_PAWN, WEIGHT_KNIGHT, WEIGHT_BISHOP,
 	                             WEIGHT_ROOK, WEIGHT_QUEEN,  WEIGHT_KING};
@@ -169,16 +167,14 @@ int board_heuristic::evaluate_material() const
 int board_heuristic::evaluate_tempo() const
 {
 
-/*
- | Evaluate tempo.
- |
- | We define a piece's tempo as the minimum number of moves required to move it
- | from its current position back to its starting position on an otherwise empty
- | chess board.  Tempo is a measure of development; good chess players maximize
- | their tempo and minimize their opponents' tempo.  I'm not sure this works
- | perfectly yet, but it at least seems to prevent The Happy King Dance (TM)
- | Gray Matter used to love so much.
- */
+// Evaluate tempo.
+//
+// We define a piece's tempo as the minimum number of moves required to move it
+// from its current position back to its starting position on an otherwise empty
+// chess board.  Tempo is a measure of development; good chess players maximize
+// their tempo and minimize their opponents' tempo.  I'm not sure this works
+// perfectly yet, but it at least seems to prevent The Happy King Dance (TM)
+// Gray Matter used to love so much.
 
 	int sign, coef, sum = 0;
 
@@ -207,7 +203,7 @@ int board_heuristic::evaluate_tempo() const
 int board_heuristic::evaluate_pawn() const
 {
 
-/* Evaluate pawn structure. */
+// Evaluate pawn structure.
 
 	int sign, coef, sum;
 	bitboard_t pawns, adj_files, adj_pawns, ranks;
@@ -271,7 +267,7 @@ end:
 int board_heuristic::evaluate_knight() const
 {
 
-/* TODO: Evaluate knight position. */
+// TODO: Evaluate knight position.
 
 	return 0;
 }
@@ -282,7 +278,7 @@ int board_heuristic::evaluate_knight() const
 int board_heuristic::evaluate_bishop() const
 {
 
-/* TODO: Evaluate bishop position. */
+// TODO: Evaluate bishop position.
 
 	return 0;
 }
@@ -293,7 +289,7 @@ int board_heuristic::evaluate_bishop() const
 int board_heuristic::evaluate_rook() const
 {
 
-/* TODO: Evaluate rook position. */
+// TODO: Evaluate rook position.
 
 	return 0;
 }
@@ -304,7 +300,7 @@ int board_heuristic::evaluate_rook() const
 int board_heuristic::evaluate_queen() const
 {
 
-/* TODO: Evaluate queen position. */
+// TODO: Evaluate queen position.
 
 	return 0;
 }
@@ -315,7 +311,7 @@ int board_heuristic::evaluate_queen() const
 int board_heuristic::evaluate_king() const
 {
 
-/* Evaluate king position. */
+// Evaluate king position.
 
 	static const int weight[] = {WEIGHT_CAN_CASTLE,
 	                             WEIGHT_CANT_CASTLE,
