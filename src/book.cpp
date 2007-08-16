@@ -100,18 +100,15 @@ void book::populate_games()
 		move = board_ptr->san_to_coord(*it);
 		if (IS_NULL_MOVE(move))
 		{
-			if (!moves.empty())
-			{
-				games.push_back(moves);
-				moves.clear();
-				board_ptr->set_board();
-			}
+			if (moves.empty())
+				continue;
+			games.push_back(moves);
+			moves.clear();
+			board_ptr->set_board();
+			continue;
 		}
-		else
-		{
-			moves.push_back(move);
-			board_ptr->make(move);
-		}
+		moves.push_back(move);
+		board_ptr->make(move);
 	}
 	board_ptr->set_board();
 }
@@ -132,11 +129,12 @@ void book::populate_table()
 	{
 		moves = *game_it;
 		for (move_it = moves.begin(); move_it != moves.end(); move_it++)
-			if (board_ptr->get_num_moves() < num_moves)
-			{
-				table_ptr->store(board_ptr->get_hash(), MAX_DEPTH, BOOK, *move_it);
-				board_ptr->make(*move_it);
-			}
+		{
+			if (board_ptr->get_num_moves() >= num_moves)
+				break;
+			table_ptr->store(board_ptr->get_hash(), MAX_DEPTH, BOOK, *move_it);
+			board_ptr->make(*move_it);
+		}
 		board_ptr->set_board();
 	}
 }
