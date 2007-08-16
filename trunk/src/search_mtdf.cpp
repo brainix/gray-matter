@@ -237,22 +237,20 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 		// If according to the transposition table, a previous search
 		// from this position determined this move to be best, then in
 		// this search, this move could be good too - score this move
-		// very highly to force it to the front of the list to score it
-		// first to hopefully cause an earlier cutoff.  Otherwise, score
-		// this move according to the history heuristic.
+		// highly to force it to the front of the list to score it first
+		// to hopefully cause an earlier cutoff.  Otherwise, score this
+		// move according to the history heuristic.
 		it->value = *it == m ? WEIGHT_KING : history_ptr->probe(whose, *it);
 	l.sort(descend);
 
 	// Score each move in the list.
 	SET_NULL_MOVE(m);
-	m.value = -INFINITY;
+	m.value = -WEIGHT_ILLEGAL;
 	for (it = l.begin(); it != l.end(); it++)
 	{
 		board_ptr->make(*it);
 		it->value = -minimax(depth - 1, shallowness + 1, -beta, -current).value;
 		board_ptr->unmake();
-		if (it->value == -WEIGHT_ILLEGAL)
-			continue;
 		if (it->value > m.value)
 			current = GREATER(current, (m = *it).value);
 		if (it->value >= beta || timeout_flag && depth_flag)
@@ -260,7 +258,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 	}
 
 	// Was there a legal move in the list?
-	if (m.value == -INFINITY)
+	if (m.value == -WEIGHT_ILLEGAL)
 	{
 		// Nope, there was no legal move in the list.  The current
 		// position must either be stalemate or checkmate.  How can we
