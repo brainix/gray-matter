@@ -46,7 +46,7 @@ book::book(table *t, string& file_name, int n)
 
 	/* Populate the token and move lists. */
 	populate_tokens(stream);
-	populate_moves();
+	populate_games();
 
 	/* Close the file. */
 	stream.close();
@@ -85,20 +85,31 @@ void book::populate_tokens(istream& stream)
 }
 
 /*----------------------------------------------------------------------------*\
- |				populate_moves()			      |
+ |				populate_games()			      |
 \*----------------------------------------------------------------------------*/
-void book::populate_moves()
+void book::populate_games()
 {
 
-/* Based on the token list, populate the move list. */
+/* Based on the token list, populate the game list. */
 
-	for (list<string>::iterator it = tokens.begin(); it != tokens.end(); it++)
+	list<string>::iterator it;
+	move_t move;
+	list<move_t> moves;
+
+	for (it = tokens.begin(); it != tokens.end(); it++)
 	{
-		moves.push_back(board_ptr->san_to_coord(*it));
-		if (IS_NULL_MOVE(moves.back()))
+		move = board_ptr->san_to_coord(*it);
+		if (IS_NULL_MOVE(move))
+		{
+			if (moves.empty())
+				continue;
+			games.push_back(moves);
+			moves.clear();
 			board_ptr->set_board();
-		else
-			board_ptr->make(moves.back());
+			continue;
+		}
+		moves.push_back(move);
+		board_ptr->make(move);
 	}
 	board_ptr->set_board();
 }
@@ -109,18 +120,22 @@ void book::populate_moves()
 void book::populate_table()
 {
 
-/* Based on the move list, populate the transposition table. */
+/* Based on the game list, populate the transposition table. */
 
-	for (list<move_t>::iterator it = moves.begin(); it != moves.end(); it++)
-		if (IS_NULL_MOVE(*it))
-			board_ptr->set_board();
-		else
-			if (board_ptr->get_num_moves() < num_moves)
-			{
-				table_ptr->store(board_ptr->get_hash(), MAX_DEPTH, BOOK, *it);
-				board_ptr->make(*it);
-			}
-	board_ptr->set_board();
+	list<list<move_t> >::iterator game_it;
+	list<move_t> moves;
+	list<move_t>::iterator move_it;
+
+	for (game_it = games.begin(); game_it != games.end(); game_it++)
+	{
+		moves = *game_it;
+		for (move_it = moves.begin(); move_it != moves.end(); move_it++)
+		{
+			table_ptr->store(board_ptr->get_hash(), MAX_DEPTH, BOOK, *move_it);
+			board_ptr->make(*move_it);
+		}
+		board_ptr->set_board();
+	}
 }
 
 /*----------------------------------------------------------------------------*\

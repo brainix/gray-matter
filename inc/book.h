@@ -65,13 +65,13 @@ public:
 private:
 	int num_moves;
 	list<string> tokens;
-	list<move_t> moves;
+	list<list<move_t> > games;
 
 	board_base *board_ptr; // Board representation object.
 	table *table_ptr;      // Transposition table object.
 
 	void populate_tokens(istream& stream);
-	void populate_moves();
+	void populate_games();
 	void populate_table();
 	int tokenize(istream& stream, string& token);
 	bool tokenize_space(istream& stream, string& token);
