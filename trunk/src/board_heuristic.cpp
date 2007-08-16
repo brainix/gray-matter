@@ -24,7 +24,7 @@
 
 static uint8_t tempo[SHAPES][8][8] =
 {
-	/* Pawn: */
+	// Pawn:
 	{{0, 0, 1, 1, 2, 3, 4, 0},
 	 {0, 0, 1, 1, 2, 3, 4, 0},
 	 {0, 0, 1, 1, 2, 3, 4, 0},
@@ -34,7 +34,7 @@ static uint8_t tempo[SHAPES][8][8] =
 	 {0, 0, 1, 1, 2, 3, 4, 0},
 	 {0, 0, 1, 1, 2, 3, 4, 0}},
 
-	/* Knight: */
+	// Knight:
 	{{3, 2, 1, 2, 3, 4, 3, 4},
 	 {0, 3, 2, 3, 2, 3, 4, 4},
 	 {2, 2, 1, 2, 3, 3, 3, 4},
@@ -44,7 +44,7 @@ static uint8_t tempo[SHAPES][8][8] =
 	 {0, 3, 2, 3, 2, 3, 4, 4},
 	 {3, 2, 1, 2, 3, 4, 3, 4}},
 
-	/* Bishop: */
+	// Bishop:
 	{{2, 2, 1, 2, 2, 1, 2, 2},
 	 {2, 1, 2, 2, 1, 2, 2, 2},
 	 {0, 2, 2, 1, 2, 2, 2, 2},
@@ -54,7 +54,7 @@ static uint8_t tempo[SHAPES][8][8] =
 	 {2, 1, 2, 2, 1, 2, 2, 2},
 	 {2, 2, 1, 2, 2, 1, 2, 2}},
 
-	/* Rook: */
+	// Rook:
 	{{0, 1, 1, 1, 1, 1, 1, 1},
 	 {1, 2, 2, 2, 2, 2, 2, 2},
 	 {1, 2, 2, 2, 2, 2, 2, 2},
@@ -64,7 +64,7 @@ static uint8_t tempo[SHAPES][8][8] =
 	 {1, 2, 2, 2, 2, 2, 2, 2},
 	 {0, 1, 1, 1, 1, 1, 1, 1}},
 
-	/* Queen: */
+	// Queen:
 	{{1, 2, 2, 1, 2, 2, 2, 2},
 	 {1, 2, 1, 2, 2, 2, 2, 2},
 	 {1, 1, 2, 2, 2, 2, 2, 2},
@@ -74,7 +74,7 @@ static uint8_t tempo[SHAPES][8][8] =
 	 {1, 2, 2, 1, 2, 2, 2, 2},
 	 {1, 2, 2, 2, 1, 2, 2, 2}},
 
-	/* King: */
+	// King:
 	{{3, 3, 3, 4, 4, 5, 6, 7},
 	 {2, 2, 3, 3, 4, 5, 6, 7},
 	 {1, 2, 2, 3, 4, 5, 6, 7},
@@ -212,10 +212,8 @@ int board_heuristic::evaluate_pawn() const
 	int sign, coef, sum;
 	bitboard_t pawns, adj_files, adj_pawns, ranks;
 
-	/*
-	 | If we've already evaluated this pawn structure, return our previous
-	 | evaluation.
-	 */
+	// If we've already evaluated this pawn structure, return our previous
+	// evaluation.
 	if (pawn_table.probe(pawn_hash, &sum))
 		goto end;
 
@@ -226,21 +224,19 @@ int board_heuristic::evaluate_pawn() const
 		{
 			pawns = state.piece[color][PAWN] & COL_MSK(file);
 			if (!(coef = count(pawns)))
-				/*
-				 | The current color has no pawn on the current
-				 | file.  Move on to the next file.
-				 */
+				// The current color has no pawn on the current
+				// file.  Move on to the next file.
 				continue;
 			adj_files = 0;
 			for (int j = file == 0 ? 1 : -1; j <= (file == 7 ? -1 : 1); j += 2)
 				adj_files |= COL_MSK(j);
 			adj_pawns = state.piece[color][PAWN] & adj_files;
 
-			/* Penalize isolated pawns. */
+			// Penalize isolated pawns.
 			if (!adj_pawns)
 				sum += sign * coef * WEIGHT_ISOLATED;
 
-			/* Penalize doubled pawns. */
+			// Penalize doubled pawns.
 			sum += sign * (coef - 1) * WEIGHT_DOUBLED;
 
 			for (int n, x, y; (n = FST(pawns)) != -1; BIT_CLR(pawns, x, y))
@@ -248,12 +244,12 @@ int board_heuristic::evaluate_pawn() const
 				x = n & 0x7;
 				y = n >> 3;
 
-				/* Penalize backward pawns. */
+				// Penalize backward pawns.
 				ranks = ROW_MSK(y) | ROW_MSK(y - sign);
 				if (!(state.piece[color][PAWN] & adj_files & ranks))
 					sum += sign * WEIGHT_BACKWARD;
 
-				/* Reward passed pawns. */
+				// Reward passed pawns.
 				ranks = 0;
 				for (int k = y + sign; k < 7 && k > 0; k += sign)
 					ranks |= ROW_MSK(k);
@@ -275,7 +271,7 @@ end:
 int board_heuristic::evaluate_knight() const
 {
 
-/* TODO: evaluate knight position. */
+/* TODO: Evaluate knight position. */
 
 	return 0;
 }
@@ -286,7 +282,7 @@ int board_heuristic::evaluate_knight() const
 int board_heuristic::evaluate_bishop() const
 {
 
-/* TODO: evaluate bishop position. */
+/* TODO: Evaluate bishop position. */
 
 	return 0;
 }
@@ -297,7 +293,7 @@ int board_heuristic::evaluate_bishop() const
 int board_heuristic::evaluate_rook() const
 {
 
-/* TODO: evaluate rook position. */
+/* TODO: Evaluate rook position. */
 
 	return 0;
 }
@@ -308,7 +304,7 @@ int board_heuristic::evaluate_rook() const
 int board_heuristic::evaluate_queen() const
 {
 
-/* TODO: evaluate queen position. */
+/* TODO: Evaluate queen position. */
 
 	return 0;
 }

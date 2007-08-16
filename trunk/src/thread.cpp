@@ -58,8 +58,10 @@ int thread_wait(thread_t *thread)
 int thread_destroy(thread_t *thread)
 {
 
-/* Destroy a thread.  If thread is NULL, destroy the calling thread.  Otherwise,
- * destroy the specified thread. */
+/*
+ | Destroy a thread.  If thread is NULL, destroy the calling thread.  Otherwise,
+ | destroy the specified thread.
+ */
 
 #if defined(LINUX) || defined(OS_X)
 	if (thread == NULL)
@@ -263,7 +265,7 @@ int cond_destroy(cond_t *cond)
 #endif
 }
 
-/* Global variables: */
+// Global variables:
 void (*callback)(void*);
 void *callback_data;
 #if defined(WINDOWS)
@@ -277,8 +279,10 @@ thread_t timer_thread = INVALID_HANDLE_VALUE;
 void timer_handler(int num)
 {
 
-/* On Linux and OS X, the alarm has sounded.  Call the previously specified
- * function. */
+/*
+ | On Linux and OS X, the alarm has sounded.  Call the previously specified
+ | function.
+ */
 
 	(*callback)(callback_data);
 }
@@ -310,11 +314,11 @@ DWORD timer_handler(LPVOID arg)
 	                                                   // the other thread.
 	HANDLE timer_id = INVALID_HANDLE_VALUE;
 
-	/* Create an alarm. */
+	// Create an alarm.
 	if ((timer_id = CreateWaitableTimer(NULL, TRUE, NULL)) == NULL)
 		goto end;
 
-	/* Set the alarm. */
+	// Set the alarm.
 	LARGE_INTEGER rel_time;
 	rel_time.QuadPart = -(msec * 100000000L); // We negate this value to
 	                                          // denote time in 100
@@ -322,14 +326,14 @@ DWORD timer_handler(LPVOID arg)
 	if (!SetWaitableTimer(timer_id, &rel_time, 0, NULL, NULL, FALSE))
 		goto end;
 
-	/* Wait for the alarm to sound. */
+	// Wait for the alarm to sound.
 	if (WaitForSingleObject(timer_id, INFINITE))
 		goto end;
 
-	/* Notify the other thread - call the previously specified function. */
+	// Notify the other thread - call the previously specified function.
 	(*callback)(callback_data);
 
-	/* Exit the timer thread. */
+	// Exit the timer thread.
 end:
 	if (timer_id != INVALID_HANDLE_VALUE)
 		CloseHandle(timer_id);
@@ -370,9 +374,9 @@ int timer_set(int csec)
 	itimerval.it_value.tv_usec = csec % 100 * 10000;
 	return setitimer(ITIMER_REAL, &itimerval, NULL) == -1 ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
-	/* Is an alarm already pending? */
+	// Is an alarm already pending?
 	if (timer_thread != INVALID_HANDLE_VALUE)
-		/* Yes.  We can only set one alarm at a time.  :-( */
+		// Yes.  We can only set one alarm at a time.  :-(
 		return CRITICAL;
 	unsigned int msec = csec * 10;
 	return thread_create(&timer_thread, (entry_t) timer_handler, &msec);
@@ -395,9 +399,9 @@ int timer_cancel()
 	itimerval.it_value.tv_usec = 0;
 	return setitimer(ITIMER_REAL, &itimerval, NULL) == -1 ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
-	/* Is an alarm pending? */
+	// Is an alarm pending?
 	if (timer_thread == INVALID_HANDLE_VALUE)
-		/* No.  There's nothing to cancel. */
+		// No.  There's nothing to cancel.
 		return NON_CRITICAL;
 	return thread_destroy(&timer_thread);
 #endif

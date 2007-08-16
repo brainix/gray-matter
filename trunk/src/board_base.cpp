@@ -22,10 +22,10 @@
 #include "gray.h"
 #include "board_base.h"
 
-/* This array maps coordinates between rotated BitBoards. */
+// This array maps coordinates between rotated BitBoards.
 static int coord[MAPS][ANGLES][8][8][COORDS] =
 {
-	/* From 0° to 45° left: */
+	// From 0° to 45° left:
 	{{{{0,0},{1,0},{3,0},{6,0},{2,1},{7,1},{5,2},{4,3}},
 	  {{2,0},{4,0},{7,0},{3,1},{0,2},{6,2},{5,3},{4,4}},
 	  {{5,0},{0,1},{4,1},{1,2},{7,2},{6,3},{5,4},{3,5}},
@@ -35,7 +35,7 @@ static int coord[MAPS][ANGLES][8][8][COORDS] =
 	  {{3,3},{2,4},{1,5},{7,5},{4,6},{0,7},{3,7},{5,7}},
 	  {{3,4},{2,5},{0,6},{5,6},{1,7},{4,7},{6,7},{7,7}}},
 
-	/* From 0° to 0°: */
+	// From 0° to 0°:
 	 {{{0,0},{0,1},{0,2},{0,3},{0,4},{0,5},{0,6},{0,7}},
 	  {{1,0},{1,1},{1,2},{1,3},{1,4},{1,5},{1,6},{1,7}},
 	  {{2,0},{2,1},{2,2},{2,3},{2,4},{2,5},{2,6},{2,7}},
@@ -45,7 +45,7 @@ static int coord[MAPS][ANGLES][8][8][COORDS] =
 	  {{6,0},{6,1},{6,2},{6,3},{6,4},{6,5},{6,6},{6,7}},
 	  {{7,0},{7,1},{7,2},{7,3},{7,4},{7,5},{7,6},{7,7}}},
 
-	/* From 0° to 45° right: */
+	// From 0° to 45° right:
 	 {{{4,3},{4,4},{3,5},{1,6},{6,6},{2,7},{5,7},{7,7}},
 	  {{5,2},{5,3},{5,4},{4,5},{2,6},{7,6},{3,7},{6,7}},
 	  {{7,1},{6,2},{6,3},{6,4},{5,5},{3,6},{0,7},{4,7}},
@@ -55,7 +55,7 @@ static int coord[MAPS][ANGLES][8][8][COORDS] =
 	  {{1,0},{4,0},{0,1},{5,1},{3,2},{2,3},{2,4},{2,5}},
 	  {{0,0},{2,0},{5,0},{1,1},{6,1},{4,2},{3,3},{3,4}}},
 
-	/* From 0° to 90° right: */
+	// From 0° to 90° right:
 	 {{{7,0},{6,0},{5,0},{4,0},{3,0},{2,0},{1,0},{0,0}},
 	  {{7,1},{6,1},{5,1},{4,1},{3,1},{2,1},{1,1},{0,1}},
 	  {{7,2},{6,2},{5,2},{4,2},{3,2},{2,2},{1,2},{0,2}},
@@ -65,7 +65,7 @@ static int coord[MAPS][ANGLES][8][8][COORDS] =
 	  {{7,6},{6,6},{5,6},{4,6},{3,6},{2,6},{1,6},{0,6}},
 	  {{7,7},{6,7},{5,7},{4,7},{3,7},{2,7},{1,7},{0,7}}}},
 
-	/* From 45° left to 0°: */
+	// From 45° left to 0°:
 	{{{{0,0},{2,1},{1,4},{3,3},{4,3},{5,3},{7,2},{6,5}},
 	  {{0,1},{3,0},{2,3},{4,2},{5,2},{6,2},{3,7},{7,4}},
 	  {{1,0},{0,4},{3,2},{5,1},{6,1},{7,1},{4,6},{5,7}},
@@ -75,7 +75,7 @@ static int coord[MAPS][ANGLES][8][8][COORDS] =
 	  {{0,3},{4,0},{1,5},{2,5},{3,5},{5,4},{4,7},{7,6}},
 	  {{1,2},{0,5},{2,4},{3,4},{4,4},{6,3},{5,6},{7,7}}},
 
-	/* From 0° to 0°: */
+	// From 0° to 0°:
 	 {{{0,0},{0,1},{0,2},{0,3},{0,4},{0,5},{0,6},{0,7}},
 	  {{1,0},{1,1},{1,2},{1,3},{1,4},{1,5},{1,6},{1,7}},
 	  {{2,0},{2,1},{2,2},{2,3},{2,4},{2,5},{2,6},{2,7}},
@@ -85,7 +85,7 @@ static int coord[MAPS][ANGLES][8][8][COORDS] =
 	  {{6,0},{6,1},{6,2},{6,3},{6,4},{6,5},{6,6},{6,7}},
 	  {{7,0},{7,1},{7,2},{7,3},{7,4},{7,5},{7,6},{7,7}}},
 
-	/* From 45° right to 0°: */
+	// From 45° right to 0°:
 	 {{{7,0},{6,2},{3,1},{4,3},{4,4},{4,5},{5,7},{2,6}},
 	  {{6,0},{7,3},{4,2},{5,4},{5,5},{5,6},{0,3},{3,7}},
 	  {{7,1},{3,0},{5,3},{6,5},{6,6},{6,7},{1,4},{0,5}},
@@ -95,7 +95,7 @@ static int coord[MAPS][ANGLES][8][8][COORDS] =
 	  {{4,0},{7,4},{2,1},{2,2},{2,3},{3,5},{0,4},{1,7}},
 	  {{5,1},{2,0},{3,2},{3,3},{3,4},{4,6},{1,5},{0,7}}},
 
-	/* From 90° right to 0°: */
+	// From 90° right to 0°:
 	 {{{0,7},{1,7},{2,7},{3,7},{4,7},{5,7},{6,7},{7,7}},
 	  {{0,6},{1,6},{2,6},{3,6},{4,6},{5,6},{6,6},{7,6}},
 	  {{0,5},{1,5},{2,5},{3,5},{4,5},{5,5},{6,5},{7,5}},
@@ -109,15 +109,15 @@ static int coord[MAPS][ANGLES][8][8][COORDS] =
 static int diag_index[15] = {0, 1, 3, 6, 10, 15, 21, 28, 36, 43, 49, 54, 58, 61, 63};
 static bitrow_t diag_mask[15] = {0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x7F, 0xFF, 0x7F, 0x3F, 0x1F, 0x0F, 0x07, 0x03, 0x01};
 
-/* Whether the moves and hash keys have been pre-computed: */
+// Whether the moves and hash keys have been pre-computed:
 bool precomputed = false;
 
-/* Pre-computed moves: */
+// Pre-computed moves:
 bitboard_t squares_king[8][8];
 bitrow_t squares_row[8][256];
 bitboard_t squares_knight[8][8];
 
-/* Zobrist hash keys: */
+// Zobrist hash keys:
 bitboard_t key_piece[COLORS][SHAPES][8][8];
 bitboard_t key_castle[COLORS][SIDES][CASTLE_STATS];
 bitboard_t key_no_en_passant;
@@ -167,15 +167,13 @@ board_base& board_base::operator=(const board_base& that)
 
 /* Overloaded assignment operator. */
 
-	/*
-	 | It's like this and like that and like this and uh.
-	 | It's like that and like this and like that and uh.
-	 | It's like this.  And who gives a f*ck about those?
-	 | So just chill, 'til the next episode.
-	 |
-	 |	Snoop Doggy Dogg and Dr. Dre on overloading the assignment
-	 |	operator
-	 */
+	// It's like this and like that and like this and uh.
+	// It's like that and like this and like that and uh.
+	// It's like this.  And who gives a f*ck about those?
+	// So just chill, 'til the next episode.
+	//
+	//	Snoop Doggy Dogg and Dr. Dre on overloading the assignment
+	//	operator
 	if (this == &that)
 		return *this;
 
@@ -302,15 +300,15 @@ bool board_base::zugzwang() const
 */
 
 	if (check(state.piece[ON_MOVE][KING], OFF_MOVE))
-		/* The color that's on move is in check. */
+		// The color that's on move is in check.
 		return true;
 	for (int color = WHITE; color <= BLACK; color++)
 	{
 		if (!count(state.piece[color][KNIGHT] | state.piece[color][BISHOP] | state.piece[color][ROOK] | state.piece[color][QUEEN]))
-			/* One color only has pawns and a king. */
+			// One color only has pawns and a king.
 			return true;
 		if (!state.piece[color][KING])
-			/* One color doesn't even have a king. */
+			// One color doesn't even have a king.
 			return true;
 	}
 	return false;
@@ -360,7 +358,7 @@ bool board_base::make(move_t m)
 
 /* Make a move. */
 
-	/* Save the current state, rotated BitBoards, and hash keys. */
+	// Save the current state, rotated BitBoards, and hash keys.
 	states.push_back(state);
 	for (int angle = L45; angle <= R90; angle++)
 		for (int color = WHITE; color <= COLORS; color++)
@@ -368,11 +366,11 @@ bool board_base::make(move_t m)
 	hashes.push_back(hash);
 	pawn_hashes.push_back(pawn_hash);
 
-	/* If we're making a null move, skip a bunch of this nonsense. */
+	// If we're making a null move, skip a bunch of this nonsense.
 	if (IS_NULL_MOVE(m))
 		goto end;
 
-	/* Move the piece and remove the captured piece. */
+	// Move the piece and remove the captured piece.
 	for (int shape = PAWN; shape <= KING; shape++)
 	{
 		if (BIT_GET(state.piece[ON_MOVE][shape], m.old_x, m.old_y))
@@ -403,35 +401,29 @@ bool board_base::make(move_t m)
 		}
 	}
 
-	/*
-	 | If we're moving a piece from one of our rooks' initial positions,
-	 | make sure we're no longer marked able to castle on that rook's
-	 | side.
-	 */
+	// If we're moving a piece from one of our rooks' initial positions,
+	// make sure we're no longer marked able to castle on that rook's
+	// side.
 	if ((m.old_x == 0 || m.old_x == 7) && (m.old_y == (ON_MOVE ? 7 : 0)) && state.castle[ON_MOVE][m.old_x == 7] == CAN_CASTLE)
 	{
 		state.castle[ON_MOVE][m.old_x == 7] = CANT_CASTLE;
 		hash ^= key_castle[ON_MOVE][m.old_x == 7][CANT_CASTLE];
 	}
 
-	/*
-	 | If we're moving a piece to one of our opponent's rooks' initial
-	 | positions, make sure our opponent is no longer marked able to castle
-	 | on that rook's side.
-	 */
+	// If we're moving a piece to one of our opponent's rooks' initial
+	// positions, make sure our opponent is no longer marked able to castle
+	// on that rook's side.
 	if ((m.new_x == 0 || m.new_x == 7) && (m.new_y == (OFF_MOVE ? 7 : 0)) && state.castle[OFF_MOVE][m.new_x == 7] == CAN_CASTLE)
 	{
 		state.castle[OFF_MOVE][m.new_x == 7] = CANT_CASTLE;
 		hash ^= key_castle[OFF_MOVE][m.old_x == 7][CANT_CASTLE];
 	}
 
-	/* If we're moving the king: */
+	// If we're moving the king:
 	if (BIT_GET(state.piece[ON_MOVE][KING], m.new_x, m.new_y))
 	{
-		/*
-		 | If we're castling, move the rook and mark us having castled
-		 | on this side.
-		 */
+		// If we're castling, move the rook and mark us having castled
+		// on this side.
 		if (abs((int) m.old_x - (int) m.new_x) == 2)
 		{
 			BIT_CLR(state.piece[ON_MOVE][ROOK], m.new_x == 6 ? 7 : 0, ON_MOVE ? 7 : 0);
@@ -447,10 +439,8 @@ bool board_base::make(move_t m)
 			hash ^= key_castle[ON_MOVE][m.new_x == 6][HAS_CASTLED];
 		}
 
-		/*
-		 | At this point, we've moved the king.  Make sure we're no
-		 | longer marked able to castle on either side.
-		 */
+		// At this point, we've moved the king.  Make sure we're no
+		// longer marked able to castle on either side.
 		for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
 			if (state.castle[ON_MOVE][side] == CAN_CASTLE)
 			{
@@ -459,15 +449,13 @@ bool board_base::make(move_t m)
 			}
 	}
 
-	/* If we're moving a pawn: */
+	// If we're moving a pawn:
 	hash ^= state.en_passant == -1 ? key_no_en_passant : key_en_passant[state.en_passant];
 	pawn_hash ^= state.en_passant == -1 ? key_no_en_passant : key_en_passant[state.en_passant];
 	if (BIT_GET(state.piece[ON_MOVE][PAWN], m.new_x, m.new_y))
 	{
-		/*
-		 | If we're promoting a pawn, replace it with the promotion
-		 | piece.
-		 */
+		// If we're promoting a pawn, replace it with the promotion
+		// piece.
 		if (m.promo)
 		{
 			BIT_CLR(state.piece[ON_MOVE][PAWN], m.new_x, m.new_y);
@@ -477,10 +465,8 @@ bool board_base::make(move_t m)
 			pawn_hash ^= key_piece[ON_MOVE][PAWN][m.new_x][m.new_y];
 		}
 
-		/*
-		 | If we're performing an en passant, remove the captured
-		 | pawn.
-		 */
+		// If we're performing an en passant, remove the captured
+		// pawn.
 		if ((int) m.new_x == state.en_passant && m.new_y == (ON_MOVE ? 2 : 5))
 		{
 			BIT_CLR(state.piece[OFF_MOVE][PAWN], m.new_x, m.old_y);
@@ -490,27 +476,23 @@ bool board_base::make(move_t m)
 			pawn_hash ^= key_piece[OFF_MOVE][PAWN][m.new_x][m.old_y];
 		}
 
-		/*
-		 | If we're advancing a pawn two squares, mark it vulnerable to
-		 | en passant.
-		 */
+		// If we're advancing a pawn two squares, mark it vulnerable to
+		// en passant.
 		state.en_passant = abs((int) m.old_y - (int) m.new_y) == 2 ? (int) m.old_x : -1;
 	}
 	else
-		/*
-		 | Oops.  We're not moving a pawn.  Mark no pawn vulnerable to
-		 | en passant.
-		 */
+		// Oops.  We're not moving a pawn.  Mark no pawn vulnerable to
+		// en passant.
 		state.en_passant = -1;
 	hash ^= state.en_passant == -1 ? key_no_en_passant : key_en_passant[state.en_passant];
 	pawn_hash ^= state.en_passant == -1 ? key_no_en_passant : key_en_passant[state.en_passant];
 
 end:
-	/* Set the other color on move. */
+	// Set the other color on move.
 	state.whose = !state.whose;
 	hash ^= key_whose;
 
-	/* Update the rotated BitBoards. */
+	// Update the rotated BitBoards.
 	for (int angle = L45; angle <= R90; angle++)
 		rotation[angle][COLORS] = rotation[angle][WHITE] | rotation[angle][BLACK];
 
@@ -528,7 +510,7 @@ bool board_base::unmake()
 	if (states.empty())
 		return false;
 
-	/* Restore the previous state, rotated BitBoards, and hash keys. */
+	// Restore the previous state, rotated BitBoards, and hash keys.
 	state = states.back();
 	states.pop_back();
 	for (int angle = R90; angle >= L45; angle--)
@@ -667,11 +649,11 @@ int board_base::perft(int depth)
 	list<move_t>::iterator it;
 	int nodes = 0;
 
-	/* Base case. */
+	// Base case.
 	if (depth == 0)
 		return 1;
 
-	/* Recursive case. */
+	// Recursive case.
 	generate(l, true);
 	for (it = l.begin(); it != l.end(); it++)
 	{
@@ -690,20 +672,20 @@ void board_base::init_state()
 
 /* Initialize the state. */
 
-	/* Clear the previous states. */
+	// Clear the previous states.
 	states.clear();
 
-	/* Initialize the current state. */
+	// Initialize the current state.
 	for (int color = WHITE; color <= BLACK; color++)
 	{
-		/* Clear the board. */
+		// Clear the board.
 		for (int shape = PAWN; shape <= KING; shape++)
 			state.piece[color][shape] = 0;
 
-		/* Place the pawns. */
+		// Place the pawns.
 		ROW_SET(state.piece[color][PAWN], color ? 6 : 1, 0xFF);
 
-		/* Place the other pieces. */
+		// Place the other pieces.
 		BIT_SET(state.piece[color][ROOK],   0, color ? 7 : 0);
 		BIT_SET(state.piece[color][KNIGHT], 1, color ? 7 : 0);
 		BIT_SET(state.piece[color][BISHOP], 2, color ? 7 : 0);
@@ -713,12 +695,12 @@ void board_base::init_state()
 		BIT_SET(state.piece[color][KNIGHT], 6, color ? 7 : 0);
 		BIT_SET(state.piece[color][ROOK],   7, color ? 7 : 0);
 
-		/* Mark both colors able to castle on both sides. */
+		// Mark both colors able to castle on both sides.
 		for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
 			state.castle[color][side] = CAN_CASTLE;
 	}
 
-	/* Mark no pawn vulnerable to en passant and set white on move. */
+	// Mark no pawn vulnerable to en passant and set white on move.
 	state.en_passant = -1;
 	state.whose = WHITE;
 }
@@ -747,13 +729,13 @@ void board_base::init_hash()
 
 /* Initialize the Zobrist hash. */
 
-	/* Clear the previous Zobrist hashes. */
+	// Clear the previous Zobrist hashes.
 	hashes.clear();
 	hash = 0;
 	pawn_hashes.clear();
 	pawn_hash = 0;
 
-	/* Initialize the current Zobrist hash. */
+	// Initialize the current Zobrist hash.
 	for (int color = WHITE; color <= BLACK; color++)
 	{
 		for (int shape = PAWN; shape <= KING; shape++)
@@ -865,7 +847,7 @@ void board_base::generate_queen(list<move_t> &l, bool only_captures) const
 		x = n & 0x7;
 		y = n >> 3;
 
-		/* Generate the horizontal and vertical moves. */
+		// Generate the horizontal and vertical moves.
 		for (int angle = ZERO; angle == ZERO || angle == R90; angle += R90 - ZERO)
 		{
 			int loc = ROW_LOC(x, y, angle);
@@ -883,7 +865,7 @@ void board_base::generate_queen(list<move_t> &l, bool only_captures) const
 			}
 		}
 
-		/* Generate the diagonal moves. */
+		// Generate the diagonal moves.
 		for (int angle = L45; angle == L45 || angle == R45; angle += R45 - L45)
 		{
 			int loc = DIAG_LOC(x, y, angle);
@@ -1007,7 +989,7 @@ void board_base::generate_pawn(list<move_t> &l, bool only_captures) const
 	move_t m;
 	m.value = m.promo = 0;
 
-	/* For its first move, a pawn can advance two squares. */
+	// For its first move, a pawn can advance two squares.
 	if (!only_captures)
 	{
 		b = state.piece[ON_MOVE][PAWN] & ROW_MSK(ON_MOVE ? 6 : 1);
@@ -1025,11 +1007,9 @@ void board_base::generate_pawn(list<move_t> &l, bool only_captures) const
 		}
 	}
 
-	/*
-	 | If our pawn is on our fifth row, and our opponent's pawn is beside
-	 | our pawn, and, as her last move, our opponent advanced her pawn two
-	 | squares, then we can perform an en passant.
-	 */
+	// If our pawn is on our fifth row, and our opponent's pawn is beside
+	// our pawn, and, as her last move, our opponent advanced her pawn two
+	// squares, then we can perform an en passant.
 	if (state.en_passant != -1)
 	{
 		m.promo = 0;
@@ -1041,7 +1021,7 @@ void board_base::generate_pawn(list<move_t> &l, bool only_captures) const
 			l.push_front(m);
 	}
 
-	/* A pawn can advance one square. */
+	// A pawn can advance one square.
 	b = state.piece[ON_MOVE][PAWN];
 	b <<= ON_MOVE ? 0 : 8;
 	b >>= ON_MOVE ? 8 : 0;
@@ -1061,7 +1041,7 @@ void board_base::generate_pawn(list<move_t> &l, bool only_captures) const
 		m.promo = 0;
 	}
 
-	/* A pawn can capture diagonally. */
+	// A pawn can capture diagonally.
 	for (int x = -1; x <= 1; x += 2)
 	{
 		b = state.piece[ON_MOVE][PAWN];
@@ -1093,10 +1073,8 @@ void board_base::precomp_king() const
 
 /* Pre-compute the king moves. */
 
-	/*
-	 | Imagine an empty board except for a king at (x, y).  Mark the king's
-	 | legal moves in the BitBoard squares_king[x][y].
-	 */
+	// Imagine an empty board except for a king at (x, y).  Mark the king's
+	// legal moves in the BitBoard squares_king[x][y].
 	for (int y = 0; y <= 7; y++)
 		for (int x = 0; x <= 7; x++)
 		{
@@ -1105,17 +1083,13 @@ void board_base::precomp_king() const
 				for (int j = -1; j <= 1; j++)
 				{
 					if (!j && !k)
-						/*
-						 | Oops.  The king can't stand
-						 | still.
-						 */
+						// Oops.  The king can't stand
+						// still.
 						continue;
 					if (x + j < 0 || x + j > 7 ||
 					    y + k < 0 || y + k > 7)
-						/*
-						 | Oops.  The king can't step
-						 | off the board.
-						 */
+						// Oops.  The king can't step
+						// off the board.
 						continue;
 					BIT_SET(squares_king[x][y], x + j, y + k);
 				}
@@ -1130,11 +1104,9 @@ void board_base::precomp_row() const
 
 /* Pre-compute the sliding piece moves. */
 
-	/*
-	 | Imagine a sliding piece on square x.  For each possible occupancy
-	 | (combination) of enemy pieces along the sliding piece's row, mark the
-	 | sliding piece's legal moves in the bitrow squares_row[x][occ].
-	 */
+	// Imagine a sliding piece on square x.  For each possible occupancy
+	// (combination) of enemy pieces along the sliding piece's row, mark the
+	// sliding piece's legal moves in the bitrow squares_row[x][occ].
 	for (int x = 0; x <= 7; x++)
 		for (int occ = 0; occ <= 0xFF; occ++)
 		{
@@ -1144,11 +1116,9 @@ void board_base::precomp_row() const
 				{
 					BIT_SET(squares_row[x][occ], j, 0);
 					if (BIT_GET(occ, j, 0))
-						/*
-						 | Oops.  The sliding piece
-						 | can't slide through an enemy
-						 | piece.
-						 */
+						// Oops.  The sliding piece
+						// can't slide through an enemy
+						// piece.
 						break;
 				}
 		}
@@ -1162,10 +1132,8 @@ void board_base::precomp_knight() const
 
 /* Pre-compute the knight moves. */
 
-	/*
-	 | Imagine an empty board except for a knight at (x, y).  Mark the
-	 | knight's legal moves in the BitBoard squares_knight[x][y].
-	 */
+	// Imagine an empty board except for a knight at (x, y).  Mark the
+	// knight's legal moves in the BitBoard squares_knight[x][y].
 	for (int y = 0; y <= 7; y++)
 		for (int x = 0; x <= 7; x++)
 		{
@@ -1174,19 +1142,15 @@ void board_base::precomp_knight() const
 				for (int j = -2; j <= 2; j++)
 				{
 					if (abs(j) == abs(k) || !j || !k)
-						/*
-						 | Oops.  The knight can only
-						 | jump two squares in one
-						 | direction and one square in a
-						 | perpendicular direction.
-						 */
+						// Oops.  The knight can only
+						// jump two squares in one
+						// direction and one square in a
+						// perpendicular direction.
 						continue;
 					if (x + j < 0 || x + j > 7 ||
 					    y + k < 0 || y + k > 7)
-						/*
-						 | Oops.  The knight can't jump
-						 | off the board.
-						 */
+						// Oops.  The knight can't jump
+						// off the board.
 						continue;
 					BIT_SET(squares_knight[x][y], x + j, y + k);
 				}
@@ -1209,7 +1173,7 @@ int board_base::mate()
 	list<move_t> l;
 	bool escape = false;
 
-	/* Look for a legal move. */
+	// Look for a legal move.
 	generate(l);
 	for (list<move_t>::iterator it = l.begin(); it != l.end() && !escape; it++)
 	{
@@ -1219,11 +1183,9 @@ int board_base::mate()
 		unmake();
 	}
 
-	/*
-	 | If there's a legal move, the game isn't over.  Otherwise, if the king
-	 | isn't attacked, the game is over due to stalemate.  Otherwise, the
-	 | game is over due to checkmate.
-	 */
+	// If there's a legal move, the game isn't over.  Otherwise, if the king
+	// isn't attacked, the game is over due to stalemate.  Otherwise, the
+	// game is over due to checkmate.
 	return escape ? IN_PROGRESS : !check(state.piece[ON_MOVE][KING], OFF_MOVE) ? STALEMATE : CHECKMATE;
 }
 
@@ -1243,16 +1205,14 @@ bool board_base::check(bitboard_t b1, bool color) const
 		x = n & 0x7;
 		y = n >> 3;
 
-		/* Look for a king attack. */
+		// Look for a king attack.
 		if (squares_king[x][y] & state.piece[color][KING])
 			return true;
 
-		/*
-		 | Look for a horizontal or vertical queen or rook attack.  The
-		 | logic here is interesting.  Pretend our king were a rook.
-		 | Would it be able to capture a rook?  If so, we're in check.
-		 | If not, we're not in check, at least not by a rook.
-		 */
+		// Look for a horizontal or vertical queen or rook attack.  The
+		// logic here is interesting.  Pretend our king were a rook.
+		// Would it be able to capture a rook?  If so, we're in check.
+		// If not, we're not in check, at least not by a rook.
 		for (int angle = ZERO; angle == ZERO || angle == R90; angle += R90 - ZERO)
 		{
 			int loc = ROW_LOC(x, y, angle);
@@ -1267,7 +1227,7 @@ bool board_base::check(bitboard_t b1, bool color) const
 				return true;
 		}
 
-		/* Look for a diagonal queen or bishop attack. */
+		// Look for a diagonal queen or bishop attack.
 		for (int angle = L45; angle == L45 || angle == R45; angle += R45 - L45)
 		{
 			int loc = DIAG_LOC(x, y, angle);
@@ -1283,24 +1243,22 @@ bool board_base::check(bitboard_t b1, bool color) const
 				return true;
 		}
 
-		/* Look for a knight attack. */
+		// Look for a knight attack.
 		if (squares_knight[x][y] & state.piece[color][KNIGHT])
 			return true;
 
-		/*
-		 | Look for a pawn attack.  The logic here is the same as for
-		 | the previous pieces, but things are a bit easier because a
-		 | pawn can attack at most 2 squares and, conversely, a square
-		 | can be attacked by at most 2 pawns.  We simply mark the
-		 | squares in the (at most) 2 columns from which a pawn could
-		 | attack and find the intersection between those squares and
-		 | the squares in the (at most) 1 row from which a pawn could
-		 | attack.  This results in 0, 1, or 2 marked squares from which
-		 | a pawn could attack.  Then, we simply check whether an
-		 | opposing pawn sits on any of our marked squares.  If so,
-		 | we're in check.  If not, we're not in check, at least not by
-		 | a pawn.  Easy, breezy, beautiful.
-		 */
+		// Look for a pawn attack.  The logic here is the same as for
+		// the previous pieces, but things are a bit easier because a
+		// pawn can attack at most 2 squares and, conversely, a square
+		// can be attacked by at most 2 pawns.  We simply mark the
+		// squares in the (at most) 2 columns from which a pawn could
+		// attack and find the intersection between those squares and
+		// the squares in the (at most) 1 row from which a pawn could
+		// attack.  This results in 0, 1, or 2 marked squares from which
+		// a pawn could attack.  Then, we simply check whether an
+		// opposing pawn sits on any of our marked squares.  If so,
+		// we're in check.  If not, we're not in check, at least not by
+		// a pawn.  Easy, breezy, beautiful.
 		bitboard_t b2 = 0;
 		for (int j = x == 0 ? 1 : -1; j <= (x == 7 ? -1 : 1); j += 2)
 			b2 |= COL_MSK(x + j);
@@ -1325,10 +1283,8 @@ bool board_base::insufficient() const
 		if (state.piece[color][PAWN] ||
 		    state.piece[color][ROOK] ||
 		    state.piece[color][QUEEN])
-			/*
-			 | Oops.  There's a pawn, rook, or queen on the board.
-			 | Someone could mate.
-			 */
+			// Oops.  There's a pawn, rook, or queen on the board.
+			// Someone could mate.
 			return false;
 
 	for (int color = WHITE; color <= BLACK; color++)

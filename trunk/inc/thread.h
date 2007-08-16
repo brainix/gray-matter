@@ -39,20 +39,20 @@
 #ifndef THREAD_H
 #define THREAD_H
 
-/* For the functions defined here, these are the standard return values: */
+// For the functions defined here, these are the standard return values:
 #define CRITICAL	-1 // Critical failure.      :-(
 #define NON_CRITICAL	 0 // Non-critical failure.  :-|
 #define SUCCESSFUL	 1 // Success.               :-)
 
 #if defined(LINUX) || defined(OS_X)
 
-/* POSIX header files: */
+// POSIX header files:
 #include <errno.h>
 #include <pthread.h>
 #include <signal.h>
 #include <sys/time.h>
 
-/* POSIX data types: */
+// POSIX data types:
 typedef pthread_t thread_t;          // Thread.
 typedef void *(*entry_t)(void *arg); // Entry point.
 typedef pthread_mutex_t mutex_t;     // Mutex.
@@ -60,10 +60,10 @@ typedef pthread_cond_t cond_t;       // Condition variable.
 
 #elif defined(WINDOWS)
 
-/* Win32 header files: */
+// Win32 header files:
 #include <windows.h>
 
-/* Win32 data types: */
+// Win32 data types:
 typedef HANDLE thread_t;              // Thread.
 typedef DWORD (*entry_t)(LPVOID arg); // Entry point.
 typedef HANDLE mutex_t;               // Mutex.
@@ -78,26 +78,26 @@ typedef struct                        // Condition variable.
 
 #endif
 
-/* Function prototypes related to threads: */
+// Function prototypes related to threads:
 int thread_create(thread_t *thread, entry_t entry, void *arg);
 int thread_wait(thread_t *thread);
 int thread_destroy(thread_t *thread);
 
-/* Function prototypes related to mutexes: */
+// Function prototypes related to mutexes:
 int mutex_create(mutex_t *mutex);
 int mutex_try_lock(mutex_t *mutex);
 int mutex_lock(mutex_t *mutex);
 int mutex_unlock(mutex_t *mutex);
 int mutex_destroy(mutex_t *mutex);
 
-/* Function prototypes related to condition variables: */
+// Function prototypes related to condition variables:
 int cond_create(cond_t *cond, void *attr);
 int cond_wait(cond_t *cond, mutex_t *mutex);
 int cond_signal(cond_t *cond);
 int cond_broadcast(cond_t *cond);
 int cond_destroy(cond_t *cond);
 
-/* Function prototypes related to timers: */
+// Function prototypes related to timers:
 int timer_function(void (*function)(void *), void *data);
 int timer_set(int csec);
 int timer_cancel();

@@ -22,7 +22,7 @@
 #ifndef CLOCK_H
 #define CLOCK_H
 
-/* Default Gray Matter stuff: */
+// Default Gray Matter stuff:
 #include "config.h"
 #include "types.h"
 #include "thread.h"

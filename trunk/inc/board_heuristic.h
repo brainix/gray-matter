@@ -24,16 +24,16 @@
 
 using namespace std;
 
-/* Default Gray Matter stuff: */
+// Default Gray Matter stuff:
 #include "config.h"
 #include "types.h"
 #include "thread.h"
 
-/* Extra Gray Matter stuff: */
+// Extra Gray Matter stuff:
 #include "board_base.h"
 #include "table.h"
 
-/* Forward declarations: */
+// Forward declarations:
 class pawn_table;
 
 class board_heuristic : public board_base
