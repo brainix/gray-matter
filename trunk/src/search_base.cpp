@@ -271,7 +271,7 @@ void search_base::start()
 /*----------------------------------------------------------------------------*\
  |				   shuffle()				      |
 \*----------------------------------------------------------------------------*/
-bool search_mtdf::shuffle(move_t m1, move_t m2)
+bool search_base::shuffle(move_t m1, move_t m2)
 {
 
 /*
@@ -289,7 +289,7 @@ bool search_mtdf::shuffle(move_t m1, move_t m2)
 /*----------------------------------------------------------------------------*\
  |				   descend()				      |
 \*----------------------------------------------------------------------------*/
-bool search_mtdf::descend(move_t m1, move_t m2)
+bool search_base::descend(move_t m1, move_t m2)
 {
 
 /*
