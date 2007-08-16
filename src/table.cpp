@@ -40,6 +40,7 @@ table::table(int mb)
 	}
 	catch (...)
 	{
+		// XXX: We should probably do something here.
 	}
 	clear();
 }
@@ -134,6 +135,7 @@ history::history()
 	}
 	catch (...)
 	{
+		// XXX: We should probably do something here.
 	}
 	clear();
 }
@@ -209,6 +211,7 @@ pawn::pawn(int mb)
 	}
 	catch (...)
 	{
+		// XXX: We should probably do something here.
 	}
 	clear();
 }
