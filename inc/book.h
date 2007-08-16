@@ -24,20 +24,20 @@
 
 using namespace std;
 
-/* C++ stuff: */
+// C++ stuff:
 #include <fstream>
 #include <string>
 
-/* Default Gray Matter stuff: */
+// Default Gray Matter stuff:
 #include "config.h"
 #include "types.h"
 
-/* Extra Gray Matter stuff: */
+// Extra Gray Matter stuff:
 #include "board_base.h"
 #include "board_heuristic.h"
 #include "table.h"
 
-/* Token types: */
+// Token types:
 #define TOKEN_UNKNOWN		0 // Unknown.
 #define TOKEN_SPACE		1 // Whitespace.
 #define TOKEN_STRING		2 // String.
@@ -51,7 +51,7 @@ using namespace std;
 			 (c) == (int) '=' || (c) == (int) ':' || \
 			 (c) == (int) '-')
 
-/* Forward declarations: */
+// Forward declarations:
 class board_base;
 class table;
 
@@ -61,12 +61,12 @@ public:
 	book(table *t, string& file_name, int n);
 	void read();
 private:
-	int num_moves;
-	list<string> tokens;
-	list<list<move_t> > games;
+	int num_moves;             //
+	list<string> tokens;       // Token list.
+	list<list<move_t> > games; // Game list.
 
-	board_base *board_ptr; // Board representation object.
-	table *table_ptr;      // Transposition table object.
+	board_base *board_ptr;     // Board representation object.
+	table *table_ptr;          // Transposition table object.
 
 	void populate_tokens(istream& stream);
 	void populate_games();

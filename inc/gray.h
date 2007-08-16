@@ -24,7 +24,7 @@
 
 #define _REENTRANT
 
-/* C stuff: */
+// C stuff:
 #include <ctype.h>
 #include <inttypes.h>
 #include <limits.h>
@@ -39,14 +39,14 @@
 #include <time.h>
 #include <unistd.h>
 
-/* C++ stuff: */
+// C++ stuff:
 #include <fstream>
 #include <iostream>
 #include <string>
 
-/* Convenience macros: */
-#define LESSER(j, k)	((j) < (k) ? (j) : (k))
-#define GREATER(j, k)	((j) > (k) ? (j) : (k))
-#define ABS(j)		(j >= 0 ? j : -j)
+// Convenience macros:
+#define LESSER(j, k)	((j) < (k) ? (j) : (k)) // The lesser of two numbers.
+#define GREATER(j, k)	((j) > (k) ? (j) : (k)) // The greater of two numbers.
+#define ABS(j)		(j >= 0 ? j : -j)       // The absolute value of a number.
 
 #endif

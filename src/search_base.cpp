@@ -27,10 +27,8 @@
 search_base::search_base(table *t, history *h, chess_clock *c, xboard *x)
 {
 
-/*
- | Constructor.  Important!  Seed the random number generator - issue
- | srand(time(NULL)); - before instantiating this class!
- */
+// Constructor.  Important!  Seed the random number generator - issue
+// srand(time(NULL)); - before instantiating this class!
 
 	max_depth = MAX_DEPTH;
 	output = false;
@@ -55,7 +53,7 @@ search_base::search_base(table *t, history *h, chess_clock *c, xboard *x)
 search_base::~search_base()
 {
 
-/* Destructor. */
+// Destructor.
 
 	cond_destroy(&search_cond);
 	mutex_destroy(&search_mutex);
@@ -69,7 +67,7 @@ search_base::~search_base()
 class search_base& search_base::operator=(const search_base& that)
 {
 
-/* Overloaded assignment operator. */
+// Overloaded assignment operator.
 
 	if (this == &that)
 		return *this;
@@ -119,34 +117,32 @@ move_t search_base::get_hint() const
 void search_base::change(int s, const board_base& now)
 {
 
-/*
- | Synchronize the board to the position we're to search from (if necessary) and
- | change the search status (to idling, thinking, pondering, or quitting).
- |
- | Subtle!  start() and change() operate on the same search object (therefore
- | the same board object) but are called from different threads.  Unless we take
- | care to avoid this race condition, start() could ponder and go nuts on the
- | board while change() could simultaneously set the board to a different
- | position.  We avoid this naughty situation by using the search's timeout
- | mechanism and the board's locking mechanism to guarantee the events occur in
- | the following sequence:
- |
- |	time		search thread		I/O thread
- |	----		-------------		----------
- |	  0		grab board
- |	  1		start pondering
- |	  2					force pondering timeout
- |	  3					wait for board
- |	  4		stop pondering
- |	  5		release board
- |	  6		wait for command
- |	  7					grab board
- |	  8					set board position
- |	  9					release board
- |	 10					send thinking command
- |	 11		grab board
- |	 12		start thinking
- */
+// Synchronize the board to the position we're to search from (if necessary) and
+// change the search status (to idling, thinking, pondering, or quitting).
+//
+// Subtle!  start() and change() operate on the same search object (therefore
+// the same board object) but are called from different threads.  Unless we take
+// care to avoid this race condition, start() could ponder and go nuts on the
+// board while change() could simultaneously set the board to a different
+// position.  We avoid this naughty situation by using the search's timeout
+// mechanism and the board's locking mechanism to guarantee the events occur in
+// the following sequence:
+//
+//	time		search thread		I/O thread
+//	----		-------------		----------
+//	  0		grab board
+//	  1		start pondering
+//	  2					force pondering timeout
+//	  3					wait for board
+//	  4		stop pondering
+//	  5		release board
+//	  6		wait for command
+//	  7					grab board
+//	  8					set board position
+//	  9					release board
+//	 10					send thinking command
+//	 11		grab board
+//	 12		start thinking
 
 	// Force pondering timeout.
 	mutex_lock(&timeout_mutex);
@@ -183,7 +179,7 @@ thread_t search_base::get_thread() const
 void search_base::set_depth(int d)
 {
 
-/* Set the maximum search depth. */
+// Set the maximum search depth.
 
 	max_depth = d;
 }
@@ -194,7 +190,7 @@ void search_base::set_depth(int d)
 void search_base::set_output(bool o)
 {
 
-/* Set whether to print thinking output. */
+// Set whether to print thinking output.
 
 	output = o;
 }
@@ -213,7 +209,7 @@ void search_base::_handle(void *arg)
 void search_base::handle()
 {
 
-/* The alarm has sounded.  Handle it. */
+// The alarm has sounded.  Handle it.
 
 	mutex_lock(&timeout_mutex);
 	timeout_flag = true;
@@ -235,11 +231,9 @@ void *search_base::_start(void *arg)
 void search_base::start()
 {
 
-/*
- | Think of this method as main() for the search thread.  Wait for the status to
- | change, then do the requested work.  Rinse, lather, repeat, until XBoard
- | commands us to quit.
- */
+// Think of this method as main() for the search thread.  Wait for the status to
+// change, then do the requested work.  Rinse, lather, repeat, until XBoard
+// commands us to quit.
 
 	int old_search_status = search_status = IDLING;
 
@@ -274,14 +268,12 @@ void search_base::start()
 bool search_base::shuffle(move_t m1, move_t m2)
 {
 
-/*
- | Pass this method as the comparison function to l.sort() to randomize the move
- | list.  This is a magnificent hack.
- |
- | Note: This hack wouldn't work for O(n²) list sort algorithms.  But if your
- | STL's list sort algorithm is O(n²), you don't deserve for this hack to work
- | anyway.
- */
+// Pass this method as the comparison function to l.sort() to randomize the move
+// list.  This is a magnificent hack.
+//
+// Note: This hack wouldn't work for O(n²) list sort algorithms.  But if your
+// STL's list sort algorithm is O(n²), you don't deserve for this hack to work
+// anyway.
 
 	return rand() & 1;
 }
@@ -292,10 +284,8 @@ bool search_base::shuffle(move_t m1, move_t m2)
 bool search_base::descend(move_t m1, move_t m2)
 {
 
-/*
- | Pass this method as the comparison function to l.sort() to sort the move list
- | from highest to lowest by score.
- */
+// Pass this method as the comparison function to l.sort() to sort the move list
+// from highest to lowest by score.
 
 	return m1.value > m2.value;
 }
@@ -306,7 +296,7 @@ bool search_base::descend(move_t m1, move_t m2)
 void search_base::extract(int s)
 {
 
-/* Extract the principal variation and hint from the transposition table. */
+// Extract the principal variation and hint from the transposition table.
 
 	move_t m;
 	pv.clear();

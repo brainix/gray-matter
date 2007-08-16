@@ -130,10 +130,8 @@ bitboard_t key_whose;
 board_base::board_base()
 {
 
-/*
- | Constructor.  Important!  Seed the random number generator - issue
- | srand(time(NULL)); - before instantiating this class!
- */
+// Constructor.  Important!  Seed the random number generator - issue
+// srand(time(NULL)); - before instantiating this class!
 
 	if (!precomputed)
 	{
@@ -154,7 +152,7 @@ board_base::board_base()
 board_base::~board_base()
 {
 
-/* Destructor. */
+// Destructor.
 
 	mutex_destroy(&mutex);
 }
@@ -165,7 +163,7 @@ board_base::~board_base()
 board_base& board_base::operator=(const board_base& that)
 {
 
-/* Overloaded assignment operator. */
+// Overloaded assignment operator.
 
 	// It's like this and like that and like this and uh.
 	// It's like that and like this and like that and uh.
@@ -198,7 +196,7 @@ board_base& board_base::operator=(const board_base& that)
 void board_base::set_board()
 {
 
-/* Set the board. */
+// Set the board.
 
 	init_state();
 	init_rotation();
@@ -227,7 +225,7 @@ void board_base::unlock()
 bool board_base::get_whose() const
 {
 
-/* Return the color on move. */
+// Return the color on move.
 
 	return ON_MOVE;
 }
@@ -238,7 +236,7 @@ bool board_base::get_whose() const
 bitboard_t board_base::get_hash() const
 {
 
-/* Return the hash key for the current state. */
+// Return the hash key for the current state.
 
 	return hash;
 }
@@ -286,18 +284,16 @@ bool board_base::check() const
 bool board_base::zugzwang() const
 {
 
-/*
- | Is the current position zugzwang?
- |
- | In most positions, there's at least one move the color on move could make to
- | improve her lot.  In these normal positions, null-move pruning works.
- | However, in certain positions, her best move would be to pass (particularly
- | in endgame).  These positions are called "zugzwang" (German for "compelled to
- | move").  In these zugzwang positions, null-move pruning doesn't work.
- |
- | The search class calls this method on a particular position to decide whether
- | or not to try null-move pruning.
-*/
+// Is the current position zugzwang?
+//
+// In most positions, there's at least one move the color on move could make to
+// improve her lot.  In these normal positions, null-move pruning works.
+// However, in certain positions, her best move would be to pass (particularly
+// in endgame).  These positions are called "zugzwang" (German for "compelled to
+// move").  In these zugzwang positions, null-move pruning doesn't work.
+//
+// The search class calls this method on a particular position to decide whether
+// or not to try null-move pruning.
 
 	if (check(state.piece[ON_MOVE][KING], OFF_MOVE))
 		// The color that's on move is in check.
@@ -356,7 +352,7 @@ void board_base::generate(list<move_t> &l, bool only_legal_moves, bool only_capt
 bool board_base::make(move_t m)
 {
 
-/* Make a move. */
+// Make a move.
 
 	// Save the current state, rotated BitBoards, and hash keys.
 	states.push_back(state);
@@ -505,7 +501,7 @@ end:
 bool board_base::unmake()
 {
 
-/* Take back the last move. */
+// Take back the last move.
 
 	if (states.empty())
 		return false;
@@ -532,7 +528,7 @@ bool board_base::unmake()
 move_t board_base::san_to_coord(string& san)
 {
 
-/* Convert a move from standard algebraic notation to coordinate notation. */
+// Convert a move from standard algebraic notation to coordinate notation.
 
 	int index = 0;
 	int shape = -1, old_x = -1, old_y = -1, new_x = -1, new_y = -1, promo = -1;
@@ -639,11 +635,9 @@ move_t board_base::san_to_coord(string& san)
 int board_base::perft(int depth)
 {
 
-/*
- | From the current position, grow the move tree to the given depth and count
- | the leaf nodes.  This may sound useless, but it makes for a good unit test
- | and benchmark for the move generator.
- */
+// From the current position, grow the move tree to the given depth and count
+// the leaf nodes.  This may sound useless, but it makes for a good unit test
+// and benchmark for the move generator.
 
 	list<move_t> l;
 	list<move_t>::iterator it;
@@ -670,7 +664,7 @@ int board_base::perft(int depth)
 void board_base::init_state()
 {
 
-/* Initialize the state. */
+// Initialize the state.
 
 	// Clear the previous states.
 	states.clear();
@@ -711,7 +705,7 @@ void board_base::init_state()
 void board_base::init_rotation()
 {
 
-/* Initialize the rotated BitBoards. */
+// Initialize the rotated BitBoards.
 
 	for (int angle = L45; angle <= R90; angle++)
 		for (int color = WHITE; color <= COLORS; color++)
@@ -727,7 +721,7 @@ void board_base::init_rotation()
 void board_base::init_hash()
 {
 
-/* Initialize the Zobrist hash. */
+// Initialize the Zobrist hash.
 
 	// Clear the previous Zobrist hashes.
 	hashes.clear();
@@ -767,7 +761,7 @@ void board_base::init_hash()
 void board_base::precomp_key() const
 {
 
-/* Pre-compute the Zobrist hash keys. */
+// Pre-compute the Zobrist hash keys.
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
@@ -794,7 +788,7 @@ void board_base::precomp_key() const
 void board_base::generate_king(list<move_t> &l, bool only_captures) const
 {
 
-/* Generate the king moves. */
+// Generate the king moves.
 
 	static const bitboard_t squares_castle[COLORS][SIDES][REQS] =
 		{{{0x000000000000000EULL,    // The squares that must be unoccupied on the queen side in order for the white king to be able to castle.
@@ -838,7 +832,7 @@ void board_base::generate_king(list<move_t> &l, bool only_captures) const
 void board_base::generate_queen(list<move_t> &l, bool only_captures) const
 {
 
-/* Generate the queen moves. */
+// Generate the queen moves.
 
 	bitboard_t from = state.piece[ON_MOVE][QUEEN];
 
@@ -892,7 +886,7 @@ void board_base::generate_queen(list<move_t> &l, bool only_captures) const
 void board_base::generate_rook(list<move_t> &l, bool only_captures) const
 {
 
-/* Generate the rook moves. */
+// Generate the rook moves.
 
 	bitboard_t from = state.piece[ON_MOVE][ROOK];
 
@@ -925,7 +919,7 @@ void board_base::generate_rook(list<move_t> &l, bool only_captures) const
 void board_base::generate_bishop(list<move_t> &l, bool only_captures) const
 {
 
-/* Generate the bishop moves. */
+// Generate the bishop moves.
 
 	bitboard_t from = state.piece[ON_MOVE][BISHOP];
 
@@ -959,7 +953,7 @@ void board_base::generate_bishop(list<move_t> &l, bool only_captures) const
 void board_base::generate_knight(list<move_t> &l, bool only_captures) const
 {
 
-/* Generate the knight moves. */
+// Generate the knight moves.
 
 	bitboard_t from = state.piece[ON_MOVE][KNIGHT];
 
@@ -983,7 +977,7 @@ void board_base::generate_knight(list<move_t> &l, bool only_captures) const
 void board_base::generate_pawn(list<move_t> &l, bool only_captures) const
 {
 
-/* Generate the pawn moves. */
+// Generate the pawn moves.
 
 	bitboard_t b;
 	move_t m;
@@ -1071,7 +1065,7 @@ void board_base::generate_pawn(list<move_t> &l, bool only_captures) const
 void board_base::precomp_king() const
 {
 
-/* Pre-compute the king moves. */
+// Pre-compute the king moves.
 
 	// Imagine an empty board except for a king at (x, y).  Mark the king's
 	// legal moves in the BitBoard squares_king[x][y].
@@ -1102,7 +1096,7 @@ void board_base::precomp_king() const
 void board_base::precomp_row() const
 {
 
-/* Pre-compute the sliding piece moves. */
+// Pre-compute the sliding piece moves.
 
 	// Imagine a sliding piece on square x.  For each possible occupancy
 	// (combination) of enemy pieces along the sliding piece's row, mark the
@@ -1130,7 +1124,7 @@ void board_base::precomp_row() const
 void board_base::precomp_knight() const
 {
 
-/* Pre-compute the knight moves. */
+// Pre-compute the knight moves.
 
 	// Imagine an empty board except for a knight at (x, y).  Mark the
 	// knight's legal moves in the BitBoard squares_knight[x][y].
@@ -1163,12 +1157,10 @@ void board_base::precomp_knight() const
 int board_base::mate()
 {
 
-/*
- | Is the game over due to stalemate or checkmate?  We test for both conditions
- | in the same function because they're so similar.  During both, the color on
- | move doesn't have a legal move.  The only difference: during stalemate, her
- | king isn't attacked; during checkmate, her king is attacked.
- */
+// Is the game over due to stalemate or checkmate?  We test for both conditions
+// in the same function because they're so similar.  During both, the color on
+// move doesn't have a legal move.  The only difference: during stalemate, her
+// king isn't attacked; during checkmate, her king is attacked.
 
 	list<move_t> l;
 	bool escape = false;
@@ -1195,10 +1187,8 @@ int board_base::mate()
 bool board_base::check(bitboard_t b1, bool color) const
 {
 
-/*
- | Is any of the specified squares being attacked by the specified color?  Check
- | for check.  ;-)
- */
+// Is any of the specified squares being attacked by the specified color?  Check
+// for check.  ;-)
 
 	for (int n, x, y; (n = FST(b1)) != -1; BIT_CLR(b1, x, y))
 	{
@@ -1275,7 +1265,7 @@ bool board_base::check(bitboard_t b1, bool color) const
 bool board_base::insufficient() const
 {
 
-/* Is the game drawn due to insufficient material? */
+// Is the game drawn due to insufficient material?
 
 	int n_count = 0, b_count = 0, b_array[COLORS][COLORS];
 
@@ -1304,7 +1294,7 @@ bool board_base::insufficient() const
 bool board_base::three() const
 {
 
-/* Is the game drawn by threefold repetition? */
+// Is the game drawn by threefold repetition?
 
 	int sum = 1;
 
@@ -1321,7 +1311,7 @@ bool board_base::three() const
 bool board_base::fifty() const
 {
 
-/* Is the game drawn by the fifty move rule? */
+// Is the game drawn by the fifty move rule?
 
 	int num[COLORS] = {count(rotation[ZERO][WHITE]), count(rotation[ZERO][BLACK])}, sum = 0;
 
@@ -1341,7 +1331,7 @@ bool board_base::fifty() const
 int board_base::count(bitboard_t b) const
 {
 
-/* Count the number of pieces in a BitBoard. */
+// Count the number of pieces in a BitBoard.
 
 	static const int table[] = {0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4};
 	int sum = 0;
@@ -1351,11 +1341,9 @@ int board_base::count(bitboard_t b) const
 	return sum;
 }
 
-/*
- | These next two methods, we shamelessly yoinked from the GNU C Library,
- | version 2.5, copyright © 1991-1998, the Free Software Foundation, originally
- | written by Torbjorn Granlund <tege@sics.se>.
- */
+// These next two methods, we shamelessly yoinked from the GNU C Library,
+// version 2.5, copyright © 1991-1998, the Free Software Foundation, originally
+// written by Torbjorn Granlund <tege@sics.se>.
 
 /*----------------------------------------------------------------------------*\
  |				   find_64()				      |
@@ -1363,11 +1351,9 @@ int board_base::count(bitboard_t b) const
 int board_base::find_64(int64_t n) const
 {
 
-/*
- | Find the first (least significant) set bit in a 64-bit integer.  The return
- | value ranges from 0 (for no bits set) to 64 (for only the most significant
- | bit set).
- */
+// Find the first (least significant) set bit in a 64-bit integer.  The return
+// value ranges from 0 (for no bits set) to 64 (for only the most significant
+// bit set).
 
 #if defined(OS_X) || defined(WINDOWS)
 	n &= -n;
@@ -1389,11 +1375,9 @@ int board_base::find_64(int64_t n) const
 int board_base::find_32(int32_t n) const
 {
 
-/*
- | Find the first (least significant) set bit in a 32-bit integer.  The return
- | value ranges from 0 (for no bits set) to 32 (for only the most significant
- | bit set).
- */
+// Find the first (least significant) set bit in a 32-bit integer.  The return
+// value ranges from 0 (for no bits set) to 32 (for only the most significant
+// bit set).
 
 #if defined(LINUX) || defined(OS_X)
 	return ffs(n);
@@ -1421,7 +1405,7 @@ int board_base::find_32(int32_t n) const
 bitboard_t board_base::rotate(bitboard_t b1, int map, int angle) const
 {
 
-/* Rotate a BitBoard. */
+// Rotate a BitBoard.
 
 	bitboard_t b2 = 0;
 
@@ -1440,7 +1424,7 @@ bitboard_t board_base::rotate(bitboard_t b1, int map, int angle) const
 uint64_t board_base::randomize() const
 {
 
-/* Generate a 64-bit pseudo-random number. */
+// Generate a 64-bit pseudo-random number.
 
 #if defined(LINUX)
 	return (uint64_t) rand() << 32 | rand();
@@ -1457,7 +1441,7 @@ uint64_t board_base::randomize() const
 void board_base::insert(int x, int y, bitboard_t b, int angle, list<move_t> &l, bool pos) const
 {
 
-/* Prepend or append a piece's possible moves to a list. */
+// Prepend or append a piece's possible moves to a list.
 
 	move_t m;
 	m.old_x = x;

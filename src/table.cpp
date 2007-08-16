@@ -28,7 +28,7 @@
 table::table(int mb)
 {
 
-/* Constructor. */
+// Constructor.
 
 	try
 	{
@@ -50,7 +50,7 @@ table::table(int mb)
 table::~table()
 {
 
-/* Destructor. */
+// Destructor.
 
 	for (int policy = DEEP; policy <= FRESH; policy++)
 		delete[] data[policy];
@@ -63,7 +63,7 @@ table::~table()
 void table::clear()
 {
 
-/* Clear the transposition table. */
+// Clear the transposition table.
 
 	for (int policy = DEEP; policy <= FRESH; policy++)
 		for (uint64_t index = 0; index < slots; index++)
@@ -187,10 +187,8 @@ int history::probe(bool color, move_t move) const
 void history::store(bool color, move_t move, int depth)
 {
 
-/*
- | Gray Matter has searched to the specified depth and determined the specified
- | move for the specified color to be the best.  Note this.
- */
+// Gray Matter has searched to the specified depth and determined the specified
+// move for the specified color to be the best.  Note this.
 
 	data[color][move.old_x][move.old_y][move.new_x][move.new_y] += 1 << depth;
 }
@@ -201,7 +199,7 @@ void history::store(bool color, move_t move, int depth)
 pawn::pawn(int mb)
 {
 
-/* Constructor. */
+// Constructor.
 
 	try
 	{
@@ -221,7 +219,7 @@ pawn::pawn(int mb)
 pawn::~pawn()
 {
 
-/* Destructor. */
+// Destructor.
 
 	delete[] data;
 }
@@ -232,7 +230,7 @@ pawn::~pawn()
 void pawn::clear()
 {
 
-/* Clear the pawn table. */
+// Clear the pawn table.
 
 	for (uint64_t index = 0; index < slots; index++)
 	{
@@ -247,11 +245,9 @@ void pawn::clear()
 bool pawn::probe(bitboard_t hash, int *value_ptr)
 {
 
-/*
- | Given the pawn structure described in hash, check the pawn table to see if
- | we've evaluated it before.  If so, save its previous evaluation to the memory
- | pointed to by value_ptr and return success.  If not, return failure.
- */
+// Given the pawn structure described in hash, check the pawn table to see if
+// we've evaluated it before.  If so, save its previous evaluation to the memory
+// pointed to by value_ptr and return success.  If not, return failure.
 
 	uint64_t index = hash % slots;
 	bool found = data[index].hash == hash;
@@ -265,10 +261,8 @@ bool pawn::probe(bitboard_t hash, int *value_ptr)
 void pawn::store(bitboard_t hash, int value)
 {
 
-/*
- | We've just evaluated the pawn structure described in hash.  Save its
- | evaluation in the pawn table for future probes.
- */
+// We've just evaluated the pawn structure described in hash.  Save its
+// evaluation in the pawn table for future probes.
 
 	uint64_t index = hash % slots;
 	data[index].hash = hash;

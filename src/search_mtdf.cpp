@@ -29,7 +29,7 @@ search_mtdf::search_mtdf(table *t, history *h, chess_clock *c, xboard *x) :
 	search_base(t, h, c, x)
 {
 
-/* Constructor. */
+// Constructor.
 
 }
 
@@ -39,7 +39,7 @@ search_mtdf::search_mtdf(table *t, history *h, chess_clock *c, xboard *x) :
 search_mtdf::~search_mtdf()
 {
 
-/* Destructor. */
+// Destructor.
 
 }
 
@@ -49,7 +49,7 @@ search_mtdf::~search_mtdf()
 search_mtdf& search_mtdf::operator=(const search_mtdf& that)
 {
 
-/* Overloaded assignment operator. */
+// Overloaded assignment operator.
 
 	if (this != &that)
 		search_base::operator=(that);
@@ -62,10 +62,8 @@ search_mtdf& search_mtdf::operator=(const search_mtdf& that)
 void search_mtdf::iterate(int s)
 {
 
-/*
- | Perform iterative deepening.  This method handles both thinking (on our own
- | time) and pondering (on our opponent's time) since they're so similar.
- */
+// Perform iterative deepening.  This method handles both thinking (on our own
+// time) and pondering (on our opponent's time) since they're so similar.
 
 	int depth;
 	move_t guess[2], m;
@@ -142,10 +140,8 @@ void search_mtdf::iterate(int s)
 move_t search_mtdf::mtdf(int depth, int guess)
 {
 
-/*
- | From the current position, search for the best move.  This method implements
- | Aske Plaat's brilliant MTD(f) algorithm.
- */
+// From the current position, search for the best move.  This method implements
+// Aske Plaat's brilliant MTD(f) algorithm.
 
 	move_t m;
 	SET_NULL_MOVE(m);
@@ -168,21 +164,19 @@ move_t search_mtdf::mtdf(int depth, int guess)
 move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 {
 
-/*
- | From the current position, search for the best move.  This method implements
- | the MiniMax algorithm.
- |
- | On top of MiniMax, this method implements NegaMax.  NegaMax produces the same
- | results as MiniMax but is simpler to code.  Instead of juggling around two
- | players, Max and Min, NegaMax treats both players as Max and negates the
- | scores on each recursive call.
- |
- | On top of NegaMax, this method implements AlphaBeta.  AlphaBeta produces the
- | same results as NegaMax but far more efficiently.
- |
- | On top of AlphaBeta, this method implements FailSoft.  FailSoft returns more
- | information than AlphaBeta.
- */
+// From the current position, search for the best move.  This method implements
+// the MiniMax algorithm.
+//
+// On top of MiniMax, this method implements NegaMax.  NegaMax produces the same
+// results as MiniMax but is simpler to code.  Instead of juggling around two
+// players, Max and Min, NegaMax treats both players as Max and negates the
+// scores on each recursive call.
+//
+// On top of NegaMax, this method implements AlphaBeta.  AlphaBeta produces the
+// same results as NegaMax but far more efficiently.
+//
+// On top of AlphaBeta, this method implements FailSoft.  FailSoft returns more
+// information than AlphaBeta.
 
 	// Local variables that pertain to the current position:
 	bool whose = board_ptr->get_whose();       // The color on move.

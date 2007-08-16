@@ -28,7 +28,7 @@
 xboard::xboard()
 {
 
-/* Constructor. */
+// Constructor.
 
 	// Turn I/O buffering off.
 	setbuf(stdout, NULL);
@@ -47,7 +47,7 @@ xboard::xboard()
 xboard::~xboard()
 {
 
-/* Destructor. */
+// Destructor.
 
 }
 
@@ -57,7 +57,7 @@ xboard::~xboard()
 void xboard::vomit(char *message) const
 {
 
-/* Houston, we have a problem... */
+// Houston, we have a problem...
 
 	printf("tellusererror %s\n", message);
 	exit(EXIT_FAILURE);
@@ -137,7 +137,7 @@ void xboard::loop(search_base *s, chess_clock *c, book *o)
 void xboard::print_output(int ply, int value, int time, int nodes, list<move_t> &pv) const
 {
 
-/* Print thinking output. */
+// Print thinking output.
 
 	printf("%d %d %d %d", ply, value, time, nodes);
 	for (list<move_t>::iterator it = pv.begin(); it != pv.end(); it++)
@@ -303,7 +303,7 @@ void xboard::do_level() const
 void xboard::do_st()
 {
 
-/* Set the maximum search time. */
+// Set the maximum search time.
 
 	sync = false;
 	for (int color = WHITE; color <= BLACK; color++)
@@ -316,7 +316,7 @@ void xboard::do_st()
 void xboard::do_sd() const
 {
 
-/* Set the maximum search depth. */
+// Set the maximum search depth.
 
 	search_ptr->set_depth(str_to_num(&buffer[3]));
 }
@@ -345,10 +345,8 @@ void xboard::do_otim() const
 void xboard::do_usermove()
 {
 
-/*
- | Our opponent has moved.  If the move was legal, and it didn't just end the
- | game, and we're not in force mode: formulate a response.
- */
+// Our opponent has moved.  If the move was legal, and it didn't just end the
+// game, and we're not in force mode: formulate a response.
 
 	move_t m;
 
@@ -401,10 +399,8 @@ void xboard::do_question() const
 void xboard::do_ping()
 {
 
-/*
- | XBoard has sent a ping request (to make sure we're not on drugs).  Send a
- | pong reply.
- */
+// XBoard has sent a ping request (to make sure we're not on drugs).  Send a
+// pong reply.
 
 	buffer[1] = 'o';
 	printf("%s\n", buffer);
@@ -424,7 +420,7 @@ void xboard::do_draw()
 void xboard::do_hint() const
 {
 
-/* Aww, poor baby.  Our opponent needs us to hold her hand.  Give her a hint. */
+// Aww, poor baby.  Our opponent needs us to hold her hand.  Give her a hint.
 
 	move_t m = search_ptr->get_hint();
 	if (IS_NULL_MOVE(m))
@@ -440,7 +436,7 @@ void xboard::do_hint() const
 void xboard::do_undo()
 {
 
-/* Take back one ply. */
+// Take back one ply.
 
 	board_ptr->unmake();
 	clock_ptr->inc_remaining_moves(board_ptr->get_whose());
@@ -452,7 +448,7 @@ void xboard::do_undo()
 void xboard::do_remove()
 {
 
-/* Take back two plies. */
+// Take back two plies.
 
 	board_ptr->unmake();
 	board_ptr->unmake();
@@ -467,7 +463,7 @@ void xboard::do_remove()
 void xboard::do_hard()
 {
 
-/* Turn on pondering.  No sleep for the wicked. */
+// Turn on pondering.  No sleep for the wicked.
 
 	ponder = true;
 }
@@ -478,7 +474,7 @@ void xboard::do_hard()
 void xboard::do_easy()
 {
 
-/* Turn off pondering.  Grab a piña colada. */
+// Turn off pondering.  Grab a piña colada.
 
 	ponder = false;
 }
@@ -489,7 +485,7 @@ void xboard::do_easy()
 void xboard::do_post() const
 {
 
-/* Turn on thinking output. */
+// Turn on thinking output.
 
 	search_ptr->set_output(true);
 }
@@ -500,7 +496,7 @@ void xboard::do_post() const
 void xboard::do_nopost() const
 {
 
-/* Turn off thinking output. */
+// Turn off thinking output.
 
 	search_ptr->set_output(false);
 }
@@ -570,7 +566,7 @@ int xboard::char_to_shape(char c) const
 bool xboard::test_move(move_t m)
 {
 
-/* In the current position, is the specified move legal? */
+// In the current position, is the specified move legal?
 
 	list<move_t> l;
 

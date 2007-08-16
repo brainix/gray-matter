@@ -82,7 +82,7 @@ typedef struct move
 	  signed value   : 16; // MiniMax score.               + 16 bits
 	                       //                              = 32 bits
 
-	/* Overloaded equality test operator. */
+	// Overloaded equality test operator.
 	bool operator==(const struct move that) const
 	{
 		return this->old_x == that.old_x && this->old_y == that.old_y &&
@@ -90,7 +90,7 @@ typedef struct move
 		       this->promo == that.promo;
 	};
 
-	/* Overloaded inequality test operator. */
+	// Overloaded inequality test operator.
 	bool operator!=(const struct move that) const
 	{
 		return this->old_x != that.old_x || this->old_y != that.old_y ||
@@ -98,7 +98,7 @@ typedef struct move
 		       this->promo != that.promo;
 	};
 
-	/* Overloaded assignment operator. */
+	// Overloaded assignment operator.
 	struct move& operator=(const struct move& that)
 	{
 		old_x = that.old_x;
@@ -111,15 +111,10 @@ typedef struct move
 	};
 } __attribute__((packed)) move_t;
 
-/*
- |
- */
 #define IS_NULL_MOVE(m)		(!(m).promo && !(m).new_y && !(m).new_x && !(m).old_y && !(m).old_x)
 #define SET_NULL_MOVE(m)	((m).promo = (m).new_y = (m).new_x = (m).old_y = (m).old_x = 0)
 
-/*
- | This structure describes a transposition table slot.
- */
+// This structure describes a transposition table slot.
 typedef struct xpos_slot
 {
 	bitboard_t hash;               // Zobrist hash key.           64 bits
@@ -128,9 +123,7 @@ typedef struct xpos_slot
 	move_t move;                   // Best move and score.     +  32 bits
 } __attribute__((packed)) xpos_slot_t; //                          = 128 bits
 
-/*
- | This structure describes a pawn table slot.
- */
+// This structure describes a pawn table slot.
 typedef struct pawn_slot
 {
 	bitboard_t hash;               // Zobrist hash key.    64 bits
