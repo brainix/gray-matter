@@ -93,6 +93,7 @@ private:
 	void do_easy();
 	void do_post() const;
 	void do_nopost() const;
+	void do_unknown() const;
 
 	int game_over();
 	int str_to_num(const char *p) const;
