@@ -185,10 +185,10 @@
 
 // Transposition table entry types:
 #define USELESS		0 // Useless.
-#define UPPER		1 // Upper bound.
-#define LOWER		2 // Lower bound.
-#define EXACT		3 // Exact MiniMax value.
-#define BOOK		4 // Prescribed by the opening book.
+#define BOOK		1 // Prescribed by the opening book.
+#define EXACT		2 // Exact MiniMax value.
+#define UPPER		3 // Upper bound.
+#define LOWER		4 // Lower bound.
 #define ENTRY_TYPES	5
 
 // Search statuses:
