@@ -30,16 +30,17 @@ book::book(table *t, string& file_name, int n)
 
 // Constructor.
 
-	ifstream stream;
+	ifstream stream;     // The PGN opening book file stream.
+	list<string> tokens; // The token list.
 
 	board_ptr = new board_heuristic();
 	table_ptr = t;
 	num_moves = n;
 
-	stream.open(file_name.c_str()); // Open the file.
-	populate_tokens(stream);        // Populate the token list.
-	stream.close();                 // Close the file.
-	populate_games();               // Populate the game list.
+	stream.open(file_name.c_str());  // Open the file.
+	populate_tokens(stream, tokens); // Populate the token list.
+	stream.close();                  // Close the file.
+	populate_games(tokens);          // Populate the game list.
 }
 
 /*----------------------------------------------------------------------------*\
@@ -53,10 +54,10 @@ void book::read()
 /*----------------------------------------------------------------------------*\
  |			       populate_tokens()			      |
 \*----------------------------------------------------------------------------*/
-void book::populate_tokens(istream& stream)
+void book::populate_tokens(istream& stream, list<string>& tokens)
 {
 
-// Based on the opening book PGN file stream, populate the token list.
+// Based on the PGN opening book file stream, populate the token list.
 
 	string token;
 
@@ -68,7 +69,7 @@ void book::populate_tokens(istream& stream)
 /*----------------------------------------------------------------------------*\
  |				populate_games()			      |
 \*----------------------------------------------------------------------------*/
-void book::populate_games()
+void book::populate_games(list<string>& tokens)
 {
 
 // Based on the token list, populate the game list.
