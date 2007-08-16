@@ -78,6 +78,7 @@ private:
 	bool tokenize_punctuation(istream& stream, string& token);
 	bool tokenize_glyph(istream& stream, string& token);
 	bool tokenize_symbol(istream& stream, string& token);
+	static bool shuffle(list<move_t> l1, list<move_t> l2);
 };
 
 #endif

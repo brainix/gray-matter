@@ -125,6 +125,7 @@ void book::populate_table()
 	list<move_t> moves;
 	list<move_t>::iterator move_it;
 
+	games.sort(shuffle);
 	for (game_it = games.begin(); game_it != games.end(); game_it++)
 	{
 		moves = *game_it;
@@ -307,4 +308,12 @@ bool book::tokenize_symbol(istream& stream, string& token)
 			token += c;
 	token += '\0';
 	return token.length() >= 2;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   shuffle()				      |
+\*----------------------------------------------------------------------------*/
+bool book::shuffle(list<move_t> l1, list<move_t> l2)
+{
+	return rand() & 1;
 }
