@@ -215,22 +215,20 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 	// of our alpha-beta window.
 	if (shallowness)
 	{
+		if (table_ptr->probe(hash, depth, EXACT, &m))
+			return m;
 		if (table_ptr->probe(hash, depth, UPPER, &m))
 		{
 			if ((upper = m.value) <= alpha)
 				return m;
+			beta = LESSER(beta, upper);
 		}
 		else if (table_ptr->probe(hash, depth, LOWER, &m))
 		{
 			if ((lower = m.value) >= beta)
 				return m;
+			current = alpha = GREATER(alpha, lower);
 		}
-		else if (table_ptr->probe(hash, depth, EXACT, &m))
-			return m;
-		else if (table_ptr->probe(hash, depth, BOOK, &m))
-			return m;
-		current = alpha = GREATER(alpha, lower);
-		beta = LESSER(beta, upper);
 	}
 
 	// Generate and re-order the move list.
@@ -270,9 +268,11 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 		// stalemated; if we're in check, we're checkmated.
 		SET_NULL_MOVE(m);
 		m.value = !board_ptr->check() ? +WEIGHT_CONTEMPT : -WEIGHT_KING + shallowness;
-		table_ptr->store(hash, depth, EXACT, m);
+		if (!timeout_flag || !depth_flag)
+			table_ptr->store(hash, depth, EXACT, m);
 		return m;
 	}
+
 	if (!timeout_flag || !depth_flag)
 	{
 		if (m.value <= alpha)
