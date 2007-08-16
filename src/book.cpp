@@ -104,20 +104,20 @@ void book::populate_table()
 
 // Based on the game list, populate the transposition table.
 
-	list<list<move_t> >::iterator game_it;
+	list<list<move_t> >::iterator game;
 	list<move_t> moves;
-	list<move_t>::iterator move_it;
+	list<move_t>::iterator move;
 
 	games.sort(shuffle);
-	for (game_it = games.begin(); game_it != games.end(); game_it++)
+	for (game = games.begin(); game != games.end(); game++)
 	{
-		moves = *game_it;
-		for (move_it = moves.begin(); move_it != moves.end(); move_it++)
+		moves = *game;
+		for (move = moves.begin(); move != moves.end(); move++)
 		{
 			if (board_ptr->get_num_moves() >= num_moves)
 				break;
-			table_ptr->store(board_ptr->get_hash(), MAX_DEPTH, BOOK, *move_it);
-			board_ptr->make(*move_it);
+			table_ptr->store(board_ptr->get_hash(), MAX_DEPTH, BOOK, *move);
+			board_ptr->make(*move);
 		}
 		board_ptr->set_board();
 	}
