@@ -1381,9 +1381,10 @@ bool board_base::three() const
 
 // Is the game drawn by threefold repetition?
 
+	list<bitboard_t>::const_reverse_iterator it;
 	int sum = 1;
 
-	for (list<bitboard_t>::const_reverse_iterator it = hashes.rbegin(); it != hashes.rend(); it++)
+	for (it = hashes.rbegin(); it != hashes.rend(); it++)
 		if (*it == hash)
 			if (++sum == 3)
 				return true;
@@ -1398,9 +1399,12 @@ bool board_base::fifty() const
 
 // Is the game drawn by the fifty move rule?
 
-	int num[COLORS] = {count(rotation[ZERO][WHITE]), count(rotation[ZERO][BLACK])}, sum = 0;
+	list<state_t>::const_reverse_iterator it;
+	int num[COLORS] = {count(rotation[ZERO][WHITE]),
+	                   count(rotation[ZERO][BLACK])};
+	int sum = 0;
 
-	for (list<state_t>::const_reverse_iterator it = states.rbegin(); it != states.rend(); it++)
+	for (it = states.rbegin(); it != states.rend(); it++)
 	{
 		if (it->piece[!it->whose][PAWN] != state.piece[!it->whose][PAWN] || count(ALL(*it, it->whose)) != num[it->whose])
 			return false;
