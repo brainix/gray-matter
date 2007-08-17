@@ -124,6 +124,34 @@ bitboard_t key_no_en_passant;
 bitboard_t key_en_passant[8];
 bitboard_t key_whose;
 
+static bitboard_t squares_castle[COLORS][SIDES][REQS] =
+{
+	// The squares that must be unoccupied on the queen side in order for
+	// the white king to be able to castle:
+	{{0x000000000000000EULL,
+	// The squares that must be unattacked on the queen side in order for
+	// the white king to be able to castle:
+	  0x000000000000001CULL},
+	// The squares that must be unoccupied on the king side in order for the
+	// white king to be able to castle:
+	 {0x0000000000000060ULL,
+	// The squares that must be unattacked on the king side in order for the
+	// white king to be able to castle:
+	  0x0000000000000070ULL}},
+	// The squares that must be unoccupied on the queen side in order for
+	// the black king to be able to castle:
+	{{0x0E00000000000000ULL,
+	// The squares that must be unattacked on the queen side in order for
+	// the black king to be able to castle:
+	  0x1C00000000000000ULL},
+	// The squares that must be unoccupied on the king side in order for the
+	// black king to be able to castle:
+	 {0x6000000000000000ULL,
+	// The squares that must be unattacked on the king side in order for the
+	// black king to be able to castle.
+	  0x7000000000000000ULL}}
+};
+
 /*----------------------------------------------------------------------------*\
  |				  board_base()				      |
 \*----------------------------------------------------------------------------*/
@@ -856,16 +884,6 @@ void board_base::generate_king(list<move_t> &l, bool only_captures) const
 {
 
 // Generate the king moves.
-
-	static const bitboard_t squares_castle[COLORS][SIDES][REQS] =
-		{{{0x000000000000000EULL,    // The squares that must be unoccupied on the queen side in order for the white king to be able to castle.
-		   0x000000000000001CULL},   // The squares that must be unattacked on the queen side in order for the white king to be able to castle.
-		  {0x0000000000000060ULL,    // The squares that must be unoccupied on the king side in order for the white king to be able to castle.
-		   0x0000000000000070ULL}},  // The squares that must be unattacked on the king side in order for the white king to be able to castle.
-		 {{0x0E00000000000000ULL,    // The squares that must be unoccupied on the queen side in order for the black king to be able to castle.
-		   0x1C00000000000000ULL},   // The squares that must be unattacked on the queen side in order for the black king to be able to castle.
-		  {0x6000000000000000ULL,    // The squares that must be unoccupied on the king side in order for the black king to be able to castle.
-		   0x7000000000000000ULL}}}; // The squares that must be unattacked on the king side in order for the black king to be able to castle.
 
 	int n = FST(state.piece[ON_MOVE][KING]), x = n & 0x7, y = n >> 3;
 	bitboard_t takes = squares_king[x][y] & rotation[ZERO][OFF_MOVE];
