@@ -40,6 +40,7 @@
 #include <unistd.h>
 
 // C++ stuff:
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <string>

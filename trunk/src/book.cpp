@@ -284,5 +284,13 @@ bool book::tokenize_symbol(istream& stream, string& token)
 \*----------------------------------------------------------------------------*/
 bool book::shuffle(list<move_t> l1, list<move_t> l2)
 {
+
+// Pass this method as the comparison function to l.sort() to randomize the game
+// list.  This is a magnificent hack.
+//
+// Note: This hack wouldn't work for O(n²) list sort algorithms.  But if your
+// STL's list sort algorithm is O(n²), you don't deserve for this hack to work
+// anyway.
+
 	return rand() & 1;
 }
