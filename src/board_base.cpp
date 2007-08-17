@@ -536,28 +536,35 @@ move_t board_base::san_to_coord(string& san)
 
 // Convert a move from Standard Algebraic Notation (SAN) to coordinate notation.
 // In the current position, if the SAN string doesn't represent a legal move,
-// return the NULL move.
+// return the null move.
 
 	int index = 0;
 	int shape = -1, old_x = -1, old_y = -1, new_x = -1, new_y = -1, promo = -1;
 	bool capture = false;
 	move_t m;
-	list<move_t> l;
-	list<move_t>::iterator it;
 
 	SET_NULL_MOVE(m);
 	m.value = 0;
 
-	// Check for special cases.  In SAN, O-O-O means we're castling queen
-	// side and O-O means we're castling king side.
+	// Check for special cases.  O-O-O means we're castling queen side and
+	// O-O means we're castling king side.
 	if (san == "O-O-O" || san == "O-O")
 	{
-		m.new_x = (m.old_x = 4) + (san == "O-O-O" ? -2 : 2);
+		int side = san == "O-O-O" ? QUEEN_SIDE : KING_SIDE;
+		if (state.castle[ON_MOVE][side] != CAN_CASTLE                          ||
+		    squares_castle[ON_MOVE][side][UNOCCUPIED] & rotation[ZERO][COLORS] ||
+		    check(squares_castle[ON_MOVE][side][UNATTACKED], OFF_MOVE))
+			return m;
+		m.new_x = (m.old_x = 4) + (side ? 2 : -2);
 		m.new_y = m.old_y = ON_MOVE ? 7 : 0;
 		m.promo = 0;
-		goto test_legality;
+		return m;
 	}
 
+	// If the SAN string begins with the letter 'K', 'Q', 'R', 'B', 'N', or
+	// 'P', we're moving a king, queen, rook, bishop, knight, or pawn
+	// respectively.  If it begins with none of these letters, we're to
+	// assume we're moving a pawn.
 	switch (san[index])
 	{
 		case 'K' : index++; shape = KING;   break;
@@ -569,11 +576,12 @@ move_t board_base::san_to_coord(string& san)
 		default  :          shape = PAWN;   break;
 	}
 
-	// If there's an 'x' here, it just means the move is a capture.
+	// If there's an 'x' here, it means the move is a capture.  Note this
+	// (to verify it's a capture later).
 	if (san[index] == 'x')
 	{
-		capture = true;
 		index++;
+		capture = true;
 	}
 
 	// If there's a letter between 'a' and 'h' here, assume it specifies the
@@ -581,11 +589,12 @@ move_t board_base::san_to_coord(string& san)
 	if (san[index] >= 'a' && san[index] <= 'h')
 		new_x = san[index++] - 'a';
 
-	// If there's an 'x' here, it just means the move is a capture.
+	// If there's an 'x' here, it means the move is a capture.  Note this
+	// (to verify it's a capture later).
 	if (san[index] == 'x')
 	{
-		capture = true;
 		index++;
+		capture = true;
 	}
 
 	// If there's a number between 1 and 8 here, assume it specifies the
@@ -593,11 +602,12 @@ move_t board_base::san_to_coord(string& san)
 	if (san[index] >= '1' && san[index] <= '8')
 		new_y = san[index++] - '1';
 
-	// If there's an 'x' here, it just means the move is a capture.
+	// If there's an 'x' here, it means the move is a capture.  Note this
+	// (to verify it's a capture later).
 	if (san[index] == 'x')
 	{
-		capture = true;
 		index++;
+		capture = true;
 	}
 
 	// If there's a letter between 'a' and 'h' here, it must be followed by
@@ -638,6 +648,7 @@ move_t board_base::san_to_coord(string& san)
 	// and fill them in now.
 	if (old_x < 0 || old_y < 0)
 	{
+		list<move_t> l;
 		switch (shape)
 		{
 			case KING   : generate_king(l);   break;
@@ -647,7 +658,7 @@ move_t board_base::san_to_coord(string& san)
 			case KNIGHT : generate_knight(l); break;
 			case PAWN   : generate_pawn(l);   break;
 		}
-		for (it = l.begin(); it != l.end(); it++)
+		for (list<move_t>::iterator it = l.begin(); it != l.end(); it++)
 			if ((old_x < 0 || old_x == (int) it->old_x) &&
 			    (old_y < 0 || old_y == (int) it->old_y) &&
 			                  new_x == (int) it->new_x  &&
@@ -660,26 +671,28 @@ move_t board_base::san_to_coord(string& san)
 	}
 
 	// At this point, we're supposed to have filled in all the info.  If we
-	// haven't, the SAN must've been badly formed.
+	// haven't, the SAN string must've been badly formed.
 	if (old_x < 0 || old_y < 0 || new_x < 0 || new_y < 0 || promo < 0)
 		return m;
 
+	// If the SAN string indicated a capture, verify the move really is a
+	// capture.
 	if (capture && !BIT_GET(ALL(state, OFF_MOVE), new_x, new_y))
 		return m;
 
+	// OK, we appear to have a valid move.
 	m.old_x = old_x;
 	m.old_y = old_y;
 	m.new_x = new_x;
 	m.new_y = new_y;
 	m.promo = promo;
 
-test_legality:
-	generate(l, true, false);
-	for (it = l.begin(); it != l.end(); it++)
-		if (*it == m)
-			return m;
-	SET_NULL_MOVE(m);
-	m.value = 0;
+	// The only thing that can go wrong now is for the move to leave us in
+	// check.  Make sure this isn't the case.
+	make(m);
+	if (check(state.piece[OFF_MOVE][KING], ON_MOVE))
+		SET_NULL_MOVE(m);
+	unmake();
 	return m;
 }
 
