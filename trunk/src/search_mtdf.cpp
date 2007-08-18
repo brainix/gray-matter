@@ -68,19 +68,17 @@ void search_mtdf::iterate(int s)
 	int depth;
 	move_t guess[2], m;
 
-	// Wait for the board, then grab the board.
-	board_ptr->lock();
-
 	// For the current position, does the opening book recommend a move?
 	if (s == THINKING)
 		if (table_ptr->probe(board_ptr->get_hash(), MAX_DEPTH, BOOK, &m))
 		{
 			// Yes.  Just make the prescribed move.
-			extract(s);
 			xboard_ptr->print_result(m);
-			board_ptr->unlock();
 			return;
 		}
+
+	// Wait for the board, then grab the board.
+	board_ptr->lock();
 
 	// Note the start time.  If we're to think, set the alarm.  (If we're to
 	// ponder, there's no need to set the alarm.  We ponder indefinitely
@@ -95,10 +93,6 @@ void search_mtdf::iterate(int s)
 		SET_NULL_MOVE(guess[depth]);
 		guess[depth].value = 0;
 	}
-
-	//
-	if (s == PONDERING)
-		board_ptr->make(hint);
 
 	// Perform iterative deepening until the alarm has sounded (if we're
 	// thinking), our opponent has moved (if we're pondering), or we've
@@ -128,9 +122,8 @@ void search_mtdf::iterate(int s)
 		}
 	}
 
-	//
-	if (s == PONDERING)
-		board_ptr->unmake();
+	// Release the board.
+	board_ptr->unlock();
 
 	// If we've just finished thinking, cancel the alarm and inform XBoard
 	// of our favorite move.
@@ -140,9 +133,6 @@ void search_mtdf::iterate(int s)
 		if (search_status != QUITTING)
 			xboard_ptr->print_result(m);
 	}
-
-	// Release the board.
-	board_ptr->unlock();
 }
 
 /*----------------------------------------------------------------------------*\
