@@ -116,6 +116,33 @@ bool precomputed = false;
 bitboard_t squares_king[8][8];
 bitrow_t squares_row[8][256];
 bitboard_t squares_knight[8][8];
+static bitboard_t squares_castle[COLORS][SIDES][REQS] =
+{
+	// The squares which must be unoccupied on the queen side in order for
+	// the white king to be able to castle:
+	{{0x000000000000000EULL,
+	// The squares which must be unattacked on the queen side in order for
+	// the white king to be able to castle:
+	  0x000000000000001CULL},
+	// The squares which must be unoccupied on the king side in order for
+	// the white king to be able to castle:
+	 {0x0000000000000060ULL,
+	// The squares which must be unattacked on the king side in order for
+	// the white king to be able to castle:
+	  0x0000000000000070ULL}},
+	// The squares which must be unoccupied on the queen side in order for
+	// the black king to be able to castle:
+	{{0x0E00000000000000ULL,
+	// The squares which must be unattacked on the queen side in order for
+	// the black king to be able to castle:
+	  0x1C00000000000000ULL},
+	// The squares which must be unoccupied on the king side in order for
+	// the black king to be able to castle:
+	 {0x6000000000000000ULL,
+	// The squares which must be unattacked on the king side in order for
+	// the black king to be able to castle.
+	  0x7000000000000000ULL}}
+};
 
 // Zobrist hash keys:
 bitboard_t key_piece[COLORS][SHAPES][8][8];
@@ -123,34 +150,6 @@ bitboard_t key_castle[COLORS][SIDES][CASTLE_STATS];
 bitboard_t key_no_en_passant;
 bitboard_t key_en_passant[8];
 bitboard_t key_whose;
-
-static bitboard_t squares_castle[COLORS][SIDES][REQS] =
-{
-	// The squares that must be unoccupied on the queen side in order for
-	// the white king to be able to castle:
-	{{0x000000000000000EULL,
-	// The squares that must be unattacked on the queen side in order for
-	// the white king to be able to castle:
-	  0x000000000000001CULL},
-	// The squares that must be unoccupied on the king side in order for the
-	// white king to be able to castle:
-	 {0x0000000000000060ULL,
-	// The squares that must be unattacked on the king side in order for the
-	// white king to be able to castle:
-	  0x0000000000000070ULL}},
-	// The squares that must be unoccupied on the queen side in order for
-	// the black king to be able to castle:
-	{{0x0E00000000000000ULL,
-	// The squares that must be unattacked on the queen side in order for
-	// the black king to be able to castle:
-	  0x1C00000000000000ULL},
-	// The squares that must be unoccupied on the king side in order for the
-	// black king to be able to castle:
-	 {0x6000000000000000ULL,
-	// The squares that must be unattacked on the king side in order for the
-	// black king to be able to castle.
-	  0x7000000000000000ULL}}
-};
 
 /*----------------------------------------------------------------------------*\
  |				  board_base()				      |
@@ -703,9 +702,15 @@ move_t board_base::san_to_coord(string& san)
 	if (old_x < 0 || old_y < 0 || new_x < 0 || new_y < 0 || promo < 0)
 		return m;
 
-	// If the SAN string indicated a capture, verify the move really is a
-	// capture.
-	if (capture && !BIT_GET(ALL(state, OFF_MOVE), new_x, new_y))
+	// Verify the piece we're moving is actually sitting on the source file
+	// and rank.
+	if (!BIT_GET(state.piece[ON_MOVE][shape], old_x, old_y))
+		return m;
+
+	// If the SAN string didn't indicate a capture, verify the move actually
+	// isn't a capture.  Conversely, if the SAN string did indicate a
+	// capture, verify the move actually is a capture.
+	if (capture != (bool) BIT_GET(rotation[ZERO][OFF_MOVE], new_x, new_y))
 		return m;
 
 	// OK, we appear to have a valid move.
@@ -1243,27 +1248,34 @@ int board_base::mate()
 {
 
 // Is the game over due to stalemate or checkmate?  We test for both conditions
-// in the same function because they're so similar.  During both, the color on
+// in the same method because they're so similar.  During both, the color on
 // move doesn't have a legal move.  The only difference: during stalemate, her
 // king isn't attacked; during checkmate, her king is attacked.
 
 	list<move_t> l;
+	list<move_t>::iterator it;
 	bool escape = false;
 
 	// Look for a legal move.
 	generate(l);
-	for (list<move_t>::iterator it = l.begin(); it != l.end() && !escape; it++)
+	for (it = l.begin(); it != l.end(); it++)
 	{
 		make(*it);
 		if (!check(state.piece[OFF_MOVE][KING], ON_MOVE))
 			escape = true;
 		unmake();
+		if (escape)
+			// The color on move has a legal move; the game isn't
+			// over.
+			return IN_PROGRESS;
 	}
 
-	// If there's a legal move, the game isn't over.  Otherwise, if the king
-	// isn't attacked, the game is over due to stalemate.  Otherwise, the
-	// game is over due to checkmate.
-	return escape ? IN_PROGRESS : !check(state.piece[ON_MOVE][KING], OFF_MOVE) ? STALEMATE : CHECKMATE;
+	// The color on move doesn't have a legal move; the game is over.  If
+	// the king isn't attacked, the game is over due to stalemate.
+	// Otherwise, the game is over due to checkmate.
+	if (!check(state.piece[ON_MOVE][KING], OFF_MOVE))
+		return STALEMATE;
+	return CHECKMATE;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -1302,7 +1314,10 @@ bool board_base::check(bitboard_t b1, bool color) const
 				return true;
 		}
 
-		// Look for a diagonal queen or bishop attack.
+		// Look for a diagonal queen or bishop attack.  The logic here
+		// is interesting.  Pretend our king were a bishop.  Would it be
+		// able to capture a bishop?  If so, we're in check.  If not,
+		// we're not in check, at least not by a bishop.
 		for (int angle = L45; angle == L45 || angle == R45; angle += R45 - L45)
 		{
 			int loc = DIAG_LOC(x, y, angle);
@@ -1318,7 +1333,10 @@ bool board_base::check(bitboard_t b1, bool color) const
 				return true;
 		}
 
-		// Look for a knight attack.
+		// Look for a knight attack.  The logic here is interesting.
+		// Pretend our king were a knight.  Would it be able to capture
+		// a knight?  If so, we're in check.  If not, we're not in
+		// check, at least not by a knight.
 		if (squares_knight[x][y] & state.piece[color][KNIGHT])
 			return true;
 
