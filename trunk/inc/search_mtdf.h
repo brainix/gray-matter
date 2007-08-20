@@ -25,7 +25,6 @@
 using namespace std;
 
 // C++ stuff:
-#include <algorithm>
 #include <list>
 
 // Default Gray Matter stuff:
@@ -41,11 +40,6 @@ using namespace std;
 
 // Forward declarations:
 class search_base;
-class board_base;
-class table;
-class history;
-class chess_clock;
-class xboard;
 
 class search_mtdf : public search_base
 {

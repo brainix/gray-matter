@@ -40,6 +40,10 @@
 #define SEARCH_STATS	4
 
 // Forward declarations:
+class board_base;
+class table;
+class history;
+class chess_clock;
 class xboard;
 
 class search_base
