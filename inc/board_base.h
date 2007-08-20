@@ -88,9 +88,9 @@ using namespace std;
 \*----------------------------------------------------------------------------*/
 
 // A BitBoard is a brilliant data structure based on this observation: there
-// are 64 bits in a uint64_t integer, there are 64 squares on a chess board.
-// See where I'm going?  A BitBoard is an unsigned 64-bit integer in which every
-// bit corresponds to a square.
+// are 64 bits in a uint64_t integer and 64 squares on a chess board.  See where
+// I'm going?  A BitBoard is an unsigned 64-bit integer in which every bit
+// corresponds to a square.
 //
 // A single BitBoard can't represent the entire state of the board.  A single
 // bit can only hold a value of 0 or 1 - enough to describe the absence or
@@ -105,9 +105,9 @@ using namespace std;
 //		· white queens		· black queens
 //		· white kings		· black kings
 //
-// Gray Matter introduces a new data structure, a BitRow.  A BitRow is an
-// unsigned 8-bit integer which represents up to 8 adjacent squares: a row in a
-// 0° bitboard, a column in a 90° bitboard, or a diagonal in a 45° bitboard.
+// Similarly, BitRow is an unsigned 8-bit integer which represents up to 8
+// adjacent squares: a row in a 0° bitboard, a column in a 90° bitboard, or a
+// diagonal in a 45° bitboard.
 typedef uint64_t bitboard_t;
 typedef uint8_t bitrow_t;
 
