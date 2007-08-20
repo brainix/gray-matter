@@ -33,20 +33,6 @@ using namespace std;
 #include "types.h"
 #include "library.h"
 
-// Piece colors:
-#define WHITE		0
-#define BLACK		1
-#define COLORS		2
-
-// Piece shapes:
-#define PAWN		0
-#define KNIGHT		1
-#define BISHOP		2
-#define ROOK		3
-#define QUEEN		4
-#define KING		5
-#define SHAPES		6
-
 // Castling sides:
 #define QUEEN_SIDE	0
 #define KING_SIDE	1
