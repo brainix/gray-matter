@@ -28,7 +28,7 @@
 // This structure describes a transposition table slot.
 typedef struct xpos_slot
 {
-	bitboard_t hash;               // Zobrist hash key.           64 bits
+	uint64_t hash;                 // Zobrist hash key.           64 bits
 	uint16_t depth;                // Depth of our search.     +  16 bits
 	uint16_t type;                 // Upper, exact, or lower.  +  16 bits
 	move_t move;                   // Best move and score.     +  32 bits
@@ -37,7 +37,7 @@ typedef struct xpos_slot
 // This structure describes a pawn table slot.
 typedef struct pawn_slot
 {
-	bitboard_t hash;               // Zobrist hash key.    64 bits
+	uint64_t hash;                 // Zobrist hash key.    64 bits
 	int16_t value;                 // Score.             + 16 bits
 } __attribute__((packed)) pawn_slot_t; //                    = 80 bits
 
