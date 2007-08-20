@@ -33,6 +33,86 @@ using namespace std;
 #include "types.h"
 #include "library.h"
 
+// Piece colors:
+#define WHITE		0
+#define BLACK		1
+#define COLORS		2
+
+// Piece shapes:
+#define PAWN		0
+#define KNIGHT		1
+#define BISHOP		2
+#define ROOK		3
+#define QUEEN		4
+#define KING		5
+#define SHAPES		6
+
+// Castling sides:
+#define QUEEN_SIDE	0
+#define KING_SIDE	1
+#define SIDES		2
+
+// Castling statuses:
+#define CAN_CASTLE	0
+#define CANT_CASTLE	1
+#define HAS_CASTLED	2
+#define CASTLE_STATS	3
+
+// Castling requirements:
+#define UNOCCUPIED	0 // Squares which mustn't be occupied.
+#define UNATTACKED	1 // Squares which mustn't be attacked.
+#define REQS		2
+
+// Game statuses:
+#define IN_PROGRESS	0 // Still in progress.
+#define STALEMATE	1 // Drawn by stalemate.
+#define INSUFFICIENT	2 // Drawn by insufficient material.
+#define THREE		3 // Drawn by threefold repetition.
+#define FIFTY		4 // Drawn by fifty move rule.
+#define CHECKMATE	5 // Checkmated.
+#define ILLEGAL		6 // Post-checkmated (king captured).
+#define GAME_STATS	7
+
+// Game phases:
+#define OPENING		0
+#define MIDGAME		1
+#define ENDGAME		2
+#define PHASES		3
+
+// Rotated bitboard maps:
+#define MAP		0
+#define UNMAP		1
+#define MAPS		2
+
+// Rotated bitboard angles:
+#define L45		0
+#define ZERO		1
+#define R45		2
+#define R90		3
+#define ANGLES		4
+
+// Board coordinates:
+#define X		0 // x-coordinate (file).
+#define Y		1 // y-coordinate (rank).
+#define COORDS		2
+
+// List positions:
+#define FRONT		0
+#define BACK		1
+#define POSITIONS	2
+
+// Convenient bitboards:
+#define SQUARES_CENTER		0x0000001818000000ULL //  4 center squares.
+#define SQUARES_EXPANDED_CENTER	0x00003C3C3C3C0000ULL // 16 center squares.
+#define SQUARES_PRINCIPAL_DIAG	0x8142241818244281ULL // 16 principal diagonal squares.
+#define SQUARES_WHITE_SIDE	0x00000000FFFFFFFFULL // 32 white side squares.
+#define SQUARES_BLACK_SIDE	0xFFFFFFFF00000000ULL // 32 black side squares.
+#define SQUARES_WHITE		0x55AA55AA55AA55AAULL // 32 white squares.
+#define SQUARES_BLACK		0xAA55AA55AA55AA55ULL // 32 black squares.
+#define SQUARES_QUEEN_SIDE	0x0F0F0F0F0F0F0F0FULL // 32 queen side squares.
+#define SQUARES_KING_SIDE	0xF0F0F0F0F0F0F0F0ULL // 32 king side squares.
+#define SQUARES_CORNER		0x8100000000000081ULL //  4 corner squares.
+
 // These macros represent the colors on and off move.
 #define ON_MOVE			(state.whose)
 #define OFF_MOVE		(!state.whose)
@@ -95,7 +175,7 @@ public:
 	virtual bitboard_t get_hash() const;
 	virtual int get_status(bool mate_test);
 	virtual int get_num_moves() const;
-	virtual int evaluate() const = 0;
+	virtual int evaluate() const = 0;       // Force sub-classes to override.
 	virtual bool check() const;
 	virtual bool zugzwang() const;
 

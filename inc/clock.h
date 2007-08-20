@@ -27,6 +27,11 @@
 #include "types.h"
 #include "library.h"
 
+// Time control styles:
+#define CONVENTIONAL	0
+#define INCREMENTAL	1
+#define SECS_PER_MOVE	2
+
 typedef void (*clock_callback_t)(void *data);
 
 class chess_clock
