@@ -21,7 +21,6 @@
 
 // Default Gray Matter stuff:
 #include "config.h"
-#include "types.h"
 #include "gray.h"
 
 // Extra Gray Matter stuff:
