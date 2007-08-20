@@ -154,7 +154,7 @@ int board_heuristic::evaluate_material() const
 		sign = color == OFF_MOVE ? 1 : -1;
 		for (int shape = PAWN; shape <= QUEEN; shape++)
 		{
-			coef = count(state.piece[color][shape]);
+			coef = count_64(state.piece[color][shape]);
 			sum += sign * coef * weight[shape];
 		}
 	}
@@ -219,7 +219,7 @@ int board_heuristic::evaluate_pawn() const
 		for (int file = 0; file <= 7; file++)
 		{
 			pawns = state.piece[color][PAWN] & COL_MSK(file);
-			if (!(coef = count(pawns)))
+			if (!(coef = count_64(pawns)))
 				// The current color has no pawn on the current
 				// file.  Move on to the next file.
 				continue;
