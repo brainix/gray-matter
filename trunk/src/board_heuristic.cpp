@@ -22,69 +22,85 @@
 #include "gray.h"
 #include "board_heuristic.h"
 
+// We define a piece's tempo as the minimum number of moves required to move it
+// from its starting position to its current position on an otherwise empty
+// chess board.  Tempo is a measure of development; good chess players maximize
+// their tempo and minimize their opponents' tempo.
+//
+// Given a piece and its current position, this array gives its tempo.
 static uint8_t tempo[SHAPES][8][8] =
 {
-	// Pawn:
-	{{0, 0, 1, 1, 2, 3, 4, 0},
-	 {0, 0, 1, 1, 2, 3, 4, 0},
-	 {0, 0, 1, 1, 2, 3, 4, 0},
-	 {0, 0, 1, 1, 2, 3, 4, 0},
-	 {0, 0, 1, 1, 2, 3, 4, 0},
-	 {0, 0, 1, 1, 2, 3, 4, 0},
-	 {0, 0, 1, 1, 2, 3, 4, 0},
-	 {0, 0, 1, 1, 2, 3, 4, 0}},
+	       // Pawn:
+	/* A */ {{0, 0, 1, 1, 2, 3, 4, 0},
+	/* B */  {0, 0, 1, 1, 2, 3, 4, 0},
+	/* C */  {0, 0, 1, 1, 2, 3, 4, 0},
+	/* D */  {0, 0, 1, 1, 2, 3, 4, 0},
+	/* E */  {0, 0, 1, 1, 2, 3, 4, 0},
+	/* F */  {0, 0, 1, 1, 2, 3, 4, 0},
+	/* G */  {0, 0, 1, 1, 2, 3, 4, 0},
+	/* H */  {0, 0, 1, 1, 2, 3, 4, 0}},
+	       // 1  2  3  4  5  6  7  8
 
-	// Knight:
-	{{3, 2, 1, 2, 3, 4, 3, 4},
-	 {0, 3, 2, 3, 2, 3, 4, 4},
-	 {2, 2, 1, 2, 3, 3, 3, 4},
-	 {2, 1, 3, 2, 2, 3, 3, 4},
-	 {2, 1, 3, 2, 2, 3, 3, 4},
-	 {2, 2, 1, 2, 3, 3, 3, 4},
-	 {0, 3, 2, 3, 2, 3, 4, 4},
-	 {3, 2, 1, 2, 3, 4, 3, 4}},
+	       // Knight:
+	/* A */ {{3, 2, 1, 2, 3, 4, 3, 4},
+	/* B */  {0, 3, 2, 3, 2, 3, 4, 4},
+	/* C */  {2, 2, 1, 2, 3, 3, 3, 4},
+	/* D */  {2, 1, 3, 2, 2, 3, 3, 4},
+	/* E */  {2, 1, 3, 2, 2, 3, 3, 4},
+	/* F */  {2, 2, 1, 2, 3, 3, 3, 4},
+	/* G */  {0, 3, 2, 3, 2, 3, 4, 4},
+	/* H */  {3, 2, 1, 2, 3, 4, 3, 4}},
+	       // 1  2  3  4  5  6  7  8
 
-	// Bishop:
-	{{2, 2, 1, 2, 2, 1, 2, 2},
-	 {2, 1, 2, 2, 1, 2, 2, 2},
-	 {0, 2, 2, 1, 2, 2, 2, 2},
-	 {2, 1, 1, 2, 2, 2, 2, 2},
-	 {2, 1, 1, 2, 2, 2, 2, 2},
-	 {0, 2, 2, 1, 2, 2, 2, 2},
-	 {2, 1, 2, 2, 1, 2, 2, 2},
-	 {2, 2, 1, 2, 2, 1, 2, 2}},
+	       // Bishop:
+	/* A */ {{2, 2, 1, 2, 2, 1, 2, 2},
+	/* B */  {2, 1, 2, 2, 1, 2, 2, 2},
+	/* C */  {0, 2, 2, 1, 2, 2, 2, 2},
+	/* D */  {2, 1, 1, 2, 2, 2, 2, 2},
+	/* E */  {2, 1, 1, 2, 2, 2, 2, 2},
+	/* F */  {0, 2, 2, 1, 2, 2, 2, 2},
+	/* G */  {2, 1, 2, 2, 1, 2, 2, 2},
+	/* H */  {2, 2, 1, 2, 2, 1, 2, 2}},
+	       // 1  2  3  4  5  6  7  8
 
-	// Rook:
-	{{0, 1, 1, 1, 1, 1, 1, 1},
-	 {1, 2, 2, 2, 2, 2, 2, 2},
-	 {1, 2, 2, 2, 2, 2, 2, 2},
-	 {1, 2, 2, 2, 2, 2, 2, 2},
-	 {1, 2, 2, 2, 2, 2, 2, 2},
-	 {1, 2, 2, 2, 2, 2, 2, 2},
-	 {1, 2, 2, 2, 2, 2, 2, 2},
-	 {0, 1, 1, 1, 1, 1, 1, 1}},
+	       // Rook:
+	/* A */ {{0, 1, 1, 1, 1, 1, 1, 1},
+	/* B */  {1, 2, 2, 2, 2, 2, 2, 2},
+	/* C */  {1, 2, 2, 2, 2, 2, 2, 2},
+	/* D */  {1, 2, 2, 2, 2, 2, 2, 2},
+	/* E */  {1, 2, 2, 2, 2, 2, 2, 2},
+	/* F */  {1, 2, 2, 2, 2, 2, 2, 2},
+	/* G */  {1, 2, 2, 2, 2, 2, 2, 2},
+	/* H */  {0, 1, 1, 1, 1, 1, 1, 1}},
+	       // 1  2  3  4  5  6  7  8
 
-	// Queen:
-	{{1, 2, 2, 1, 2, 2, 2, 2},
-	 {1, 2, 1, 2, 2, 2, 2, 2},
-	 {1, 1, 2, 2, 2, 2, 2, 2},
-	 {0, 1, 1, 1, 1, 1, 1, 1},
-	 {1, 1, 2, 2, 2, 2, 2, 2},
-	 {1, 2, 1, 2, 2, 2, 2, 2},
-	 {1, 2, 2, 1, 2, 2, 2, 2},
-	 {1, 2, 2, 2, 1, 2, 2, 2}},
+	       // Queen:
+	/* A */ {{1, 2, 2, 1, 2, 2, 2, 2},
+	/* B */  {1, 2, 1, 2, 2, 2, 2, 2},
+	/* C */  {1, 1, 2, 2, 2, 2, 2, 2},
+	/* D */  {0, 1, 1, 1, 1, 1, 1, 1},
+	/* E */  {1, 1, 2, 2, 2, 2, 2, 2},
+	/* F */  {1, 2, 1, 2, 2, 2, 2, 2},
+	/* G */  {1, 2, 2, 1, 2, 2, 2, 2},
+	/* H */  {1, 2, 2, 2, 1, 2, 2, 2}},
+	       // 1  2  3  4  5  6  7  8
 
-	// King:
-	{{3, 3, 3, 4, 4, 5, 6, 7},
-	 {2, 2, 3, 3, 4, 5, 6, 7},
-	 {1, 2, 2, 3, 4, 5, 6, 7},
-	 {1, 1, 2, 3, 4, 5, 6, 7},
-	 {0, 1, 2, 3, 4, 5, 6, 7},
-	 {1, 1, 2, 3, 4, 5, 6, 7},
-	 {1, 2, 2, 3, 4, 5, 6, 7},
-	 {2, 2, 3, 3, 4, 5, 6, 7}}
+	       // King:
+	/* A */ {{3, 3, 3, 4, 4, 5, 6, 7},
+	/* B */  {2, 2, 3, 3, 4, 5, 6, 7},
+	/* C */  {1, 2, 2, 3, 4, 5, 6, 7},
+	/* D */  {1, 1, 2, 3, 4, 5, 6, 7},
+	/* E */  {0, 1, 2, 3, 4, 5, 6, 7},
+	/* F */  {1, 1, 2, 3, 4, 5, 6, 7},
+	/* G */  {1, 2, 2, 3, 4, 5, 6, 7},
+	/* H */  {2, 2, 3, 3, 4, 5, 6, 7}}
+	       // 1  2  3  4  5  6  7  8
 };
 
+// Since pawn structure remains relatively static, we maintain a hash table of
+// previous pawn structure evaluations.  According to my tests, this hash table
+// sustains a hit rate of around 97%.  This enables us to perform sophisticated
+// pawn structure analysis pretty much for free.
 pawn pawn_table;
 
 /*----------------------------------------------------------------------------*\
@@ -167,14 +183,8 @@ int board_heuristic::evaluate_material() const
 int board_heuristic::evaluate_tempo() const
 {
 
-// Evaluate tempo.
-//
-// We define a piece's tempo as the minimum number of moves required to move it
-// from its current position back to its starting position on an otherwise empty
-// chess board.  Tempo is a measure of development; good chess players maximize
-// their tempo and minimize their opponents' tempo.  I'm not sure this works
-// perfectly yet, but it at least seems to prevent The Happy King Dance (TM)
-// Gray Matter used to love so much.
+// Evaluate tempo.  I'm not sure this is perfect, but it at least seems to
+// prevent The Happy King Dance (TM).
 
 	int sign, coef, sum = 0;
 
