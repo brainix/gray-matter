@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*\
- |	thread.h - cross-platform library interface			      |
+ |	library.h - cross-platform library interface			      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
@@ -36,8 +36,8 @@
  | conformant like every other operating system on this planet.  I hate myself.
  */
 
-#ifndef THREAD_H
-#define THREAD_H
+#ifndef LIBRARY_H
+#define LIBRARY_H
 
 // For the functions defined here, these are the standard return values:
 #define CRITICAL	-1 // Critical failure.      :-(

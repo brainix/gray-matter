@@ -25,7 +25,7 @@
 // Default Gray Matter stuff:
 #include "config.h"
 #include "types.h"
-#include "thread.h"
+#include "library.h"
 
 typedef void (*clock_callback_t)(void *data);
 
