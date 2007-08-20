@@ -110,6 +110,20 @@
 #error "In inc/config.h, OVERHEAD must be >= 1."
 #endif
 
+// Piece colors:
+#define WHITE		0
+#define BLACK		1
+#define COLORS		2
+
+// Piece shapes:
+#define PAWN		0
+#define KNIGHT		1
+#define BISHOP		2
+#define ROOK		3
+#define QUEEN		4
+#define KING		5
+#define SHAPES		6
+
 // Memory units:
 #define  B		1           // Byte.
 #define KB		(1024 * B)  // Kilobyte.
