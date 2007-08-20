@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*\
- |	thread.cpp - cross-platform library implementation		      |
+ |	library.cpp - cross-platform library implementation		      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
@@ -19,7 +19,7 @@
  | this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "thread.h"
+#include "library.h"
 
 /*----------------------------------------------------------------------------*\
  |				thread_create()				      |
