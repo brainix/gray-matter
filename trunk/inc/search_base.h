@@ -22,6 +22,11 @@
 #ifndef SEARCH_BASE_H
 #define SEARCH_BASE_H
 
+// Default Gray Matter stuff:
+#include "config.h"
+#include "library.h"
+
+// Extra Gray Matter stuff:
 #include "board_base.h"
 #include "board_heuristic.h"
 #include "table.h"
