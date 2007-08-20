@@ -149,6 +149,18 @@ typedef uint8_t bitrow_t;
 // This macro finds the first set bit in a BitBoard.
 #define FST(b)				(find_64(b) - 1)
 
+// Convenient BitBoards:
+#define SQUARES_CENTER		0x0000001818000000ULL //  4 center squares.
+#define SQUARES_EXPANDED_CENTER	0x00003C3C3C3C0000ULL // 16 center squares.
+#define SQUARES_PRINCIPAL_DIAG	0x8142241818244281ULL // 16 principal diagonal squares.
+#define SQUARES_WHITE_SIDE	0x00000000FFFFFFFFULL // 32 white side squares.
+#define SQUARES_BLACK_SIDE	0xFFFFFFFF00000000ULL // 32 black side squares.
+#define SQUARES_WHITE		0x55AA55AA55AA55AAULL // 32 white squares.
+#define SQUARES_BLACK		0xAA55AA55AA55AA55ULL // 32 black squares.
+#define SQUARES_QUEEN_SIDE	0x0F0F0F0F0F0F0F0FULL // 32 queen side squares.
+#define SQUARES_KING_SIDE	0xF0F0F0F0F0F0F0F0ULL // 32 king side squares.
+#define SQUARES_CORNER		0x8100000000000081ULL //  4 corner squares.
+
 
 
 /*----------------------------------------------------------------------------*\
