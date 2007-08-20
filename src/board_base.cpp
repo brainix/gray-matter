@@ -643,8 +643,9 @@ move_t board_base::san_to_coord(string& san)
 
 	// If there's an = sign here, it must be followed by the letter 'Q',
 	// 'R', 'B', or 'N'.  The = sign means we're promoting a pawn and the
-	// following letter represents the piece we're promoting to.  If there's
-	// no = sign here, it means we're not promoting a pawn.
+	// following letter represents the piece we're promoting to: a queen,
+	// rook, bishop, or knight respectively.  If there's no = sign here, it
+	// means we're not promoting a pawn.
 	if (san[index] == '=')
 		switch (san[++index])
 		{
@@ -715,9 +716,22 @@ move_t board_base::san_to_coord(string& san)
 	// check.  Make sure this isn't the case.
 	make(m);
 	if (check(state.piece[OFF_MOVE][KING], ON_MOVE))
-		SET_NULL_MOVE(m);
+		SET_NULL_MOVE(m); // Oops, the move leaves us in check.
 	unmake();
 	return m;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				 coord_to_san()				      |
+\*----------------------------------------------------------------------------*/
+void board_base::coord_to_san(move_t m, string& san)
+{
+
+// Convert a move from coordinate notation to Standard Algebraic Notation (SAN).
+// In the current position, if the move in coordinate notation doesn't represent
+// a legal move, return the empty string.
+
+	san.erase(0, san.length());
 }
 
 /*----------------------------------------------------------------------------*\

@@ -104,6 +104,7 @@ public:
 	virtual bool make(move_t m);
 	virtual bool unmake();
 	virtual move_t san_to_coord(string& san);
+	virtual void coord_to_san(move_t m, string& san);
 	virtual int perft(int depth);
 
 protected:
