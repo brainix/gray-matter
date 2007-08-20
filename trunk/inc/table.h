@@ -26,6 +26,9 @@
 #include "config.h"
 #include "types.h"
 
+// Extra Gray Matter stuff:
+#include "board_base.h"
+
 // Transposition table entry replacement policies:
 #define DEEP		0 // Replace if same depth or deeper.
 #define FRESH		1 // Replace always.
@@ -42,6 +45,15 @@
 /*----------------------------------------------------------------------------*\
  |			      Transposition Table			      |
 \*----------------------------------------------------------------------------*/
+
+// This structure describes a transposition table slot.
+typedef struct xpos_slot
+{
+	bitboard_t hash;               // Zobrist hash key.           64 bits
+	uint16_t depth;                // Depth of our search.     +  16 bits
+	uint16_t type;                 // Upper, exact, or lower.  +  16 bits
+	move_t move;                   // Best move and score.     +  32 bits
+} __attribute__((packed)) xpos_slot_t; //                          = 128 bits
 
 class table
 {
@@ -75,6 +87,13 @@ private:
 /*----------------------------------------------------------------------------*\
  |				   Pawn Table				      |
 \*----------------------------------------------------------------------------*/
+
+// This structure describes a pawn table slot.
+typedef struct pawn_slot
+{
+	bitboard_t hash;               // Zobrist hash key.    64 bits
+	int16_t value;                 // Score.             + 16 bits
+} __attribute__((packed)) pawn_slot_t; //                    = 80 bits
 
 class pawn
 {
