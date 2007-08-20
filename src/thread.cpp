@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*\
- |	thread.cpp - cross-platform multithreading library implementation     |
+ |	thread.cpp - cross-platform library implementation		      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
@@ -19,7 +19,6 @@
  | this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdio.h>
 #include "thread.h"
 
 /*----------------------------------------------------------------------------*\
@@ -398,5 +397,96 @@ int timer_cancel()
 		// No.  There's nothing to cancel.
 		return NON_CRITICAL;
 	return thread_destroy(&timer_thread);
+#endif
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   rand_64()				      |
+\*----------------------------------------------------------------------------*/
+uint64_t rand_64()
+{
+
+// Generate a 64-bit pseudo-random number.
+
+#if defined(LINUX)
+	return (uint64_t) rand() << 32 | rand();
+#elif defined(OS_X)
+	return (uint64_t) arc4random() << 32 | arc4random();
+#elif defined(WINDOWS)
+	return (uint64_t) rand() << 32 | rand();
+#endif
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   count_64()				      |
+\*----------------------------------------------------------------------------*/
+int count_64(uint64_t n)
+{
+
+// Count the number of set bits in a 64-bit integer.
+
+	static const int table[] = {0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4};
+	int sum = 0;
+
+	for (; n; n >>= 4)
+		sum += table[n & 0xF];
+	return sum;
+}
+
+// These next two functions, we shamelessly yoinked from the GNU C Library,
+// version 2.5, copyright © 1991-1998, the Free Software Foundation, originally
+// written by Torbjorn Granlund <tege@sics.se>.
+
+/*----------------------------------------------------------------------------*\
+ |				   find_64()				      |
+\*----------------------------------------------------------------------------*/
+int find_64(int64_t n)
+{
+
+// Find the first (least significant) set bit in a 64-bit integer.  The return
+// value ranges from 0 (for no bits set) to 64 (for only the most significant
+// bit set).
+
+#if defined(OS_X) || defined(WINDOWS)
+	n &= -n;
+	int shift = (uint64_t) n <= 0xFFFFFFFFULL ? 0 : 32;
+#endif
+
+#if defined(LINUX)
+	return ffsll(n);
+#elif defined(OS_X)
+	return ffs(n >> shift) + shift;
+#elif defined(WINDOWS)
+	return find_32(n >> shift) + shift;
+#endif
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   find_32()				      |
+\*----------------------------------------------------------------------------*/
+int find_32(int32_t n)
+{
+
+// Find the first (least significant) set bit in a 32-bit integer.  The return
+// value ranges from 0 (for no bits set) to 32 (for only the most significant
+// bit set).
+
+#if defined(LINUX) || defined(OS_X)
+	return ffs(n);
+#elif defined(WINDOWS)
+	static const uint8_t table[] =
+	{
+		0,1,2,2,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,
+		6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,
+		7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+		7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+		8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,
+		8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,
+		8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,
+		8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8
+	};
+	n &= -n;
+	int shift = n <= 0xFFFF ? (n <= 0xFF ? 0 : 8) : (n <= 0xFFFFFF ?  16 : 24);
+	return table[n >> shift] + shift;
 #endif
 }

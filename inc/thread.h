@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*\
- |	thread.h - cross-platform multithreading library interface	      |
+ |	thread.h - cross-platform library interface			      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
@@ -20,8 +20,8 @@
  */
 
 /*
- | This is our cross-platform multithreading library.  All of these data types
- | and functions are defined twice: once for POSIX, again for Win32.
+ | This is our cross-platform library.  All of these data types and functions
+ | are defined twice: once for POSIX, again for Win32.
  |
  | This interface file and its corresponding implementation file were originally
  | ripped off from Doug Taylor's excellent libMetric.  You can find it here:
@@ -50,6 +50,10 @@
 #include <errno.h>
 #include <pthread.h>
 #include <signal.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <strings.h>
 #include <sys/time.h>
 
 // POSIX data types:
@@ -61,6 +65,9 @@ typedef pthread_cond_t cond_t;       // Condition variable.
 #elif defined(WINDOWS)
 
 // Win32 header files:
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <windows.h>
 
 // Win32 data types:
@@ -101,5 +108,12 @@ int cond_destroy(cond_t *cond);
 int timer_function(void (*function)(void *), void *data);
 int timer_set(int csec);
 int timer_cancel();
+
+// Function prototypes related to 64-bit pseudo-random number generation and
+// bitwise operations:
+uint64_t rand_64();
+int count_64(uint64_t n);
+int find_64(int64_t n);
+int find_32(int32_t n);
 
 #endif

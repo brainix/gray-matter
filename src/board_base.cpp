@@ -22,7 +22,7 @@
 #include "gray.h"
 #include "board_base.h"
 
-// This array maps coordinates between rotated BitBoards.
+// This array maps coordinates between rotated BitBoards:
 static int coord[MAPS][ANGLES][8][8][COORDS] =
 {
 	// From 0° to 45° left:
@@ -328,18 +328,21 @@ bool board_base::zugzwang() const
 // The search class calls this method on a particular position to decide whether
 // or not to try null-move pruning.
 
-	if (check(state.piece[ON_MOVE][KING], OFF_MOVE))
-		// The color that's on move is in check.
-		return true;
 	for (int color = WHITE; color <= BLACK; color++)
 	{
-		if (!count(state.piece[color][KNIGHT] | state.piece[color][BISHOP] | state.piece[color][ROOK] | state.piece[color][QUEEN]))
+		if (!state.piece[color][KNIGHT] &&
+		    !state.piece[color][BISHOP] &&
+		    !state.piece[color][ROOK]   &&
+		    !state.piece[color][QUEEN])
 			// One color only has pawns and a king.
 			return true;
 		if (!state.piece[color][KING])
 			// One color doesn't even have a king.
 			return true;
 	}
+	if (check(state.piece[ON_MOVE][KING], OFF_MOVE))
+		// The color on move is in check.
+		return true;
 	return false;
 }
 
@@ -348,35 +351,23 @@ bool board_base::zugzwang() const
 \*----------------------------------------------------------------------------*/
 void board_base::generate(list<move_t> &l, bool only_legal_moves, bool only_captures)
 {
-	list<move_t> tmp;
-	list<move_t>::iterator it;
+	generate_king(l, only_captures);
+	generate_queen(l, only_captures);
+	generate_rook(l, only_captures);
+	generate_bishop(l, only_captures);
+	generate_knight(l, only_captures);
+	generate_pawn(l, only_captures);
 
-	if (!only_legal_moves)
-	{
-		generate_king(l, only_captures);
-		generate_queen(l, only_captures);
-		generate_rook(l, only_captures);
-		generate_bishop(l, only_captures);
-		generate_knight(l, only_captures);
-		generate_pawn(l, only_captures);
-	}
-	else
-	{
-		generate_king(tmp, only_captures);
-		generate_queen(tmp, only_captures);
-		generate_rook(tmp, only_captures);
-		generate_bishop(tmp, only_captures);
-		generate_knight(tmp, only_captures);
-		generate_pawn(tmp, only_captures);
-
-		for (it = tmp.begin(); it != tmp.end(); it++)
+	if (only_legal_moves)
+		for (list<move_t>::iterator it = l.begin(); it != l.end();)
 		{
 			make(*it);
-			if (!check(state.piece[OFF_MOVE][KING], ON_MOVE))
-				l.push_back(*it);
+			if (check(state.piece[OFF_MOVE][KING], ON_MOVE))
+				it = l.erase(it);
+			else
+				it++;
 			unmake();
 		}
-	}
 }
 
 /*----------------------------------------------------------------------------*\
@@ -868,18 +859,18 @@ void board_base::precomp_key() const
 		for (int shape = PAWN; shape <= KING; shape++)
 			for (int y = 0; y <= 7; y++)
 				for (int x = 0; x <= 7; x++)
-					key_piece[color][shape][x][y] = randomize();
+					key_piece[color][shape][x][y] = rand_64();
 
 		for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
 			for (int stat = CAN_CASTLE; stat <= HAS_CASTLED; stat++)
-				key_castle[color][side][stat] = randomize();
+				key_castle[color][side][stat] = rand_64();
 	}
 
-	key_no_en_passant = randomize();
+	key_no_en_passant = rand_64();
 	for (int x = 0; x <= 8; x++)
-		key_en_passant[x] = randomize();
+		key_en_passant[x] = rand_64();
 
-	key_whose = randomize();
+	key_whose = rand_64();
 }
 
 /*----------------------------------------------------------------------------*\
@@ -1382,10 +1373,10 @@ bool board_base::insufficient() const
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
-		n_count += count(state.piece[color][KNIGHT]);
-		b_count += count(state.piece[color][BISHOP]);
-		b_array[color][WHITE] = count(state.piece[color][BISHOP] & SQUARES_WHITE);
-		b_array[color][BLACK] = count(state.piece[color][BISHOP] & SQUARES_BLACK);
+		n_count += count_64(state.piece[color][KNIGHT]);
+		b_count += count_64(state.piece[color][BISHOP]);
+		b_array[color][WHITE] = count_64(state.piece[color][BISHOP] & SQUARES_WHITE);
+		b_array[color][BLACK] = count_64(state.piece[color][BISHOP] & SQUARES_BLACK);
 	}
 	return n_count + b_count <= 1 ||
 	       n_count == 0 && b_count == 2 && b_array[WHITE][WHITE] == b_array[BLACK][WHITE] && b_array[WHITE][BLACK] == b_array[BLACK][BLACK];
@@ -1418,92 +1409,18 @@ bool board_base::fifty() const
 // Is the game drawn by the fifty move rule?
 
 	list<state_t>::const_reverse_iterator it;
-	int num[COLORS] = {count(rotation[ZERO][WHITE]),
-	                   count(rotation[ZERO][BLACK])};
+	int num[COLORS] = {count_64(rotation[ZERO][WHITE]),
+	                   count_64(rotation[ZERO][BLACK])};
 	int sum = 0;
 
 	for (it = states.rbegin(); it != states.rend(); it++)
 	{
-		if (it->piece[!it->whose][PAWN] != state.piece[!it->whose][PAWN] || count(ALL(*it, it->whose)) != num[it->whose])
+		if (it->piece[!it->whose][PAWN] != state.piece[!it->whose][PAWN] || count_64(ALL(*it, it->whose)) != num[it->whose])
 			return false;
 		if (++sum == 50)
 			return true;
 	}
 	return false;
-}
-
-/*----------------------------------------------------------------------------*\
- |				    count()				      |
-\*----------------------------------------------------------------------------*/
-int board_base::count(bitboard_t b) const
-{
-
-// Count the number of pieces in a BitBoard.
-
-	static const int table[] = {0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4};
-	int sum = 0;
-
-	for (; b; b >>= 4)
-		sum += table[b & 0xF];
-	return sum;
-}
-
-// These next two methods, we shamelessly yoinked from the GNU C Library,
-// version 2.5, copyright © 1991-1998, the Free Software Foundation, originally
-// written by Torbjorn Granlund <tege@sics.se>.
-
-/*----------------------------------------------------------------------------*\
- |				   find_64()				      |
-\*----------------------------------------------------------------------------*/
-int board_base::find_64(int64_t n) const
-{
-
-// Find the first (least significant) set bit in a 64-bit integer.  The return
-// value ranges from 0 (for no bits set) to 64 (for only the most significant
-// bit set).
-
-#if defined(OS_X) || defined(WINDOWS)
-	n &= -n;
-	int shift = (uint64_t) n <= 0xFFFFFFFFULL ? 0 : 32;
-#endif
-
-#if defined(LINUX)
-	return ffsll(n);
-#elif defined(OS_X)
-	return ffs(n >> shift) + shift;
-#elif defined(WINDOWS)
-	return find_32(n >> shift) + shift;
-#endif
-}
-
-/*----------------------------------------------------------------------------*\
- |				   find_32()				      |
-\*----------------------------------------------------------------------------*/
-int board_base::find_32(int32_t n) const
-{
-
-// Find the first (least significant) set bit in a 32-bit integer.  The return
-// value ranges from 0 (for no bits set) to 32 (for only the most significant
-// bit set).
-
-#if defined(LINUX) || defined(OS_X)
-	return ffs(n);
-#elif defined(WINDOWS)
-	static const uint8_t table[] =
-	{
-		0,1,2,2,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,
-		6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,
-		7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
-		7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
-		8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,
-		8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,
-		8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,
-		8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8
-	};
-	n &= -n;
-	int shift = n <= 0xFFFF ? (n <= 0xFF ? 0 : 8) : (n <= 0xFFFFFF ?  16 : 24);
-	return table[n >> shift] + shift;
-#endif
 }
 
 /*----------------------------------------------------------------------------*\
@@ -1523,23 +1440,6 @@ bitboard_t board_base::rotate(bitboard_t b1, int map, int angle) const
 		BIT_SET(b2, coord[map][angle][x][y][X], coord[map][angle][x][y][Y]);
 	}
 	return b2;
-}
-
-/*----------------------------------------------------------------------------*\
- |				  randomize()				      |
-\*----------------------------------------------------------------------------*/
-uint64_t board_base::randomize() const
-{
-
-// Generate a 64-bit pseudo-random number.
-
-#if defined(LINUX)
-	return (uint64_t) rand() << 32 | rand();
-#elif defined(OS_X)
-	return (uint64_t) arc4random() << 32 | arc4random();
-#elif defined(WINDOWS)
-	return (uint64_t) rand() << 32 | rand();
-#endif
 }
 
 /*----------------------------------------------------------------------------*\

@@ -142,11 +142,7 @@ protected:
 	virtual bool fifty() const;
 
 	// These methods manipulate BitBoards.
-	virtual int count(bitboard_t b) const;
-	virtual int find_64(int64_t n) const;
-	virtual int find_32(int32_t n) const;
 	virtual bitboard_t rotate(bitboard_t b1, int map, int angle) const;
-	virtual uint64_t randomize() const;
 	virtual void insert(int x, int y, bitboard_t b, int angle, list<move_t> &l, bool pos) const;
 };
 
