@@ -33,11 +33,6 @@ using namespace std;
 #include "types.h"
 #include "library.h"
 
-// Castling sides:
-#define QUEEN_SIDE	0
-#define KING_SIDE	1
-#define SIDES		2
-
 // Castling statuses:
 #define CAN_CASTLE	0
 #define CANT_CASTLE	1

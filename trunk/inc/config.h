@@ -124,6 +124,11 @@
 #define KING		5
 #define SHAPES		6
 
+// Castling sides:
+#define QUEEN_SIDE	0
+#define KING_SIDE	1
+#define SIDES		2
+
 // Memory units:
 #define  B		1           // Byte.
 #define KB		(1024 * B)  // Kilobyte.
