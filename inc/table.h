@@ -24,7 +24,7 @@
 
 // Default Gray Matter stuff:
 #include "config.h"
-#include "types.h"
+#include "library.h"
 
 // Extra Gray Matter stuff:
 #include "board_base.h"

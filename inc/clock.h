@@ -24,7 +24,6 @@
 
 // Default Gray Matter stuff:
 #include "config.h"
-#include "types.h"
 #include "library.h"
 
 // Time control styles:
