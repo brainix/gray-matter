@@ -25,7 +25,6 @@
 using namespace std;
 
 // C++ stuff:
-#include <cstdint>
 #include <list>
 #include <string>
 
