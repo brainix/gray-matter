@@ -26,6 +26,19 @@
 #include "config.h"
 #include "types.h"
 
+// Transposition table entry replacement policies:
+#define DEEP		0 // Replace if same depth or deeper.
+#define FRESH		1 // Replace always.
+#define POLICIES	2
+
+// Transposition table entry types:
+#define USELESS		0 // Useless.
+#define BOOK		1 // Prescribed by the opening book.
+#define EXACT		2 // Exact MiniMax value.
+#define UPPER		3 // Upper bound.
+#define LOWER		4 // Lower bound.
+#define ENTRY_TYPES	5
+
 /*----------------------------------------------------------------------------*\
  |			      Transposition Table			      |
 \*----------------------------------------------------------------------------*/

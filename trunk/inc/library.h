@@ -25,15 +25,15 @@
  |
  | This interface file and its corresponding implementation file were originally
  | ripped off from Doug Taylor's excellent libMetric.  You can find it here:
- | http://jdtaylor.org/  Hopefully, we'll do some meaningful work that Doug will
- | be able to merge upstream.
+ | http://jdtaylor.org/  Hopefully, we'll do some meaningful work Doug will be
+ | able to merge upstream.
  |
- | Throughout this endeavor, I've learned that writing a multithreaded program
- | for Windows is akin to building a Ferrari out of Duplo.  Sadly, the world is
- | populated with toddlers with stubby fingers that are too clumsy to manipulate
- | Lego.  I just wish that that knucklehead Steve Ballmer could stop throwing
- | chairs long enough to make his thrice-damned operating system POSIX
- | conformant like every other operating system on this planet.  I hate myself.
+ | Throughout this endeavor, I've learned programming for Windows is akin to
+ | building a Ferrari out of Duplo.  Sadly, the world is populated with toddlers
+ | who have stubby fingers too clumsy to manipulate Lego.  I just wish that
+ | knucklehead Steve Ballmer could stop throwing chairs long enough to make his
+ | thrice-damned operating system POSIX conformant like every other operating
+ | system on this planet.  I hate myself.
  */
 
 #ifndef LIBRARY_H
