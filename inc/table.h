@@ -64,8 +64,12 @@ public:
 	bool probe(bitboard_t hash, int depth, int type, move_t *move_ptr);
 	void store(bitboard_t hash, int depth, int type, move_t move);
 private:
-	uint64_t slots;     // The number of slots.
-	xpos_slot_t **data; // The slots themselves.
+	uint64_t slots;      // The number of slots.
+	xpos_slot_t **data;  // The slots themselves.
+	int successful;      // The number of successful queries.
+	int semi_successful; // The number of semi-successful queries.
+	int unsuccessful;    // The number of unsuccessful queries;
+	int total;           // The total number of queries.
 };
 
 /*----------------------------------------------------------------------------*\
@@ -106,6 +110,9 @@ public:
 private:
 	uint64_t slots;    // The number of slots.
 	pawn_slot_t *data; // The slots themselves.
+	int successful;    // The number of successful queries.
+	int unsuccessful;  // The number of unsuccessful queries;
+	int total;         // The total number of queries.
 };
 
 #endif

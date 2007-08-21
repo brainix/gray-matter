@@ -24,10 +24,13 @@
 
 // We define a piece's tempo as the minimum number of moves required to move it
 // from its starting position to its current position on an otherwise empty
-// chess board.  Tempo is a measure of development; good chess players maximize
+// chess board.  Tempo is a measure of development.  Good chess players maximize
 // their tempo and minimize their opponents' tempo.
 //
-// Given a piece and its current position, this array gives its tempo.
+// Given a white piece and its current position, this array gives its tempo.
+// Since the white pieces' starting positions are reflections of the black
+// pieces' starting positions, with this info, it's trivial to compute any black
+// piece's tempo.
 static uint8_t tempo[SHAPES][8][8] =
 {
 	       // Pawn:

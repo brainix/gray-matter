@@ -43,6 +43,11 @@ table::table(int mb)
 		// XXX: We should probably do something here.
 	}
 	clear();
+
+	successful = 0;
+	semi_successful = 0;
+	unsuccessful = 0;
+	total = 0;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -87,10 +92,20 @@ bool table::probe(bitboard_t hash, int depth, int type, move_t *move_ptr)
 		if (data[policy][index].hash == hash)
 		{
 			*move_ptr = data[policy][index].move;
-			return data[policy][index].depth >= depth && (data[policy][index].type == type || data[policy][index].type == EXACT || data[policy][index].type == BOOK);
+			if (data[policy][index].depth >= depth && (data[policy][index].type == type || data[policy][index].type == EXACT || data[policy][index].type == BOOK))
+			{
+				successful++;
+				total++;
+				return true;
+			}
+			semi_successful++;
+			total++;
+			return false;
 		}
 	SET_NULL_MOVE(*move_ptr);
 	move_ptr->value = 0;
+	unsuccessful++;
+	total++;
 	return false;
 }
 
@@ -214,6 +229,10 @@ pawn::pawn(int mb)
 		// XXX: We should probably do something here.
 	}
 	clear();
+
+	successful = 0;
+	unsuccessful = 0;
+	total = 0;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -255,6 +274,9 @@ bool pawn::probe(bitboard_t hash, int *value_ptr)
 	uint64_t index = hash % slots;
 	bool found = data[index].hash == hash;
 	*value_ptr = found ? data[index].value : 0;
+	successful += found ? 1 : 0;
+	unsuccessful += found ? 0 : 1;
+	total++;
 	return found;
 }
 
