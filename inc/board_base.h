@@ -176,6 +176,7 @@ typedef struct state
 	int castle[COLORS][SIDES];        // Castling statuses.
 	int en_passant;                   // En passant vulnerability.
 	bool whose;                       // Color on move.
+	int fifty;                        // 50 move rule counter.
 } state_t;
 
 // These macros represent the colors on and off move.

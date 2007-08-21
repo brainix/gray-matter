@@ -418,6 +418,7 @@ bool board_base::make(move_t m)
 			hash ^= key_piece[OFF_MOVE][shape][m.new_x][m.new_y];
 			if (shape == PAWN)
 				pawn_hash ^= key_piece[OFF_MOVE][shape][m.new_x][m.new_y];
+			state.fifty = -1;
 		}
 	}
 
@@ -499,6 +500,9 @@ bool board_base::make(move_t m)
 		// If we're advancing a pawn two squares, mark it vulnerable to
 		// en passant.
 		state.en_passant = abs((int) m.old_y - (int) m.new_y) == 2 ? (int) m.old_x : -1;
+
+		// Reset the 50 move rule counter.
+		state.fifty = -1;
 	}
 	else
 		// Oops.  We're not moving a pawn.  Mark no pawn vulnerable to
@@ -511,6 +515,9 @@ end:
 	// Set the other color on move.
 	state.whose = !state.whose;
 	hash ^= key_whose;
+
+	// Increment the 50 move rule counter.
+	state.fifty++;
 
 	// Update the rotated BitBoards.
 	for (int angle = L45; angle <= R90; angle++)
@@ -799,9 +806,11 @@ void board_base::init_state()
 			state.castle[color][side] = CAN_CASTLE;
 	}
 
-	// Mark no pawn vulnerable to en passant and set white on move.
+	// Mark no pawn vulnerable to en passant, set white on move, and
+	// initialize the 50 move rule counter.
 	state.en_passant = -1;
 	state.whose = WHITE;
+	state.fifty = 0;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -1422,19 +1431,7 @@ bool board_base::fifty() const
 
 // Is the game drawn by the fifty move rule?
 
-	list<state_t>::const_reverse_iterator it;
-	int num[COLORS] = {count_64(rotation[ZERO][WHITE]),
-	                   count_64(rotation[ZERO][BLACK])};
-	int sum = 0;
-
-	for (it = states.rbegin(); it != states.rend(); it++)
-	{
-		if (it->piece[!it->whose][PAWN] != state.piece[!it->whose][PAWN] || count_64(ALL(*it, it->whose)) != num[it->whose])
-			return false;
-		if (++sum == 50)
-			return true;
-	}
-	return false;
+	return state.fifty >= 50;
 }
 
 /*----------------------------------------------------------------------------*\
