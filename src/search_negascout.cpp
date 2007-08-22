@@ -143,10 +143,11 @@ move_t search_negascout::minimax(int depth, int shallowness, int alpha, int beta
 
 	// Local variables that pertain to the current position:
 	bool whose = board_ptr->get_whose();       // The color on move.
-//	bitboard_t hash = board_ptr->get_hash();   // This position's hash.
+	bitboard_t hash = board_ptr->get_hash();   // This position's hash.
 	int status = board_ptr->get_status(false); // Whether the game is over.
 	list<move_t> l;                            // The move list.
 	list<move_t>::iterator it;                 // The iterator.
+	bool found = false;                        //
 	move_t m;                                  // The best move.
 
 	// Increment the number of positions searched.
@@ -188,18 +189,20 @@ move_t search_negascout::minimax(int depth, int shallowness, int alpha, int beta
 	for (it = l.begin(); it != l.end(); it++)
 	{
 		board_ptr->make(*it);
-		it->value = -minimax(depth - 1, shallowness + 1, -beta, -alpha).value;
+		if (found)
+			it->value = -minimax(depth - 1, shallowness + 1, -alpha - 1, -alpha).value;
+		if (!found || it->value > alpha && it->value < beta)
+			it->value = -minimax(depth - 1, shallowness + 1, -beta, -alpha).value;
 		board_ptr->unmake();
 		if (it->value >= alpha)
 		{
-			alpha = it->value;
-			m = *it;
+			alpha = (m = *it).value;
+			found = true;
 		}
 		if (it->value > beta)
 		{
-			m = *it;
-			m.value = beta;
-			break;
+			(m = *it).value = beta;
+			return m;
 		}
 		if (timeout_flag && depth_flag)
 			break;
