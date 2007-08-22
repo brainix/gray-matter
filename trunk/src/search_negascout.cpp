@@ -193,11 +193,11 @@ move_t search_negascout::minimax(int depth, int shallowness, int alpha, int beta
 		if (it->value >= alpha)
 		{
 			alpha = it->value;
-			m = it;
+			m = *it;
 		}
 		if (it->value > beta)
 		{
-			m = it;
+			m = *it;
 			m.value = beta;
 			break;
 		}
