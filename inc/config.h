@@ -61,10 +61,10 @@
 #define WEIGHT_ILLEGAL		20000
 
 // Values of pawn formations:
-#define WEIGHT_ISOLATED		  -80
-#define WEIGHT_DOUBLED		  -40
-#define WEIGHT_BACKWARD		  -60
-#define WEIGHT_PASSED		   30
+#define WEIGHT_ISOLATED		  -40
+#define WEIGHT_DOUBLED		  -20
+#define WEIGHT_BACKWARD		  -30
+#define WEIGHT_PASSED		   15
 
 // Values of castling statuses:
 #define WEIGHT_CANT_CASTLE	  -20
