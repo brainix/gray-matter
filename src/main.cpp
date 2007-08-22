@@ -29,6 +29,7 @@
 #include "xboard.h"
 #include "search_base.h"
 #include "search_mtdf.h"
+#include "search_negascout.h"
 #include "book.h"
 
 // Function prototypes:
