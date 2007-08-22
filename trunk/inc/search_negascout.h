@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*\
- |	search_mtdf.h - MTD(f) move search interface			      |
+ |	search_negascout.h - NegaScout move search interface		      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
@@ -19,8 +19,8 @@
  | this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SEARCH_MTDF_H
-#define SEARCH_MTDF_H
+#ifndef SEARCH_NEGASCOUT_H
+#define SEARCH_NEGASCOUT_H
 
 using namespace std;
 
@@ -37,15 +37,14 @@ using namespace std;
 // Forward declarations:
 class search_base;
 
-class search_mtdf : public search_base
+class search_negascout : public search_base
 {
 public:
-	search_mtdf(table *t, history *h, chess_clock *c, xboard *x);
-	~search_mtdf();
-	search_mtdf& operator=(const search_mtdf& that);
+	search_negascout(table *t, history *h, chess_clock *c, xboard *x);
+	~search_negascout();
+	search_negascout& operator=(const search_negascout& that);
 private:
 	void iterate(int s);
-	move_t mtdf(int depth, int guess);
 	move_t minimax(int depth, int shallowness, int alpha, int beta);
 };
 

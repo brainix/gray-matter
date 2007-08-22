@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*\
- |	search_mtdf.cpp - MTD(f) move search implementation		      |
+ |	search_negascout.cpp - NegaScout move search implementation	      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
@@ -20,12 +20,12 @@
  */
 
 #include "gray.h"
-#include "search_mtdf.h"
+#include "search_negascout.h"
 
 /*----------------------------------------------------------------------------*\
- |				 search_mtdf()				      |
+ |			       search_negascout()			      |
 \*----------------------------------------------------------------------------*/
-search_mtdf::search_mtdf(table *t, history *h, chess_clock *c, xboard *x) :
+search_negascout::search_negascout(table *t, history *h, chess_clock *c, xboard *x) :
 	search_base(t, h, c, x)
 {
 
@@ -34,9 +34,9 @@ search_mtdf::search_mtdf(table *t, history *h, chess_clock *c, xboard *x) :
 }
 
 /*----------------------------------------------------------------------------*\
- |				 ~search_mtdf()				      |
+ |			      ~search_negascout()			      |
 \*----------------------------------------------------------------------------*/
-search_mtdf::~search_mtdf()
+search_negascout::~search_negascout()
 {
 
 // Destructor.
@@ -46,7 +46,7 @@ search_mtdf::~search_mtdf()
 /*----------------------------------------------------------------------------*\
  |				       =				      |
 \*----------------------------------------------------------------------------*/
-search_mtdf& search_mtdf::operator=(const search_mtdf& that)
+search_negascout& search_negascout::operator=(const search_negascout& that)
 {
 
 // Overloaded assignment operator.
@@ -59,14 +59,14 @@ search_mtdf& search_mtdf::operator=(const search_mtdf& that)
 /*----------------------------------------------------------------------------*\
  |				   iterate()				      |
 \*----------------------------------------------------------------------------*/
-void search_mtdf::iterate(int s)
+void search_negascout::iterate(int s)
 {
 
 // Perform iterative deepening.  This method handles both thinking (on our own
 // time) and pondering (on our opponent's time) since they're so similar.
 
 	int depth;
-	move_t guess[2], m;
+	move_t tmp, m;
 
 	// For the current position, does the opening book recommend a move?
 	if (s == THINKING)
@@ -88,25 +88,22 @@ void search_mtdf::iterate(int s)
 	if (s == THINKING)
 		clock_ptr->set_alarm(board_ptr->get_whose());
 	nodes = 0;
-	for (depth = 0; depth <= 1; depth++)
-	{
-		SET_NULL_MOVE(guess[depth]);
-		guess[depth].value = 0;
-	}
+	SET_NULL_MOVE(tmp);
+	tmp.value = 0;
 
 	// Perform iterative deepening until the alarm has sounded (if we're
 	// thinking), our opponent has moved (if we're pondering), or we've
 	// reached the maximum depth (either way).
 	for (depth = 1; depth <= max_depth; depth++)
 	{
-		guess[depth & 1] = mtdf(depth, guess[depth & 1].value);
-		if (timeout_flag && depth_flag || IS_NULL_MOVE(guess[depth & 1]))
+		tmp = minimax(depth, 0, -INFINITY, INFINITY);
+		if (timeout_flag && depth_flag || IS_NULL_MOVE(tmp))
 			// Oops.  Either the alarm has interrupted this
 			// iteration (and the results are incomplete and
 			// unreliable), or there's no legal move in this
 			// position (and the game must've ended).
 			break;
-		m = guess[depth & 1];
+		m = tmp;
 		extract(s);
 		if (output)
 			xboard_ptr->print_output(depth, m.value, clock_ptr->get_elapsed(), nodes, pv);
@@ -136,57 +133,21 @@ void search_mtdf::iterate(int s)
 }
 
 /*----------------------------------------------------------------------------*\
- |				     mtdf()				      |
-\*----------------------------------------------------------------------------*/
-move_t search_mtdf::mtdf(int depth, int guess)
-{
-
-// From the current position, search for the best move.  This method implements
-// the MTD(f) algorithm.
-
-	move_t m;
-	SET_NULL_MOVE(m);
-	m.value = guess;
-	int upper = +INFINITY, lower = -INFINITY, beta;
-
-	while (upper > lower && (!timeout_flag || !depth_flag))
-	{
-		beta = m.value + (m.value == lower);
-		m = minimax(depth, 0, beta - 1, beta);
-		upper = m.value < beta ? m.value : upper;
-		lower = m.value < beta ? lower : m.value;
-	}
-	return m;
-}
-
-/*----------------------------------------------------------------------------*\
  |				   minimax()				      |
 \*----------------------------------------------------------------------------*/
-move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
+move_t search_negascout::minimax(int depth, int shallowness, int alpha, int beta)
 {
 
 // From the current position, search for the best move.  This method implements
 // the MiniMax algorithm.
-//
-// On top of MiniMax, this method implements NegaMax.  NegaMax produces the same
-// results as MiniMax but is simpler to code.  Instead of juggling around two
-// players, Max and Min, NegaMax treats both players as Max and negates the
-// scores on each recursive call.
-//
-// On top of NegaMax, this method implements AlphaBeta.  AlphaBeta produces the
-// same results as NegaMax but far more efficiently.
-//
-// On top of AlphaBeta, this method implements FailSoft.  FailSoft returns more
-// information than AlphaBeta.
 
 	// Local variables that pertain to the current position:
 	bool whose = board_ptr->get_whose();       // The color on move.
 	bitboard_t hash = board_ptr->get_hash();   // This position's hash.
 	int status = board_ptr->get_status(false); // Whether the game is over.
-	int upper = +INFINITY, lower = -INFINITY;  // The upper & lower bounds.
-	int current = alpha;                       // Scratch alpha variable.
 	list<move_t> l;                            // The move list.
 	list<move_t>::iterator it;                 // The iterator.
+	bool found = false;                        //
 	move_t m;                                  // The best move.
 
 	// Increment the number of positions searched.
@@ -210,27 +171,6 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 		return m;
 	}
 
-	// If we've already sufficiently examined this position, return the best
-	// move from our previous search.  Otherwise, if we can, reduce the size
-	// of our alpha-beta window.
-	if (shallowness)
-	{
-		if (table_ptr->probe(hash, depth, EXACT, &m))
-			return m;
-		if (table_ptr->probe(hash, depth, UPPER, &m))
-		{
-			if ((upper = m.value) <= alpha)
-				return m;
-			beta = LESSER(beta, upper);
-		}
-		else if (table_ptr->probe(hash, depth, LOWER, &m))
-		{
-			if ((lower = m.value) >= beta)
-				return m;
-			current = alpha = GREATER(alpha, lower);
-		}
-	}
-
 	// Generate and re-order the move list.
 	board_ptr->generate(l, !shallowness);
 	for (it = l.begin(); it != l.end(); it++)
@@ -249,34 +189,27 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 	for (it = l.begin(); it != l.end(); it++)
 	{
 		board_ptr->make(*it);
-		it->value = -minimax(depth - 1, shallowness + 1, -beta, -current).value;
+		if (found)
+			it->value = -minimax(depth - 1, shallowness + 1, -alpha - 1, -alpha).value;
+		if (!found || it->value > alpha && it->value < beta)
+			it->value = -minimax(depth - 1, shallowness + 1, -beta, -alpha).value;
 		board_ptr->unmake();
-		if (it->value > m.value)
-			current = GREATER(current, (m = *it).value);
-		if (it->value >= beta || timeout_flag && depth_flag)
+		if (it->value >= alpha)
+		{
+			alpha = (m = *it).value;
+			found = true;
+		}
+		if (it->value > beta)
+		{
+			(m = *it).value = beta;
+			return m;
+		}
+		if (timeout_flag && depth_flag)
 			break;
-	}
-
-	// Was there a legal move in the list?
-	if (m.value == -WEIGHT_ILLEGAL)
-	{
-		// Nope, there was no legal move in the list.  The current
-		// position must either be stalemate or checkmate.  How can we
-		// tell which?  Easily.  If we're not in check, we're
-		// stalemated; if we're in check, we're checkmated.
-		SET_NULL_MOVE(m);
-		m.value = !board_ptr->check() ? +WEIGHT_CONTEMPT : -WEIGHT_KING + shallowness;
-		if (!timeout_flag || !depth_flag)
-			table_ptr->store(hash, depth, EXACT, m);
-		return m;
 	}
 
 	if (!timeout_flag || !depth_flag)
 	{
-		if (m.value <= alpha)
-			table_ptr->store(hash, depth, UPPER, m);
-		else if (m.value >= beta)
-			table_ptr->store(hash, depth, LOWER, m);
 		history_ptr->store(whose, m, depth);
 	}
 	return m;
