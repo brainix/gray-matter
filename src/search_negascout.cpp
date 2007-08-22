@@ -143,7 +143,7 @@ move_t search_negascout::minimax(int depth, int shallowness, int alpha, int beta
 
 	// Local variables that pertain to the current position:
 	bool whose = board_ptr->get_whose();       // The color on move.
-	bitboard_t hash = board_ptr->get_hash();   // This position's hash.
+//	bitboard_t hash = board_ptr->get_hash();   // This position's hash.
 	int status = board_ptr->get_status(false); // Whether the game is over.
 	list<move_t> l;                            // The move list.
 	list<move_t>::iterator it;                 // The iterator.
