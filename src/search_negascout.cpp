@@ -147,7 +147,6 @@ move_t search_negascout::minimax(int depth, int shallowness, int alpha, int beta
 	int status = board_ptr->get_status(false); // Whether the game is over.
 	list<move_t> l;                            // The move list.
 	list<move_t>::iterator it;                 // The iterator.
-	bool found = false;                        //
 	move_t m;                                  // The best move.
 
 	// Increment the number of positions searched.
@@ -189,21 +188,18 @@ move_t search_negascout::minimax(int depth, int shallowness, int alpha, int beta
 	for (it = l.begin(); it != l.end(); it++)
 	{
 		board_ptr->make(*it);
-		if (found)
-			it->value = -minimax(depth - 1, shallowness + 1, -alpha - 1, -alpha).value;
-		if (!found || it->value > alpha && it->value < beta)
-			it->value = -minimax(depth - 1, shallowness + 1, -beta, -alpha).value;
+		it->value = -minimax(depth - 1, shallowness + 1, -beta, -alpha).value;
 		board_ptr->unmake();
 		if (it->value >= alpha)
 		{
-			alpha = (m = *it).value;
-			found = true;
+			alpha = it->value;
+			m = it;
 		}
 		if (it->value > beta)
 		{
-			m = *it;
+			m = it;
 			m.value = beta;
-			return m;
+			break;
 		}
 		if (timeout_flag && depth_flag)
 			break;
