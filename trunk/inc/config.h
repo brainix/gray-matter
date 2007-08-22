@@ -67,9 +67,9 @@
 #define WEIGHT_PASSED		   15
 
 // Values of castling statuses:
-#define WEIGHT_CANT_CASTLE	  -20
+#define WEIGHT_CANT_CASTLE	  -40
 #define WEIGHT_CAN_CASTLE	    0
-#define WEIGHT_HAS_CASTLED	   40
+#define WEIGHT_HAS_CASTLED	   80
 
 // Value of tempo:
 #define WEIGHT_TEMPO		   33
