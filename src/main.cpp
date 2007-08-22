@@ -122,9 +122,9 @@ int main(int argc, char **argv)
 	// Based on the -s command-line option, choose the move search engine
 	// and cast it as a generic version.
 	search_base *s;
-	if (search_base == "NegaScout")
+	if (search_engine == "NegaScout")
 		s = new search_negascout(&t, &h, &c, &x);
-	if (search_base == "MTD(f)")
+	if (search_engine == "MTD(f)")
 		s = new search_mtdf(&t, &h, &c, &x);
 
 	// Launch the event loop.
