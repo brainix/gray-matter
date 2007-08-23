@@ -22,9 +22,6 @@
 #ifndef SEARCH_BASE_H
 #define SEARCH_BASE_H
 
-// C++ stuff:
-#include <list>
-
 // Default Gray Matter stuff:
 #include "config.h"
 #include "library.h"
@@ -34,7 +31,6 @@
 #include "board_heuristic.h"
 #include "table.h"
 #include "clock.h"
-#include "xboard.h"
 
 // Search statuses:
 #define IDLING		0 // Masturbating.
@@ -70,9 +66,9 @@ protected:
 	static void *_start(void *arg);            // Proxy thread entry point.
 	virtual void start();                      // C++ thread entry point.
 	virtual void iterate(int s) = 0;           // Force sub-classes to override.
-	static bool shuffle(move_t m1, move_t m2); //
-	static bool descend(move_t m1, move_t m2); //
-	virtual void extract(int s);               //
+	static bool shuffle(move_t m1, move_t m2);
+	static bool descend(move_t m1, move_t m2);
+	virtual void extract(int s);
 
 	list<move_t> pv;        // Principal variation.
 	move_t hint;            // Opponent's best move.

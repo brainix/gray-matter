@@ -76,24 +76,17 @@ void search_mtdf::iterate(int s)
 			xboard_ptr->print_result(m);
 			return;
 		}
-	else if (pv.size() < 2 || IS_NULL_MOVE(hint))
-		return;
 
 	// Wait for the board, then grab the board.
 	board_ptr->lock();
 
 	// Note the start time.  If we're to think, set the alarm.  (If we're to
 	// ponder, there's no need to set the alarm.  We ponder indefinitely
-	// until the opponent has moved.)
+	// until the opponent has moved.)  Initialize the number of nodes
+	// searched.
 	clock_ptr->note_time();
 	if (s == THINKING)
 		clock_ptr->set_alarm(board_ptr->get_whose());
-
-	//
-	if (s == PONDERING)
-		board_ptr->make(hint);
-
-	// Initialize the number of nodes searched.
 	nodes = 0;
 	for (depth = 0; depth <= 1; depth++)
 	{
@@ -128,10 +121,6 @@ void search_mtdf::iterate(int s)
 			mutex_unlock(&depth_mutex);
 		}
 	}
-
-	//
-	if (s == PONDERING)
-		board_ptr->unmake();
 
 	// Release the board.
 	board_ptr->unlock();

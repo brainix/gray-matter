@@ -24,12 +24,16 @@
 
 using namespace std;
 
+// C++ stuff:
+#include <list>
+
 // Default Gray Matter stuff:
 #include "config.h"
 #include "library.h"
 
 // Extra Gray Matter stuff:
 #include "search_base.h"
+#include "board_base.h"
 #include "table.h"
 #include "clock.h"
 #include "xboard.h"
