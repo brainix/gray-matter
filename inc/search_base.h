@@ -65,14 +65,14 @@ public:
 	virtual void set_output(bool o);
 
 protected:
-	static void _handle(void *arg);                        // Proxy clock callback.
-	virtual void handle();                                 // C++ clock callback.
-	static void *_start(void *arg);                        // Proxy thread entry point.
-	virtual void start();                                  // C++ thread entry point.
-	virtual void iterate(int s) = 0;                       // Force sub-classes to override.
-	static bool shuffle(move_t m1, move_t m2);             //
-	static bool descend(move_t m1, move_t m2);             //
-	virtual void extract(int s, bool extract_hint = true); //
+	static void _handle(void *arg);            // Proxy clock callback.
+	virtual void handle();                     // C++ clock callback.
+	static void *_start(void *arg);            // Proxy thread entry point.
+	virtual void start();                      // C++ thread entry point.
+	virtual void iterate(int s) = 0;           // Force sub-classes to override.
+	static bool shuffle(move_t m1, move_t m2); //
+	static bool descend(move_t m1, move_t m2); //
+	virtual void extract(int s);               //
 
 	list<move_t> pv;        // Principal variation.
 	move_t hint;            // Opponent's best move.
