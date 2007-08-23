@@ -73,7 +73,7 @@ protected:
 	static bool shuffle(move_t m1, move_t m2);
 	static bool descend(move_t m1, move_t m2);
 	virtual void extract_pv();
-	virtual void extract_hint();
+	virtual void extract_hint(int s);
 
 	list<move_t> pv;        // Principal variation.
 	move_t hint;            // Opponent's best move.
