@@ -68,25 +68,32 @@ void search_mtdf::iterate(int s)
 	int depth;
 	move_t guess[2], m;
 
-	// For the current position, does the opening book recommend a move?
-	if (s == THINKING)
-		if (table_ptr->probe(board_ptr->get_hash(), MAX_DEPTH, BOOK, &m))
-		{
-			// Yes.  Just make the prescribed move.
-			xboard_ptr->print_result(m);
-			return;
-		}
-
 	// Wait for the board, then grab the board.
 	board_ptr->lock();
 
+	// For the current position, does the opening book recommend a move?
+	if (s == THINKING && table_ptr->probe(board_ptr->get_hash(), MAX_DEPTH, BOOK, &m))
+	{
+		// Yes.  Make the prescribed move.
+		extract_pv();
+		extract_hint();
+		board_ptr->unlock();
+		xboard_ptr->print_result(m);
+		return;
+	}
+
 	// Note the start time.  If we're to think, set the alarm.  (If we're to
 	// ponder, there's no need to set the alarm.  We ponder indefinitely
-	// until the opponent has moved.)  Initialize the number of nodes
-	// searched.
+	// until the opponent has moved.)
 	clock_ptr->note_time();
 	if (s == THINKING)
 		clock_ptr->set_alarm(board_ptr->get_whose());
+
+	//
+	if (s == PONDERING && !IS_NULL_MOVE(hint))
+		board_ptr->make(hint);
+
+	// Initialize the number of nodes searched.
 	nodes = 0;
 	for (depth = 0; depth <= 1; depth++)
 	{
@@ -107,7 +114,7 @@ void search_mtdf::iterate(int s)
 			// position (and the game must've ended).
 			break;
 		m = guess[depth & 1];
-		extract(s);
+		extract_pv();
 		if (output)
 			xboard_ptr->print_output(depth, m.value, clock_ptr->get_elapsed(), nodes, pv);
 		if (ABS(m.value) >= WEIGHT_KING - MAX_DEPTH)
@@ -122,17 +129,23 @@ void search_mtdf::iterate(int s)
 		}
 	}
 
-	// Release the board.
-	board_ptr->unlock();
-
-	// If we've just finished thinking, cancel the alarm and inform XBoard
-	// of our favorite move.
+	// If we've just finished thinking, cancel the alarm.
 	if (s == THINKING)
 	{
 		clock_ptr->cancel_alarm();
-		if (search_status != QUITTING)
-			xboard_ptr->print_result(m);
+		extract_hint();
 	}
+
+	//
+	if (s == PONDERING && !IS_NULL_MOVE(hint))
+		board_ptr->unmake();
+
+	// Release the board.
+	board_ptr->unlock();
+
+	// If we've just finished thinking, inform XBoard of our favorite move.
+	if (s == THINKING && search_status != QUITTING)
+		xboard_ptr->print_result(m);
 }
 
 /*----------------------------------------------------------------------------*\
