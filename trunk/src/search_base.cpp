@@ -155,6 +155,8 @@ void search_base::change(int s, const board_base& now)
 	{
 		board_ptr->lock();
 		*board_ptr = now;
+		extract_pv();
+		extract_hint(s);
 		board_ptr->unlock();
 	}
 
@@ -315,16 +317,22 @@ void search_base::extract_pv()
 /*----------------------------------------------------------------------------*\
  |				 extract_hint()				      |
 \*----------------------------------------------------------------------------*/
-void search_base::extract_hint()
+void search_base::extract_hint(int s)
 {
 
 // Extract the hint from the principal variation.
 
-	if (pv.size() >= 2)
-	{
-		list<move_t>::iterator it = pv.begin();
-		hint = *++it;
-	}
+	if (s == THINKING)
+		if (pv.size() >= 2)
+		{
+			list<move_t>::iterator it = pv.begin();
+			hint = *++it;
+		}
+		else
+			SET_NULL_MOVE(hint);
 	else
-		SET_NULL_MOVE(hint);
+		if (!pv.empty())
+			hint = pv.front();
+		else
+			SET_NULL_MOVE(hint);
 }

@@ -76,7 +76,7 @@ void search_mtdf::iterate(int s)
 	{
 		// Yes.  Make the prescribed move.
 		extract_pv();
-		extract_hint();
+		extract_hint(THINKING);
 		board_ptr->unlock();
 		xboard_ptr->print_result(m);
 		return;
@@ -133,7 +133,7 @@ void search_mtdf::iterate(int s)
 	if (s == THINKING)
 	{
 		clock_ptr->cancel_alarm();
-		extract_hint();
+		extract_hint(THINKING);
 	}
 
 	//
