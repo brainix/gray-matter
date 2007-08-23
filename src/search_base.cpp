@@ -291,17 +291,16 @@ bool search_base::descend(move_t m1, move_t m2)
 }
 
 /*----------------------------------------------------------------------------*\
- |				   extract()				      |
+ |				  extract_pv()				      |
 \*----------------------------------------------------------------------------*/
-void search_base::extract(int s)
+void search_base::extract_pv()
 {
 
-// Extract the principal variation and hint from the transposition table.
+// Extract the principal variation from the transposition table.
 
 	move_t m;
 	pv.clear();
 
-	// Get the principal variation.
 	for (table_ptr->probe(board_ptr->get_hash(), 0, EXACT, &m); !IS_NULL_MOVE(m) && board_ptr->get_status(true) == IN_PROGRESS; table_ptr->probe(board_ptr->get_hash(), 0, EXACT, &m))
 	{
 		pv.push_back(m);
@@ -311,15 +310,21 @@ void search_base::extract(int s)
 	}
 	for (size_t j = 0; j < pv.size(); j++)
 		board_ptr->unmake();
+}
 
-	// Get the hint.
-	if (s == THINKING && pv.size() >= 2)
+/*----------------------------------------------------------------------------*\
+ |				 extract_hint()				      |
+\*----------------------------------------------------------------------------*/
+void search_base::extract_hint()
+{
+
+// Extract the hint from the principal variation.
+
+	if (pv.size() >= 2)
 	{
 		list<move_t>::iterator it = pv.begin();
 		hint = *++it;
 	}
-	else if (s == PONDERING && pv.size() >= 1)
-		hint = pv.front();
 	else
 		SET_NULL_MOVE(hint);
 }
