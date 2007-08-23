@@ -22,6 +22,9 @@
 #ifndef SEARCH_BASE_H
 #define SEARCH_BASE_H
 
+// C++ stuff:
+#include <list>
+
 // Default Gray Matter stuff:
 #include "config.h"
 #include "library.h"
@@ -31,6 +34,7 @@
 #include "board_heuristic.h"
 #include "table.h"
 #include "clock.h"
+#include "xboard.h"
 
 // Search statuses:
 #define IDLING		0 // Masturbating.
