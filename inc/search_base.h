@@ -22,6 +22,9 @@
 #ifndef SEARCH_BASE_H
 #define SEARCH_BASE_H
 
+// C++ stuff:
+#include <list>
+
 // Default Gray Matter stuff:
 #include "config.h"
 #include "library.h"
@@ -31,6 +34,7 @@
 #include "board_heuristic.h"
 #include "table.h"
 #include "clock.h"
+#include "xboard.h"
 
 // Search statuses:
 #define IDLING		0 // Masturbating.
@@ -61,14 +65,14 @@ public:
 	virtual void set_output(bool o);
 
 protected:
-	static void _handle(void *arg);            // Proxy clock callback.
-	virtual void handle();                     // C++ clock callback.
-	static void *_start(void *arg);            // Proxy thread entry point.
-	virtual void start();                      // C++ thread entry point.
-	virtual void iterate(int s) = 0;           // Force sub-classes to override.
-	static bool shuffle(move_t m1, move_t m2);
-	static bool descend(move_t m1, move_t m2);
-	virtual void extract(int s);
+	static void _handle(void *arg);                        // Proxy clock callback.
+	virtual void handle();                                 // C++ clock callback.
+	static void *_start(void *arg);                        // Proxy thread entry point.
+	virtual void start();                                  // C++ thread entry point.
+	virtual void iterate(int s) = 0;                       // Force sub-classes to override.
+	static bool shuffle(move_t m1, move_t m2);             //
+	static bool descend(move_t m1, move_t m2);             //
+	virtual void extract(int s, bool extract_hint = true); //
 
 	list<move_t> pv;        // Principal variation.
 	move_t hint;            // Opponent's best move.

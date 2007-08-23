@@ -293,7 +293,7 @@ bool search_base::descend(move_t m1, move_t m2)
 /*----------------------------------------------------------------------------*\
  |				   extract()				      |
 \*----------------------------------------------------------------------------*/
-void search_base::extract(int s)
+void search_base::extract(int s, bool extract_hint)
 {
 
 // Extract the principal variation and hint from the transposition table.
@@ -313,13 +313,16 @@ void search_base::extract(int s)
 		board_ptr->unmake();
 
 	// Get the hint.
-	if (s == THINKING && pv.size() >= 2)
+	if (extract_hint)
 	{
-		list<move_t>::iterator it = pv.begin();
-		hint = *++it;
+		if (s == THINKING && pv.size() >= 2)
+		{
+			list<move_t>::iterator it = pv.begin();
+			hint = *++it;
+		}
+		else if (s == PONDERING && pv.size() >= 1)
+			hint = pv.front();
+		else
+			SET_NULL_MOVE(hint);
 	}
-	else if (s == PONDERING && pv.size() >= 1)
-		hint = pv.front();
-	else
-		SET_NULL_MOVE(hint);
 }
