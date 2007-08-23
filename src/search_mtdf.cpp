@@ -87,6 +87,8 @@ void search_mtdf::iterate(int s)
 	clock_ptr->note_time();
 	if (s == THINKING)
 		clock_ptr->set_alarm(board_ptr->get_whose());
+	if (s == PONDERING && pv.size() >= 2 && !IS_NULL_MOVE(hint))
+		board_ptr->make(hint);
 	nodes = 0;
 	for (depth = 0; depth <= 1; depth++)
 	{
