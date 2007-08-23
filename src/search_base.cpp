@@ -313,14 +313,13 @@ void search_base::extract(int s)
 		board_ptr->unmake();
 
 	// Get the hint.
-	if (s == THINKING)
+	if (s == THINKING && pv.size() >= 2)
 	{
-		if (pv.size() >= 2)
-		{
-			list<move_t>::iterator it = pv.begin();
-			hint = *++it;
-		}
-		else
-			SET_NULL_MOVE(hint);
+		list<move_t>::iterator it = pv.begin();
+		hint = *++it;
 	}
+	else if (s == PONDERING && pv.size() >= 1)
+		hint = pv.front();
+	else
+		SET_NULL_MOVE(hint);
 }
