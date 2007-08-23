@@ -24,9 +24,6 @@
 
 using namespace std;
 
-// C++ stuff:
-#include <list>
-
 // Default Gray Matter stuff:
 #include "config.h"
 #include "library.h"
