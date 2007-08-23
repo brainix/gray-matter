@@ -65,6 +65,7 @@ void search_mtdf::iterate(int s)
 // Perform iterative deepening.  This method handles both thinking (on our own
 // time) and pondering (on our opponent's time) since they're so similar.
 
+	bool strong_pondering = s == PONDERING && pv.size() >= 2 && !IS_NULL_MOVE(hint);
 	int depth;
 	move_t guess[2], m;
 
@@ -82,13 +83,16 @@ void search_mtdf::iterate(int s)
 
 	// Note the start time.  If we're to think, set the alarm.  (If we're to
 	// ponder, there's no need to set the alarm.  We ponder indefinitely
-	// until the opponent has moved.)  Initialize the number of nodes
-	// searched.
+	// until the opponent has moved.)
 	clock_ptr->note_time();
 	if (s == THINKING)
 		clock_ptr->set_alarm(board_ptr->get_whose());
-	if (s == PONDERING && pv.size() >= 2 && !IS_NULL_MOVE(hint))
+
+	//
+	if (strong_pondering)
 		board_ptr->make(hint);
+
+	// Initialize the number of nodes searched.
 	nodes = 0;
 	for (depth = 0; depth <= 1; depth++)
 	{
@@ -109,7 +113,7 @@ void search_mtdf::iterate(int s)
 			// position (and the game must've ended).
 			break;
 		m = guess[depth & 1];
-		extract(s);
+		extract(s, !strong_pondering);
 		if (output)
 			xboard_ptr->print_output(depth, m.value, clock_ptr->get_elapsed(), nodes, pv);
 		if (ABS(m.value) >= WEIGHT_KING - MAX_DEPTH)
@@ -123,6 +127,10 @@ void search_mtdf::iterate(int s)
 			mutex_unlock(&depth_mutex);
 		}
 	}
+
+	//
+	if (strong_pondering)
+		board_ptr->unmake();
 
 	// Release the board.
 	board_ptr->unlock();
