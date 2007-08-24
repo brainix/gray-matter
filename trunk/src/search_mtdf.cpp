@@ -84,12 +84,13 @@ void search_mtdf::iterate(int s)
 
 	// Note the start time.  If we're to think, set the alarm.  (If we're to
 	// ponder, there's no need to set the alarm.  We ponder indefinitely
-	// until the opponent has moved.)
+	// until our opponent has moved.)
 	clock_ptr->note_time();
 	if (s == THINKING)
 		clock_ptr->set_alarm(board_ptr->get_whose());
 
-	//
+	// If we're to ponder, pretend our opponent has made the move we think
+	// she'll make, then think about our best response.
 	if (s == PONDERING && !IS_NULL_MOVE(hint))
 		board_ptr->make(hint);
 
@@ -136,7 +137,8 @@ void search_mtdf::iterate(int s)
 		extract_hint(THINKING);
 	}
 
-	//
+	// If we've just finished pondering, take back the move we thought our
+	// opponent would've made.
 	if (s == PONDERING && !IS_NULL_MOVE(hint))
 		board_ptr->unmake();
 
@@ -284,9 +286,13 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 		return m;
 	}
 
+	// Was the search interrupted?
 	if (!timeout_flag || !depth_flag)
 	{
-		if (m.value <= alpha)
+		// Nope, the results are complete and reliable.
+		if (m.value > alpha && m.value < beta)
+			table_ptr->store(hash, depth, EXACT, m);
+		else if (m.value <= alpha)
 			table_ptr->store(hash, depth, UPPER, m);
 		else if (m.value >= beta)
 			table_ptr->store(hash, depth, LOWER, m);
