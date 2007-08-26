@@ -117,7 +117,13 @@ void search_mtdf::iterate(int s)
 		m = guess[depth & 1];
 		extract_pv();
 		if (output)
+		{
+			if (s == PONDERING && !IS_NULL_MOVE(hint))
+				pv.push_front(hint);
 			xboard_ptr->print_output(depth, m.value, clock_ptr->get_elapsed(), nodes, pv);
+			if (s == PONDERING && !IS_NULL_MOVE(hint))
+				pv.pop_front();
+		}
 		if (ABS(m.value) >= WEIGHT_KING - MAX_DEPTH)
 			// Oops.  The game will be over at this depth.  There's
 			// no point in searching deeper.  Eyes on the prize.
