@@ -254,7 +254,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta, boo
 		SET_NULL_MOVE(null_move);
 		null_move.value = +WEIGHT_ILLEGAL;
 		board_ptr->make(null_move);
-		null_move = minimax(depth - 3, shallowness + 3, -beta, -beta + 1, false);
+		null_move = minimax(depth - 4, shallowness + 4, -beta, -beta + 1, false);
 		board_ptr->unmake();
 		if ((null_move.value *= -1) >= beta)
 			return null_move;
