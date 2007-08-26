@@ -252,8 +252,8 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta, boo
 	if (try_null_move)
 	{
 		SET_NULL_MOVE(null_move);
-		null_move = -minimax(depth - 3, shallowness + 3, -beta, -beta + 1, false);
-		if (null_move.value >= beta)
+		null_move = minimax(depth - 3, shallowness + 3, -beta, -beta + 1, false);
+		if ((null_move.value = -null_move.value) >= beta)
 			return null_move;
 	}
 
