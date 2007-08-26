@@ -228,7 +228,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 
 	// If we've already sufficiently examined this position, return the best
 	// move from our previous search.  Otherwise, if we can, reduce the size
-	// of our alpha-beta window.
+	// of our AlphaBeta window.
 	if (shallowness)
 	{
 		if (table_ptr->probe(hash, depth, EXACT, &m))
