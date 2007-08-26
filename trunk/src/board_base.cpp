@@ -1416,7 +1416,7 @@ bool board_base::three() const
 	list<bitboard_t>::const_reverse_iterator it;
 	int sum = 1;
 
-	for (it = hashes.rbegin(); it != hashes.rend(); it++, it++)
+	for (it = hashes.rbegin(); it != hashes.rend(); it++)
 		if (*it == hash)
 			if (++sum == 3)
 				return true;
