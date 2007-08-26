@@ -238,25 +238,25 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta, boo
 		{
 			if ((upper = m.value) <= alpha)
 				return m;
-//			beta = LESSER(beta, upper);
+			beta = LESSER(beta, upper);
 		}
 		else if (table_ptr->probe(hash, depth, LOWER, &m))
 		{
 			if ((lower = m.value) >= beta)
 				return m;
-//			current = alpha = GREATER(alpha, lower);
+			current = alpha = GREATER(alpha, lower);
 		}
 	}
 
 	//
-	if (try_null_move && !board_ptr->zugzwang())
+	if (depth >= 3 && try_null_move && !board_ptr->zugzwang())
 	{
 		SET_NULL_MOVE(null_move);
-		null_move.value = -WEIGHT_ILLEGAL;
+		null_move.value = +WEIGHT_ILLEGAL;
 		board_ptr->make(null_move);
 		null_move = minimax(depth - 3, shallowness + 3, -beta, -beta + 1, false);
 		board_ptr->unmake();
-		if ((null_move.value = -null_move.value) >= beta)
+		if ((null_move.value *= -1) >= beta)
 			return null_move;
 	}
 
