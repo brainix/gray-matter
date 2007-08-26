@@ -244,13 +244,13 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 		{
 			if ((upper = m.value) <= alpha)
 				return m;
-			beta = LESSER(beta, upper);
+//			beta = LESSER(beta, upper);
 		}
 		if (table_ptr->probe(hash, depth, LOWER, &m))
 		{
 			if ((lower = m.value) >= beta)
 				return m;
-			current = alpha = GREATER(alpha, lower);
+//			current = alpha = GREATER(alpha, lower);
 		}
 	}
 
