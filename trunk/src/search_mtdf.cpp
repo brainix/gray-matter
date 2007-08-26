@@ -217,10 +217,11 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 	if (depth <= 0 || status != IN_PROGRESS)
 	{
 		// If this position is a draw:
-		//     We want to discourage players from forcing a premature
-		//     draw.  That's why we score this position as +WEIGHT_CONTEMPT.
-		//     Therefore, when the NegaMax recursion unrolls, we score
-		//     the move that leads to this position as -WEIGHT_CONTEMPT.
+		//
+		// We want to discourage players from forcing a premature draw.
+		// That's why we score this position as +WEIGHT_CONTEMPT.
+		// Therefore, when the NegaMax recursion unrolls, we score the
+		// move that leads to this position as -WEIGHT_CONTEMPT.
 		SET_NULL_MOVE(m);
 		m.value = status == IN_PROGRESS ? -board_ptr->evaluate() : status >= INSUFFICIENT && status <= FIFTY ? +WEIGHT_CONTEMPT : -WEIGHT_ILLEGAL;
 		return m;
@@ -239,7 +240,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 				return m;
 			beta = LESSER(beta, upper);
 		}
-		else if (table_ptr->probe(hash, depth, LOWER, &m))
+		if (table_ptr->probe(hash, depth, LOWER, &m))
 		{
 			if ((lower = m.value) >= beta)
 				return m;
@@ -293,9 +294,9 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 		// Nope, the results are complete and reliable.
 		if (m.value > alpha && m.value < beta)
 			table_ptr->store(hash, depth, EXACT, m);
-		else if (m.value <= alpha)
+		if (m.value <= alpha)
 			table_ptr->store(hash, depth, UPPER, m);
-		else if (m.value >= beta)
+		if (m.value >= beta)
 			table_ptr->store(hash, depth, LOWER, m);
 		history_ptr->store(whose, m, depth);
 	}
