@@ -222,13 +222,13 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 		//     Therefore, when the NegaMax recursion unrolls, we score
 		//     the move that leads to this position as -WEIGHT_CONTEMPT.
 		SET_NULL_MOVE(m);
-		m.value = status == IN_PROGRESS ? -quiesce(alpha, beta) : status >= INSUFFICIENT && status <= FIFTY ? +WEIGHT_CONTEMPT : -WEIGHT_ILLEGAL;
+		m.value = status == IN_PROGRESS ? -board_ptr->evaluate() : status >= INSUFFICIENT && status <= FIFTY ? +WEIGHT_CONTEMPT : -WEIGHT_ILLEGAL;
 		return m;
 	}
 
 	// If we've already sufficiently examined this position, return the best
 	// move from our previous search.  Otherwise, if we can, reduce the size
-	// of our AlphaBeta window.
+	// of our alpha-beta window.
 	if (shallowness)
 	{
 		if (table_ptr->probe(hash, depth, EXACT, &m))
@@ -300,33 +300,4 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 		history_ptr->store(whose, m, depth);
 	}
 	return m;
-}
-
-/*----------------------------------------------------------------------------*\
- |				   quiesce()				      |
-\*----------------------------------------------------------------------------*/
-int search_mtdf::quiesce(int alpha, int beta)
-{
-
-// Evaluate the current position.  This method implements quiescence search.
-
-	list<move_t> l;                    // The move list.
-	list<move_t>::iterator it;         // The iterator.
-	int value = board_ptr->evaluate(); // The current position's evaluation.
-
-	if (value >= beta)
-		return value;
-
-	board_ptr->generate(l, false, true);
-	for (it = l.begin(); it != l.end(); it++)
-	{
-		board_ptr->make(*it);
-		value = -quiesce(-beta, -alpha);
-		board_ptr->unmake();
-		if (value >= alpha)
-			alpha = value;
-		if (value >= beta || timeout_flag && depth_flag)
-			break;
-	}
-	return value;
 }
