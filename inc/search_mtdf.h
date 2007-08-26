@@ -37,6 +37,11 @@ using namespace std;
 
 // Forward declarations:
 class search_base;
+class board_base;
+class table;
+class history;
+class chess_clock;
+class xboard;
 
 class search_mtdf : public search_base
 {
