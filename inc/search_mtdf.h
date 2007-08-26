@@ -37,11 +37,6 @@ using namespace std;
 
 // Forward declarations:
 class search_base;
-class board_base;
-class table;
-class history;
-class chess_clock;
-class xboard;
 
 class search_mtdf : public search_base
 {
@@ -51,9 +46,8 @@ public:
 	search_mtdf& operator=(const search_mtdf& that);
 private:
 	void iterate(int s);
-	move_t mtdf(int depth, int guess = 0);
+	move_t mtdf(int depth, int guess);
 	move_t minimax(int depth, int shallowness = 0, int alpha = -INFINITY, int beta = +INFINITY);
-	int quiesce(int alpha, int beta);
 };
 
 #endif
