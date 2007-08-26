@@ -249,7 +249,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta, boo
 	}
 
 	//
-	if (depth >= 3 && try_null_move && !board_ptr->zugzwang())
+	if (depth >= 4 && try_null_move && !board_ptr->zugzwang())
 	{
 		SET_NULL_MOVE(null_move);
 		null_move.value = +WEIGHT_ILLEGAL;
