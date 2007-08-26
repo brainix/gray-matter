@@ -167,7 +167,7 @@ move_t search_mtdf::mtdf(int depth, int guess)
 	while (upper > lower && (!timeout_flag || !depth_flag))
 	{
 		beta = m.value + (m.value == lower);
-		m = minimax(depth, 0, beta - 1, beta, true);
+		m = minimax(depth, 0, beta - 1, beta);
 		upper = m.value < beta ? m.value : upper;
 		lower = m.value < beta ? lower : m.value;
 	}
@@ -177,7 +177,7 @@ move_t search_mtdf::mtdf(int depth, int guess)
 /*----------------------------------------------------------------------------*\
  |				   minimax()				      |
 \*----------------------------------------------------------------------------*/
-move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta, bool try_null_move)
+move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 {
 
 // From the current position, search for the best move.  This method implements
@@ -201,7 +201,6 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta, boo
 	int upper = +INFINITY;                     // The upper bound.
 	int lower = -INFINITY;                     // The lower bound.
 	int current = alpha;                       // Scratch alpha variable.
-	move_t null_move;                          //
 	list<move_t> l;                            // The move list.
 	list<move_t>::iterator it;                 // The iterator.
 	move_t m;                                  // The best move.
@@ -248,18 +247,6 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta, boo
 		}
 	}
 
-	//
-	if (depth >= 4 && try_null_move && !board_ptr->zugzwang())
-	{
-		SET_NULL_MOVE(null_move);
-		null_move.value = +WEIGHT_ILLEGAL;
-		board_ptr->make(null_move);
-		null_move = minimax(depth - 4, shallowness + 4, -beta, -beta + 1, false);
-		board_ptr->unmake();
-		if ((null_move.value *= -1) >= beta)
-			return null_move;
-	}
-
 	// Generate and re-order the move list.
 	board_ptr->generate(l, !shallowness);
 	for (it = l.begin(); it != l.end(); it++)
@@ -278,7 +265,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta, boo
 	for (it = l.begin(); it != l.end(); it++)
 	{
 		board_ptr->make(*it);
-		it->value = -minimax(depth - 1, shallowness + 1, -beta, -current, true).value;
+		it->value = -minimax(depth - 1, shallowness + 1, -beta, -current).value;
 		board_ptr->unmake();
 		if (it->value > m.value)
 			current = GREATER(current, (m = *it).value);
