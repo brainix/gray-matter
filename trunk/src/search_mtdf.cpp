@@ -312,7 +312,7 @@ int search_mtdf::quiesce(int alpha, int beta)
 
 	list<move_t> l;                    // The move list.
 	list<move_t>::iterator it;         // The iterator.
-	int value = board_ptr->evaluate(); //
+	int value = board_ptr->evaluate(); // The current position's evaluation.
 
 	if (value >= beta)
 		return value;
