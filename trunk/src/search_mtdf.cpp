@@ -325,7 +325,7 @@ int search_mtdf::quiesce(int alpha, int beta)
 		board_ptr->unmake();
 		if (value >= alpha)
 			alpha = value;
-		if (value >= beta)
+		if (value >= beta || timeout_flag && depth_flag)
 			break;
 	}
 	return value;
