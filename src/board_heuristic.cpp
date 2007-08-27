@@ -282,7 +282,20 @@ int board_heuristic::evaluate_knight() const
 
 // TODO: Evaluate knight position.
 
-	return 0;
+	int sign, sum = 0;
+	bitboard_t knights;
+
+	for (int color = WHITE; color <= BLACK; color++)
+	{
+		sign = color == OFF_MOVE ? 1 : -1;
+		knights = state.piece[color][KNIGHT];
+		for (int n, x, y; (n = FST(knights)) != -1; BIT_CLR(knights, x, y))
+		{
+			x = n & 0x7;
+			y = n >> 3;
+		}
+	}
+	return sum;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -293,7 +306,20 @@ int board_heuristic::evaluate_bishop() const
 
 // TODO: Evaluate bishop position.
 
-	return 0;
+	int sign, sum = 0;
+	bitboard_t bishops;
+
+	for (int color = WHITE; color <= BLACK; color++)
+	{
+		sign = color == OFF_MOVE ? 1 : -1;
+		bishops = state.piece[color][BISHOP];
+		for (int n, x, y; (n = FST(bishops)) != -1; BIT_CLR(bishops, x, y))
+		{
+			x = n & 0x7;
+			y = n >> 3;
+		}
+	}
+	return sum;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -304,7 +330,20 @@ int board_heuristic::evaluate_rook() const
 
 // TODO: Evaluate rook position.
 
-	return 0;
+	int sign, sum = 0;
+	bitboard_t rooks;
+
+	for (int color = WHITE; color <= BLACK; color++)
+	{
+		sign = color == OFF_MOVE ? 1 : -1;
+		rooks = state.piece[color][ROOK];
+		for (int n, x, y; (n = FST(rooks)) != -1; BIT_CLR(rooks, x, y))
+		{
+			x = n & 0x7;
+			y = n >> 3;
+		}
+	}
+	return sum;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -315,7 +354,20 @@ int board_heuristic::evaluate_queen() const
 
 // TODO: Evaluate queen position.
 
-	return 0;
+	int sign, sum = 0;
+	bitboard_t queens;
+
+	for (int color = WHITE; color <= BLACK; color++)
+	{
+		sign = color == OFF_MOVE ? 1 : -1;
+		queens = state.piece[color][QUEEN];
+		for (int n, x, y; (n = FST(queens)) != -1; BIT_CLR(queens, x, y))
+		{
+			x = n & 0x7;
+			y = n >> 3;
+		}
+	}
+	return sum;
 }
 
 /*----------------------------------------------------------------------------*\
