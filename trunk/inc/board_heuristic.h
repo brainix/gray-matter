@@ -46,10 +46,6 @@ private:
 	int evaluate_material() const;
 	int evaluate_tempo() const;
 	int evaluate_pawn() const;
-	int evaluate_knight() const;
-	int evaluate_bishop() const;
-	int evaluate_rook() const;
-	int evaluate_queen() const;
 	int evaluate_king() const;
 };
 

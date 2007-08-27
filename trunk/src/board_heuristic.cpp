@@ -151,9 +151,8 @@ int board_heuristic::evaluate() const
 	if (!state.piece[ON_MOVE][KING])
 		return WEIGHT_ILLEGAL;
 
-	return evaluate_material() + evaluate_tempo()  + evaluate_pawn() +
-	       evaluate_knight()   + evaluate_bishop() + evaluate_rook() +
-	       evaluate_queen()    + evaluate_king();
+	return evaluate_material() + evaluate_tempo() + evaluate_pawn() +
+	       evaluate_king();
 }
 
 /*----------------------------------------------------------------------------*\
@@ -272,102 +271,6 @@ int board_heuristic::evaluate_pawn() const
 end:
 	sign = OFF_MOVE == WHITE ? 1 : -1;
 	return sign * sum;
-}
-
-/*----------------------------------------------------------------------------*\
- |			       evaluate_knight()			      |
-\*----------------------------------------------------------------------------*/
-int board_heuristic::evaluate_knight() const
-{
-
-// TODO: Evaluate knight position.
-
-	int sign, sum = 0;
-	bitboard_t knights;
-
-	for (int color = WHITE; color <= BLACK; color++)
-	{
-		sign = color == OFF_MOVE ? 1 : -1;
-		knights = state.piece[color][KNIGHT];
-		for (int n, x, y; (n = FST(knights)) != -1; BIT_CLR(knights, x, y))
-		{
-			x = n & 0x7;
-			y = n >> 3;
-		}
-	}
-	return sum;
-}
-
-/*----------------------------------------------------------------------------*\
- |			       evaluate_bishop()			      |
-\*----------------------------------------------------------------------------*/
-int board_heuristic::evaluate_bishop() const
-{
-
-// TODO: Evaluate bishop position.
-
-	int sign, sum = 0;
-	bitboard_t bishops;
-
-	for (int color = WHITE; color <= BLACK; color++)
-	{
-		sign = color == OFF_MOVE ? 1 : -1;
-		bishops = state.piece[color][BISHOP];
-		for (int n, x, y; (n = FST(bishops)) != -1; BIT_CLR(bishops, x, y))
-		{
-			x = n & 0x7;
-			y = n >> 3;
-		}
-	}
-	return sum;
-}
-
-/*----------------------------------------------------------------------------*\
- |				evaluate_rook()				      |
-\*----------------------------------------------------------------------------*/
-int board_heuristic::evaluate_rook() const
-{
-
-// TODO: Evaluate rook position.
-
-	int sign, sum = 0;
-	bitboard_t rooks;
-
-	for (int color = WHITE; color <= BLACK; color++)
-	{
-		sign = color == OFF_MOVE ? 1 : -1;
-		rooks = state.piece[color][ROOK];
-		for (int n, x, y; (n = FST(rooks)) != -1; BIT_CLR(rooks, x, y))
-		{
-			x = n & 0x7;
-			y = n >> 3;
-		}
-	}
-	return sum;
-}
-
-/*----------------------------------------------------------------------------*\
- |				evaluate_queen()			      |
-\*----------------------------------------------------------------------------*/
-int board_heuristic::evaluate_queen() const
-{
-
-// TODO: Evaluate queen position.
-
-	int sign, sum = 0;
-	bitboard_t queens;
-
-	for (int color = WHITE; color <= BLACK; color++)
-	{
-		sign = color == OFF_MOVE ? 1 : -1;
-		queens = state.piece[color][QUEEN];
-		for (int n, x, y; (n = FST(queens)) != -1; BIT_CLR(queens, x, y))
-		{
-			x = n & 0x7;
-			y = n >> 3;
-		}
-	}
-	return sum;
 }
 
 /*----------------------------------------------------------------------------*\
