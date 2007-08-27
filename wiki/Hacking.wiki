@@ -1,5 +1,5 @@
 #summary How to hack Gray Matter.
-#labels Featured,Phase-Design,Phase-Implementation
+#labels Phase-Design,Phase-Implementation
 
 = Introduction =
 
