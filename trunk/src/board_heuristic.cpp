@@ -22,88 +22,10 @@
 #include "gray.h"
 #include "board_heuristic.h"
 
-// We define a piece's tempo as the minimum number of moves required to move it
-// from its starting position to its current position on an otherwise empty
-// chess board.  Tempo is a measure of development.  Good chess players maximize
-// their tempo and minimize their opponents' tempo.
-//
-// Given a white piece and its current position, this array gives its tempo.
-// Since the white pieces' starting positions are reflections of the black
-// pieces' starting positions, with this info, it's trivial to compute any black
-// piece's tempo.
-static int tempo[SHAPES][8][8] =
-{
-	       // Pawn:
-	/* A */ {{  0,   0,   1,   1,   2,   3,   4,   0},
-	/* B */  {  0,   0,   1,   1,   2,   3,   4,   0},
-	/* C */  {  0,   0,   1,   1,   2,   3,   4,   0},
-	/* D */  {  0,   0,   1,   1,   2,   3,   4,   0},
-	/* E */  {  0,   0,   1,   1,   2,   3,   4,   0},
-	/* F */  {  0,   0,   1,   1,   2,   3,   4,   0},
-	/* G */  {  0,   0,   1,   1,   2,   3,   4,   0},
-	/* H */  {  0,   0,   1,   1,   2,   3,   4,   0}},
-	       //   1    2    3    4    5    6    7    8
-
-	       // Knight:
-	/* A */ {{  3,   2,   1,   2,   3,   4,   3,   4},
-	/* B */  {  0,   3,   2,   3,   2,   3,   4,   4},
-	/* C */  {  2,   2,   1,   2,   3,   3,   3,   4},
-	/* D */  {  2,   1,   3,   2,   2,   3,   3,   4},
-	/* E */  {  2,   1,   3,   2,   2,   3,   3,   4},
-	/* F */  {  2,   2,   1,   2,   3,   3,   3,   4},
-	/* G */  {  0,   3,   2,   3,   2,   3,   4,   4},
-	/* H */  {  3,   2,   1,   2,   3,   4,   3,   4}},
-	       //   1    2    3    4    5    6    7    8
-
-	       // Bishop:
-	/* A */ {{  2,   2,   1,   2,   2,   1,   2,   2},
-	/* B */  {  2,   1,   2,   2,   1,   2,   2,   2},
-	/* C */  {  0,   2,   2,   1,   2,   2,   2,   2},
-	/* D */  {  2,   1,   1,   2,   2,   2,   2,   2},
-	/* E */  {  2,   1,   1,   2,   2,   2,   2,   2},
-	/* F */  {  0,   2,   2,   1,   2,   2,   2,   2},
-	/* G */  {  2,   1,   2,   2,   1,   2,   2,   2},
-	/* H */  {  2,   2,   1,   2,   2,   1,   2,   2}},
-	       //   1    2    3    4    5    6    7    8
-
-	       // Rook:
-	/* A */ {{  0,   1,   1,   1,   1,   1,   1,   1},
-	/* B */  {  1,   2,   2,   2,   2,   2,   2,   2},
-	/* C */  {  1,   2,   2,   2,   2,   2,   2,   2},
-	/* D */  {  1,   2,   2,   2,   2,   2,   2,   2},
-	/* E */  {  1,   2,   2,   2,   2,   2,   2,   2},
-	/* F */  {  1,   2,   2,   2,   2,   2,   2,   2},
-	/* G */  {  1,   2,   2,   2,   2,   2,   2,   2},
-	/* H */  {  0,   1,   1,   1,   1,   1,   1,   1}},
-	       //   1    2    3    4    5    6    7    8
-
-	       // Queen:
-	/* A */ {{  1,   2,   2,   1,   2,   2,   2,   2},
-	/* B */  {  1,   2,   1,   2,   2,   2,   2,   2},
-	/* C */  {  1,   1,   2,   2,   2,   2,   2,   2},
-	/* D */  {  0,   1,   1,   1,   1,   1,   1,   1},
-	/* E */  {  1,   1,   2,   2,   2,   2,   2,   2},
-	/* F */  {  1,   2,   1,   2,   2,   2,   2,   2},
-	/* G */  {  1,   2,   2,   1,   2,   2,   2,   2},
-	/* H */  {  1,   2,   2,   2,   1,   2,   2,   2}},
-	       //   1    2    3    4    5    6    7    8
-
-	       // King:
-	/* A */ {{  3,   3,   3,   4,   4,   5,   6,   7},
-	/* B */  {  2,   2,   3,   3,   4,   5,   6,   7},
-	/* C */  {  1,   2,   2,   3,   4,   5,   6,   7},
-	/* D */  {  1,   1,   2,   3,   4,   5,   6,   7},
-	/* E */  {  0,   1,   2,   3,   4,   5,   6,   7},
-	/* F */  {  1,   1,   2,   3,   4,   5,   6,   7},
-	/* G */  {  1,   2,   2,   3,   4,   5,   6,   7},
-	/* H */  {  2,   2,   3,   3,   4,   5,   6,   7}}
-	       //   1    2    3    4    5    6    7    8
-};
-
 //
 static int position[SHAPES][8][8] =
 {
-	       // Pawn:
+	       // Pawns:
 	/* A */ {{  0,   0,   1,   3,   6,  10,  40,   0},
 	/* B */  {  0,   0,   1,   3,   6,  10,  40,   0},
 	/* C */  {  0,   0,   1,   3,   6,  10,  40,   0},
@@ -114,7 +36,7 @@ static int position[SHAPES][8][8] =
 	/* H */  {  0,   0,   1,   3,   6,  10,  40,   0}},
 	       //   1    2    3    4    5    6    7    8
 
-	       // Knight:
+	       // Knights:
 	/* A */ {{-60, -30, -30, -30, -30, -30, -30, -60},
 	/* B */  {-30, -24,  -6,  -6,  -6,  -6, -24, -30},
 	/* C */  {-30, -10,  -6,  -2,  -2,  -6, -10, -30},
@@ -125,7 +47,7 @@ static int position[SHAPES][8][8] =
 	/* H */  {-60, -30, -30, -30, -30, -30, -30, -60}},
 	       //   1    2    3    4    5    6    7    8
 
-	       // Bishop:
+	       // Bishops:
 	/* A */ {{-20, -20, -20, -20, -20, -20, -20, -20},
 	/* B */  {-20,   6,   6,   3,   3,   6,   6, -20},
 	/* C */  {-20,   6,   8,   6,   6,   8,   6, -20},
@@ -136,7 +58,7 @@ static int position[SHAPES][8][8] =
 	/* H */  {-20, -20, -20, -20, -20, -20, -20, -20}},
 	       //   1    2    3    4    5    6    7    8
 
-	       // Rook:
+	       // Rooks:
 	/* A */ {{-10, -10, -10, -10, -10, -10, -10, -10},
 	/* B */  { -6,  -6,  -6,  -6,  -6,  -6,  -6,  -6},
 	/* C */  { -2,  -2,  -2,  -2,  -2,  -2,  -2,  -2},
@@ -147,7 +69,7 @@ static int position[SHAPES][8][8] =
 	/* H */  {-10, -10, -10, -10, -10, -10, -10, -10}},
 	       //   1    2    3    4    5    6    7    8
 
-	       // Queen:
+	       // Queens:
 	/* A */ {{-20, -20,   0,   0,   0,   0, -20, -20},
 	/* B */  {-20,   0,   8,   8,   8,   8,   0, -20},
 	/* C */  {  0,   8,   8,  12,  12,   8,   8,   0},
@@ -158,7 +80,7 @@ static int position[SHAPES][8][8] =
 	/* H */  {-20, -20,   0,   0,   0,   0, -20, -20}},
 	       //   1    2    3    4    5    6    7    8
 
-	       // King:
+	       // Kings:
 	/* A */ {{  0,   0,   0,   0,   0,   0,   0,   0},
 	/* B */  {  0,   0,   0,   0,   0,   0,   0,   0},
 	/* C */  {  0,   0,   0,   0,   0,   0,   0,   0},
@@ -223,98 +145,19 @@ int board_heuristic::evaluate() const
 	if (!state.piece[ON_MOVE][KING])
 		return WEIGHT_ILLEGAL;
 
-	sum += evaluate_material();
-	sum += evaluate_position();
-	sum += evaluate_pawn();
-	sum += evaluate_king();
+	sum += evaluate_pawns();
+	sum += evaluate_knights();
+	sum += evaluate_bishops();
+	sum += evaluate_rooks();
+	sum += evaluate_queens();
+	sum += evaluate_kings();
 	return sum;
 }
 
 /*----------------------------------------------------------------------------*\
- |			      evaluate_material()			      |
+ |				evaluate_pawns()			      |
 \*----------------------------------------------------------------------------*/
-int board_heuristic::evaluate_material() const
-{
-
-// Evaluate material.
-
-	static const int weight[] = {WEIGHT_PAWN, WEIGHT_KNIGHT, WEIGHT_BISHOP,
-	                             WEIGHT_ROOK, WEIGHT_QUEEN,  WEIGHT_KING};
-	int sign, coef, sum = 0;
-
-	for (int color = WHITE; color <= BLACK; color++)
-	{
-		sign = color == OFF_MOVE ? 1 : -1;
-		for (int shape = PAWN; shape <= QUEEN; shape++)
-		{
-			coef = count_64(state.piece[color][shape]);
-			sum += sign * coef * weight[shape];
-		}
-	}
-	return sum;
-}
-
-/*----------------------------------------------------------------------------*\
- |				evaluate_tempo()			      |
-\*----------------------------------------------------------------------------*/
-int board_heuristic::evaluate_tempo() const
-{
-
-// Evaluate tempo.  I'm not sure this is perfect, but it at least seems to
-// prevent The Happy King Dance (TM).
-
-	int sign, coef, sum = 0;
-
-	for (int color = WHITE; color <= BLACK; color++)
-	{
-		sign = color == OFF_MOVE ? 1 : -1;
-		coef = 0;
-		for (int shape = PAWN; shape <= QUEEN; shape++)
-		{
-			bitboard_t b = state.piece[color][shape];
-			for (int n, x, y; (n = FST(b)) != -1; BIT_CLR(b, x, y))
-			{
-				x = n & 0x7;
-				y = n >> 3;
-				coef += tempo[shape][x][color == WHITE ? y : 7 - y];
-			}
-		}
-		sum += sign * coef * WEIGHT_TEMPO;
-	}
-	return sum;
-}
-
-/*----------------------------------------------------------------------------*\
- |			      evaluate_position()			      |
-\*----------------------------------------------------------------------------*/
-int board_heuristic::evaluate_position() const
-{
-
-// Evaluate position.
-
-	int sign, sum = 0;
-
-	for (int color = WHITE; color <= BLACK; color++)
-	{
-		sign = color == OFF_MOVE ? 1 : -1;
-		for (int shape = PAWN; shape <= QUEEN; shape++)
-		{
-			bitboard_t b = state.piece[color][shape];
-			for (int n, x, y; (n = FST(b)) != -1; BIT_CLR(b, x, y))
-			{
-				x = n & 0x7;
-				y = n >> 3;
-				sum += sign * position[shape][x][color == WHITE ? y : 7 - y];
-			}
-		}
-	}
-	return sum;
-}
-
-/*----------------------------------------------------------------------------*\
- |				evaluate_pawn()				      |
-\*----------------------------------------------------------------------------*/
-int board_heuristic::evaluate_pawn() const
+int board_heuristic::evaluate_pawns() const
 {
 
 // Evaluate pawn structure.
@@ -341,6 +184,9 @@ int board_heuristic::evaluate_pawn() const
 			for (int j = file == 0 ? 1 : -1; j <= (file == 7 ? -1 : 1); j += 2)
 				adj_files |= COL_MSK(j);
 			adj_pawns = state.piece[color][PAWN] & adj_files;
+
+			// Reward material.
+			sum += sign * coef * WEIGHT_PAWN;
 
 			// Penalize isolated pawns.
 			if (!adj_pawns)
@@ -376,9 +222,101 @@ end:
 }
 
 /*----------------------------------------------------------------------------*\
- |				evaluate_king()				      |
+ |			       evaluate_knights()			      |
 \*----------------------------------------------------------------------------*/
-int board_heuristic::evaluate_king() const
+int board_heuristic::evaluate_knights() const
+{
+	int sign, sum = 0;
+	bitboard_t knights;
+
+	for (int color = WHITE; color <= BLACK; color++)
+	{
+		sign = color == OFF_MOVE ? 1 : -1;
+		knights = state.piece[color][KNIGHT];
+		for (int n, x, y; (n = FST(knights)) != -1; BIT_CLR(knights, x, y))
+		{
+			x = n & 0x7;
+			y = n >> 3;
+			sum += sign * WEIGHT_KNIGHT;
+			sum += sign * position[KNIGHT][x][y];
+		}
+	}
+	return sum;
+}
+
+/*----------------------------------------------------------------------------*\
+ |			       evaluate_bishops()			      |
+\*----------------------------------------------------------------------------*/
+int board_heuristic::evaluate_bishops() const
+{
+	int sign, sum = 0;
+	bitboard_t bishops;
+
+	for (int color = WHITE; color <= BLACK; color++)
+	{
+		sign = color == OFF_MOVE ? 1 : -1;
+		bishops = state.piece[color][BISHOP];
+		for (int n, x, y; (n = FST(bishops)) != -1; BIT_CLR(bishops, x, y))
+		{
+			x = n & 0x7;
+			y = n >> 3;
+			sum += sign * WEIGHT_BISHOP;
+			sum += sign * position[BISHOP][x][y];
+		}
+	}
+	return sum;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				evaluate_rooks()			      |
+\*----------------------------------------------------------------------------*/
+int board_heuristic::evaluate_rooks() const
+{
+	int sign, sum = 0;
+	bitboard_t rooks;
+
+	for (int color = WHITE; color <= BLACK; color++)
+	{
+		sign = color == OFF_MOVE ? 1 : -1;
+		rooks = state.piece[color][ROOK];
+		for (int n, x, y; (n = FST(rooks)) != -1; BIT_CLR(rooks, x, y))
+		{
+			x = n & 0x7;
+			y = n >> 3;
+			sum += sign * WEIGHT_ROOK;
+			sum += sign * position[ROOK][x][y];
+		}
+	}
+	return sum;
+}
+
+/*----------------------------------------------------------------------------*\
+ |			       evaluate_queens()			      |
+\*----------------------------------------------------------------------------*/
+int board_heuristic::evaluate_queens() const
+{
+	int sign, sum = 0;
+	bitboard_t queens;
+
+	for (int color = WHITE; color <= BLACK; color++)
+	{
+		sign = color == OFF_MOVE ? 1 : -1;
+		queens = state.piece[color][QUEEN];
+		for (int n, x, y; (n = FST(queens)) != -1; BIT_CLR(queens, x, y))
+		{
+			x = n & 0x7;
+			y = n >> 3;
+			sum += sign * WEIGHT_QUEEN;
+			sum += sign * position[QUEEN][x][y];
+		}
+	}
+	return sum;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				evaluate_kings()			      |
+\*----------------------------------------------------------------------------*/
+int board_heuristic::evaluate_kings() const
 {
 
 // Evaluate king position.
