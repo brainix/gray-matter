@@ -107,8 +107,7 @@ void search_mtdf::iterate(int s)
 	// reached the maximum depth (either way).
 	for (depth = 1; depth <= max_depth; depth++)
 	{
-//		guess[depth & 1] = mtdf(depth, guess[depth & 1].value);
-		guess[depth & 1] = minimax(depth);
+		guess[depth & 1] = mtdf(depth, guess[depth & 1].value);
 		if (timeout_flag && depth_flag || IS_NULL_MOVE(guess[depth & 1]))
 			// Oops.  Either the alarm has interrupted this
 			// iteration (and the results are incomplete and
@@ -245,13 +244,13 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 		{
 			if ((upper = m.value) <= alpha)
 				return m;
-//			beta = LESSER(beta, upper);
+			beta = LESSER(beta, upper);
 		}
 		if (table_ptr->probe(hash, depth, LOWER, &m))
 		{
 			if ((lower = m.value) >= beta)
 				return m;
-//			current = alpha = GREATER(alpha, lower);
+			current = alpha = GREATER(alpha, lower);
 		}
 	}
 
