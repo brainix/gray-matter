@@ -75,7 +75,7 @@
 #define WEIGHT_TEMPO		   10
 
 // How much we hate our opponent:
-#define WEIGHT_CONTEMPT		  100
+#define WEIGHT_CONTEMPT		    0
 
 
 
