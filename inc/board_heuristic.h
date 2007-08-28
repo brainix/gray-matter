@@ -45,6 +45,7 @@ public:
 private:
 	int evaluate_material() const;
 	int evaluate_tempo() const;
+	int evaluate_position() const;
 	int evaluate_pawn() const;
 	int evaluate_king() const;
 };
