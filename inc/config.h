@@ -60,19 +60,10 @@
 #define WEIGHT_KING		10000
 #define WEIGHT_ILLEGAL		20000
 
-// Values of pawn formations:
-#define WEIGHT_ISOLATED		  -10
-#define WEIGHT_DOUBLED		  -10
-#define WEIGHT_BACKWARD		  -10
-#define WEIGHT_PASSED		   10
-
-// Values of castling statuses:
-#define WEIGHT_CANT_CASTLE	  -20
-#define WEIGHT_CAN_CASTLE	    0
-#define WEIGHT_HAS_CASTLED	   40
-
-// How much we hate our opponent:
-#define WEIGHT_CONTEMPT		    0
+//
+#define WEIGHT_DUO		    2 // Value of one pawn in a duo.
+#define WEIGHT_CANT_CASTLE	  -20 // Value of not castling.
+#define WEIGHT_CONTEMPT		    0 // How much we hate our opponent.
 
 
 
