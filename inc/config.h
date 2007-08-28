@@ -71,9 +71,6 @@
 #define WEIGHT_CAN_CASTLE	    0
 #define WEIGHT_HAS_CASTLED	   40
 
-// Value of tempo:
-#define WEIGHT_TEMPO		   10
-
 // How much we hate our opponent:
 #define WEIGHT_CONTEMPT		    0
 
