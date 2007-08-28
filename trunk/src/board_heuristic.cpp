@@ -189,6 +189,12 @@ int board_heuristic::evaluate_pawns() const
 
 	int sign, coef, sum;
 	bitboard_t pawns, adj_files, adj_pawns, ranks;
+	int num_isolated = 0, num_isolated_open_file = 0;
+
+	static const int weight_isolated[] = {80, 80, 80, 70, 60, 40, 20, 8, 0, -8, -20, -40, -60, -70, -80, -80, -80};
+	static const int weight_isolated_open_file[] = {24, 24, 24, 24, 24, 16, 10, 4, 0, -4, -10, -16, -24, -24, -24, -24, -24};
+	static const int weight_doubled[] = {0, 0, 4, 7, 10, 10, 10, 10, 10};
+	static const int weight_passed[] = {0, 12, 20, 48, 72, 120, 150, 0};
 
 	// If we've already evaluated this pawn structure, return our previous
 	// evaluation.
@@ -207,41 +213,53 @@ int board_heuristic::evaluate_pawns() const
 				continue;
 			adj_files = 0;
 			for (int j = file == 0 ? 1 : -1; j <= (file == 7 ? -1 : 1); j += 2)
-				adj_files |= COL_MSK(j);
+				adj_files |= COL_MSK(file + j);
 			adj_pawns = state.piece[color][PAWN] & adj_files;
 
-			// Penalize isolated pawns.
+			// Count isolated pawns and isolated pawns on open
+			// files.
 			if (!adj_pawns)
-				sum += sign * coef * WEIGHT_ISOLATED;
+			{
+				num_isolated += sign * coef;
+				if (!(state.piece[!color][PAWN] & COL_MSK(file)))
+					num_isolated_open_file += sign * coef;
+			}
 
 			// Penalize doubled pawns.
-			sum += sign * (coef - 1) * WEIGHT_DOUBLED;
+			sum += sign * coef * weight_doubled[coef];
 
 			for (int n, x, y; (n = FST(pawns)) != -1; BIT_CLR(pawns, x, y))
 			{
 				x = n & 0x7;
 				y = n >> 3;
 
-				// Reward material.
-				sum += sign * WEIGHT_PAWN;
-
-				// Reward position.
-				sum += sign * position[KNIGHT][x][color == WHITE ? y : 7 - y];
-
-				// Penalize backward pawns.
-				ranks = ROW_MSK(y) | ROW_MSK(y - sign);
-				if (!(state.piece[color][PAWN] & adj_files & ranks))
-					sum += sign * WEIGHT_BACKWARD;
+				// Reward pawn duos.
+				for (int j = x == 0 ? 1 : -1; j <= (x == 7 ? -1 : 1); j += 2)
+					if (BIT_GET(state.piece[color][PAWN], x + j, y))
+					{
+						sum += sign * WEIGHT_DUO;
+						break;
+					}
 
 				// Reward passed pawns.
 				ranks = 0;
 				for (int k = y + sign; k < 7 && k > 0; k += sign)
 					ranks |= ROW_MSK(k);
 				if (!(state.piece[!color][PAWN] & adj_files & ranks))
-					sum += sign * WEIGHT_PASSED;
+					sum += sign * weight_passed[color == WHITE ? y : 7 - y];
+
+				// TODO: Reward hidden passed pawns.
+
+				// Reward position and material.
+				sum += sign * position[KNIGHT][x][color == WHITE ? y : 7 - y];
+				sum += sign * WEIGHT_PAWN;
 			}
 		}
 	}
+
+	// Penalize isolated pawns and isolated pawns on open files.
+	sum += weight_isolated[num_isolated + 9];
+	sum += weight_isolated_open_file[num_isolated_open_file + 9];
 
 	pawn_table.store(pawn_hash, sum);
 end:
@@ -365,9 +383,6 @@ int board_heuristic::evaluate_kings() const
 
 // Evaluate king position.
 
-	static const int weight[] = {WEIGHT_CAN_CASTLE,
-	                             WEIGHT_CANT_CASTLE,
-	                             WEIGHT_HAS_CASTLED};
 	int sign, sum = 0;
 	bitboard_t pawns = state.piece[WHITE][PAWN] | state.piece[BLACK][PAWN];
 
@@ -378,9 +393,10 @@ int board_heuristic::evaluate_kings() const
 		int x = n & 0x7;
 		int y = n >> 3;
 
-		//
-		for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
-			sum += sign * weight[state.castle[color][side]];
+		// Penalize not castling.
+		if (state.castle[color][QUEEN_SIDE] == CANT_CASTLE &&
+		    state.castle[color][KING_SIDE]  == CANT_CASTLE)
+			sum += sign * WEIGHT_CANT_CASTLE;
 
 		// Reward position.
 		if (pawns & SQUARES_QUEEN_SIDE && pawns & SQUARES_KING_SIDE)
