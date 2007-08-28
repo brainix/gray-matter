@@ -92,7 +92,7 @@ static int position[SHAPES][8][8] =
 	       //   1    2    3    4    5    6    7    8
 };
 
-static int king_position[SIDES][8][8]
+static int king_position[SIDES][8][8] =
 {
 	       // White king:
 	/* A */ {{-20,   0,  20,  40,  40,  40,  40, -20},
