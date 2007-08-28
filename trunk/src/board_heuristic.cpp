@@ -25,7 +25,7 @@
 //
 static int position[SHAPES][8][8] =
 {
-	       // Pawns:
+	       // White pawns:
 	/* A */ {{  0,   0,   1,   3,   6,  10,  40,   0},
 	/* B */  {  0,   0,   1,   3,   6,  10,  40,   0},
 	/* C */  {  0,   0,   1,   3,   6,  10,  40,   0},
@@ -80,15 +80,40 @@ static int position[SHAPES][8][8] =
 	/* H */  {-20, -20,   0,   0,   0,   0, -20, -20}},
 	       //   1    2    3    4    5    6    7    8
 
-	       // Kings:
-	/* A */ {{  0,   0,   0,   0,   0,   0,   0,   0},
-	/* B */  {  0,   0,   0,   0,   0,   0,   0,   0},
-	/* C */  {  0,   0,   0,   0,   0,   0,   0,   0},
-	/* D */  {  0,   0,   0,   0,   0,   0,   0,   0},
-	/* E */  {  0,   0,   0,   0,   0,   0,   0,   0},
-	/* F */  {  0,   0,   0,   0,   0,   0,   0,   0},
-	/* G */  {  0,   0,   0,   0,   0,   0,   0,   0},
-	/* H */  {  0,   0,   0,   0,   0,   0,   0,   0}}
+	       // White king:
+	/* A */ {{-40, -20, -20, -20, -20, -20, -20, -40},
+	/* B */  {-20,   0,  20,  20,  30,  30,  30, -20},
+	/* C */  {-20,   0,  20,  40,  60,  60,  40, -20},
+	/* D */  {-20,   0,  20,  40,  60,  60,  40, -20},
+	/* E */  {-20,   0,  20,  40,  60,  60,  40, -20},
+	/* F */  {-20,   0,  20,  40,  60,  60,  40, -20},
+	/* G */  {-20,   0,  20,  20,  30,  30,  30, -20},
+	/* H */  {-40, -20, -20, -20, -20, -20, -20, -40}}
+	       //   1    2    3    4    5    6    7    8
+};
+
+static int king_position[SIDES][8][8]
+{
+	       // White king:
+	/* A */ {{-20,   0,  20,  40,  40,  40,  40, -20},
+	/* B */  {-20,   0,  20,  40,  60,  60,  40, -20},
+	/* C */  {-20,   0,  20,  40,  60,  60,  40, -20},
+	/* D */  {-20,   0,  20,  40,  60,  60,  40, -20},
+	/* E */  {-20,   0,  20,  20,  20,  20,  20, -20},
+	/* F */  {-20, -20, -20, -20, -20, -20, -20, -20},
+	/* G */  {-40, -40, -40, -40, -40, -40, -40, -40},
+	/* H */  {-60, -60, -60, -60, -60, -60, -60, -60}},
+	       //   1    2    3    4    5    6    7    8
+
+	       // White king:
+	/* A */ {{-60, -60, -60, -60, -60, -60, -60, -60},
+	/* B */  {-40, -40, -40, -40, -40, -40, -40, -40},
+	/* C */  {-20, -20, -20, -20, -20, -20, -20, -20},
+	/* D */  {-20,   0,  20,  20,  20,  20,  20, -20},
+	/* E */  {-20,   0,  20,  40,  60,  60,  40, -20},
+	/* F */  {-20,   0,  20,  40,  60,  60,  40, -20},
+	/* G */  {-20,   0,  20,  40,  60,  60,  40, -20},
+	/* H */  {-20,   0,  20,  40,  40,  40,  40, -20}}
 	       //   1    2    3    4    5    6    7    8
 };
 
@@ -185,9 +210,6 @@ int board_heuristic::evaluate_pawns() const
 				adj_files |= COL_MSK(j);
 			adj_pawns = state.piece[color][PAWN] & adj_files;
 
-			// Reward material.
-			sum += sign * coef * WEIGHT_PAWN;
-
 			// Penalize isolated pawns.
 			if (!adj_pawns)
 				sum += sign * coef * WEIGHT_ISOLATED;
@@ -199,6 +221,12 @@ int board_heuristic::evaluate_pawns() const
 			{
 				x = n & 0x7;
 				y = n >> 3;
+
+				// Reward material.
+				sum += sign * WEIGHT_PAWN;
+
+				// Reward position.
+				sum += sign * position[KNIGHT][x][color == WHITE ? y : 7 - y];
 
 				// Penalize backward pawns.
 				ranks = ROW_MSK(y) | ROW_MSK(y - sign);
@@ -237,7 +265,11 @@ int board_heuristic::evaluate_knights() const
 		{
 			x = n & 0x7;
 			y = n >> 3;
+
+			// Reward material.
 			sum += sign * WEIGHT_KNIGHT;
+
+			// Reward position.
 			sum += sign * position[KNIGHT][x][y];
 		}
 	}
@@ -260,7 +292,11 @@ int board_heuristic::evaluate_bishops() const
 		{
 			x = n & 0x7;
 			y = n >> 3;
+
+			// Reward material.
 			sum += sign * WEIGHT_BISHOP;
+
+			// Reward position.
 			sum += sign * position[BISHOP][x][y];
 		}
 	}
@@ -283,7 +319,11 @@ int board_heuristic::evaluate_rooks() const
 		{
 			x = n & 0x7;
 			y = n >> 3;
+
+			// Reward material.
 			sum += sign * WEIGHT_ROOK;
+
+			// Reward position.
 			sum += sign * position[ROOK][x][y];
 		}
 	}
@@ -306,7 +346,11 @@ int board_heuristic::evaluate_queens() const
 		{
 			x = n & 0x7;
 			y = n >> 3;
+
+			// Reward material.
 			sum += sign * WEIGHT_QUEEN;
+
+			// Reward position.
 			sum += sign * position[QUEEN][x][y];
 		}
 	}
@@ -325,12 +369,26 @@ int board_heuristic::evaluate_kings() const
 	                             WEIGHT_CANT_CASTLE,
 	                             WEIGHT_HAS_CASTLED};
 	int sign, sum = 0;
+	bitboard_t pawns = state.piece[WHITE][PAWN] | state.piece[BLACK][PAWN];
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
 		sign = color == OFF_MOVE ? 1 : -1;
+		int n = FST(state.piece[color][KING]);
+		int x = n & 0x7;
+		int y = n >> 3;
+
+		//
 		for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
 			sum += sign * weight[state.castle[color][side]];
+
+		// Reward position.
+		if (pawns & SQUARES_QUEEN_SIDE && pawns & SQUARES_KING_SIDE)
+			sum += sign * position[KING][x][color == WHITE ? y : 7 - y];
+		else if (pawns & SQUARES_QUEEN_SIDE)
+			sum += sign * king_position[QUEEN_SIDE][x][color == WHITE ? y : 7 - y];
+		else if (pawns)
+			sum += sign * king_position[KING_SIDE][x][color == WHITE ? y : 7 - y];
 	}
 	return sum;
 }
