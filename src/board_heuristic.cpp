@@ -224,6 +224,9 @@ int board_heuristic::evaluate() const
 		return WEIGHT_ILLEGAL;
 
 	sum += evaluate_material();
+	sum += evaluate_position();
+	sum += evaluate_pawn();
+	sum += evaluate_king();
 	return sum;
 }
 
