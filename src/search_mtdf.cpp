@@ -107,7 +107,8 @@ void search_mtdf::iterate(int s)
 	// reached the maximum depth (either way).
 	for (depth = 1; depth <= max_depth; depth++)
 	{
-		guess[depth & 1] = mtdf(depth, guess[depth & 1].value);
+//		guess[depth & 1] = mtdf(depth, guess[depth & 1].value);
+		guess[depth & 1] = minimax(depth);
 		if (timeout_flag && depth_flag || IS_NULL_MOVE(guess[depth & 1]))
 			// Oops.  Either the alarm has interrupted this
 			// iteration (and the results are incomplete and
