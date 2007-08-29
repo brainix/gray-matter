@@ -189,11 +189,11 @@ int board_heuristic::evaluate_pawns() const
 
 	int sign, coef, sum;
 	bitboard_t pawns, adj_files, adj_pawns, ranks;
-	int num_isolated = 0, num_isolated_open_file = 0;
+	int num_isolated[COLORS] = {0, 0}, num_isolated_open_file[COLORS] = {0, 0};
 
-	static const int weight_isolated[] = {80, 80, 80, 70, 60, 40, 20, 8, 0, -8, -20, -40, -60, -70, -80, -80, -80};
-	static const int weight_isolated_open_file[] = {24, 24, 24, 24, 24, 16, 10, 4, 0, -4, -10, -16, -24, -24, -24, -24, -24};
-	static const int weight_doubled[] = {0, 0, 4, 7, 10, 10, 10, 10, 10};
+	static const int weight_isolated[] = {0, -8, -20, -40, -60, -70, -80, -80, -80};
+	static const int weight_isolated_open_file[] = {0, -4, -10, -16, -24, -24, -24, -24, -24};
+	static const int weight_doubled[] = {0, 0, -4, -7, -10, -10, -10, -10, -10};
 	static const int weight_passed[] = {0, 12, 20, 48, 72, 120, 150, 0};
 
 	// If we've already evaluated this pawn structure, return our previous
@@ -220,9 +220,9 @@ int board_heuristic::evaluate_pawns() const
 			// files.
 			if (!adj_pawns)
 			{
-				num_isolated += sign * coef;
+				num_isolated[color] += coef;
 				if (!(state.piece[!color][PAWN] & COL_MSK(file)))
-					num_isolated_open_file += sign * coef;
+					num_isolated_open_file[color] += coef;
 			}
 
 			// Penalize doubled pawns.
@@ -258,8 +258,8 @@ int board_heuristic::evaluate_pawns() const
 	}
 
 	// Penalize isolated pawns and isolated pawns on open files.
-	sum += weight_isolated[num_isolated + 9];
-	sum += weight_isolated_open_file[num_isolated_open_file + 9];
+	sum += weight_isolated[num_isolated[WHITE]] - weight_isolated[num_isolated[BLACK]];
+	sum += weight_isolated_open_file[num_isolated_open_file[WHITE]] - weight_isolated_open_file[num_isolated_open_file[BLACK]];
 
 	pawn_table.store(pawn_hash, sum);
 end:
