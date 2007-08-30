@@ -142,6 +142,9 @@ static const int weight_knight_outpost[8][8] =
 	       //   1    2    3    4    5    6    7    8
 };
 
+//
+static const int weight_cant_castle = -20;
+
 // Since pawn structure remains relatively static, we maintain a hash table of
 // previous pawn structure evaluations.  According to my tests, this hash table
 // sustains a hit rate of around 97%.  This enables us to perform sophisticated
@@ -449,7 +452,7 @@ int board_heuristic::evaluate_kings() const
 
 		// Penalize not castling.
 		if (state.castle[color][QUEEN_SIDE] == CANT_CASTLE && state.castle[color][KING_SIDE] == CANT_CASTLE)
-			sum += sign * WEIGHT_CANT_CASTLE;
+			sum += sign * weight_cant_castle;
 
 		// Penalize bad position or reward good position.
 		if (pawns & SQUARES_QUEEN_SIDE && pawns & SQUARES_KING_SIDE)
