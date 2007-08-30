@@ -61,7 +61,6 @@
 #define WEIGHT_ILLEGAL		20000
 
 //
-#define WEIGHT_DUO		    2 // Value of one pawn in a duo.
 #define WEIGHT_CANT_CASTLE	  -20 // Value of not castling.
 #define WEIGHT_CONTEMPT		    0 // How much we hate our opponent.
 
