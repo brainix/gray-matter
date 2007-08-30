@@ -92,6 +92,7 @@ static int weight_position[SHAPES][8][8] =
 	       //   1    2    3    4    5    6    7    8
 };
 
+//
 static int weight_king_position[SIDES][8][8] =
 {
 	       // White king:
@@ -117,6 +118,7 @@ static int weight_king_position[SIDES][8][8] =
 	       //   1    2    3    4    5    6    7    8
 };
 
+//
 static const int weight_pawn_isolated[9] = {0, -8, -20, -40, -60, -70, -80, -80, -80};
 static const int weight_pawn_isolated_doubled[9] = {0, -5, -10, -15, -15, -15, -15, -15, -15};
 static const int weight_pawn_isolated_open_file[9] = {0, -4, -10, -16, -24, -24, -24, -24, -24};
@@ -126,6 +128,7 @@ static const int weight_pawn_duo = 2;
 static const int weight_pawn_passed[8] = {0, 12, 20, 48, 72, 120, 150, 0};
 static const int weight_pawn_hidden_passed[8] = {0, 0, 0, 0, 20, 40, 0, 0};
 
+//
 static const int weight_knight_outpost[8][8] =
 {
 	/* A */  {  0,   0,   0,   0,   0,   0,   0,   0},
@@ -275,8 +278,11 @@ int board_heuristic::evaluate_pawns() const
 
 				// TODO: Reward hidden passed pawns.
 
-				// Reward position and material.
+				// Penalize bad position or reward good
+				// position.
 				sum += sign * weight_position[KNIGHT][x][color == WHITE ? y : 7 - y];
+
+				// Reward material.
 				sum += sign * WEIGHT_PAWN;
 			}
 		}
@@ -297,6 +303,9 @@ end:
 \*----------------------------------------------------------------------------*/
 int board_heuristic::evaluate_knights() const
 {
+
+//
+
 	int sign, sum = 0;
 	bitboard_t knights;
 
@@ -312,7 +321,7 @@ int board_heuristic::evaluate_knights() const
 			// Reward material.
 			sum += sign * WEIGHT_KNIGHT;
 
-			// Reward position.
+			// Penalize bad position or reward good position.
 			sum += sign * weight_position[KNIGHT][x][y];
 		}
 	}
@@ -324,6 +333,9 @@ int board_heuristic::evaluate_knights() const
 \*----------------------------------------------------------------------------*/
 int board_heuristic::evaluate_bishops() const
 {
+
+//
+
 	int sign, sum = 0;
 	bitboard_t bishops;
 
@@ -339,7 +351,7 @@ int board_heuristic::evaluate_bishops() const
 			// Reward material.
 			sum += sign * WEIGHT_BISHOP;
 
-			// Reward position.
+			// Penalize bad position or reward good position.
 			sum += sign * weight_position[BISHOP][x][y];
 		}
 	}
@@ -351,6 +363,9 @@ int board_heuristic::evaluate_bishops() const
 \*----------------------------------------------------------------------------*/
 int board_heuristic::evaluate_rooks() const
 {
+
+//
+
 	int sign, sum = 0;
 	bitboard_t rooks;
 
@@ -366,7 +381,7 @@ int board_heuristic::evaluate_rooks() const
 			// Reward material.
 			sum += sign * WEIGHT_ROOK;
 
-			// Reward position.
+			// Penalize bad position or reward good position.
 			sum += sign * weight_position[ROOK][x][y];
 		}
 	}
@@ -378,6 +393,9 @@ int board_heuristic::evaluate_rooks() const
 \*----------------------------------------------------------------------------*/
 int board_heuristic::evaluate_queens() const
 {
+
+//
+
 	static const int queen_rook_on_7th = 50;
 	static const int offside = -30;
 
@@ -396,7 +414,7 @@ int board_heuristic::evaluate_queens() const
 			// Reward material.
 			sum += sign * WEIGHT_QUEEN;
 
-			// Reward position.
+			// Penalize bad position or reward good position.
 			sum += sign * weight_position[QUEEN][x][y];
 
 			//
@@ -430,11 +448,10 @@ int board_heuristic::evaluate_kings() const
 		int y = n >> 3;
 
 		// Penalize not castling.
-		if (state.castle[color][QUEEN_SIDE] == CANT_CASTLE &&
-		    state.castle[color][KING_SIDE]  == CANT_CASTLE)
+		if (state.castle[color][QUEEN_SIDE] == CANT_CASTLE && state.castle[color][KING_SIDE] == CANT_CASTLE)
 			sum += sign * WEIGHT_CANT_CASTLE;
 
-		// Reward position.
+		// Penalize bad position or reward good position.
 		if (pawns & SQUARES_QUEEN_SIDE && pawns & SQUARES_KING_SIDE)
 			sum += sign * weight_position[KING][x][color == WHITE ? y : 7 - y];
 		else if (pawns & SQUARES_QUEEN_SIDE)
