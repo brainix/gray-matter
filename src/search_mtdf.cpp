@@ -204,8 +204,6 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 	bool whose = board_ptr->get_whose();       // The color on move.
 	bitboard_t hash = board_ptr->get_hash();   // This position's hash.
 	int status = board_ptr->get_status(false); // Whether the game is over.
-	int upper = +INFINITY;                     // The upper bound.
-	int lower = -INFINITY;                     // The lower bound.
 	int current = alpha;                       // Scratch alpha variable.
 	list<move_t> l;                            // The move list.
 	list<move_t>::iterator it;                 // The iterator.
@@ -240,18 +238,18 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 	{
 		if (table_ptr->probe(hash, depth, EXACT, &m))
 			return m;
-		if (table_ptr->probe(hash, depth, UPPER, &m))
-		{
-			if ((upper = m.value) <= alpha)
-				return m;
-			beta = LESSER(beta, upper);
-		}
-		if (table_ptr->probe(hash, depth, LOWER, &m))
-		{
-			if ((lower = m.value) >= beta)
-				return m;
-			current = alpha = GREATER(alpha, lower);
-		}
+//		if (table_ptr->probe(hash, depth, UPPER, &m))
+//		{
+//			if (m.value <= alpha)
+//				return m;
+//			beta = LESSER(beta, m.value);
+//		}
+//		if (table_ptr->probe(hash, depth, LOWER, &m))
+//		{
+//			if (m.value >= beta)
+//				return m;
+//			current = alpha = GREATER(alpha, m.value);
+//		}
 	}
 
 	// Generate and re-order the move list.
