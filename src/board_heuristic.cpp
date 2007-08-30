@@ -191,10 +191,14 @@ int board_heuristic::evaluate_pawns() const
 	bitboard_t pawns, adj_files, adj_pawns, ranks;
 	int num_isolated[COLORS] = {0, 0}, num_isolated_open_file[COLORS] = {0, 0};
 
-	static const int weight_isolated[] = {0, -8, -20, -40, -60, -70, -80, -80, -80};
-	static const int weight_isolated_open_file[] = {0, -4, -10, -16, -24, -24, -24, -24, -24};
-	static const int weight_doubled[] = {0, 0, -4, -7, -10, -10, -10, -10, -10};
-	static const int weight_passed[] = {0, 12, 20, 48, 72, 120, 150, 0};
+	static const int weight_isolated[9] = {0, -8, -20, -40, -60, -70, -80, -80, -80};
+	static const int weight_isolated_doubled[9] = {0, -5, -10, -15, -15, -15, -15, -15, -15};
+	static const int weight_isolated_open_file[9] = {0, -4, -10, -16, -24, -24, -24, -24, -24};
+//	static const int weight_weak[2] = {12, 20};
+	static const int weight_doubled[9] = {0, 0, -4, -7, -10, -10, -10, -10, -10};
+	static const int weight_duo = 2;
+	static const int weight_passed[8] = {0, 12, 20, 48, 72, 120, 150, 0};
+//	static const int weight_hidden_passed[8] = {0, 0, 0, 0, 20, 40, 0, 0};
 
 	// If we've already evaluated this pawn structure, return our previous
 	// evaluation.
@@ -216,17 +220,25 @@ int board_heuristic::evaluate_pawns() const
 				adj_files |= COL_MSK(file + j);
 			adj_pawns = state.piece[color][PAWN] & adj_files;
 
-			// Count isolated pawns and isolated pawns on open
-			// files.
 			if (!adj_pawns)
 			{
+				// Count isolated pawns, penalize isolated
+				// doubled pawns, and count isolated pawns on
+				// open files.
 				num_isolated[color] += coef;
+				if (coef > 1)
+					sum += sign * coef * weight_isolated_doubled[coef];
 				if (!(state.piece[!color][PAWN] & COL_MSK(file)))
 					num_isolated_open_file[color] += coef;
 			}
+			else
+			{
+				// TODO: Penalize weak pawns.
 
-			// Penalize doubled pawns.
-			sum += sign * coef * weight_doubled[coef];
+				// Penalize doubled pawns.
+				if (coef > 1)
+					sum += sign * coef * weight_doubled[coef];
+			}
 
 			for (int n, x, y; (n = FST(pawns)) != -1; BIT_CLR(pawns, x, y))
 			{
@@ -237,7 +249,7 @@ int board_heuristic::evaluate_pawns() const
 				for (int j = x == 0 ? 1 : -1; j <= (x == 7 ? -1 : 1); j += 2)
 					if (BIT_GET(state.piece[color][PAWN], x + j, y))
 					{
-						sum += sign * WEIGHT_DUO;
+						sum += sign * weight_duo;
 						break;
 					}
 
