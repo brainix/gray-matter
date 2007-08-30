@@ -212,6 +212,24 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 	// Increment the number of positions searched.
 	nodes++;
 
+	// If we've already sufficiently examined this position, return the best
+	// move from our previous search.  Otherwise, if we can, reduce the size
+	// of our AlphaBeta window.
+	if (table_ptr->probe(hash, depth, EXACT, &m))
+		return m;
+	if (table_ptr->probe(hash, depth, UPPER, &m))
+	{
+		if (m.value <= alpha)
+			return m;
+		beta = LESSER(beta, m.value);
+	}
+	if (table_ptr->probe(hash, depth, LOWER, &m))
+	{
+		if (m.value >= beta)
+			return m;
+		current = alpha = GREATER(alpha, m.value);
+	}
+
 	// If we've reached the maximum search depth, this node is a leaf - all
 	// we have to do is apply the static evaluator.  If this position is
 	// terminal (the end of the game), there's no legal move - all we have
@@ -228,28 +246,8 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 		// move that leads to this position as -WEIGHT_CONTEMPT.
 		SET_NULL_MOVE(m);
 		m.value = status == IN_PROGRESS ? -board_ptr->evaluate() : status >= INSUFFICIENT && status <= FIFTY ? +WEIGHT_CONTEMPT : -WEIGHT_ILLEGAL;
+		table_ptr->store(hash, depth, EXACT, m);
 		return m;
-	}
-
-	// If we've already sufficiently examined this position, return the best
-	// move from our previous search.  Otherwise, if we can, reduce the size
-	// of our AlphaBeta window.
-	if (shallowness)
-	{
-		if (table_ptr->probe(hash, depth, EXACT, &m))
-			return m;
-//		if (table_ptr->probe(hash, depth, UPPER, &m))
-//		{
-//			if (m.value <= alpha)
-//				return m;
-//			beta = LESSER(beta, m.value);
-//		}
-//		if (table_ptr->probe(hash, depth, LOWER, &m))
-//		{
-//			if (m.value >= beta)
-//				return m;
-//			current = alpha = GREATER(alpha, m.value);
-//		}
 	}
 
 	// Generate and re-order the move list.
