@@ -187,10 +187,6 @@ int board_heuristic::evaluate_pawns() const
 
 // Evaluate pawn structure.
 
-	int sign, coef, sum;
-	bitboard_t pawns, adj_files, adj_pawns, ranks;
-	int num_isolated[COLORS] = {0, 0}, num_isolated_open_file[COLORS] = {0, 0};
-
 	static const int weight_isolated[9] = {0, -8, -20, -40, -60, -70, -80, -80, -80};
 	static const int weight_isolated_doubled[9] = {0, -5, -10, -15, -15, -15, -15, -15, -15};
 	static const int weight_isolated_open_file[9] = {0, -4, -10, -16, -24, -24, -24, -24, -24};
@@ -199,6 +195,10 @@ int board_heuristic::evaluate_pawns() const
 	static const int weight_duo = 2;
 	static const int weight_passed[8] = {0, 12, 20, 48, 72, 120, 150, 0};
 //	static const int weight_hidden_passed[8] = {0, 0, 0, 0, 20, 40, 0, 0};
+
+	int sign, coef, sum;
+	bitboard_t pawns, adj_files, adj_pawns, ranks;
+	int num_isolated[COLORS] = {0, 0}, num_isolated_open_file[COLORS] = {0, 0};
 
 	// If we've already evaluated this pawn structure, return our previous
 	// evaluation.
@@ -365,6 +365,9 @@ int board_heuristic::evaluate_rooks() const
 \*----------------------------------------------------------------------------*/
 int board_heuristic::evaluate_queens() const
 {
+	static const int queen_rook_on_7th = 50;
+	static const int offside = -30;
+
 	int sign, sum = 0;
 	bitboard_t queens;
 
@@ -382,6 +385,14 @@ int board_heuristic::evaluate_queens() const
 
 			// Reward position.
 			sum += sign * position[QUEEN][x][y];
+
+			//
+			if (y == (color == WHITE ? 6 : 1) && state.piece[color][ROOK] & ROW_MSK(color == WHITE ? 6 : 1) && state.piece[!color][KING] & ROW_MSK(color == WHITE ? 7 : 0))
+				sum += queen_rook_on_7th;
+
+			//
+			if (x <= 1 && FST(state.piece[!color][KING]) & 0x7 >= 5 || x >= 6 && FST(state.piece[!color][KING]) & 0x7 <= 2)
+				sum += offside;
 		}
 	}
 	return sum;
