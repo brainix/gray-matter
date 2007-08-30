@@ -23,7 +23,7 @@
 #include "board_heuristic.h"
 
 //
-static int position[SHAPES][8][8] =
+static int weight_position[SHAPES][8][8] =
 {
 	       // White pawns:
 	/* A */ {{  0,   0,   1,   3,   6,  10,  40,   0},
@@ -92,7 +92,7 @@ static int position[SHAPES][8][8] =
 	       //   1    2    3    4    5    6    7    8
 };
 
-static int king_position[SIDES][8][8] =
+static int weight_king_position[SIDES][8][8] =
 {
 	       // White king:
 	/* A */ {{-20,   0,  20,  40,  40,  40,  40, -20},
@@ -114,6 +114,28 @@ static int king_position[SIDES][8][8] =
 	/* F */  {-20,   0,  20,  40,  60,  60,  40, -20},
 	/* G */  {-20,   0,  20,  40,  60,  60,  40, -20},
 	/* H */  {-20,   0,  20,  40,  40,  40,  40, -20}}
+	       //   1    2    3    4    5    6    7    8
+};
+
+static const int weight_pawn_isolated[9] = {0, -8, -20, -40, -60, -70, -80, -80, -80};
+static const int weight_pawn_isolated_doubled[9] = {0, -5, -10, -15, -15, -15, -15, -15, -15};
+static const int weight_pawn_isolated_open_file[9] = {0, -4, -10, -16, -24, -24, -24, -24, -24};
+static const int weight_pawn_weak[2] = {12, 20};
+static const int weight_pawn_doubled[9] = {0, 0, -4, -7, -10, -10, -10, -10, -10};
+static const int weight_pawn_duo = 2;
+static const int weight_pawn_passed[8] = {0, 12, 20, 48, 72, 120, 150, 0};
+static const int weight_pawn_hidden_passed[8] = {0, 0, 0, 0, 20, 40, 0, 0};
+
+static const int weight_knight_outpost[8][8] =
+{
+	/* A */  {  0,   0,   0,   0,   0,   0,   0,   0},
+	/* B */  {  0,   0,   0,   5,   5,   0,   0,   0},
+	/* C */  {  0,   0,   0,  10,  10,  10,   0,   0},
+	/* D */  {  0,   0,   0,  20,  24,  24,   0,   0},
+	/* E */  {  0,   0,   0,  20,  24,  24,   0,   0},
+	/* F */  {  0,   0,   0,  10,  10,  10,   0,   0},
+	/* G */  {  0,   0,   0,   5,   5,   0,   0,   0},
+	/* H */  {  0,   0,   0,   0,   0,   0,   0,   0}
 	       //   1    2    3    4    5    6    7    8
 };
 
@@ -187,15 +209,6 @@ int board_heuristic::evaluate_pawns() const
 
 // Evaluate pawn structure.
 
-	static const int weight_isolated[9] = {0, -8, -20, -40, -60, -70, -80, -80, -80};
-	static const int weight_isolated_doubled[9] = {0, -5, -10, -15, -15, -15, -15, -15, -15};
-	static const int weight_isolated_open_file[9] = {0, -4, -10, -16, -24, -24, -24, -24, -24};
-//	static const int weight_weak[2] = {12, 20};
-	static const int weight_doubled[9] = {0, 0, -4, -7, -10, -10, -10, -10, -10};
-	static const int weight_duo = 2;
-	static const int weight_passed[8] = {0, 12, 20, 48, 72, 120, 150, 0};
-//	static const int weight_hidden_passed[8] = {0, 0, 0, 0, 20, 40, 0, 0};
-
 	int sign, coef, sum;
 	bitboard_t pawns, adj_files, adj_pawns, ranks;
 	int num_isolated[COLORS] = {0, 0}, num_isolated_open_file[COLORS] = {0, 0};
@@ -227,7 +240,7 @@ int board_heuristic::evaluate_pawns() const
 				// open files.
 				num_isolated[color] += coef;
 				if (coef > 1)
-					sum += sign * coef * weight_isolated_doubled[coef];
+					sum += sign * coef * weight_pawn_isolated_doubled[coef];
 				if (!(state.piece[!color][PAWN] & COL_MSK(file)))
 					num_isolated_open_file[color] += coef;
 			}
@@ -237,7 +250,7 @@ int board_heuristic::evaluate_pawns() const
 
 				// Penalize doubled pawns.
 				if (coef > 1)
-					sum += sign * coef * weight_doubled[coef];
+					sum += sign * coef * weight_pawn_doubled[coef];
 			}
 
 			for (int n, x, y; (n = FST(pawns)) != -1; BIT_CLR(pawns, x, y))
@@ -249,7 +262,7 @@ int board_heuristic::evaluate_pawns() const
 				for (int j = x == 0 ? 1 : -1; j <= (x == 7 ? -1 : 1); j += 2)
 					if (BIT_GET(state.piece[color][PAWN], x + j, y))
 					{
-						sum += sign * weight_duo;
+						sum += sign * weight_pawn_duo;
 						break;
 					}
 
@@ -258,20 +271,20 @@ int board_heuristic::evaluate_pawns() const
 				for (int k = y + sign; k < 7 && k > 0; k += sign)
 					ranks |= ROW_MSK(k);
 				if (!(state.piece[!color][PAWN] & adj_files & ranks))
-					sum += sign * weight_passed[color == WHITE ? y : 7 - y];
+					sum += sign * weight_pawn_passed[color == WHITE ? y : 7 - y];
 
 				// TODO: Reward hidden passed pawns.
 
 				// Reward position and material.
-				sum += sign * position[KNIGHT][x][color == WHITE ? y : 7 - y];
+				sum += sign * weight_position[KNIGHT][x][color == WHITE ? y : 7 - y];
 				sum += sign * WEIGHT_PAWN;
 			}
 		}
 	}
 
 	// Penalize isolated pawns and isolated pawns on open files.
-	sum += weight_isolated[num_isolated[WHITE]] - weight_isolated[num_isolated[BLACK]];
-	sum += weight_isolated_open_file[num_isolated_open_file[WHITE]] - weight_isolated_open_file[num_isolated_open_file[BLACK]];
+	sum += weight_pawn_isolated[num_isolated[WHITE]] - weight_pawn_isolated[num_isolated[BLACK]];
+	sum += weight_pawn_isolated_open_file[num_isolated_open_file[WHITE]] - weight_pawn_isolated_open_file[num_isolated_open_file[BLACK]];
 
 	pawn_table.store(pawn_hash, sum);
 end:
@@ -300,7 +313,7 @@ int board_heuristic::evaluate_knights() const
 			sum += sign * WEIGHT_KNIGHT;
 
 			// Reward position.
-			sum += sign * position[KNIGHT][x][y];
+			sum += sign * weight_position[KNIGHT][x][y];
 		}
 	}
 	return sum;
@@ -327,7 +340,7 @@ int board_heuristic::evaluate_bishops() const
 			sum += sign * WEIGHT_BISHOP;
 
 			// Reward position.
-			sum += sign * position[BISHOP][x][y];
+			sum += sign * weight_position[BISHOP][x][y];
 		}
 	}
 	return sum;
@@ -354,7 +367,7 @@ int board_heuristic::evaluate_rooks() const
 			sum += sign * WEIGHT_ROOK;
 
 			// Reward position.
-			sum += sign * position[ROOK][x][y];
+			sum += sign * weight_position[ROOK][x][y];
 		}
 	}
 	return sum;
@@ -384,7 +397,7 @@ int board_heuristic::evaluate_queens() const
 			sum += sign * WEIGHT_QUEEN;
 
 			// Reward position.
-			sum += sign * position[QUEEN][x][y];
+			sum += sign * weight_position[QUEEN][x][y];
 
 			//
 			if (y == (color == WHITE ? 6 : 1) && state.piece[color][ROOK] & ROW_MSK(color == WHITE ? 6 : 1) && state.piece[!color][KING] & ROW_MSK(color == WHITE ? 7 : 0))
@@ -423,11 +436,11 @@ int board_heuristic::evaluate_kings() const
 
 		// Reward position.
 		if (pawns & SQUARES_QUEEN_SIDE && pawns & SQUARES_KING_SIDE)
-			sum += sign * position[KING][x][color == WHITE ? y : 7 - y];
+			sum += sign * weight_position[KING][x][color == WHITE ? y : 7 - y];
 		else if (pawns & SQUARES_QUEEN_SIDE)
-			sum += sign * king_position[QUEEN_SIDE][x][color == WHITE ? y : 7 - y];
+			sum += sign * weight_king_position[QUEEN_SIDE][x][color == WHITE ? y : 7 - y];
 		else if (pawns)
-			sum += sign * king_position[KING_SIDE][x][color == WHITE ? y : 7 - y];
+			sum += sign * weight_king_position[KING_SIDE][x][color == WHITE ? y : 7 - y];
 	}
 	return sum;
 }
