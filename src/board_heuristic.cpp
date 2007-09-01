@@ -105,17 +105,6 @@ static int weight_king_position[SIDES][8][8] =
 	/* G */  {-40, -40, -40, -40, -40, -40, -40, -40},
 	/* H */  {-60, -60, -60, -60, -60, -60, -60, -60}},
 	       //   1    2    3    4    5    6    7    8
-
-	       // White king:
-	/* A */ {{-60, -60, -60, -60, -60, -60, -60, -60},
-	/* B */  {-40, -40, -40, -40, -40, -40, -40, -40},
-	/* C */  {-20, -20, -20, -20, -20, -20, -20, -20},
-	/* D */  {-20,   0,  20,  20,  20,  20,  20, -20},
-	/* E */  {-20,   0,  20,  40,  60,  60,  40, -20},
-	/* F */  {-20,   0,  20,  40,  60,  60,  40, -20},
-	/* G */  {-20,   0,  20,  40,  60,  60,  40, -20},
-	/* H */  {-20,   0,  20,  40,  40,  40,  40, -20}}
-	       //   1    2    3    4    5    6    7    8
 };
 
 //
@@ -455,12 +444,13 @@ int board_heuristic::evaluate_kings() const
 			sum += sign * weight_cant_castle;
 
 		// Penalize bad position or reward good position.
-		if (pawns & SQUARES_QUEEN_SIDE && pawns & SQUARES_KING_SIDE)
-			sum += sign * weight_position[KING][x][color == WHITE ? y : 7 - y];
-		else if (pawns & SQUARES_QUEEN_SIDE)
-			sum += sign * weight_king_position[QUEEN_SIDE][x][color == WHITE ? y : 7 - y];
-		else if (pawns)
-			sum += sign * weight_king_position[KING_SIDE][x][color == WHITE ? y : 7 - y];
+		if (pawns)
+		{
+			if (pawns & SQUARES_QUEEN_SIDE && pawns & SQUARES_KING_SIDE)
+				sum += sign * weight_position[KING][x][color == WHITE ? y : 7 - y];
+			else
+				sum += sign * weight_king_position[pawns & SQUARES_QUEEN_SIDE ? x : 7 - x][color == WHITE ? y : 7 - y];
+		}
 	}
 	return sum;
 }
