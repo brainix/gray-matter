@@ -1402,7 +1402,7 @@ bool board_base::check(bitboard_t b1, bool color) const
 		// opposing pawn sits on any of our marked squares.  If so,
 		// we're in check.  If not, we're not in check, at least not by
 		// a pawn.  Easy, breezy, beautiful.
-		if (pawn_attacks[color][x][y] & state.pieces[color][PAWN])
+		if (pawn_attacks[color][x][y] & state.piece[color][PAWN])
 			return true;
 	}
 	return false;
