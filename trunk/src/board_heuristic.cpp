@@ -23,8 +23,8 @@
 #include "board_heuristic.h"
 
 //
-extern pawn_attacks;
-extern potential_pawn_attacks;
+extern bitboard_t pawn_attacks[COLORS][8][8];
+extern bitboard_t potential_pawn_attacks[COLORS][8][8];
 
 //
 static int weight_material[SHAPES] = {WEIGHT_PAWN, WEIGHT_KNIGHT, WEIGHT_BISHOP,
