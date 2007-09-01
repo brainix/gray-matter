@@ -93,7 +93,7 @@ static int weight_position[SHAPES][8][8] =
 };
 
 //
-static int weight_king_position[SIDES][8][8] =
+static int weight_king_position[8][8] =
 {
 	       // White king:
 	/* A */ {{-20,   0,  20,  40,  40,  40,  40, -20},
