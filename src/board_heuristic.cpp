@@ -23,6 +23,10 @@
 #include "board_heuristic.h"
 
 //
+extern pawn_attacks;
+extern potential_pawn_attacks;
+
+//
 static int weight_material[SHAPES] = {WEIGHT_PAWN, WEIGHT_KNIGHT, WEIGHT_BISHOP,
                                       WEIGHT_ROOK, WEIGHT_QUEEN,  WEIGHT_KING};
 
