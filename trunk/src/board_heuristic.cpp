@@ -23,8 +23,10 @@
 #include "board_heuristic.h"
 
 //
+extern bitboard_t adj_files[8];
 extern bitboard_t pawn_attacks[COLORS][8][8];
 extern bitboard_t potential_pawn_attacks[COLORS][8][8];
+extern bitboard_t pawn_duo[8][8];
 
 //
 static int weight_material[SHAPES] = {WEIGHT_PAWN, WEIGHT_KNIGHT, WEIGHT_BISHOP,
@@ -213,7 +215,7 @@ int board_heuristic::evaluate_pawns() const
 // Evaluate pawn structure.
 
 	int sign, coef, sum;
-	bitboard_t pawns, adj_files, adj_pawns;
+	bitboard_t pawns, adj_pawns;
 	int num_isolated[COLORS] = {0, 0}, num_isolated_open_file[COLORS] = {0, 0};
 
 	// If we've already evaluated this pawn structure, return our previous
@@ -231,10 +233,7 @@ int board_heuristic::evaluate_pawns() const
 				// The current color has no pawn on the current
 				// file.  Move on to the next file.
 				continue;
-			adj_files = 0;
-			for (int j = file == 0 ? 1 : -1; j <= (file == 7 ? -1 : 1); j += 2)
-				adj_files |= COL_MSK(file + j);
-			adj_pawns = state.piece[color][PAWN] & adj_files;
+			adj_pawns = state.piece[color][PAWN] & adj_files[file];
 
 			if (!adj_pawns)
 			{
@@ -262,12 +261,8 @@ int board_heuristic::evaluate_pawns() const
 				y = n >> 3;
 
 				// Reward pawn duos.
-				for (int j = x == 0 ? 1 : -1; j <= (x == 7 ? -1 : 1); j += 2)
-					if (BIT_GET(state.piece[color][PAWN], x + j, y))
-					{
-						sum += sign * weight_pawn_duo;
-						break;
-					}
+				if (pawn_duo[x][y] & state.piece[color][PAWN])
+					sum += sign * weight_pawn_duo;
 
 				// Reward passed pawns.
 				if (!(potential_pawn_attacks[!color][x][y] & state.piece[!color][PAWN]))

@@ -145,8 +145,10 @@ static bitboard_t squares_castle[COLORS][SIDES][REQS] =
 };
 
 //
+bitboard_t adj_files[8];
 bitboard_t pawn_attacks[COLORS][8][8];
 bitboard_t potential_pawn_attacks[COLORS][8][8];
+bitboard_t pawn_duo[8][8];
 
 // Zobrist hash keys:
 bitboard_t key_piece[COLORS][SHAPES][8][8];
@@ -1266,9 +1268,18 @@ void board_base::precomp_knight() const
 void board_base::precomp_pawn() const
 {
 
-// Pre-compute the pawn attacks and potential pawn attacks.
+// Pre-compute the adjacent files, pawn attacks, potential pawn attacks, and
+// pawn duos.
 
-	//
+	// Pre-compute the adjacent files.
+	for (int file = 0; file <= 7; file++)
+	{
+		adj_files[file] = 0;
+		for (int j = file == 0 ? 1 : -1; j <= (file == 7 ? -1 : 1); j += 2)
+			adj_files[file] |= COL_MSK(file + j);
+	}
+
+	// Pre-compute the pawn attacks and potential pawn attacks.
 	for (int color = WHITE; color <= BLACK; color++)
 		for (int y = 0; y <= 7; y++)
 			for (int x = 0; x <= 7; x++)
@@ -1289,6 +1300,15 @@ void board_base::precomp_pawn() const
 				pawn_attacks[color][x][y] &= rank;
 				potential_pawn_attacks[color][x][y] &= ranks;
 			}
+
+	// Pre-compute the pawn duos.
+	for (int y = 1; y <= 6; y++)
+		for (int x = 0; x <= 7; x++)
+		{
+			pawn_duo[x][y] = 0;
+			for (int j = x == 0 ? 1 : -1; j <= (x == 7 ? -1 : 1); j += 2)
+				BIT_SET(pawn_duo[x][y], x + j, y);
+		}
 }
 
 /*----------------------------------------------------------------------------*\
