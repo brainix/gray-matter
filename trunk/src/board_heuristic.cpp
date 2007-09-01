@@ -213,7 +213,7 @@ int board_heuristic::evaluate_pawns() const
 // Evaluate pawn structure.
 
 	int sign, coef, sum;
-	bitboard_t pawns, adj_files, adj_pawns, ranks;
+	bitboard_t pawns, adj_files, adj_pawns;
 	int num_isolated[COLORS] = {0, 0}, num_isolated_open_file[COLORS] = {0, 0};
 
 	// If we've already evaluated this pawn structure, return our previous
