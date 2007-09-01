@@ -135,7 +135,7 @@ static const int weight_knight_outpost[8][8] =
 	       //   1    2    3    4    5    6    7    8
 };
 
-//
+// The penalty for giving up castling:
 static const int weight_cant_castle = -20;
 
 // Since pawn structure remains relatively static, we maintain a hash table of
@@ -319,6 +319,25 @@ int board_heuristic::evaluate_knights() const
 
 			// Penalize bad position or reward good position.
 			sum += sign * weight_position[KNIGHT][x][y];
+
+			//
+			if (weight_knight_outpost[x][color == WHITE ? y : 7 - y])
+			{
+				bitboard_t potential_pawn_defenses = 0;
+				bitboard_t potential_pawn_attacks = 0;
+				bitboard_t tmp = 0;
+				for (int j = x - 1; j <= x + 1; j += 2)
+				{
+					potential_pawn_defenses |= COL_MSK(j);
+					potential_pawn_attacks |= COL_MSK(j);
+				}
+				potential_pawn_defenses &= ROW_MSK(y + (color == WHITE ? -1 : 1));
+				for (int k = y + (color == WHITE ? 1 : -1); k >= 1 && k <= 6; k += color == WHITE ? 1 : -1)
+					tmp |= ROW_MSK(k);
+				potential_pawn_attacks &= tmp;
+				if (potential_pawn_defenses & state.piece[color][PAWN] && !(potential_pawn_attacks & state.piece[!color][PAWN]))
+					sum += sign * weight_knight_outpost[x][color == WHITE ? y : 7 - y];
+			}
 		}
 	}
 	return sum;
@@ -443,7 +462,7 @@ int board_heuristic::evaluate_kings() const
 		int x = n & 0x7;
 		int y = n >> 3;
 
-		// Penalize not castling.
+		// Penalize giving up castling.
 		if (state.castle[color][QUEEN_SIDE] == CANT_CASTLE && state.castle[color][KING_SIDE] == CANT_CASTLE)
 			sum += sign * weight_cant_castle;
 

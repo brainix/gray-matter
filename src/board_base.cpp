@@ -144,6 +144,10 @@ static bitboard_t squares_castle[COLORS][SIDES][REQS] =
 	  0x7000000000000000ULL}}
 };
 
+//
+bitboard_t pawn_attacks[8][8];
+bitboard_t potential_pawn_attacks[8][8];
+
 // Zobrist hash keys:
 bitboard_t key_piece[COLORS][SHAPES][8][8];
 bitboard_t key_castle[COLORS][SIDES][CASTLE_STATS];
@@ -165,6 +169,7 @@ board_base::board_base()
 		precomp_king();
 		precomp_row();
 		precomp_knight();
+		precomp_pawn();
 		precomp_key();
 		precomputed = true;
 	}
@@ -1252,6 +1257,32 @@ void board_base::precomp_knight() const
 						continue;
 					BIT_SET(squares_knight[x][y], x + j, y + k);
 				}
+		}
+}
+
+/*----------------------------------------------------------------------------*\
+ |				 precomp_pawn()				      |
+\*----------------------------------------------------------------------------*/
+void board_base::precomp_pawn() const
+{
+
+//
+
+	for (int y = 0; y <= 7; y++)
+		for (int x = 0; x <= 7; x++)
+		{
+			pawn_attacks[x][y] = 0;
+			for (int j = x == 0 ? 1 : -1; j <= (x == 7 ? -1 : 1); j += 2)
+				pawn_attacks[x][y] |= COL_MSK(x + j);
+			pawn_attacks[x][y] &= y <= 1 ? 0 : ROW_MSK(y - 1);
+
+			potential_pawn_attacks[x][y] = 0;
+			for (int j = x == 0 ? 1 : -1; j <= (x == 7 ? -1 : 1); j += 2)
+				potential_pawn_attacks[x][y] |= COL_MSK(x + j);
+			bitboard_t tmp = 0;
+			for (int k = -1; y + k >= 1; k--)
+				tmp |= ROW_MSK(y + k);
+			potential_pawn_attacks[x][y] &= tmp;
 		}
 }
 
