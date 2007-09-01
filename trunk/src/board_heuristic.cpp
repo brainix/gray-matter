@@ -219,7 +219,7 @@ int board_heuristic::evaluate_pawns() const
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
-		sign = color == WHITE ? 1 : -1;
+		sign = !color ? 1 : -1;
 		for (int file = 0; file <= 7; file++)
 		{
 			pawns = state.piece[color][PAWN] & COL_MSK(file);
@@ -266,17 +266,14 @@ int board_heuristic::evaluate_pawns() const
 					}
 
 				// Reward passed pawns.
-				ranks = 0;
-				for (int k = y + sign; k < 7 && k > 0; k += sign)
-					ranks |= ROW_MSK(k);
-				if (!(state.piece[!color][PAWN] & adj_files & ranks))
-					sum += sign * weight_pawn_passed[color == WHITE ? y : 7 - y];
+				if (!(potential_pawn_attacks[!color][x][y] & state.piece[!color][PAWN]))
+					sum += sign * weight_pawn_passed[!color ? y : 7 - y];
 
 				// TODO: Reward hidden passed pawns.
 
 				// Penalize bad position or reward good
 				// position.
-				sum += sign * weight_position[KNIGHT][x][color == WHITE ? y : 7 - y];
+				sum += sign * weight_position[KNIGHT][x][!color ? y : 7 - y];
 
 				// Reward material.
 				sum += sign * weight_material[PAWN];
@@ -290,7 +287,7 @@ int board_heuristic::evaluate_pawns() const
 
 	pawn_table.store(pawn_hash, sum);
 end:
-	sign = OFF_MOVE == WHITE ? 1 : -1;
+	sign = !OFF_MOVE ? 1 : -1;
 	return sign * sum;
 }
 
@@ -321,23 +318,8 @@ int board_heuristic::evaluate_knights() const
 			sum += sign * weight_position[KNIGHT][x][y];
 
 			//
-			if (weight_knight_outpost[x][color == WHITE ? y : 7 - y])
-			{
-				bitboard_t potential_pawn_defenses = 0;
-				bitboard_t potential_pawn_attacks = 0;
-				bitboard_t tmp = 0;
-				for (int j = x - 1; j <= x + 1; j += 2)
-				{
-					potential_pawn_defenses |= COL_MSK(j);
-					potential_pawn_attacks |= COL_MSK(j);
-				}
-				potential_pawn_defenses &= ROW_MSK(y + (color == WHITE ? -1 : 1));
-				for (int k = y + (color == WHITE ? 1 : -1); k >= 1 && k <= 6; k += color == WHITE ? 1 : -1)
-					tmp |= ROW_MSK(k);
-				potential_pawn_attacks &= tmp;
-				if (potential_pawn_defenses & state.piece[color][PAWN] && !(potential_pawn_attacks & state.piece[!color][PAWN]))
-					sum += sign * weight_knight_outpost[x][color == WHITE ? y : 7 - y];
-			}
+			if (pawn_attacks[color][x][y] & state.piece[color][PAWN] && !(potential_pawn_attacks[!color][x][y] & state.piece[!color][PAWN]))
+				sum += weight_knight_outpost[x][!color ? y : 7 - y];
 		}
 	}
 	return sum;
@@ -433,7 +415,7 @@ int board_heuristic::evaluate_queens() const
 			sum += sign * weight_position[QUEEN][x][y];
 
 			//
-			if (y == (color == WHITE ? 6 : 1) && state.piece[color][ROOK] & ROW_MSK(color == WHITE ? 6 : 1) && state.piece[!color][KING] & ROW_MSK(color == WHITE ? 7 : 0))
+			if (y == (!color ? 6 : 1) && state.piece[color][ROOK] & ROW_MSK(!color ? 6 : 1) && state.piece[!color][KING] & ROW_MSK(!color ? 7 : 0))
 				sum += queen_rook_on_7th;
 
 			//
@@ -468,9 +450,9 @@ int board_heuristic::evaluate_kings() const
 
 		// Penalize bad position or reward good position.
 		if (pawns & SQUARES_QUEEN_SIDE && pawns & SQUARES_KING_SIDE)
-			sum += sign * weight_position[KING][x][color == WHITE ? y : 7 - y];
+			sum += sign * weight_position[KING][x][!color ? y : 7 - y];
 		else if (pawns)
-			sum += sign * weight_king_position[pawns & SQUARES_QUEEN_SIDE ? x : 7 - x][color == WHITE ? y : 7 - y];
+			sum += sign * weight_king_position[pawns & SQUARES_QUEEN_SIDE ? x : 7 - x][!color ? y : 7 - y];
 	}
 	return sum;
 }

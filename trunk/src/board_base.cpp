@@ -797,14 +797,14 @@ void board_base::init_state()
 		ROW_SET(state.piece[color][PAWN], color ? 6 : 1, 0xFF);
 
 		// Place the other pieces.
-		BIT_SET(state.piece[color][ROOK],   0, color ? 7 : 0);
-		BIT_SET(state.piece[color][KNIGHT], 1, color ? 7 : 0);
-		BIT_SET(state.piece[color][BISHOP], 2, color ? 7 : 0);
-		BIT_SET(state.piece[color][QUEEN],  3, color ? 7 : 0);
-		BIT_SET(state.piece[color][KING],   4, color ? 7 : 0);
-		BIT_SET(state.piece[color][BISHOP], 5, color ? 7 : 0);
-		BIT_SET(state.piece[color][KNIGHT], 6, color ? 7 : 0);
-		BIT_SET(state.piece[color][ROOK],   7, color ? 7 : 0);
+		BIT_SET(state.piece[color][ROOK],   0, !color ? 0 : 7);
+		BIT_SET(state.piece[color][KNIGHT], 1, !color ? 0 : 7);
+		BIT_SET(state.piece[color][BISHOP], 2, !color ? 0 : 7);
+		BIT_SET(state.piece[color][QUEEN],  3, !color ? 0 : 7);
+		BIT_SET(state.piece[color][KING],   4, !color ? 0 : 7);
+		BIT_SET(state.piece[color][BISHOP], 5, !color ? 0 : 7);
+		BIT_SET(state.piece[color][KNIGHT], 6, !color ? 0 : 7);
+		BIT_SET(state.piece[color][ROOK],   7, !color ? 0 : 7);
 
 		// Mark both colors able to castle on both sides.
 		for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
@@ -1266,7 +1266,7 @@ void board_base::precomp_knight() const
 void board_base::precomp_pawn() const
 {
 
-//
+// Pre-compute the pawn attacks and potential pawn attacks.
 
 	//
 	for (int color = WHITE; color <= BLACK; color++)
@@ -1282,11 +1282,12 @@ void board_base::precomp_pawn() const
 					pawn_attacks[color][x][y] |= COL_MSK(x + j);
 					potential_pawn_attacks[color][x][y] |= COL_MSK(x + j);
 				}
-				bitboard_t files = 0;
+				bitboard_t rank = ROW_MSK(y + (!color ? -1 : 1));
+				bitboard_t ranks = 0;
 				for (int k = y + (!color ? -1 : 1); y + k >= 1 && y + k <= 6; k += !color ? -1 : 1)
-					files |= ROW_MSK(y + k);
-				pawn_attacks[color][x][y] &= ROW_MSK(y + (!color ? -1 : 1));
-				potential_pawn_attacks[color][x][y] &= files;
+					ranks |= ROW_MSK(y + k);
+				pawn_attacks[color][x][y] &= rank;
+				potential_pawn_attacks[color][x][y] &= ranks;
 			}
 }
 
@@ -1401,11 +1402,7 @@ bool board_base::check(bitboard_t b1, bool color) const
 		// opposing pawn sits on any of our marked squares.  If so,
 		// we're in check.  If not, we're not in check, at least not by
 		// a pawn.  Easy, breezy, beautiful.
-		bitboard_t b2 = 0;
-		for (int j = x == 0 ? 1 : -1; j <= (x == 7 ? -1 : 1); j += 2)
-			b2 |= COL_MSK(x + j);
-		b2 &= (color && y >= 6 || !color && y <= 1) ? 0 : ROW_MSK(y + (color ? 1 : -1));
-		if (b2 & state.piece[color][PAWN])
+		if (pawn_attacks[color][x][y] & state.pieces[color][PAWN])
 			return true;
 	}
 	return false;
