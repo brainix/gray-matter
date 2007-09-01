@@ -145,8 +145,8 @@ static bitboard_t squares_castle[COLORS][SIDES][REQS] =
 };
 
 //
-bitboard_t pawn_attacks[8][8];
-bitboard_t potential_pawn_attacks[8][8];
+bitboard_t pawn_attacks[COLORS][8][8];
+bitboard_t potential_pawn_attacks[COLORS][8][8];
 
 // Zobrist hash keys:
 bitboard_t key_piece[COLORS][SHAPES][8][8];
@@ -1268,22 +1268,26 @@ void board_base::precomp_pawn() const
 
 //
 
-	for (int y = 0; y <= 7; y++)
-		for (int x = 0; x <= 7; x++)
-		{
-			pawn_attacks[x][y] = 0;
-			for (int j = x == 0 ? 1 : -1; j <= (x == 7 ? -1 : 1); j += 2)
-				pawn_attacks[x][y] |= COL_MSK(x + j);
-			pawn_attacks[x][y] &= y <= 1 ? 0 : ROW_MSK(y - 1);
-
-			potential_pawn_attacks[x][y] = 0;
-			for (int j = x == 0 ? 1 : -1; j <= (x == 7 ? -1 : 1); j += 2)
-				potential_pawn_attacks[x][y] |= COL_MSK(x + j);
-			bitboard_t tmp = 0;
-			for (int k = -1; y + k >= 1; k--)
-				tmp |= ROW_MSK(y + k);
-			potential_pawn_attacks[x][y] &= tmp;
-		}
+	//
+	for (int color = WHITE; color <= BLACK; color++)
+		for (int y = 0; y <= 7; y++)
+			for (int x = 0; x <= 7; x++)
+			{
+				pawn_attacks[color][x][y] = 0;
+				potential_pawn_attacks[color][x][y] = 0;
+				if (!color && y <= 1 || color && y >= 6)
+					continue;
+				for (int j = x == 0 ? 1 : -1; j <= (x == 7 ? -1 : 1); j += 2)
+				{
+					pawn_attacks[color][x][y] |= COL_MSK(x + j);
+					potential_pawn_attacks[color][x][y] |= COL_MSK(x + j);
+				}
+				bitboard_t files = 0;
+				for (int k = y + (!color ? -1 : 1); y + k >= 1 && y + k <= 6; k += !color ? -1 : 1)
+					files |= ROW_MSK(y + k);
+				pawn_attacks[color][x][y] &= ROW_MSK(y + (!color ? -1 : 1));
+				potential_pawn_attacks[color][x][y] &= files;
+			}
 }
 
 /*----------------------------------------------------------------------------*\
