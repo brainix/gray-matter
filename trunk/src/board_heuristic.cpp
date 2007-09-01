@@ -23,6 +23,10 @@
 #include "board_heuristic.h"
 
 //
+static int weight_material[SHAPES] = {WEIGHT_PAWN, WEIGHT_KNIGHT, WEIGHT_BISHOP,
+                                      WEIGHT_ROOK, WEIGHT_QUEEN,  WEIGHT_KING};
+
+//
 static int weight_position[SHAPES][8][8] =
 {
 	       // White pawns:
@@ -275,7 +279,7 @@ int board_heuristic::evaluate_pawns() const
 				sum += sign * weight_position[KNIGHT][x][color == WHITE ? y : 7 - y];
 
 				// Reward material.
-				sum += sign * WEIGHT_PAWN;
+				sum += sign * weight_material[PAWN];
 			}
 		}
 	}
@@ -311,7 +315,7 @@ int board_heuristic::evaluate_knights() const
 			y = n >> 3;
 
 			// Reward material.
-			sum += sign * WEIGHT_KNIGHT;
+			sum += sign * weight_material[KNIGHT];
 
 			// Penalize bad position or reward good position.
 			sum += sign * weight_position[KNIGHT][x][y];
@@ -341,7 +345,7 @@ int board_heuristic::evaluate_bishops() const
 			y = n >> 3;
 
 			// Reward material.
-			sum += sign * WEIGHT_BISHOP;
+			sum += sign * weight_material[BISHOP];
 
 			// Penalize bad position or reward good position.
 			sum += sign * weight_position[BISHOP][x][y];
@@ -371,7 +375,7 @@ int board_heuristic::evaluate_rooks() const
 			y = n >> 3;
 
 			// Reward material.
-			sum += sign * WEIGHT_ROOK;
+			sum += sign * weight_material[ROOK];
 
 			// Penalize bad position or reward good position.
 			sum += sign * weight_position[ROOK][x][y];
@@ -404,7 +408,7 @@ int board_heuristic::evaluate_queens() const
 			y = n >> 3;
 
 			// Reward material.
-			sum += sign * WEIGHT_QUEEN;
+			sum += sign * weight_material[QUEEN];
 
 			// Penalize bad position or reward good position.
 			sum += sign * weight_position[QUEEN][x][y];
@@ -444,13 +448,10 @@ int board_heuristic::evaluate_kings() const
 			sum += sign * weight_cant_castle;
 
 		// Penalize bad position or reward good position.
-		if (pawns)
-		{
-			if (pawns & SQUARES_QUEEN_SIDE && pawns & SQUARES_KING_SIDE)
-				sum += sign * weight_position[KING][x][color == WHITE ? y : 7 - y];
-			else
-				sum += sign * weight_king_position[pawns & SQUARES_QUEEN_SIDE ? x : 7 - x][color == WHITE ? y : 7 - y];
-		}
+		if (pawns & SQUARES_QUEEN_SIDE && pawns & SQUARES_KING_SIDE)
+			sum += sign * weight_position[KING][x][color == WHITE ? y : 7 - y];
+		else if (pawns)
+			sum += sign * weight_king_position[pawns & SQUARES_QUEEN_SIDE ? x : 7 - x][color == WHITE ? y : 7 - y];
 	}
 	return sum;
 }
