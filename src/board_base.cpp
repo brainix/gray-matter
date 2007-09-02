@@ -1302,10 +1302,12 @@ void board_base::precomp_mask() const
 			}
 
 	// Pre-compute the pawn duos.
-	for (int y = 1; y <= 6; y++)
+	for (int y = 0; y <= 7; y++)
 		for (int x = 0; x <= 7; x++)
 		{
 			mask_pawn_duos[x][y] = 0;
+			if (y == 0 || y == 7)
+				continue;
 			for (int j = x == 0 ? 1 : -1; j <= (x == 7 ? -1 : 1); j += 2)
 				BIT_SET(mask_pawn_duos[x][y], x + j, y);
 		}
