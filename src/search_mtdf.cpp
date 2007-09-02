@@ -204,8 +204,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 	bool whose = board_ptr->get_whose();       // The color on move.
 	bitboard_t hash = board_ptr->get_hash();   // This position's hash.
 	int status = board_ptr->get_status(false); // Whether the game is over.
-	int saved_alpha = alpha;                   // Saved alpha variable.
-	int saved_beta = beta;                     // Saved beta variable.
+	int current = alpha;                       // Scratch alpha variable.
 	list<move_t> l;                            // The move list.
 	list<move_t>::iterator it;                 // The iterator.
 	move_t m;                                  // The best move.
@@ -220,15 +219,15 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 		return m;
 	if (table_ptr->probe(hash, depth, UPPER, &m))
 	{
-		if (m.value <= saved_alpha)
+		if (m.value <= alpha)
 			return m;
 		beta = LESSER(beta, m.value);
 	}
 	if (table_ptr->probe(hash, depth, LOWER, &m))
 	{
-		if (m.value >= saved_beta)
+		if (m.value >= beta)
 			return m;
-		alpha = GREATER(alpha, m.value);
+		current = alpha = GREATER(alpha, m.value);
 	}
 
 	// If we've reached the maximum search depth, this node is a leaf - all
@@ -269,10 +268,10 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 	for (it = l.begin(); it != l.end(); it++)
 	{
 		board_ptr->make(*it);
-		it->value = -minimax(depth - 1, shallowness + 1, -beta, -alpha).value;
+		it->value = -minimax(depth - 1, shallowness + 1, -beta, -current).value;
 		board_ptr->unmake();
 		if (it->value > m.value)
-			alpha = GREATER(alpha, (m = *it).value);
+			current = GREATER(current, (m = *it).value);
 		if (it->value >= beta || timeout_flag && depth_flag)
 			break;
 	}
@@ -295,11 +294,11 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 	if (!timeout_flag || !depth_flag)
 	{
 		// Nope, the results are complete and reliable.
-		if (m.value > saved_alpha && m.value < saved_beta)
+		if (m.value > alpha && m.value < beta)
 			table_ptr->store(hash, depth, EXACT, m);
-		if (m.value <= saved_alpha)
+		if (m.value <= alpha)
 			table_ptr->store(hash, depth, UPPER, m);
-		if (m.value >= saved_beta)
+		if (m.value >= beta)
 			table_ptr->store(hash, depth, LOWER, m);
 		history_ptr->store(whose, m, depth);
 	}
