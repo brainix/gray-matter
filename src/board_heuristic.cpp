@@ -22,11 +22,11 @@
 #include "gray.h"
 #include "board_heuristic.h"
 
-//
-extern bitboard_t adj_files[8];
-extern bitboard_t pawn_attacks[COLORS][8][8];
-extern bitboard_t potential_pawn_attacks[COLORS][8][8];
-extern bitboard_t pawn_duo[8][8];
+// Pre-computed BitMasks:
+extern bitboard_t mask_adj_files[8];
+extern bitboard_t mask_pawn_attacks[COLORS][8][8];
+extern bitboard_t mask_potential_pawn_attacks[COLORS][8][8];
+extern bitboard_t mask_pawn_duos[8][8];
 
 //
 static int weight_material[SHAPES] = {WEIGHT_PAWN, WEIGHT_KNIGHT, WEIGHT_BISHOP,
@@ -233,7 +233,7 @@ int board_heuristic::evaluate_pawns() const
 				// The current color has no pawn on the current
 				// file.  Move on to the next file.
 				continue;
-			adj_pawns = state.piece[color][PAWN] & adj_files[file];
+			adj_pawns = state.piece[color][PAWN] & mask_adj_files[file];
 
 			if (!adj_pawns)
 			{
@@ -251,8 +251,7 @@ int board_heuristic::evaluate_pawns() const
 				// TODO: Penalize weak pawns.
 
 				// Penalize doubled pawns.
-				if (coef > 1)
-					sum += sign * coef * weight_pawn_doubled[coef];
+				sum += sign * coef * weight_pawn_doubled[coef];
 			}
 
 			for (int n, x, y; (n = FST(pawns)) != -1; BIT_CLR(pawns, x, y))
@@ -261,11 +260,11 @@ int board_heuristic::evaluate_pawns() const
 				y = n >> 3;
 
 				// Reward pawn duos.
-				if (pawn_duo[x][y] & state.piece[color][PAWN])
+				if (mask_pawn_duos[x][y] & state.piece[color][PAWN])
 					sum += sign * weight_pawn_duo;
 
 				// Reward passed pawns.
-				if (!(potential_pawn_attacks[!color][x][y] & state.piece[!color][PAWN]))
+				if (!(mask_potential_pawn_attacks[!color][x][y] & state.piece[!color][PAWN]))
 					sum += sign * weight_pawn_passed[!color ? y : 7 - y];
 
 				// TODO: Reward hidden passed pawns.
@@ -317,7 +316,7 @@ int board_heuristic::evaluate_knights() const
 			sum += sign * weight_position[KNIGHT][x][y];
 
 			//
-			if (pawn_attacks[color][x][y] & state.piece[color][PAWN] && !(potential_pawn_attacks[!color][x][y] & state.piece[!color][PAWN]))
+			if (mask_pawn_attacks[color][x][y] & state.piece[color][PAWN] && !(mask_potential_pawn_attacks[!color][x][y] & state.piece[!color][PAWN]))
 				sum += weight_knight_outpost[x][!color ? y : 7 - y];
 		}
 	}
