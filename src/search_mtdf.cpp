@@ -295,6 +295,9 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 	{
 		// Nope, the results are complete and reliable.
 		if (m.value > alpha && m.value < beta)
+			// XXX: When doing zero-window searches with MTD(f),
+			// this should never happen.  I've only accounted for
+			// this case in the interest of robustness.
 			table_ptr->store(hash, depth, EXACT, m);
 		if (m.value <= alpha)
 			table_ptr->store(hash, depth, UPPER, m);
