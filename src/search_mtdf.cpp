@@ -208,6 +208,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 	list<move_t> l;                            // The move list.
 	list<move_t>::iterator it;                 // The iterator.
 	move_t m;                                  // The best move.
+	bool etc = false;                          //
 
 	// Increment the number of positions searched.
 	nodes++;
@@ -261,6 +262,22 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 		// move according to the history heuristic.
 		it->value = *it == m ? WEIGHT_KING : history_ptr->probe(whose, *it);
 	l.sort(descend);
+
+	//
+	if (depth >= 3)
+		for (it = l.begin(); it != l.end(); it++)
+		{
+			board_ptr->make(*it);
+			if (table_ptr->probe(board_ptr->get_hash(), depth - 1, LOWER, &m))
+				if (-m.value >= beta)
+					etc = true;
+			board_ptr->unmake();
+			if (etc)
+			{
+				it->value = -m.value;
+				return *it;
+			}
+		}
 
 	// Score each move in the list.
 	SET_NULL_MOVE(m);
