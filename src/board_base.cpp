@@ -106,6 +106,7 @@ static int coord[MAPS][ANGLES][8][8][COORDS] =
 	  {{0,0},{1,0},{2,0},{3,0},{4,0},{5,0},{6,0},{7,0}}}}
 };
 
+//
 static int diag_index[15] = {0, 1, 3, 6, 10, 15, 21, 28, 36, 43, 49, 54, 58, 61, 63};
 static bitrow_t diag_mask[15] = {0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x7F, 0xFF, 0x7F, 0x3F, 0x1F, 0x0F, 0x07, 0x03, 0x01};
 
@@ -144,7 +145,7 @@ static bitboard_t squares_castle[COLORS][SIDES][REQS] =
 	  0x7000000000000000ULL}}
 };
 
-//
+// Pre-computed BitMasks:
 bitboard_t mask_adj_files[8];
 bitboard_t mask_pawn_attacks[COLORS][8][8];
 bitboard_t mask_potential_pawn_attacks[COLORS][8][8];
@@ -796,7 +797,7 @@ void board_base::init_state()
 			state.piece[color][shape] = 0;
 
 		// Place the pawns.
-		ROW_SET(state.piece[color][PAWN], color ? 6 : 1, 0xFF);
+		ROW_SET(state.piece[color][PAWN], !color ? 1 : 6, 0xFF);
 
 		// Place the other pieces.
 		BIT_SET(state.piece[color][ROOK],   0, !color ? 0 : 7);
@@ -1269,9 +1270,9 @@ void board_base::precomp_mask() const
 {
 
 // Pre-compute the adjacent files, pawn attacks, potential pawn attacks, and
-// pawn duos.
+// pawn duos BitMasks.
 
-	// Pre-compute the adjacent files.
+	// Pre-compute the adjacent files BitMasks.
 	for (int file = 0; file <= 7; file++)
 	{
 		mask_adj_files[file] = 0;
@@ -1279,7 +1280,7 @@ void board_base::precomp_mask() const
 			mask_adj_files[file] |= COL_MSK(file + j);
 	}
 
-	// Pre-compute the pawn attacks and potential pawn attacks.
+	// Pre-compute the pawn attacks and potential pawn attacks BitMasks.
 	for (int color = WHITE; color <= BLACK; color++)
 		for (int y = 0; y <= 7; y++)
 			for (int x = 0; x <= 7; x++)
@@ -1301,7 +1302,7 @@ void board_base::precomp_mask() const
 				mask_potential_pawn_attacks[color][x][y] &= ranks;
 			}
 
-	// Pre-compute the pawn duos.
+	// Pre-compute the pawn duos BitMasks.
 	for (int y = 0; y <= 7; y++)
 		for (int x = 0; x <= 7; x++)
 		{
