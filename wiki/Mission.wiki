@@ -2,7 +2,7 @@
 #labels Featured,Phase-Requirements
 [http://gray-matter.googlecode.com/svn/trunk/doc/credits The Gray Matter Team]'s mission is to develop a competitive, pedagogical chess engine.  And, most importantly, to have [http://www.oreillynet.com/onlamp/blog/2005/10/ofun.html fun] while doing it!
 
-=== Short Term Goals (for the Next Month) ===
+===Short Term Goals (for the Next Month)===
   * ~~To nurture a community of hackers and chess players by:~~
     * ~~Cleaning up and commenting code, authoring [http://code.google.com/p/gray-matter/w/list documentation], maintaining a [http://chess-engine.blogspot.com/ blog],~~
     * ~~Automating [http://tim-mann.org/ics.html ICS] play,~~
@@ -12,7 +12,7 @@
   * To ~~adopt a version numbering standard and~~ provide builds.
   * To earn a provisional rating.
 
-=== Mid Term Goals (for the Next Year) ===
+===Mid Term Goals (for the Next Year)===
   * To design and implement ~~[http://www.cs.vu.nl/~aske/mtdf.html MTD(f)],~~ null-move pruning, and quiescence search.
   * ~~To provide evidence for correctness of search.~~
   * ~~To design and implement an opening book.~~
@@ -20,11 +20,11 @@
   * To earn a respectable rating.
   * To identify a potential market and come up with a business plan.
 
-=== Long Term Goals (for the Project's Lifetime) ===
+===Long Term Goals (for the Project's Lifetime)===
   * To parallelize the move search.
   * To earn a master-level rating.
 
-= Quotes =
+=Quotes=
 This section contains quotes about Gray Matter and its hackers.
 
   * Smack my bishop! - Prodigy
@@ -33,11 +33,7 @@ This section contains quotes about Gray Matter and its hackers.
 
   * Thank you very much for having created Gray Matter - I'm trying to create a basic chess engine to communicate with [http://www.tim-mann.org/xboard.html XBoard], and your code provided valuable insight! - Christian Korn
 
-  * Calm down in there, [http://picasaweb.google.com/brainix/Raj/photo#5075555799065712114 Rain Man]. - Kati Freeman
-
   * I had no problems compiling and playing it on my Linux box.  It's awesome! - Kyle Fitch
-
-  * Gray matters! - Kati Freeman
 
   * Thanks!  In fact, your implementation caught some bugs in my pseudocode for ttables that we're now "hashing out", as it were, on our course email list.  So thanks much! - [http://web.cecs.pdx.edu/~bart/ Bart Massey], Assoc. Prof. Computer Science, Portland State University
 
