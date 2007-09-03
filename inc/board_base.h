@@ -262,7 +262,7 @@ public:
 	virtual bitboard_t get_hash() const;
 	virtual int get_status(bool mate_test);
 	virtual int get_num_moves() const;
-	virtual int evaluate() = 0;             // Force sub-classes to override.
+	virtual int evaluate() const = 0;       // Force sub-classes to override.
 	virtual bool check() const;
 	virtual bool zugzwang() const;
 
@@ -301,7 +301,6 @@ protected:
 	virtual void precomp_king() const;
 	virtual void precomp_row() const;
 	virtual void precomp_knight() const;
-	virtual void precomp_mask() const;
 
 	// These methods test for various conditions.
 	virtual int mate();
