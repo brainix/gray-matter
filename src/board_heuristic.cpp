@@ -142,15 +142,15 @@ static const int weight_pawn_blocked = 12;
 //
 static const int weight_knight_outpost[8][8] =
 {
-	/* A */  {  0,   0,   0,   0,   0,   0,   0,   0},
-	/* B */  {  0,   0,   0,   5,   5,   0,   0,   0},
-	/* C */  {  0,   0,   0,  10,  10,  10,   0,   0},
-	/* D */  {  0,   0,   0,  20,  24,  24,   0,   0},
-	/* E */  {  0,   0,   0,  20,  24,  24,   0,   0},
-	/* F */  {  0,   0,   0,  10,  10,  10,   0,   0},
-	/* G */  {  0,   0,   0,   5,   5,   0,   0,   0},
-	/* H */  {  0,   0,   0,   0,   0,   0,   0,   0}
-	       //   1    2    3    4    5    6    7    8
+	/* A */  { 0,  0,  0,  0,  0,  0,  0,  0},
+	/* B */  { 0,  0,  0,  5,  5,  0,  0,  0},
+	/* C */  { 0,  0,  0, 10, 10, 10,  0,  0},
+	/* D */  { 0,  0,  0, 20, 24, 24,  0,  0},
+	/* E */  { 0,  0,  0, 20, 24, 24,  0,  0},
+	/* F */  { 0,  0,  0, 10, 10, 10,  0,  0},
+	/* G */  { 0,  0,  0,  5,  5,  0,  0,  0},
+	/* H */  { 0,  0,  0,  0,  0,  0,  0,  0}
+	       //  1   2   3   4   5   6   7   8
 };
 
 //
@@ -159,7 +159,7 @@ static const int weight_bishop_trapped = -174;
 
 //
 static const int weight_rook_on_7th = 24;
-static const int weight_rook_rook_on_7th = 10;
+static const int weight_rooks_on_7th = 10;
 
 //
 static const int weight_queen_rook_on_7th = 50;
@@ -329,13 +329,19 @@ int board_heuristic::evaluate_knights() const
 //
 
 	int sign, sum = 0;
-	bitboard_t knights;
+	bitboard_t white_pawns = state.piece[WHITE][PAWN];
+	bitboard_t black_pawns = state.piece[BLACK][PAWN];
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
 		sign = color == OFF_MOVE ? 1 : -1;
-		knights = state.piece[color][KNIGHT];
-		for (int n, x, y; (n = FST(knights)) != -1; BIT_CLR(knights, x, y))
+		bitboard_t our_pawns = state.piece[ color][PAWN];
+		bitboard_t opp_pawns = state.piece[!color][PAWN];
+		int opp_king_x = king_coord[!color][X];
+		int opp_king_y = king_coord[!color][Y];
+
+		bitboard_t b = state.piece[color][KNIGHT];
+		for (int n, x, y; (n = FST(b)) != -1; BIT_CLR(b, x, y))
 		{
 			x = n & 0x7;
 			y = n >> 3;
@@ -347,16 +353,24 @@ int board_heuristic::evaluate_knights() const
 			sum += sign * weight_position[KNIGHT][x][y];
 
 			// Reward outposts.
-			if (mask_pawn_attacks[color][x][y] & state.piece[color][PAWN] && !(mask_potential_pawn_attacks[!color][x][y] & state.piece[!color][PAWN]))
+			bool defended = mask_pawn_attacks[color][x][y] & our_pawns;
+			bool attacked = mask_potential_pawn_attacks[!color][x][y] & opp_pawns;
+			if (defended && !attacked)
 				sum += weight_knight_outpost[x][!color ? y : 7 - y];
 
 			//
-			for (int j = 3; j <= 4; j++)
-				if (x == j && y == !color ? 5 : 2 && BIT_GET(state.piece[!color][PAWN], j, !color ? 6 : 1))
-					sum += sign * weight_pawn_blocked;
+			if (color == WHITE                                    &&
+			    ((x == 3 && y == 5 && BIT_GET(black_pawns, 3, 6)) ||
+			     (x == 4 && y == 5 && BIT_GET(black_pawns, 4, 6))))
+				sum += sign * weight_pawn_blocked;
+			if (color == BLACK                                    &&
+			    ((x == 3 && y == 2 && BIT_GET(white_pawns, 3, 1)) ||
+			     (x == 4 && y == 2 && BIT_GET(white_pawns, 4, 1))))
+				sum += sign * weight_pawn_blocked;
 
 			// Reward king tropism.
-			sum += weight_tropism[KNIGHT][DISTANCE(x, y, king_coord[!color][X], king_coord[!color][Y])];
+			int distance = DISTANCE(x, y, opp_king_x, opp_king_y);
+			sum += weight_tropism[KNIGHT][distance];
 		}
 	}
 	return sum;
@@ -371,13 +385,17 @@ int board_heuristic::evaluate_bishops() const
 //
 
 	int sign, sum = 0;
-	bitboard_t bishops;
+	bitboard_t white_pawns = state.piece[WHITE][PAWN];
+	bitboard_t black_pawns = state.piece[BLACK][PAWN];
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
 		sign = color == OFF_MOVE ? 1 : -1;
-		bishops = state.piece[color][BISHOP];
-		for (int n, x, y; (n = FST(bishops)) != -1; BIT_CLR(bishops, x, y))
+		int opp_king_x = king_coord[!color][X];
+		int opp_king_y = king_coord[!color][Y];
+
+		bitboard_t b = state.piece[color][BISHOP];
+		for (int n, x, y; (n = FST(b)) != -1; BIT_CLR(b, x, y))
 		{
 			x = n & 0x7;
 			y = n >> 3;
@@ -389,26 +407,32 @@ int board_heuristic::evaluate_bishops() const
 			sum += sign * weight_position[BISHOP][x][y];
 
 			//
-			for (int j = 3; j <= 4; j++)
-				if (x == j && y == !color ? 5 : 2 && BIT_GET(state.piece[!color][PAWN], j, !color ? 6 : 1))
-					sum += sign * weight_pawn_blocked;
+			if (color == WHITE                                    &&
+			    ((x == 3 && y == 5 && BIT_GET(black_pawns, 3, 6)) ||
+			     (x == 4 && y == 5 && BIT_GET(black_pawns, 4, 6))))
+				sum += sign * weight_pawn_blocked;
+			if (color == BLACK                                    &&
+			    ((x == 3 && y == 2 && BIT_GET(white_pawns, 3, 1)) ||
+			     (x == 4 && y == 2 && BIT_GET(white_pawns, 4, 1))))
+				sum += sign * weight_pawn_blocked;
 
 			//
-			if (color == WHITE)
-				if ((x == 0 && y == 6 && BIT_GET(state.piece[BLACK][PAWN], 1, 5)) ||
-				    (x == 1 && y == 7 && BIT_GET(state.piece[BLACK][PAWN], 2, 6)) ||
-				    (x == 7 && y == 6 && BIT_GET(state.piece[BLACK][PAWN], 6, 5)) ||
-				    (x == 6 && y == 7 && BIT_GET(state.piece[BLACK][PAWN], 5, 6)))
-					sum += sign * weight_bishop_trapped;
-			if (color == BLACK)
-				if ((x == 0 && y == 1 && BIT_GET(state.piece[WHITE][PAWN], 1, 2)) ||
-				    (x == 1 && y == 0 && BIT_GET(state.piece[WHITE][PAWN], 2, 1)) ||
-				    (x == 7 && y == 1 && BIT_GET(state.piece[WHITE][PAWN], 6, 2)) ||
-				    (x == 6 && y == 0 && BIT_GET(state.piece[WHITE][PAWN], 5, 1)))
-					sum += sign * weight_bishop_trapped;
+			if (color == WHITE                                    &&
+			    ((x == 0 && y == 6 && BIT_GET(black_pawns, 1, 5)) ||
+			     (x == 1 && y == 7 && BIT_GET(black_pawns, 2, 6)) ||
+			     (x == 7 && y == 6 && BIT_GET(black_pawns, 6, 5)) ||
+			     (x == 6 && y == 7 && BIT_GET(black_pawns, 5, 6))))
+				sum += sign * weight_bishop_trapped;
+			if (color == BLACK                                    &&
+			    ((x == 0 && y == 1 && BIT_GET(white_pawns, 1, 2)) ||
+			     (x == 1 && y == 0 && BIT_GET(white_pawns, 2, 1)) ||
+			     (x == 7 && y == 1 && BIT_GET(white_pawns, 6, 2)) ||
+			     (x == 6 && y == 0 && BIT_GET(white_pawns, 5, 1))))
+				sum += sign * weight_bishop_trapped;
 
 			// Reward king tropism.
-			sum += weight_tropism[BISHOP][DISTANCE(x, y, king_coord[!color][X], king_coord[!color][Y])];
+			int distance = DISTANCE(x, y, opp_king_x, opp_king_y);
+			sum += weight_tropism[BISHOP][distance];
 		}
 	}
 	return sum;
@@ -423,13 +447,23 @@ int board_heuristic::evaluate_rooks() const
 //
 
 	int sign, sum = 0;
-	bitboard_t rooks;
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
 		sign = color == OFF_MOVE ? 1 : -1;
-		rooks = state.piece[color][ROOK];
-		for (int n, x, y; (n = FST(rooks)) != -1; BIT_CLR(rooks, x, y))
+		int seven = !color ? 6 : 1;
+		int eight = !color ? 7 : 0;
+		bitboard_t our_rooks = state.piece[ color][ROOK];
+		bitboard_t opp_pawns = state.piece[!color][PAWN];
+		int opp_king_x = king_coord[!color][X];
+		int opp_king_y = king_coord[!color][Y];
+
+		bool our_rooks_on_7 = count_64(ROW_GET(our_rooks, seven)) > 1;
+		bool opp_pawn_on_7 = ROW_GET(opp_pawns, seven);
+		bool opp_king_on_8 = opp_king_y == eight;
+
+		bitboard_t b = state.piece[color][ROOK];
+		for (int n, x, y; (n = FST(b)) != -1; BIT_CLR(b, x, y))
 		{
 			x = n & 0x7;
 			y = n >> 3;
@@ -441,16 +475,16 @@ int board_heuristic::evaluate_rooks() const
 			sum += sign * weight_position[ROOK][x][y];
 
 			//
-			if (y == !color ? 6 : 1 &&
-			    (king_coord[!color][Y] == color ? 7 : 0 || state.piece[!color][PAWN] & ROW_MSK(color ? 6 : 1)))
+			if (y == seven && (opp_pawn_on_7 || opp_king_on_8))
 			{
 				sum += sign * weight_rook_on_7th;
-				if (count_64(state.piece[color][ROOK] & ROW_MSK(!color ? 6 : 1)) > 1)
-					sum += sign * weight_rook_rook_on_7th;
+				if (our_rooks_on_7)
+					sum += sign * weight_rooks_on_7th;
 			}
 
 			// Reward king tropism.
-			sum += weight_tropism[ROOK][DISTANCE(x, y, king_coord[!color][X], king_coord[!color][Y])];
+			int distance = DISTANCE(x, y, opp_king_x, opp_king_y);
+			sum += weight_tropism[ROOK][distance];
 		}
 	}
 	return sum;
@@ -465,13 +499,23 @@ int board_heuristic::evaluate_queens() const
 //
 
 	int sign, sum = 0;
-	bitboard_t queens;
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
 		sign = color == OFF_MOVE ? 1 : -1;
-		queens = state.piece[color][QUEEN];
-		for (int n, x, y; (n = FST(queens)) != -1; BIT_CLR(queens, x, y))
+		int seven = !color ? 6 : 1;
+		int eight = !color ? 7 : 0;
+		bitboard_t our_rooks = state.piece[ color][ROOK];
+		bitboard_t opp_pawns = state.piece[!color][PAWN];
+		int opp_king_x = king_coord[!color][X];
+		int opp_king_y = king_coord[!color][Y];
+
+		bool our_rook_on_7 = ROW_GET(our_rooks, seven);
+		bool opp_pawn_on_7 = ROW_GET(opp_pawns, seven);
+		bool opp_king_on_8 = opp_king_y == eight;
+
+		bitboard_t b = state.piece[color][QUEEN];
+		for (int n, x, y; (n = FST(b)) != -1; BIT_CLR(b, x, y))
 		{
 			x = n & 0x7;
 			y = n >> 3;
@@ -483,17 +527,17 @@ int board_heuristic::evaluate_queens() const
 			sum += sign * weight_position[QUEEN][x][y];
 
 			//
-			if (y == !color ? 6 : 1                                &&
-			    state.piece[color][ROOK] & ROW_MSK(!color ? 6 : 1) &&
-			    (king_coord[!color][Y] == color ? 7 : 0 || state.piece[!color][PAWN] & ROW_MSK(color ? 6 : 1)))
+			if (y == seven && our_rook_on_7 &&
+			    (opp_pawn_on_7 || opp_king_on_8))
 				sum += weight_queen_rook_on_7th;
 
 			//
-			if (x <= 1 && FST(state.piece[!color][KING]) & 0x7 >= 5 || x >= 6 && FST(state.piece[!color][KING]) & 0x7 <= 2)
+			if (x < 2 && opp_king_x > 4 || x > 5 && opp_king_x < 3)
 				sum += weight_queen_offside;
 
 			// Reward king tropism.
-			sum += weight_tropism[QUEEN][DISTANCE(x, y, king_coord[!color][X], king_coord[!color][Y])];
+			int distance = DISTANCE(x, y, opp_king_x, opp_king_y);
+			sum += weight_tropism[QUEEN][distance];
 		}
 	}
 	return sum;
@@ -517,7 +561,8 @@ int board_heuristic::evaluate_kings() const
 		int y = king_coord[color][Y];
 
 		// Penalize giving up castling.
-		if (state.castle[color][QUEEN_SIDE] == CANT_CASTLE && state.castle[color][KING_SIDE] == CANT_CASTLE)
+		if (state.castle[color][QUEEN_SIDE] == CANT_CASTLE &&
+		    state.castle[color][ KING_SIDE] == CANT_CASTLE)
 			sum += sign * weight_king_cant_castle;
 
 		// Penalize bad position or reward good position.
