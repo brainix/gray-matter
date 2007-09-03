@@ -46,8 +46,9 @@
 #include <string>
 
 // Convenience macros:
-#define LESSER(j, k)	((j) < (k) ? (j) : (k)) // The lesser of two numbers.
-#define GREATER(j, k)	((j) > (k) ? (j) : (k)) // The greater of two numbers.
-#define ABS(j)		(j >= 0 ? j : -j)       // The absolute value of a number.
+#define LESSER(j, k)			((j) < (k) ? (j) : (k))               // The lesser of two numbers.
+#define GREATER(j, k)			((j) > (k) ? (j) : (k))               // The greater of two numbers.
+#define ABS(j)				((j) >= 0 ? (j) : -(j))               // The absolute value of a number.
+#define DISTANCE(x1, y1, x2, y2)	(GREATER(ABS(x1 - x2), ABS(y1 - y2))) //
 
 #endif
