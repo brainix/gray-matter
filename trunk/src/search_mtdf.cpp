@@ -192,26 +192,40 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 // On top of MiniMax, this method implements NegaMax.  NegaMax produces the same
 // results as MiniMax but is simpler to code.  Instead of juggling around two
 // players, Max and Min, NegaMax treats both players as Max and negates the
-// scores on each recursive call.
+// scores (and negates and swaps the lower and upper bounds - more on that in
+// the next paragraph) on each recursive call.  In other words, NegaMax always
+// views the color on move as Max and the color off move as Min.
 //
 // On top of NegaMax, this method implements AlphaBeta.  AlphaBeta produces the
 // same results as NegaMax but far more efficiently.
 //
 // On top of AlphaBeta, this method implements FailSoft.  FailSoft returns more
-// information than AlphaBeta.
+// information than AlphaBeta.  If the exact score falls outside of the window,
+// AlphaBeta returns either alpha (to represent the exact score is lower than
+// the window) or beta (to represent the exact score is higher than the window).
 
 	// Local variables that pertain to the current position:
-	bool whose = board_ptr->get_whose();       // The color on move.
-	bitboard_t hash = board_ptr->get_hash();   // This position's hash.
-	int status = board_ptr->get_status(false); // Whether the game is over.
-	int saved_alpha = alpha;                   // Saved lower bound.
-	int saved_beta = beta;                     // Saved upper bound.
-	list<move_t> l;                            // The move list.
-	list<move_t>::iterator it;                 // The iterator.
-	move_t m;                                  // The best move.
+	bool whose = board_ptr->get_whose();     // The color on move.
+	bitboard_t hash = board_ptr->get_hash(); // This position's hash.
+	int status = board_ptr->get_status(0);   // Whether the game is over.
+	int saved_alpha = alpha;                 // Saved lower bound on score.
+	int saved_beta = beta;                   // Saved upper bound on score.
+	list<move_t> l;                          // The move list.
+	list<move_t>::iterator it;               // The move list's iterator.
+	move_t m;                                // The best move and score.
 
 	// Increment the number of positions searched.
 	nodes++;
+
+	// If this position is terminal (the end of the game), there's no legal
+	// move - all we have to do is determine if the game is drawn or lost.
+	// (Subtle!  We couldn't have just won because our opponent moved last.)
+	if (status != IN_PROGRESS)
+	{
+		SET_NULL_MOVE(m);
+		m.value = status >= INSUFFICIENT && status <= FIFTY ? +WEIGHT_CONTEMPT : -WEIGHT_ILLEGAL;
+		return m;
+	}
 
 	// If we've already sufficiently examined this position, return the best
 	// move from our previous search.  Otherwise, if we can, reduce the size
@@ -222,32 +236,28 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 	{
 		if (m.value <= alpha)
 			return m;
+		// XXX: When doing MTD(f) zero-window searches, our window
+		// should never be resized here.  I've only accounted for this
+		// in the interest of robustness.
 		beta = LESSER(beta, m.value);
 	}
 	if (table_ptr->probe(hash, depth, LOWER, &m))
 	{
 		if (m.value >= beta)
 			return m;
+		// XXX: When doing MTD(f) zero-window searches, our window
+		// should never be resized here.  I've only accounted for this
+		// in the interest of robustness.
 		alpha = GREATER(alpha, m.value);
 	}
 
 	// If we've reached the maximum search depth, this node is a leaf - all
-	// we have to do is apply the static evaluator.  If this position is
-	// terminal (the end of the game), there's no legal move - all we have
-	// to do is determine if the game is drawn or lost.  (Subtle!  We
-	// couldn't have just won because our opponent moved last.)  Check for
-	// these cases.
-	if (depth <= 0 || status != IN_PROGRESS)
+	// we have to do is apply the static evaluator.
+	if (depth <= 0)
 	{
-		// If this position is a draw:
-		//
-		// We want to discourage players from forcing a premature draw.
-		// That's why we score this position as +WEIGHT_CONTEMPT.
-		// Therefore, when the NegaMax recursion unrolls, we score the
-		// move that leads to this position as -WEIGHT_CONTEMPT.
 		SET_NULL_MOVE(m);
-		m.value = status == IN_PROGRESS ? -board_ptr->evaluate() : status >= INSUFFICIENT && status <= FIFTY ? +WEIGHT_CONTEMPT : -WEIGHT_ILLEGAL;
-		table_ptr->store(hash, depth, EXACT, m);
+		m.value = -board_ptr->evaluate();
+		table_ptr->store(hash, 0, EXACT, m);
 		return m;
 	}
 
@@ -294,11 +304,12 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 	// Was the search interrupted?
 	if (!timeout_flag || !depth_flag)
 	{
-		// Nope, the results are complete and reliable.
+		// Nope, the results are complete and reliable.  Save them for
+		// progeny.
 		if (m.value > saved_alpha && m.value < saved_beta)
-			// XXX: When doing zero-window searches with MTD(f),
-			// this should never happen.  I've only accounted for
-			// this case in the interest of robustness.
+			// XXX: When doing MTD(f) zero-window searches, our move
+			// search should never return an exact score.  I've only
+			// accounted for this in the interest of robustness.
 			table_ptr->store(hash, depth, EXACT, m);
 		if (m.value <= saved_alpha)
 			table_ptr->store(hash, depth, UPPER, m);

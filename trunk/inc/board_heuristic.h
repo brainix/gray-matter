@@ -43,6 +43,8 @@ public:
 	board_heuristic& operator=(const board_heuristic& that);
 	int evaluate() const;
 private:
+	int king_coord[COLORS][COORDS];
+
 	int evaluate_pawns() const;
 	int evaluate_knights() const;
 	int evaluate_bishops() const;
