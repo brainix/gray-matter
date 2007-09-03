@@ -41,7 +41,7 @@ public:
 	board_heuristic();
 	~board_heuristic();
 	board_heuristic& operator=(const board_heuristic& that);
-	int evaluate() const;
+	int evaluate();
 private:
 	int king_coord[COLORS][COORDS];
 

@@ -210,7 +210,7 @@ board_heuristic& board_heuristic::operator=(const board_heuristic& that)
 /*----------------------------------------------------------------------------*\
  |				   evaluate()				      |
 \*----------------------------------------------------------------------------*/
-int board_heuristic::evaluate() const
+int board_heuristic::evaluate()
 {
 
 // Evaluate the current state.  For simplicity's sake, evaluate from the

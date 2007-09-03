@@ -262,7 +262,7 @@ public:
 	virtual bitboard_t get_hash() const;
 	virtual int get_status(bool mate_test);
 	virtual int get_num_moves() const;
-	virtual int evaluate() const = 0;       // Force sub-classes to override.
+	virtual int evaluate() = 0;             // Force sub-classes to override.
 	virtual bool check() const;
 	virtual bool zugzwang() const;
 
