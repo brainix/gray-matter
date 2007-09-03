@@ -11,14 +11,8 @@ basic chess engine to communicate with XBoard, and your code provided valuable
 insight!
 	- Christian Korn
 
-Calm down in there, Rain Man.
-	- Kati Freeman
-
 I had no problems compiling and playing it on my Linux box.  It's awesome!
 	- Kyle Fitch
-
-Gray matters!
-	- Kati Freeman
 
 Thanks!  In fact, your implementation caught some bugs in my pseudocode for
 ttables that we're now "hashing out", as it were, on our course email list.  So
