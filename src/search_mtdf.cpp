@@ -203,6 +203,8 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 // information than AlphaBeta.  If the exact score falls outside of the window,
 // AlphaBeta returns either alpha (to represent the exact score is lower than
 // the window) or beta (to represent the exact score is higher than the window).
+// On the other hand, FailSoft returns either an upper bound (<= alpha) or a
+// lower bound (>= beta) on the exact score.
 
 	// Local variables that pertain to the current position:
 	bool whose = board_ptr->get_whose();     // The color on move.
