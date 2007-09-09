@@ -147,6 +147,7 @@ static bitboard_t squares_castle[COLORS][SIDES][REQS] =
 
 // Pre-computed BitMasks:
 bitboard_t mask_adj_files[8];
+bitboard_t mask_pawn_attacks[COLORS][8][8];
 
 // Zobrist hash keys:
 bitboard_t key_piece[COLORS][SHAPES][8][8];
@@ -1273,6 +1274,21 @@ void board_base::precomp_mask() const
 		mask_adj_files[x] = 0;
 		for (int j = x == 0 ? 1 : -1; j <= (x == 7 ? -1 : 1); j += 2)
 			mask_adj_files[x] |= COL_MSK(x + j);
+	}
+
+	for (int color = WHITE; color <= BLACK; color++)
+	{
+		for (int x = 0; x <= 7; x++)
+			for (int y = 0; y <= 7; y++)
+			{
+				mask_pawn_attacks[color][x][y] = 0;
+				if (color == WHITE && y >= 0 && y <= 1 ||
+				    color == BLACK && y >= 6 && y <= 7)
+					continue;
+				bitboard_t b = mask_adj_files[x];
+				b &= ROW_MSK(x + (color == WHITE ? -1 : 1));
+				mask_pawn_attacks[color][x][y] = b;
+			}
 	}
 }
 
