@@ -32,6 +32,8 @@ search_base::search_base(table *t, history *h, chess_clock *c, xboard *x)
 
 	max_depth = MAX_DEPTH;
 	output = false;
+	correct_guesses = 0;
+	total_guesses = 0;
 
 	board_ptr = new board_heuristic();
 	table_ptr = t;
@@ -92,6 +94,44 @@ class search_base& search_base::operator=(const search_base& that)
 }
 
 /*----------------------------------------------------------------------------*\
+ |				   get_hint()				      |
+\*----------------------------------------------------------------------------*/
+move_t search_base::get_hint() const
+{
+	return hint;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				  get_thread()				      |
+\*----------------------------------------------------------------------------*/
+thread_t search_base::get_thread() const
+{
+	return search_thread;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				  set_depth()				      |
+\*----------------------------------------------------------------------------*/
+void search_base::set_depth(int d)
+{
+
+// Set the maximum search depth.
+
+	max_depth = d;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				  set_output()				      |
+\*----------------------------------------------------------------------------*/
+void search_base::set_output(bool o)
+{
+
+// Set whether to print thinking output.
+
+	output = o;
+}
+
+/*----------------------------------------------------------------------------*\
  |				   move_now()				      |
 \*----------------------------------------------------------------------------*/
 void search_base::move_now()
@@ -104,11 +144,12 @@ void search_base::move_now()
 }
 
 /*----------------------------------------------------------------------------*\
- |				   get_hint()				      |
+ |				 verify_guess()				      |
 \*----------------------------------------------------------------------------*/
-move_t search_base::get_hint() const
+void search_base::verify_guess(move_t m)
 {
-	return hint;
+	correct_guesses += hint == m;
+	total_guesses++;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -168,36 +209,6 @@ void search_base::change(int s, const board_base& now)
 }
 
 /*----------------------------------------------------------------------------*\
- |				  get_thread()				      |
-\*----------------------------------------------------------------------------*/
-thread_t search_base::get_thread() const
-{
-	return search_thread;
-}
-
-/*----------------------------------------------------------------------------*\
- |				  set_depth()				      |
-\*----------------------------------------------------------------------------*/
-void search_base::set_depth(int d)
-{
-
-// Set the maximum search depth.
-
-	max_depth = d;
-}
-
-/*----------------------------------------------------------------------------*\
- |				  set_output()				      |
-\*----------------------------------------------------------------------------*/
-void search_base::set_output(bool o)
-{
-
-// Set whether to print thinking output.
-
-	output = o;
-}
-
-/*----------------------------------------------------------------------------*\
  |				    _handle()				      |
 \*----------------------------------------------------------------------------*/
 void search_base::_handle(void *arg)
@@ -234,7 +245,7 @@ void search_base::start()
 {
 
 // Think of this method as main() for the search thread.  Wait for the status to
-// change, then do the requested work.  Rinse, lather, repeat, until XBoard
+// change, then do the requested work.  Rinse, lather, and repeat, until XBoard
 // commands us to quit.
 
 	int old_search_status = search_status = IDLING;
@@ -262,34 +273,6 @@ void search_base::start()
 	} while (search_status != QUITTING);
 
 	thread_destroy(NULL);
-}
-
-/*----------------------------------------------------------------------------*\
- |				   shuffle()				      |
-\*----------------------------------------------------------------------------*/
-bool search_base::shuffle(move_t m1, move_t m2)
-{
-
-// Pass this method as the comparison function to l.sort() to randomize the move
-// list.  This is a magnificent hack.
-//
-// Note: This hack wouldn't work for O(n²) list sort algorithms.  But if your
-// STL's list sort algorithm is O(n²), you don't deserve for this hack to work
-// anyway.
-
-	return rand() & 1;
-}
-
-/*----------------------------------------------------------------------------*\
- |				   descend()				      |
-\*----------------------------------------------------------------------------*/
-bool search_base::descend(move_t m1, move_t m2)
-{
-
-// Pass this method as the comparison function to l.sort() to sort the move list
-// from highest to lowest by score.
-
-	return m1.value > m2.value;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -335,4 +318,32 @@ void search_base::extract_hint(int s)
 			hint = pv.front();
 		else
 			SET_NULL_MOVE(hint);
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   shuffle()				      |
+\*----------------------------------------------------------------------------*/
+bool search_base::shuffle(move_t m1, move_t m2)
+{
+
+// Pass this method as the comparison function to l.sort() to randomize the move
+// list.  This is a magnificent hack.
+//
+// Note: This hack wouldn't work for O(n²) list sort algorithms.  But if your
+// STL's list sort algorithm is O(n²), you don't deserve for this hack to work
+// anyway.
+
+	return rand() & 1;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   descend()				      |
+\*----------------------------------------------------------------------------*/
+bool search_base::descend(move_t m1, move_t m2)
+{
+
+// Pass this method as the comparison function to l.sort() to sort the move list
+// from highest to lowest by score.
+
+	return m1.value > m2.value;
 }

@@ -56,13 +56,13 @@ public:
 	search_base(table *t, history *h, chess_clock *c, xboard *x);
 	virtual ~search_base();
 	virtual search_base& operator=(const search_base& that);
-
-	virtual void move_now();
 	virtual move_t get_hint() const;
-	virtual void change(int s, const board_base& now);
 	virtual thread_t get_thread() const;
 	virtual void set_depth(int d);
 	virtual void set_output(bool o);
+	virtual void move_now();
+	virtual void verify_guess(move_t m);
+	virtual void change(int s, const board_base& now);
 
 protected:
 	static void _handle(void *arg);            // Proxy clock callback.
@@ -70,16 +70,18 @@ protected:
 	static void *_start(void *arg);            // Proxy thread entry point.
 	virtual void start();                      // C++ thread entry point.
 	virtual void iterate(int s) = 0;           // Force sub-classes to override.
-	static bool shuffle(move_t m1, move_t m2);
-	static bool descend(move_t m1, move_t m2);
 	virtual void extract_pv();
 	virtual void extract_hint(int s);
+	static bool shuffle(move_t m1, move_t m2);
+	static bool descend(move_t m1, move_t m2);
 
 	list<move_t> pv;        // Principal variation.
 	move_t hint;            // Opponent's best move.
 	int max_depth;          // Maximum search depth.
 	int nodes;              // Number of nodes searched.
 	bool output;            // Whether to print thinking output.
+	int correct_guesses;    //
+	int total_guesses;      //
 
 	board_base *board_ptr;  // Board representation object.
 	table *table_ptr;       // Transposition table object.
