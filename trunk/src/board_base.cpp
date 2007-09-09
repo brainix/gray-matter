@@ -145,6 +145,9 @@ static bitboard_t squares_castle[COLORS][SIDES][REQS] =
 	  0x7000000000000000ULL}}
 };
 
+// Pre-computed BitMasks:
+bitboard_t mask_adj_files[8];
+
 // Zobrist hash keys:
 bitboard_t key_piece[COLORS][SHAPES][8][8];
 bitboard_t key_castle[COLORS][SIDES][CASTLE_STATS];
@@ -166,6 +169,7 @@ board_base::board_base()
 		precomp_king();
 		precomp_row();
 		precomp_knight();
+		precomp_mask();
 		precomp_key();
 		precomputed = true;
 	}
@@ -1254,6 +1258,22 @@ void board_base::precomp_knight() const
 					BIT_SET(squares_knight[x][y], x + j, y + k);
 				}
 		}
+}
+
+/*----------------------------------------------------------------------------*\
+ |				 precomp_mask()				      |
+\*----------------------------------------------------------------------------*/
+void board_base::precomp_mask() const
+{
+
+// Pre-compute the BitMasks.
+
+	for (int x = 0; x <= 7; x++)
+	{
+		mask_adj_files[x] = 0;
+		for (int j = x == 0 ? 1 : -1; j <= (x == 7 ? -1 : 1); j += 2)
+			mask_adj_files[x] |= COL_MSK(x + j);
+	}
 }
 
 /*----------------------------------------------------------------------------*\
