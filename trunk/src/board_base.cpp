@@ -145,10 +145,6 @@ static bitboard_t squares_castle[COLORS][SIDES][REQS] =
 	  0x7000000000000000ULL}}
 };
 
-// Pre-computed BitMasks:
-bitboard_t mask_adj_files[8];
-bitboard_t mask_pawn_attacks[COLORS][8][8];
-
 // Zobrist hash keys:
 bitboard_t key_piece[COLORS][SHAPES][8][8];
 bitboard_t key_castle[COLORS][SIDES][CASTLE_STATS];
@@ -170,7 +166,6 @@ board_base::board_base()
 		precomp_king();
 		precomp_row();
 		precomp_knight();
-		precomp_mask();
 		precomp_key();
 		precomputed = true;
 	}
@@ -1262,37 +1257,6 @@ void board_base::precomp_knight() const
 }
 
 /*----------------------------------------------------------------------------*\
- |				 precomp_mask()				      |
-\*----------------------------------------------------------------------------*/
-void board_base::precomp_mask() const
-{
-
-// Pre-compute the BitMasks.
-
-	for (int x = 0; x <= 7; x++)
-	{
-		mask_adj_files[x] = 0;
-		for (int j = x == 0 ? 1 : -1; j <= (x == 7 ? -1 : 1); j += 2)
-			mask_adj_files[x] |= COL_MSK(x + j);
-	}
-
-	for (int color = WHITE; color <= BLACK; color++)
-	{
-		for (int x = 0; x <= 7; x++)
-			for (int y = 0; y <= 7; y++)
-			{
-				mask_pawn_attacks[color][x][y] = 0;
-				if (color == WHITE && y >= 0 && y <= 1 ||
-				    color == BLACK && y >= 6 && y <= 7)
-					continue;
-				bitboard_t b = mask_adj_files[x];
-				b &= ROW_MSK(x + (color == WHITE ? -1 : 1));
-				mask_pawn_attacks[color][x][y] = b;
-			}
-	}
-}
-
-/*----------------------------------------------------------------------------*\
  |				     mate()				      |
 \*----------------------------------------------------------------------------*/
 int board_base::mate()
@@ -1403,7 +1367,11 @@ bool board_base::check(bitboard_t b1, bool color) const
 		// opposing pawn sits on any of our marked squares.  If so,
 		// we're in check.  If not, we're not in check, at least not by
 		// a pawn.  Easy, breezy, beautiful.
-		if (mask_pawn_attacks[color][x][y] & state.piece[color][PAWN])
+		bitboard_t pawn_attacks = 0;
+		for (int j = x == 0 ? 1 : -1; j <= (x == 7 ? -1 : 1); j += 2)
+			pawn_attacks |= COL_MSK(x + j);
+		pawn_attacks &= (!color && y <= 1 || color && y >= 6) ? 0 : ROW_MSK(y + (!color ? -1 : 1));
+		if (pawn_attacks & state.piece[color][PAWN])
 			return true;
 	}
 	return false;
