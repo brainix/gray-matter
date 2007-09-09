@@ -362,6 +362,7 @@ void xboard::do_usermove()
 	}
 
 	board_ptr->make(m);
+	search_ptr->verify_guess(m);
 	clock_ptr->dec_remaining_moves(!board_ptr->get_whose());
 
 	// Alright, so the move was legal.  Did it just end the game?
