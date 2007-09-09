@@ -1403,11 +1403,7 @@ bool board_base::check(bitboard_t b1, bool color) const
 		// opposing pawn sits on any of our marked squares.  If so,
 		// we're in check.  If not, we're not in check, at least not by
 		// a pawn.  Easy, breezy, beautiful.
-		bitboard_t pawn_attacks = 0;
-		for (int j = x == 0 ? 1 : -1; j <= (x == 7 ? -1 : 1); j += 2)
-			pawn_attacks |= COL_MSK(x + j);
-		pawn_attacks &= (!color && y <= 1 || color && y >= 6) ? 0 : ROW_MSK(y + (!color ? -1 : 1));
-		if (pawn_attacks & state.piece[color][PAWN])
+		if (mask_pawn_attacks[color][x][y] & state.piece[color][PAWN])
 			return true;
 	}
 	return false;
