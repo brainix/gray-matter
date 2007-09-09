@@ -61,7 +61,7 @@ public:
 	virtual void set_depth(int d);
 	virtual void set_output(bool o);
 	virtual void move_now();
-	virtual void verify_guess(move_t m);
+	virtual void verify_prediction(move_t m);
 	virtual void change(int s, const board_base& now);
 
 protected:
