@@ -144,9 +144,9 @@ void search_base::move_now()
 }
 
 /*----------------------------------------------------------------------------*\
- |				 verify_guess()				      |
+ |			      verify_prediction()			      |
 \*----------------------------------------------------------------------------*/
-void search_base::verify_guess(move_t m)
+void search_base::verify_prediction(move_t m)
 {
 	correct_guesses += hint == m;
 	total_guesses++;
