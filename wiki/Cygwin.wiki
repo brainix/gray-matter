@@ -13,8 +13,8 @@ This document only explains how to compile Gray Matter within the Cygwin environ
   * Type: *{{{make -f CYGmakefile}}}*
 The Windows executable is now: *{{{bin/gray.exe}}}*
 
-=Install WinBoard and Gray Matter=
+=Install !WinBoard and Gray Matter=
   * [Install Follow these steps.]  Of course, instead of the provided *{{{gray.exe}}}*, use the one you just compiled.
 
-=Hack WinBoard=
+=Hack !WinBoard=
   * !WinBoard also uses Cygwin.  It's distributed with a file named *{{{cygwin1.dll}}}* which is out of date with the version we just compiled Gray Matter against.  Copy the *{{{cygwin1.dll}}}* from Cygwin's *{{{bin/}}}* directory into !WinBoard's directory.
