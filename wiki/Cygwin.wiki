@@ -1,7 +1,7 @@
 #summary How to compile in Cygwin on Windows.
 #labels Phase-Deploy
 
-This document only explains how to compile Gray Matter within the Cygwin environment on Windows.  If you're interested in compiling and running it on Linux, you're in the wrong place.  If you're interested in using a pre-built executable on Windows, [Install click here].
+This document only explains how to compile Gray Matter within the Cygwin environment on Windows.  If you're interested in compiling and running it on Linux, [Compile click here].  If you're interested in using a pre-built executable on Windows, [Install click here].
 
 =Install Cygwin=
   * Download Cygwin's *{{{setup.exe}}}* from one of the [http://www.cygwin.com/mirrors.html mirrors].
