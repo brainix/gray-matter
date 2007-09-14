@@ -425,11 +425,10 @@ int count_64(uint64_t n)
 
 // Count the number of set bits in a 64-bit integer.
 
-	static const int table[] = {0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4};
-	int sum = 0;
+	int sum;
 
-	for (; n; n >>= 4)
-		sum += table[n & 0xF];
+	for (sum = 0; n; sum++)
+		n &= n - 1;
 	return sum;
 }
 
@@ -468,8 +467,8 @@ int find_32(int32_t n)
 {
 
 // Find the first (least significant) set bit in a 32-bit integer.  The return
-// value ranges from 0 (for no bits set) to 32 (for only the most significant
-// bit set).
+// value ranges from 0 (for no bit set), to 1 (for the least significant bit
+// set), to 32 (for only the most significant bit set).
 
 #if defined(LINUX) || defined(OS_X)
 	return ffs(n);
