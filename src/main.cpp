@@ -39,37 +39,26 @@ int main(int argc, char **argv);
 \*----------------------------------------------------------------------------*/
 int main(int argc, char **argv)
 {
-	string book_name = BOOK_NAME;
-	int book_moves = BOOK_MOVES;
+	// Default settings:
 	string search_engine = SEARCH_ENGINE;
 	int xpos_table_mb = XPOS_TABLE_MB;
+	int pawn_table_mb = PAWN_TABLE_MB;
+	string book_name = BOOK_NAME;
+	int book_moves = BOOK_MOVES;
 	int overhead = OVERHEAD;
 
-	// Parse the command-line arguments.
-	for (int c; (c = getopt(argc, argv, "n:m:e:x:o:")) != -1;)
+	// Parse the command-line arguments and possibly change the default
+	// settings.
+	for (int c; (c = getopt(argc, argv, "e:x:p:n:m:o:")) != -1;)
 		switch (c)
 		{
-			case 'n':
-				// Specifying the file name of the opening book.
-				book_name = optarg;
-				break;
-			case 'm':
-				// Specifying the number of moves to read per
-				// game in the opening book.
-				if ((book_moves = atoi(optarg)) < 0)
-				{
-					cout << "number of book moves "
-					     << "must be >= 0"
-					     << endl;
-					exit(EXIT_FAILURE);
-				}
 			case 'e':
 				// Specifying which move search engine to use.
 				search_engine = optarg;
 				if (search_engine != "MTD(f)")
 				{
-					cout << "unknown move search engine: "
-					     << optarg
+					cout << "move search engine "
+					     << "must be MTD(f)"
 					     << endl;
 					exit(EXIT_FAILURE);
 				}
@@ -81,6 +70,30 @@ int main(int argc, char **argv)
 				{
 					cout << "transposition table "
 					     << "must be >= 1 MB"
+					     << endl;
+					exit(EXIT_FAILURE);
+				}
+				break;
+			case 'p':
+				// Specifying the size of the pawn table.
+				if ((pawn_table_mb = atoi(optarg)) < 1)
+				{
+					cout << "pawn table must be >= 1 MB"
+					     << endl;
+					exit(EXIT_FAILURE);
+				}
+				break;
+			case 'n':
+				// Specifying the file name of the opening book.
+				book_name = optarg;
+				break;
+			case 'm':
+				// Specifying the number of moves to read per
+				// game in the opening book.
+				if ((book_moves = atoi(optarg)) < 1)
+				{
+					cout << "number of book moves "
+					     << "must be >= 1 ply"
 					     << endl;
 					exit(EXIT_FAILURE);
 				}
