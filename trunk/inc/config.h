@@ -35,16 +35,16 @@
 /*----------------------------------------------------------------------------*\
 \*----------------------------------------------------------------------------*/
 
-#define BOOK_NAME	"book.pgn" // The opening book file name.
-#define BOOK_MOVES	40         // The number of moves to read per game from the opening book.
-#define SEARCH_ENGINE	"MTD(f)"   // The move search engine.
+#define SEARCH_ENGINE	"MTD(f)"   // Move search engine.
+#define BOOK_NAME	"book.pgn" // Opening book file name.
 
 // All of the values in this section must be >= 1.
-#define XPOS_TABLE_MB	64         // The transposition table size (in MB).
-#define PAWN_TABLE_MB	 1         // The pawn table size (in MB).
-#define OVERHEAD	 1         // The move search overhead (in centiseconds).
-#define MIN_DEPTH	 2         // The minimum search depth (in plies).
-#define MAX_DEPTH	16         // The maximum search depth (in plies).
+#define XPOS_TABLE_MB	64         // Transposition table size (in MB).
+#define PAWN_TABLE_MB	 1         // Pawn table size (in MB).
+#define BOOK_MOVES	40         // Num moves per game from book (in plies).
+#define OVERHEAD	 1         // Move search overhead (in centiseconds).
+#define MIN_DEPTH	 2         // Minimum search depth (in plies).
+#define MAX_DEPTH	16         // Maximum search depth (in plies).
 
 
 
@@ -72,10 +72,6 @@
 // The following preprocessor directives are used to ensure that the user has
 // chosen sane values for the preceeding settings.
 
-#if BOOK_MOVES < 0
-#error "In inc/config.h, BOOK_MOVES must be >= 0."
-#endif
-
 #if XPOS_TABLE_MB < 1
 #error "In inc/config.h, XPOS_TABLE_MB must be >= 1."
 #endif
@@ -84,16 +80,20 @@
 #error "In inc/config.h, PAWN_TABLE_MB must be >= 1."
 #endif
 
+#if BOOK_MOVES < 1
+#error "In inc/config.h, BOOK_MOVES must be >= 1."
+#endif
+
+#if OVERHEAD < 1
+#error "In inc/config.h, OVERHEAD must be >= 1."
+#endif
+
 #if MIN_DEPTH < 1
 #error "In inc/config.h, MIN_DEPTH must be >= 1."
 #endif
 
 #if MIN_DEPTH >= MAX_DEPTH
 #error "In inc/config.h, MIN_DEPTH must be < MAX_DEPTH."
-#endif
-
-#if OVERHEAD < 1
-#error "In inc/config.h, OVERHEAD must be >= 1."
 #endif
 
 // Piece colors:
