@@ -427,8 +427,8 @@ int count_64(uint64_t n)
 
 	int sum;
 
-	for (sum = 0; n; sum++)
-		n &= n - 1;
+	for (sum = 0; n; sum++) // Count until n is clear.
+		n &= n - 1;     // Clear n's least significant set bit.
 	return sum;
 }
 
@@ -443,8 +443,11 @@ int find_64(int64_t n)
 {
 
 // Find the first (least significant) set bit in a 64-bit integer.  The return
-// value ranges from 0 (for no bits set) to 64 (for only the most significant
-// bit set).
+// value ranges from 0 (for no bit set), to 1 (for the least significant bit
+// set), to 64 (for only the most significant bit set).
+//
+// XXX: This may crash under Windows.  If it does, simply change the function
+// definition to: int find_64(uint64_t n)
 
 #if defined(OS_X) || defined(WINDOWS)
 	n &= -n;
@@ -469,6 +472,9 @@ int find_32(int32_t n)
 // Find the first (least significant) set bit in a 32-bit integer.  The return
 // value ranges from 0 (for no bit set), to 1 (for the least significant bit
 // set), to 32 (for only the most significant bit set).
+//
+// XXX: This may crash under Windows.  If it does, simply change the function
+// definition to: int find_32(uint32_t n)
 
 #if defined(LINUX) || defined(OS_X)
 	return ffs(n);
@@ -485,7 +491,7 @@ int find_32(int32_t n)
 		8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8
 	};
 	n &= -n;
-	int shift = n <= 0xFFFF ? (n <= 0xFF ? 0 : 8) : (n <= 0xFFFFFF ?  16 : 24);
+	int shift = (uint32_t) n <= 0xFFFF ? ((uint32_t) n <= 0xFF ? 0 : 8) : ((uint32_t) n <= 0xFFFFFF ? 16 : 24);
 	return table[n >> shift] + shift;
 #endif
 }
