@@ -92,7 +92,10 @@ bool table::probe(bitboard_t hash, int depth, int type, move_t *move_ptr)
 		if (data[policy][index].hash == hash)
 		{
 			*move_ptr = data[policy][index].move;
-			if (data[policy][index].depth >= depth && (data[policy][index].type == type || data[policy][index].type == EXACT || data[policy][index].type == BOOK))
+			if (data[policy][index].depth >= depth &&
+			    (data[policy][index].type == BOOK  ||
+			     data[policy][index].type == EXACT ||
+			     data[policy][index].type == type))
 			{
 				successful++;
 				total++;
@@ -136,14 +139,14 @@ history::history()
 		for (int color = WHITE; color <= BLACK; color++)
 		{
 			data[color] = new int***[8];
-			for (int old_x = 0; old_x <= 7; old_x++)
+			for (int x1 = 0; x1 <= 7; x1++)
 			{
-				data[color][old_x] = new int**[8];
-				for (int old_y = 0; old_y <= 7; old_y++)
+				data[color][x1] = new int**[8];
+				for (int y1 = 0; y1 <= 7; y1++)
 				{
-					data[color][old_x][old_y] = new int*[8];
-					for (int new_x = 0; new_x <= 7; new_x++)
-						data[color][old_x][old_y][new_x] = new int[8];
+					data[color][x1][y1] = new int*[8];
+					for (int x2 = 0; x2 <= 7; x2++)
+						data[color][x1][y1][x2] = new int[8];
 				}
 			}
 		}
@@ -162,15 +165,15 @@ history::~history()
 {
 	for (int color = WHITE; color <= BLACK; color++)
 	{
-		for (int old_x = 0; old_x <= 7; old_x++)
+		for (int x1 = 0; x1 <= 7; x1++)
 		{
-			for (int old_y = 0; old_y <= 7; old_y++)
+			for (int y1 = 0; y1 <= 7; y1++)
 			{
-				for (int new_x = 0; new_x <= 7; new_x++)
-					delete[] data[color][old_x][old_y][new_x];
-				delete[] data[color][old_x][old_y];
+				for (int x2 = 0; x2 <= 7; x2++)
+					delete[] data[color][x1][y1][x2];
+				delete[] data[color][x1][y1];
 			}
-			delete[] data[color][old_x];
+			delete[] data[color][x1];
 		}
 		delete[] data[color];
 	}
@@ -183,31 +186,31 @@ history::~history()
 void history::clear()
 {
 	for (int color = WHITE; color <= BLACK; color++)
-		for (int old_x = 0; old_x <= 7; old_x++)
-			for (int old_y = 0; old_y <= 7; old_y++)
-				for (int new_x = 0; new_x <= 7; new_x++)
-					for (int new_y = 0; new_y <= 7; new_y++)
-						data[color][old_x][old_y][new_x][new_y] = 0;
+		for (int x1 = 0; x1 <= 7; x1++)
+			for (int y1 = 0; y1 <= 7; y1++)
+				for (int x2 = 0; x2 <= 7; x2++)
+					for (int y2 = 0; y2 <= 7; y2++)
+						data[color][x1][y1][x2][y2] = 0;
 }
 
 /*----------------------------------------------------------------------------*\
  |				history::probe()			      |
 \*----------------------------------------------------------------------------*/
-int history::probe(bool color, move_t move) const
+int history::probe(bool color, move_t m) const
 {
-	return data[color][move.old_x][move.old_y][move.new_x][move.new_y];
+	return data[color][m.x1][m.y1][m.x2][m.y2];
 }
 
 /*----------------------------------------------------------------------------*\
  |				history::store()			      |
 \*----------------------------------------------------------------------------*/
-void history::store(bool color, move_t move, int depth)
+void history::store(bool color, move_t m, int depth)
 {
 
 // Gray Matter has searched to the specified depth and determined the specified
 // move for the specified color to be the best.  Note this.
 
-	data[color][move.old_x][move.old_y][move.new_x][move.new_y] += 1 << depth;
+	data[color][m.x1][m.y1][m.x2][m.y2] += 1 << depth;
 }
 
 /*----------------------------------------------------------------------------*\

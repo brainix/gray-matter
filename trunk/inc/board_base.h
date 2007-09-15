@@ -199,10 +199,10 @@ typedef struct state
 // ugliness).
 typedef struct move
 {
-	unsigned old_x   :  3; // From x coordinate.              3 bits
-	unsigned old_y   :  3; // From y coordinate.           +  3 bits
-	unsigned new_x   :  3; // To x coordinate.             +  3 bits
-	unsigned new_y   :  3; // To y coordinate.             +  3 bits
+	unsigned x1      :  3; // From x coordinate.              3 bits
+	unsigned y1      :  3; // From y coordinate.           +  3 bits
+	unsigned x2      :  3; // To x coordinate.             +  3 bits
+	unsigned y2      :  3; // To y coordinate.             +  3 bits
 	unsigned promo   :  3; // Pawn promotion information.  +  3 bits
 	unsigned padding :  1; // The Evil Bit (TM).           +  1 bit
 	  signed value   : 16; // MiniMax score.               + 16 bits
@@ -211,34 +211,34 @@ typedef struct move
 	// Overloaded equality test operator.
 	bool operator==(const struct move that) const
 	{
-		return this->old_x == that.old_x && this->old_y == that.old_y &&
-		       this->new_x == that.new_x && this->new_y == that.new_y &&
+		return this->x1 == that.x1 && this->y1 == that.y1 &&
+		       this->x2 == that.x2 && this->y2 == that.y2 &&
 		       this->promo == that.promo;
 	};
 
 	// Overloaded inequality test operator.
 	bool operator!=(const struct move that) const
 	{
-		return this->old_x != that.old_x || this->old_y != that.old_y ||
-		       this->new_x != that.new_x || this->new_y != that.new_y ||
+		return this->x1 != that.x1 || this->y1 != that.y1 ||
+		       this->x2 != that.x2 || this->y2 != that.y2 ||
 		       this->promo != that.promo;
 	};
 
 	// Overloaded assignment operator.
 	struct move& operator=(const struct move& that)
 	{
-		old_x = that.old_x;
-		old_y = that.old_y;
-		new_x = that.new_x;
-		new_y = that.new_y;
+		x1 = that.x1;
+		y1 = that.y1;
+		x2 = that.x2;
+		y2 = that.y2;
 		promo = that.promo;
 		value = that.value;
 		return *this;
 	};
 } __attribute__((packed)) move_t;
 
-#define IS_NULL_MOVE(m)		(!(m).promo && !(m).new_y && !(m).new_x && !(m).old_y && !(m).old_x)
-#define SET_NULL_MOVE(m)	((m).promo = (m).new_y = (m).new_x = (m).old_y = (m).old_x = 0)
+#define IS_NULL_MOVE(m)		(!(m).promo && !(m).y2 && !(m).x2 && !(m).y1 && !(m).x1)
+#define SET_NULL_MOVE(m)	((m).promo = (m).y2 = (m).x2 = (m).y1 = (m).x1 = 0)
 
 
 
