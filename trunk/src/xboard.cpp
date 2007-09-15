@@ -175,8 +175,8 @@ void xboard::print_resignation() const
 \*----------------------------------------------------------------------------*/
 void xboard::print_move(move_t m) const
 {
-	printf("%c%c", m.old_x + 'a', m.old_y + '1');
-	printf("%c%c", m.new_x + 'a', m.new_y + '1');
+	printf("%c%c", m.x1 + 'a', m.y1 + '1');
+	printf("%c%c", m.x2 + 'a', m.y2 + '1');
 	switch (m.promo)
 	{
 		case KNIGHT : printf("n"); break;
@@ -349,8 +349,8 @@ void xboard::do_usermove()
 	move_t m;
 
 	// Was the move legal?
-	m.old_x = buffer[ 9] - 'a'; m.old_y = buffer[10] - '1';
-	m.new_x = buffer[11] - 'a'; m.new_y = buffer[12] - '1';
+	m.x1 = buffer[ 9] - 'a'; m.y1 = buffer[10] - '1';
+	m.x2 = buffer[11] - 'a'; m.y2 = buffer[12] - '1';
 	m.promo = char_to_shape(buffer[13]);
 	if (!test_move(m))
 	{
