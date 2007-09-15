@@ -82,8 +82,8 @@ public:
 	history();
 	~history();
 	void clear();
-	int probe(bool color, move_t move) const;
-	void store(bool color, move_t move, int depth);
+	int probe(bool color, move_t m) const;
+	void store(bool color, move_t m, int depth);
 private:
 	int *****data;
 };

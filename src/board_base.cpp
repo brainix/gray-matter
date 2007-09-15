@@ -394,31 +394,31 @@ bool board_base::make(move_t m)
 	// Move the piece and remove the captured piece.
 	for (int shape = PAWN; shape <= KING; shape++)
 	{
-		if (BIT_GET(state.piece[ON_MOVE][shape], m.old_x, m.old_y))
+		if (BIT_GET(state.piece[ON_MOVE][shape], m.x1, m.y1))
 		{
-			BIT_CLR(state.piece[ON_MOVE][shape], m.old_x, m.old_y);
-			BIT_SET(state.piece[ON_MOVE][shape], m.new_x, m.new_y);
+			BIT_CLR(state.piece[ON_MOVE][shape], m.x1, m.y1);
+			BIT_SET(state.piece[ON_MOVE][shape], m.x2, m.y2);
 			for (int angle = L45; angle <= R90; angle++)
 			{
-				BIT_CLR(rotation[angle][ON_MOVE], coord[MAP][angle][m.old_x][m.old_y][X], coord[MAP][angle][m.old_x][m.old_y][Y]);
-				BIT_SET(rotation[angle][ON_MOVE], coord[MAP][angle][m.new_x][m.new_y][X], coord[MAP][angle][m.new_x][m.new_y][Y]);
+				BIT_CLR(rotation[angle][ON_MOVE], coord[MAP][angle][m.x1][m.y1][X], coord[MAP][angle][m.x1][m.y1][Y]);
+				BIT_SET(rotation[angle][ON_MOVE], coord[MAP][angle][m.x2][m.y2][X], coord[MAP][angle][m.x2][m.y2][Y]);
 			}
-			hash ^= key_piece[ON_MOVE][shape][m.old_x][m.old_y];
-			hash ^= key_piece[ON_MOVE][shape][m.new_x][m.new_y];
+			hash ^= key_piece[ON_MOVE][shape][m.x1][m.y1];
+			hash ^= key_piece[ON_MOVE][shape][m.x2][m.y2];
 			if (shape == PAWN)
 			{
-				pawn_hash ^= key_piece[ON_MOVE][shape][m.old_x][m.old_y];
-				pawn_hash ^= key_piece[ON_MOVE][shape][m.new_x][m.new_y];
+				pawn_hash ^= key_piece[ON_MOVE][shape][m.x1][m.y1];
+				pawn_hash ^= key_piece[ON_MOVE][shape][m.x2][m.y2];
 			}
 		}
-		if (BIT_GET(state.piece[OFF_MOVE][shape], m.new_x, m.new_y))
+		if (BIT_GET(state.piece[OFF_MOVE][shape], m.x2, m.y2))
 		{
-			BIT_CLR(state.piece[OFF_MOVE][shape], m.new_x, m.new_y);
+			BIT_CLR(state.piece[OFF_MOVE][shape], m.x2, m.y2);
 			for (int angle = L45; angle <= R90; angle++)
-				BIT_CLR(rotation[angle][OFF_MOVE], coord[MAP][angle][m.new_x][m.new_y][X], coord[MAP][angle][m.new_x][m.new_y][Y]);
-			hash ^= key_piece[OFF_MOVE][shape][m.new_x][m.new_y];
+				BIT_CLR(rotation[angle][OFF_MOVE], coord[MAP][angle][m.x2][m.y2][X], coord[MAP][angle][m.x2][m.y2][Y]);
+			hash ^= key_piece[OFF_MOVE][shape][m.x2][m.y2];
 			if (shape == PAWN)
-				pawn_hash ^= key_piece[OFF_MOVE][shape][m.new_x][m.new_y];
+				pawn_hash ^= key_piece[OFF_MOVE][shape][m.x2][m.y2];
 			state.fifty = -1;
 		}
 	}
@@ -426,39 +426,39 @@ bool board_base::make(move_t m)
 	// If we're moving a piece from one of our rooks' initial positions,
 	// make sure we're no longer marked able to castle on that rook's
 	// side.
-	if ((m.old_x == 0 || m.old_x == 7) && (m.old_y == (ON_MOVE ? 7 : 0)) && state.castle[ON_MOVE][m.old_x == 7] == CAN_CASTLE)
+	if ((m.x1 == 0 || m.x1 == 7) && (m.y1 == (ON_MOVE ? 7 : 0)) && state.castle[ON_MOVE][m.x1 == 7] == CAN_CASTLE)
 	{
-		state.castle[ON_MOVE][m.old_x == 7] = CANT_CASTLE;
-		hash ^= key_castle[ON_MOVE][m.old_x == 7][CANT_CASTLE];
+		state.castle[ON_MOVE][m.x1 == 7] = CANT_CASTLE;
+		hash ^= key_castle[ON_MOVE][m.x1 == 7][CANT_CASTLE];
 	}
 
 	// If we're moving a piece to one of our opponent's rooks' initial
 	// positions, make sure our opponent is no longer marked able to castle
 	// on that rook's side.
-	if ((m.new_x == 0 || m.new_x == 7) && (m.new_y == (OFF_MOVE ? 7 : 0)) && state.castle[OFF_MOVE][m.new_x == 7] == CAN_CASTLE)
+	if ((m.x2 == 0 || m.x2 == 7) && (m.y2 == (OFF_MOVE ? 7 : 0)) && state.castle[OFF_MOVE][m.x2 == 7] == CAN_CASTLE)
 	{
-		state.castle[OFF_MOVE][m.new_x == 7] = CANT_CASTLE;
-		hash ^= key_castle[OFF_MOVE][m.old_x == 7][CANT_CASTLE];
+		state.castle[OFF_MOVE][m.x2 == 7] = CANT_CASTLE;
+		hash ^= key_castle[OFF_MOVE][m.x1 == 7][CANT_CASTLE];
 	}
 
 	// If we're moving the king:
-	if (BIT_GET(state.piece[ON_MOVE][KING], m.new_x, m.new_y))
+	if (BIT_GET(state.piece[ON_MOVE][KING], m.x2, m.y2))
 	{
 		// If we're castling, move the rook and mark us having castled
 		// on this side.
-		if (abs((int) m.old_x - (int) m.new_x) == 2)
+		if (abs((int) m.x1 - (int) m.x2) == 2)
 		{
-			BIT_CLR(state.piece[ON_MOVE][ROOK], m.new_x == 6 ? 7 : 0, ON_MOVE ? 7 : 0);
-			BIT_SET(state.piece[ON_MOVE][ROOK], m.new_x == 6 ? 5 : 3, ON_MOVE ? 7 : 0);
+			BIT_CLR(state.piece[ON_MOVE][ROOK], m.x2 == 6 ? 7 : 0, ON_MOVE ? 7 : 0);
+			BIT_SET(state.piece[ON_MOVE][ROOK], m.x2 == 6 ? 5 : 3, ON_MOVE ? 7 : 0);
 			for (int angle = L45; angle <= R90; angle++)
 			{
-				BIT_CLR(rotation[angle][ON_MOVE], coord[MAP][angle][m.new_x == 6 ? 7 : 0][ON_MOVE ? 7 : 0][X], coord[MAP][angle][m.new_x == 6 ? 7 : 0][ON_MOVE ? 7 : 0][Y]);
-				BIT_SET(rotation[angle][ON_MOVE], coord[MAP][angle][m.new_x == 6 ? 5 : 3][ON_MOVE ? 7 : 0][X], coord[MAP][angle][m.new_x == 6 ? 5 : 3][ON_MOVE ? 7 : 0][Y]);
+				BIT_CLR(rotation[angle][ON_MOVE], coord[MAP][angle][m.x2 == 6 ? 7 : 0][ON_MOVE ? 7 : 0][X], coord[MAP][angle][m.x2 == 6 ? 7 : 0][ON_MOVE ? 7 : 0][Y]);
+				BIT_SET(rotation[angle][ON_MOVE], coord[MAP][angle][m.x2 == 6 ? 5 : 3][ON_MOVE ? 7 : 0][X], coord[MAP][angle][m.x2 == 6 ? 5 : 3][ON_MOVE ? 7 : 0][Y]);
 			}
-			hash ^= key_piece[ON_MOVE][ROOK][m.new_x == 6 ? 7 : 0][ON_MOVE ? 7 : 0];
-			hash ^= key_piece[ON_MOVE][ROOK][m.new_x == 6 ? 5 : 3][ON_MOVE ? 7 : 0];
-			state.castle[ON_MOVE][m.new_x == 6] = HAS_CASTLED;
-			hash ^= key_castle[ON_MOVE][m.new_x == 6][HAS_CASTLED];
+			hash ^= key_piece[ON_MOVE][ROOK][m.x2 == 6 ? 7 : 0][ON_MOVE ? 7 : 0];
+			hash ^= key_piece[ON_MOVE][ROOK][m.x2 == 6 ? 5 : 3][ON_MOVE ? 7 : 0];
+			state.castle[ON_MOVE][m.x2 == 6] = HAS_CASTLED;
+			hash ^= key_castle[ON_MOVE][m.x2 == 6][HAS_CASTLED];
 		}
 
 		// At this point, we've moved the king.  Make sure we're no
@@ -474,33 +474,33 @@ bool board_base::make(move_t m)
 	// If we're moving a pawn:
 	hash ^= state.en_passant == -1 ? key_no_en_passant : key_en_passant[state.en_passant];
 	pawn_hash ^= state.en_passant == -1 ? key_no_en_passant : key_en_passant[state.en_passant];
-	if (BIT_GET(state.piece[ON_MOVE][PAWN], m.new_x, m.new_y))
+	if (BIT_GET(state.piece[ON_MOVE][PAWN], m.x2, m.y2))
 	{
 		// If we're promoting a pawn, replace it with the promotion
 		// piece.
 		if (m.promo)
 		{
-			BIT_CLR(state.piece[ON_MOVE][PAWN], m.new_x, m.new_y);
-			BIT_SET(state.piece[ON_MOVE][m.promo], m.new_x, m.new_y);
-			hash ^= key_piece[ON_MOVE][PAWN][m.new_x][m.new_y];
-			hash ^= key_piece[ON_MOVE][m.promo][m.new_x][m.new_y];
-			pawn_hash ^= key_piece[ON_MOVE][PAWN][m.new_x][m.new_y];
+			BIT_CLR(state.piece[ON_MOVE][PAWN], m.x2, m.y2);
+			BIT_SET(state.piece[ON_MOVE][m.promo], m.x2, m.y2);
+			hash ^= key_piece[ON_MOVE][PAWN][m.x2][m.y2];
+			hash ^= key_piece[ON_MOVE][m.promo][m.x2][m.y2];
+			pawn_hash ^= key_piece[ON_MOVE][PAWN][m.x2][m.y2];
 		}
 
 		// If we're performing an en passant, remove the captured
 		// pawn.
-		if ((int) m.new_x == state.en_passant && m.new_y == (ON_MOVE ? 2 : 5))
+		if ((int) m.x2 == state.en_passant && m.y2 == (ON_MOVE ? 2 : 5))
 		{
-			BIT_CLR(state.piece[OFF_MOVE][PAWN], m.new_x, m.old_y);
+			BIT_CLR(state.piece[OFF_MOVE][PAWN], m.x2, m.y1);
 			for (int angle = L45; angle <= R90; angle++)
-				BIT_CLR(rotation[angle][OFF_MOVE], coord[MAP][angle][m.new_x][m.old_y][X], coord[MAP][angle][m.new_x][m.old_y][Y]);
-			hash ^= key_piece[OFF_MOVE][PAWN][m.new_x][m.old_y];
-			pawn_hash ^= key_piece[OFF_MOVE][PAWN][m.new_x][m.old_y];
+				BIT_CLR(rotation[angle][OFF_MOVE], coord[MAP][angle][m.x2][m.y1][X], coord[MAP][angle][m.x2][m.y1][Y]);
+			hash ^= key_piece[OFF_MOVE][PAWN][m.x2][m.y1];
+			pawn_hash ^= key_piece[OFF_MOVE][PAWN][m.x2][m.y1];
 		}
 
 		// If we're advancing a pawn two squares, mark it vulnerable to
 		// en passant.
-		state.en_passant = abs((int) m.old_y - (int) m.new_y) == 2 ? (int) m.old_x : -1;
+		state.en_passant = abs((int) m.y1 - (int) m.y2) == 2 ? (int) m.x1 : -1;
 
 		// Reset the 50 move rule counter.
 		state.fifty = -1;
@@ -565,7 +565,7 @@ move_t board_base::san_to_coord(string& san)
 // return the null move.
 
 	int index = 0;
-	int shape = -1, old_x = -1, old_y = -1, new_x = -1, new_y = -1, promo = -1;
+	int shape = -1, x1 = -1, y1 = -1, x2 = -1, y2 = -1, promo = -1;
 	bool capture = false;
 	move_t m;
 
@@ -581,8 +581,8 @@ move_t board_base::san_to_coord(string& san)
 		    squares_castle[ON_MOVE][side][UNOCCUPIED] & rotation[ZERO][COLORS] ||
 		    check(squares_castle[ON_MOVE][side][UNATTACKED], OFF_MOVE))
 			return m;
-		m.new_x = (m.old_x = 4) + (side ? 2 : -2);
-		m.new_y = m.old_y = ON_MOVE ? 7 : 0;
+		m.x2 = (m.x1 = 4) + (side ? 2 : -2);
+		m.y2 = m.y1 = ON_MOVE ? 7 : 0;
 		m.promo = 0;
 		return m;
 	}
@@ -613,7 +613,7 @@ move_t board_base::san_to_coord(string& san)
 	// If there's a letter between 'a' and 'h' here, assume it specifies the
 	// destination file.
 	if (san[index] >= 'a' && san[index] <= 'h')
-		new_x = san[index++] - 'a';
+		x2 = san[index++] - 'a';
 
 	// If there's an 'x' here, it means the move is a capture.  Note this
 	// (to verify it's a capture later).
@@ -626,7 +626,7 @@ move_t board_base::san_to_coord(string& san)
 	// If there's a number between 1 and 8 here, assume it specifies the
 	// destination rank.
 	if (san[index] >= '1' && san[index] <= '8')
-		new_y = san[index++] - '1';
+		y2 = san[index++] - '1';
 
 	// If there's an 'x' here, it means the move is a capture.  Note this
 	// (to verify it's a capture later).
@@ -643,10 +643,10 @@ move_t board_base::san_to_coord(string& san)
 	// the destination file and rank.
 	if (san[index] >= 'a' && san[index] <= 'h')
 	{
-		old_x = new_x;
-		old_y = new_y;
-		new_x = san[index++] - 'a';
-		new_y = san[index++] - '1';
+		x1 = x2;
+		y1 = y2;
+		x2 = san[index++] - 'a';
+		y2 = san[index++] - '1';
 	}
 
 	// If there's an = sign here, it must be followed by the letter 'Q',
@@ -673,7 +673,7 @@ move_t board_base::san_to_coord(string& san)
 	//
 	// If we haven't already filled in the source file and rank, derive them
 	// and fill them in now.
-	if (old_x < 0 || old_y < 0)
+	if (x1 < 0 || y1 < 0)
 	{
 		list<move_t> l;
 		switch (shape)
@@ -686,38 +686,38 @@ move_t board_base::san_to_coord(string& san)
 			case PAWN   : generate_pawn(l);   break;
 		}
 		for (list<move_t>::iterator it = l.begin(); it != l.end(); it++)
-			if ((old_x < 0 || old_x == (int) it->old_x) &&
-			    (old_y < 0 || old_y == (int) it->old_y) &&
-			                  new_x == (int) it->new_x  &&
-			                  new_y == (int) it->new_y)
+			if ((x1 < 0 || x1 == (int) it->x1) &&
+			    (y1 < 0 || y1 == (int) it->y1) &&
+			               x2 == (int) it->x2  &&
+			               y2 == (int) it->y2)
 			{
-				old_x = it->old_x;
-				old_y = it->old_y;
+				x1 = it->x1;
+				y1 = it->y1;
 				break;
 			}
 	}
 
 	// At this point, we're supposed to have filled in all the info.  If we
 	// haven't, the SAN string must've been badly formed.
-	if (old_x < 0 || old_y < 0 || new_x < 0 || new_y < 0 || promo < 0)
+	if (x1 < 0 || y1 < 0 || x2 < 0 || y2 < 0 || promo < 0)
 		return m;
 
 	// Verify the piece we're moving is actually sitting on the source file
 	// and rank.
-	if (!BIT_GET(state.piece[ON_MOVE][shape], old_x, old_y))
+	if (!BIT_GET(state.piece[ON_MOVE][shape], x1, y1))
 		return m;
 
 	// If the SAN string didn't indicate a capture, verify the move actually
 	// isn't a capture.  Conversely, if the SAN string did indicate a
 	// capture, verify the move actually is a capture.
-	if (capture != (bool) BIT_GET(rotation[ZERO][OFF_MOVE], new_x, new_y))
+	if (capture != (bool) BIT_GET(rotation[ZERO][OFF_MOVE], x2, y2))
 		return m;
 
 	// OK, we appear to have a valid move.
-	m.old_x = old_x;
-	m.old_y = old_y;
-	m.new_x = new_x;
-	m.new_y = new_y;
+	m.x1 = x1;
+	m.y1 = y1;
+	m.x2 = x2;
+	m.y2 = y2;
 	m.promo = promo;
 
 	// The only thing that can go wrong now is for the move to leave us in
@@ -924,8 +924,8 @@ void board_base::generate_king(list<move_t> &l, bool only_captures) const
 			continue; // One of the squares is being attacked.
 
 		move_t m;
-		m.new_x = (m.old_x = 4) + (side ? 2 : -2);
-		m.new_y = m.old_y = ON_MOVE ? 7 : 0;
+		m.x2 = (m.x1 = 4) + (side ? 2 : -2);
+		m.y2 = m.y1 = ON_MOVE ? 7 : 0;
 		m.value = m.promo = 0;
 		l.push_front(m);
 	}
@@ -1098,10 +1098,10 @@ void board_base::generate_pawn(list<move_t> &l, bool only_captures) const
 			b >>= ON_MOVE ? 8 : 0;
 			b &= ~rotation[ZERO][COLORS];
 		}
-		for (int n; (n = FST(b)) != -1; BIT_CLR(b, m.new_x, m.new_y))
+		for (int n; (n = FST(b)) != -1; BIT_CLR(b, m.x2, m.y2))
 		{
-			m.old_x = m.new_x = n & 0x7;
-			m.old_y = (m.new_y = n >> 3) + (ON_MOVE ? 2 : -2);
+			m.x1 = m.x2 = n & 0x7;
+			m.y1 = (m.y2 = n >> 3) + (ON_MOVE ? 2 : -2);
 			l.push_back(m);
 		}
 	}
@@ -1112,11 +1112,11 @@ void board_base::generate_pawn(list<move_t> &l, bool only_captures) const
 	if (state.en_passant != -1)
 	{
 		m.promo = 0;
-		m.new_y = ON_MOVE ? 2 : 5;
-		m.new_x = state.en_passant;
-		if (state.en_passant != 0 && BIT_GET(state.piece[ON_MOVE][PAWN], m.old_x = state.en_passant - 1, m.old_y = ON_MOVE ? 3 : 4))
+		m.y2 = ON_MOVE ? 2 : 5;
+		m.x2 = state.en_passant;
+		if (state.en_passant != 0 && BIT_GET(state.piece[ON_MOVE][PAWN], m.x1 = state.en_passant - 1, m.y1 = ON_MOVE ? 3 : 4))
 			l.push_front(m);
-		if (state.en_passant != 7 && BIT_GET(state.piece[ON_MOVE][PAWN], m.old_x = state.en_passant + 1, m.old_y = ON_MOVE ? 3 : 4))
+		if (state.en_passant != 7 && BIT_GET(state.piece[ON_MOVE][PAWN], m.x1 = state.en_passant + 1, m.y1 = ON_MOVE ? 3 : 4))
 			l.push_front(m);
 	}
 
@@ -1125,11 +1125,11 @@ void board_base::generate_pawn(list<move_t> &l, bool only_captures) const
 	b <<= ON_MOVE ? 0 : 8;
 	b >>= ON_MOVE ? 8 : 0;
 	b &= ~rotation[ZERO][COLORS];
-	for (int n; (n = FST(b)) != -1; BIT_CLR(b, m.new_x, m.new_y))
+	for (int n; (n = FST(b)) != -1; BIT_CLR(b, m.x2, m.y2))
 	{
-		m.old_x = m.new_x = n & 0x7;
-		m.old_y = (m.new_y = n >> 3) + (ON_MOVE ? 1 : -1);
-		if (m.new_y != (ON_MOVE ? 0 : 7))
+		m.x1 = m.x2 = n & 0x7;
+		m.y1 = (m.y2 = n >> 3) + (ON_MOVE ? 1 : -1);
+		if (m.y2 != (ON_MOVE ? 0 : 7))
 		{
 			if (!only_captures)
 				l.push_back(m);
@@ -1148,11 +1148,11 @@ void board_base::generate_pawn(list<move_t> &l, bool only_captures) const
 		b >>= ON_MOVE ? x == -1 ? 9 : 7 : 0;
 		COL_CLR(b, x == -1 ? 7 : 0);
 		b &= rotation[ZERO][OFF_MOVE];
-		for (int n; (n = FST(b)) != -1; BIT_CLR(b, m.new_x, m.new_y))
+		for (int n; (n = FST(b)) != -1; BIT_CLR(b, m.x2, m.y2))
 		{
-			m.old_x = (m.new_x = n & 0x7) - x;
-			m.old_y = (m.new_y = n >> 3) + (ON_MOVE ? 1 : -1);
-			if (m.new_y != (ON_MOVE ? 0 : 7))
+			m.x1 = (m.x2 = n & 0x7) - x;
+			m.y1 = (m.y2 = n >> 3) + (ON_MOVE ? 1 : -1);
+			if (m.y2 != (ON_MOVE ? 0 : 7))
 			{
 				l.push_front(m);
 				continue;
@@ -1463,16 +1463,16 @@ void board_base::insert(int x, int y, bitboard_t b, int angle, list<move_t> &l, 
 // Prepend or append a piece's possible moves to a list.
 
 	move_t m;
-	m.old_x = x;
-	m.old_y = y;
+	m.x1 = x;
+	m.y1 = y;
 	m.value = m.promo = 0;
 
 	for (int n; (n = FST(b)) != -1; BIT_CLR(b, x, y))
 	{
 		x = n & 0x7;
 		y = n >> 3;
-		m.new_x = coord[UNMAP][angle][x][y][X];
-		m.new_y = coord[UNMAP][angle][x][y][Y];
+		m.x2 = coord[UNMAP][angle][x][y][X];
+		m.y2 = coord[UNMAP][angle][x][y][Y];
 		if (pos == FRONT)
 			l.push_front(m);
 		else
