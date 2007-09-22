@@ -394,6 +394,7 @@ bool board_base::make(move_t m)
 	// Move the piece and remove the captured piece.
 	for (int shape = PAWN; shape <= KING; shape++)
 	{
+		// Move the piece.
 		if (BIT_GET(state.piece[ON_MOVE][shape], m.x1, m.y1))
 		{
 			BIT_CLR(state.piece[ON_MOVE][shape], m.x1, m.y1);
@@ -409,8 +410,14 @@ bool board_base::make(move_t m)
 			{
 				pawn_hash ^= key_piece[ON_MOVE][shape][m.x1][m.y1];
 				pawn_hash ^= key_piece[ON_MOVE][shape][m.x2][m.y2];
+
+				// We're moving a pawn.  Reset the 50 move rule
+				// counter.
+				state.fifty = -1;
 			}
 		}
+
+		// Remove the captured piece.
 		if (BIT_GET(state.piece[OFF_MOVE][shape], m.x2, m.y2))
 		{
 			BIT_CLR(state.piece[OFF_MOVE][shape], m.x2, m.y2);
@@ -419,6 +426,9 @@ bool board_base::make(move_t m)
 			hash ^= key_piece[OFF_MOVE][shape][m.x2][m.y2];
 			if (shape == PAWN)
 				pawn_hash ^= key_piece[OFF_MOVE][shape][m.x2][m.y2];
+
+			// We're capturing a piece.  Reset the 50 move rule
+			// counter.
 			state.fifty = -1;
 		}
 	}
@@ -661,6 +671,7 @@ move_t board_base::san_to_coord(string& san)
 			case 'R' : index++; promo = ROOK;   break;
 			case 'B' : index++; promo = BISHOP; break;
 			case 'N' : index++; promo = KNIGHT; break;
+			default  : return m;                break;
 		}
 	else
 		promo = 0;
