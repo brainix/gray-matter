@@ -46,6 +46,9 @@ using namespace std;
 #define TOKEN_GLYPH		5 // Numeric Annotation Glyph (NAG).
 #define TOKEN_SYMBOL		6 // Symbol.
 
+#define IS_PUNCT(c)	((c) == (int) '.' || (c) == (int) '*' || \
+			 (c) == (int) '[' || (c) == (int) ']' || \
+			 (c) == (int) '<' || (c) == (int) '>')
 #define IS_SYMBOL(c)	(isalnum((c))     || (c) == (int) '_' || \
 			 (c) == (int) '+' || (c) == (int) "#" || \
 			 (c) == (int) '=' || (c) == (int) ':' || \

@@ -116,7 +116,8 @@ void book::populate_table()
 		{
 			if (board_ptr->get_num_moves() >= num_moves)
 				break;
-			table_ptr->store(board_ptr->get_hash(), MAX_DEPTH, BOOK, *move);
+			table_ptr->store(board_ptr->get_hash(), MAX_DEPTH, BOOK,
+			                 *move);
 			board_ptr->make(*move);
 		}
 		board_ptr->set_board();
@@ -229,7 +230,7 @@ bool book::tokenize_punctuation(istream& stream, string& token)
 
 	token.erase(0, token.length());
 	int c = stream.peek();
-	if (c == '.' || c == '*' || c == '[' || c == ']' || c == '<' || c == '>')
+	if (IS_PUNCT(c))
 	{
 		token += c;
 		stream.ignore();
@@ -273,7 +274,7 @@ bool book::tokenize_symbol(istream& stream, string& token)
 
 	token.erase(0, token.length());
 	if (isalnum(stream.peek()))
-		for (int c = stream.peek(); IS_SYMBOL(c); stream.ignore(), c = stream.peek())
+		for (int c; IS_SYMBOL(c = stream.peek()); stream.ignore())
 			token += c;
 	token += '\0';
 	return token.length() >= 2;
