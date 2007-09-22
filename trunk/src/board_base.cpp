@@ -511,9 +511,6 @@ bool board_base::make(move_t m)
 		// If we're advancing a pawn two squares, mark it vulnerable to
 		// en passant.
 		state.en_passant = abs((int) m.y1 - (int) m.y2) == 2 ? (int) m.x1 : -1;
-
-		// Reset the 50 move rule counter.
-		state.fifty = -1;
 	}
 	else
 		// Oops.  We're not moving a pawn.  Mark no pawn vulnerable to
