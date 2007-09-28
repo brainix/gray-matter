@@ -1182,25 +1182,26 @@ void board_base::precomp_king() const
 
 	// Imagine an empty board except for a king at (x, y).  Mark the king's
 	// legal moves in the BitBoard squares_king[x][y].
-	for (int y = 0; y <= 7; y++)
-		for (int x = 0; x <= 7; x++)
-		{
-			squares_king[x][y] = 0;
-			for (int k = -1; k <= 1; k++)
-				for (int j = -1; j <= 1; j++)
-				{
-					if (!j && !k)
-						// Oops.  The king can't stand
-						// still.
-						continue;
-					if (x + j < 0 || x + j > 7 ||
-					    y + k < 0 || y + k > 7)
-						// Oops.  The king can't step
-						// off the board.
-						continue;
-					BIT_SET(squares_king[x][y], x + j, y + k);
-				}
-		}
+	for (int n = 0; n <= 63; n++)
+	{
+		int x = n & 0x7;
+		int y = n >> 3;
+
+		squares_king[x][y] = 0;
+		for (int k = -1; k <= 1; k++)
+			for (int j = -1; j <= 1; j++)
+			{
+				if (!j && !k)
+					// Oops.  The king can't stand still.
+					continue;
+				if (x + j < 0 || x + j > 7 ||
+				    y + k < 0 || y + k > 7)
+					// Oops.  The king can't step off the
+					// board.
+					continue;
+				BIT_SET(squares_king[x][y], x + j, y + k);
+			}
+	}
 }
 
 /*----------------------------------------------------------------------------*\
@@ -1241,27 +1242,28 @@ void board_base::precomp_knight() const
 
 	// Imagine an empty board except for a knight at (x, y).  Mark the
 	// knight's legal moves in the BitBoard squares_knight[x][y].
-	for (int y = 0; y <= 7; y++)
-		for (int x = 0; x <= 7; x++)
-		{
-			squares_knight[x][y] = 0;
-			for (int k = -2; k <= 2; k++)
-				for (int j = -2; j <= 2; j++)
-				{
-					if (abs(j) == abs(k) || !j || !k)
-						// Oops.  The knight can only
-						// jump two squares in one
-						// direction and one square in a
-						// perpendicular direction.
-						continue;
-					if (x + j < 0 || x + j > 7 ||
-					    y + k < 0 || y + k > 7)
-						// Oops.  The knight can't jump
-						// off the board.
-						continue;
-					BIT_SET(squares_knight[x][y], x + j, y + k);
-				}
-		}
+	for (int n = 0; n <= 63; n++)
+	{
+		int x = n & 0x7;
+		int y = n >> 3;
+
+		squares_knight[x][y] = 0;
+		for (int k = -2; k <= 2; k++)
+			for (int j = -2; j <= 2; j++)
+			{
+				if (abs(j) == abs(k) || !j || !k)
+					// Oops.  The knight can only jump two
+					// squares in one direction and one
+					// square in a perpendicular direction.
+					continue;
+				if (x + j < 0 || x + j > 7 ||
+				    y + k < 0 || y + k > 7)
+					// Oops.  The knight can't jump off the
+					// board.
+					continue;
+				BIT_SET(squares_knight[x][y], x + j, y + k);
+			}
+	}
 }
 
 /*----------------------------------------------------------------------------*\
