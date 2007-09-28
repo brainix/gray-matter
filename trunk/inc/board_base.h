@@ -312,10 +312,6 @@ protected:
 	// These methods manipulate BitBoards.
 	virtual bitboard_t rotate(bitboard_t b1, int map, int angle) const;
 	virtual void insert(int x, int y, bitboard_t b, int angle, list<move_t> &l, bool pos) const;
-
-	// Prevent the class from being instantiated without the proper
-	// construction.
-	board_base();
 };
 
 
