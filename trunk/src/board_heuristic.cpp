@@ -111,6 +111,9 @@ static int weight_king_position[8][8] =
 	       //   1    2    3    4    5    6    7    8
 };
 
+//
+static const int weight_pawn_duo = 2;
+
 // The penalty for giving up castling:
 static const int weight_king_cant_castle = -20;
 
@@ -120,6 +123,9 @@ static const int weight_king_cant_castle = -20;
 // pawn structure analysis pretty much for free.
 pawn pawn_table;
 
+bool precomputed_board_heuristic = false;
+bitboard_t squares_pawn_duo[8][8];
+
 /*----------------------------------------------------------------------------*\
  |			       board_heuristic()			      |
 \*----------------------------------------------------------------------------*/
@@ -128,6 +134,11 @@ board_heuristic::board_heuristic() : board_base()
 
 // Constructor.
 
+	if (!precomputed_board_heuristic)
+	{
+		precomp_pawn();
+		precomputed_board_heuristic = true;
+	}
 }
 
 /*----------------------------------------------------------------------------*\
@@ -206,6 +217,20 @@ int board_heuristic::evaluate_pawns() const
 
 			// Penalize bad position or reward good position.
 			sum += sign * weight_position[PAWN][x][y];
+
+			// TODO: Penalize isolated pawns.
+
+			// TODO: Penalize weak pawns.
+
+			// TODO: Penalize doubled pawns.
+
+			// Reward pawn duos.
+			if (state.piece[color][PAWN] & squares_pawn_duo[x][y])
+				sum += sign * weight_pawn_duo;
+
+			// TODO: Reward passed pawns.
+
+			// TODO: Reward hidden passed pawns.
 		}
 	}
 
@@ -365,4 +390,22 @@ int board_heuristic::evaluate_kings() const
 			sum += sign * weight_king_position[pawns & SQUARES_QUEEN_SIDE ? x : 7 - x][!color ? y : 7 - y];
 	}
 	return sum;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				 precomp_pawn()				      |
+\*----------------------------------------------------------------------------*/
+void board_heuristic::precomp_pawn() const
+{
+	for (int n = 0; n <= 63; n++)
+	{
+		int x = n & 0x7;
+		int y = n >> 3;
+
+		squares_pawn_duo[x][y] = 0;
+		if (y == 0 || y == 7)
+			continue;
+		for (int j = x == 0 ? 1 : -1; j <= (x == 7 ? -1 : 1); j += 2)
+			BIT_SET(squares_pawn_duo[x][y], x + j, y);
+	}
 }

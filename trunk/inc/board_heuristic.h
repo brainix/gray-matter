@@ -49,6 +49,7 @@ private:
 	int evaluate_rooks() const;
 	int evaluate_queens() const;
 	int evaluate_kings() const;
+	void precomp_pawn() const;
 };
 
 #endif
