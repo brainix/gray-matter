@@ -112,6 +112,7 @@ static int weight_king_position[8][8] =
 };
 
 //
+static const int weight_pawn_doubled[9] = {0, 0, 4, 7, 10, 10, 10, 10, 10};
 static const int weight_pawn_duo = 2;
 
 // The penalty for giving up castling:
@@ -196,7 +197,6 @@ int board_heuristic::evaluate_pawns() const
 // Evaluate pawn structure.
 
 	int sign, sum = 0;
-	bitboard_t b;
 
 	// If we've already evaluated this pawn structure, return our previous
 	// evaluation.
@@ -206,7 +206,7 @@ int board_heuristic::evaluate_pawns() const
 	for (int color = WHITE; color <= BLACK; color++)
 	{
 		sign = !color ? 1 : -1;
-		b = state.piece[color][PAWN];
+		bitboard_t b = state.piece[color][PAWN];
 		for (int n, x, y; (n = FST(b)) != -1; BIT_CLR(b, x, y))
 		{
 			x = n & 0x7;
@@ -222,7 +222,11 @@ int board_heuristic::evaluate_pawns() const
 
 			// TODO: Penalize weak pawns.
 
-			// TODO: Penalize doubled pawns.
+			// Penalize doubled pawns.
+			bitboard_t pawns = state.piece[color][PAWN];
+			bitboard_t pawns_on_col = pawns & COL_MSK(y);
+			int num_pawns_on_col = count_64(pawns_on_col);
+			sum += sign * weight_pawn_doubled[num_pawns_on_col];
 
 			// Reward pawn duos.
 			if (state.piece[color][PAWN] & squares_pawn_duo[x][y])
