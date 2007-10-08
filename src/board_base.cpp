@@ -144,6 +144,8 @@ static bitboard_t squares_castle[COLORS][SIDES][REQS] =
 	// the black king to be able to castle.
 	  0x7000000000000000ULL}}
 };
+bitboard_t squares_adj_cols[8];
+bitboard_t squares_pawn_attacks[COLORS][8][8];
 
 // Zobrist hash keys:
 bitboard_t key_piece[COLORS][SHAPES][8][8];
@@ -166,6 +168,7 @@ board_base::board_base()
 		precomp_king();
 		precomp_row();
 		precomp_knight();
+		precomp_pawn();
 		precomp_key();
 		precomputed_board_base = true;
 	}
@@ -1267,6 +1270,39 @@ void board_base::precomp_knight() const
 }
 
 /*----------------------------------------------------------------------------*\
+ |				 precomp_pawn()				      |
+\*----------------------------------------------------------------------------*/
+void board_base::precomp_pawn() const
+{
+	// For every column, pre-compute its adjacent columns.
+	for (int x = 0; x <= 7; x++)
+	{
+		squares_adj_cols[x] = 0;
+		for (int j = x == 0 ? 1 : -1; j <= (x == 7 ? -1 : 1); j += 2)
+			squares_adj_cols[x] |= COL_MSK(x + j);
+	}
+
+	// For both colors and every square on the board, pre-compute the
+	// squares from which pawns of the color can attack.
+	for (int color = WHITE; color <= BLACK; color++)
+		for (int n = 0; n <= 63; n++)
+		{
+			int x = n & 0x7;
+			int y = n >> 3;
+
+			squares_pawn_attacks[color][x][y] = 0;
+			if (color == WHITE && (y == 0 || y == 1) ||
+			    color == BLACK && (y == 6 || y == 7))
+				// A white pawn can never attack a square in
+				// rank 1 or 2.  Similarly, a black pawn can
+				// never attack a square in rank 6 or 7.
+				continue;
+			squares_pawn_attacks = ROW_MSK(y + (color ? 1 : -1));
+			squares_pawn_attacks &= squares_adj_cols[x];
+		}
+}
+
+/*----------------------------------------------------------------------------*\
  |				     mate()				      |
 \*----------------------------------------------------------------------------*/
 int board_base::mate()
@@ -1377,11 +1413,7 @@ bool board_base::check(bitboard_t b1, bool color) const
 		// opposing pawn sits on any of our marked squares.  If so,
 		// we're in check.  If not, we're not in check, at least not by
 		// a pawn.  Easy, breezy, beautiful.
-		bitboard_t pawn_attacks = 0;
-		for (int j = x == 0 ? 1 : -1; j <= (x == 7 ? -1 : 1); j += 2)
-			pawn_attacks |= COL_MSK(x + j);
-		pawn_attacks &= (!color && y <= 1 || color && y >= 6) ? 0 : ROW_MSK(y + (!color ? -1 : 1));
-		if (pawn_attacks & state.piece[color][PAWN])
+		if (squares_pawn_attacks[color][x][y] & state.piece[color][PAWN])
 			return true;
 	}
 	return false;

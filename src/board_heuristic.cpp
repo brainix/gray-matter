@@ -111,8 +111,8 @@ static int weight_king_position[8][8] =
 	       //   1    2    3    4    5    6    7    8
 };
 
-//
-static const int weight_pawn_doubled[9] = {0, 0, 4, 7, 10, 10, 10, 10, 10};
+// The values of various pawn structure features:
+static const int weight_pawn_doubled[9] = {0, 0, -4, -7, -10, -10, -10, -10, -10};
 static const int weight_pawn_duo = 2;
 
 // The penalty for giving up castling:
@@ -125,6 +125,7 @@ static const int weight_king_cant_castle = -20;
 pawn pawn_table;
 
 bool precomputed_board_heuristic = false;
+extern bitboard_t squares_adj_cols[];
 bitboard_t squares_pawn_duo[8][8];
 
 /*----------------------------------------------------------------------------*\
@@ -409,7 +410,6 @@ void board_heuristic::precomp_pawn() const
 		squares_pawn_duo[x][y] = 0;
 		if (y == 0 || y == 7)
 			continue;
-		for (int j = x == 0 ? 1 : -1; j <= (x == 7 ? -1 : 1); j += 2)
-			BIT_SET(squares_pawn_duo[x][y], x + j, y);
+		squares_pawn_duo[x][y] = squares_adj_cols[x] & ROW_MSK(y);
 	}
 }

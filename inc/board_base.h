@@ -301,6 +301,7 @@ protected:
 	virtual void precomp_king() const;
 	virtual void precomp_row() const;
 	virtual void precomp_knight() const;
+	virtual void precomp_pawn() const;
 
 	// These methods test for various conditions.
 	virtual int mate();
