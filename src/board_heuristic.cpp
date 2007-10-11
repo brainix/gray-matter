@@ -112,7 +112,9 @@ static int weight_king_position[8][8] =
 };
 
 // The values of various pawn structure features:
-static const int weight_pawn_doubled[9] = {0, 0, -4, -7, -10, -10, -10, -10, -10};
+static const int weight_pawn_isolated[9]         = {0, -8, -20, -40, -60, -70, -80, -80, -80};
+static const int weight_pawn_isolated_doubled[9] = {0, -5, -10, -15, -15, -15, -15, -15, -15};
+static const int weight_pawn_doubled[9]          = {0,  0,  -4,  -7, -10, -10, -10, -10, -10};
 static const int weight_pawn_duo = 2;
 
 // The penalty for giving up castling:
@@ -208,6 +210,7 @@ int board_heuristic::evaluate_pawns() const
 	{
 		sign = !color ? 1 : -1;
 		bitboard_t b = state.piece[color][PAWN];
+		int num_isolated = 0;
 		for (int n, x, y; (n = FST(b)) != -1; BIT_CLR(b, x, y))
 		{
 			x = n & 0x7;
@@ -219,24 +222,37 @@ int board_heuristic::evaluate_pawns() const
 			// Penalize bad position or reward good position.
 			sum += sign * weight_position[PAWN][x][y];
 
-			// TODO: Penalize isolated pawns.
-
-			// TODO: Penalize weak pawns.
-
-			// Penalize doubled pawns.
+			//
 			bitboard_t pawns = state.piece[color][PAWN];
 			bitboard_t pawns_on_col = pawns & COL_MSK(y);
-			int num_pawns_on_col = count_64(pawns_on_col);
-			sum += sign * weight_pawn_doubled[num_pawns_on_col];
+			int num_on_col = count_64(pawns_on_col);
 
-			// Reward pawn duos.
-			if (state.piece[color][PAWN] & squares_pawn_duo[x][y])
-				sum += sign * weight_pawn_duo;
+			if (!(state.piece[color][PAWN] & squares_adj_cols[x]))
+			{
+				// Count isolated pawns and penalize isolated
+				// doubled pawns.
+				num_isolated++;
+				sum += sign * weight_pawn_isolated_doubled[num_on_col];
+			}
+			else
+			{
+				// TODO: Penalize weak pawns.
+
+				// Penalize doubled pawns.
+				sum += sign * weight_pawn_doubled[num_on_col];
+
+				// Reward pawn duos.
+				if (state.piece[color][PAWN] & squares_pawn_duo[x][y])
+					sum += sign * weight_pawn_duo;
+			}
 
 			// TODO: Reward passed pawns.
 
 			// TODO: Reward hidden passed pawns.
 		}
+
+		// Penalize isolated pawns.
+		sum += sign * weight_pawn_isolated[num_isolated];
 	}
 
 	pawn_table.store(pawn_hash, sum);
