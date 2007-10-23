@@ -13,7 +13,7 @@
 
   * *Ply* - One move by one player.  The ply is used as a unit of depth.  For example, at the start of a game, a move tree that's 4 plies deep consists of white's possible moves, black's possible responses, white's possible counter-responses, and black's possible counter-counter-responses.
 
-  * *Pondering* or *Permanent Brain* - What the engine does when its opponent is on move.  For a more detailed description, click [Pondering here].
+  * *Pondering* or *Permanent Brain* - What the engine does when its opponent is on move.  For a more detailed description, [Pondering click here].
 
   * *Principal Variation* or *PV* - A series of best moves from the current position to a given depth.  The PV always begins with a move for the color on move.  For example, at the start of the game, the PV consists of white's best move, black's best response, white's best counter-response, black's best counter-counter-response, and so on.
 
