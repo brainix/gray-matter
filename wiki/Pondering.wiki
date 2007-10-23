@@ -1,6 +1,8 @@
 #summary What to do when the opponent is on move.
 #labels Phase-Design,Phase-Implementation
 
+=Introduction=
+
 Some terminology:  _Thinking_ is what a chess engine does when it's on move.  When the engine thinks, it generates a _principal variation_ (or _PV_).  A PV is a series of best moves - the engine's best move, the opponent's best response, the engine's best counter-response, the opponent's best counter-counter-response, and so on - from the current position to a given depth.  _Pondering_ is what the engine does when its opponent is on move.
 
 When the engine finishes thinking, the PV begins with the move that the engine will make followed by the move that the engine believes that the opponent will make in response.  At this point, the engine pops the first move off of the PV and makes it on the board.  The question is: what should the engine do next (while waiting for the opponent to move)?  How should it ponder?
