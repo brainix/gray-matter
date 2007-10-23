@@ -1,4 +1,4 @@
-#summary How to install and run on WinBoard on Windows.
+#summary How to install and run Gray Matter.
 #labels Featured,Phase-Deploy
 
 =Install and Run on Windows=
