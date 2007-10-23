@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*\
- |	search_mtdf.h - MTD(f) move search interface			      |
+ |	search_bogo.h - BogoSearch move search interface		      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
@@ -19,8 +19,8 @@
  | this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SEARCH_MTDF_H
-#define SEARCH_MTDF_H
+#ifndef SEARCH_BOGO_H
+#define SEARCH_BOGO_H
 
 using namespace std;
 
@@ -43,16 +43,13 @@ class history;
 class chess_clock;
 class xboard;
 
-class search_mtdf : public search_base
+class search_bogo : public search_base
 {
 public:
-	search_mtdf(table *t, history *h, chess_clock *c, xboard *x);
-	~search_mtdf();
-	search_mtdf& operator=(const search_mtdf& that);
+	search_bogo(table *t, history *h, chess_clock *c, xboard *x);
+	~search_bogo();
 private:
 	void iterate(int s);
-	move_t mtdf(int depth, int guess = 0);
-	move_t minimax(int depth, int shallowness = 0, int alpha = -INFINITY, int beta = +INFINITY);
 };
 
 #endif

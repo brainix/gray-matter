@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*\
- |	search_mtdf.h - MTD(f) move search interface			      |
+ |	search_bogo.cpp - BogoSearch move search implementation		      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
@@ -19,40 +19,33 @@
  | this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SEARCH_MTDF_H
-#define SEARCH_MTDF_H
+#include "gray.h"
+#include "search_bogo.h"
 
-using namespace std;
-
-// Default Gray Matter stuff:
-#include "config.h"
-#include "library.h"
-
-// Extra Gray Matter stuff:
-#include "search_base.h"
-#include "board_base.h"
-#include "table.h"
-#include "clock.h"
-#include "xboard.h"
-
-// Forward declarations:
-class search_base;
-class board_base;
-class table;
-class history;
-class chess_clock;
-class xboard;
-
-class search_mtdf : public search_base
+/*----------------------------------------------------------------------------*\
+ |				 search_bogo()				      |
+\*----------------------------------------------------------------------------*/
+search_bogo::search_bogo(table *t, history *h, chess_clock *c, xboard *x) :
+	search_base(t, h, c, x)
 {
-public:
-	search_mtdf(table *t, history *h, chess_clock *c, xboard *x);
-	~search_mtdf();
-	search_mtdf& operator=(const search_mtdf& that);
-private:
-	void iterate(int s);
-	move_t mtdf(int depth, int guess = 0);
-	move_t minimax(int depth, int shallowness = 0, int alpha = -INFINITY, int beta = +INFINITY);
-};
 
-#endif
+// Constructor.
+
+}
+
+/*----------------------------------------------------------------------------*\
+ |				 ~search_bogo()				      |
+\*----------------------------------------------------------------------------*/
+search_bogo::~search_bogo()
+{
+
+// Destructor.
+
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   iterate()				      |
+\*----------------------------------------------------------------------------*/
+void search_bogo::iterate(int s)
+{
+}
