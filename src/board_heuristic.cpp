@@ -171,7 +171,7 @@ board_heuristic& board_heuristic::operator=(const board_heuristic& that)
 /*----------------------------------------------------------------------------*\
  |				   evaluate()				      |
 \*----------------------------------------------------------------------------*/
-int board_heuristic::evaluate() const
+int board_heuristic::evaluate(int depth) const
 {
 
 // Evaluate the current state.  For simplicity's sake, evaluate from the
@@ -187,7 +187,7 @@ int board_heuristic::evaluate() const
 	sum += evaluate_bishops();
 	sum += evaluate_rooks();
 	sum += evaluate_queens();
-	sum += evaluate_kings();
+	sum += evaluate_kings(depth);
 	return sum;
 }
 
@@ -384,7 +384,7 @@ int board_heuristic::evaluate_queens() const
 /*----------------------------------------------------------------------------*\
  |				evaluate_kings()			      |
 \*----------------------------------------------------------------------------*/
-int board_heuristic::evaluate_kings() const
+int board_heuristic::evaluate_kings(int depth) const
 {
 
 // Evaluate king position.
