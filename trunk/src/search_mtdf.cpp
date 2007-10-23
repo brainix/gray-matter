@@ -258,7 +258,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 	if (depth <= 0)
 	{
 		SET_NULL_MOVE(m);
-		m.value = -board_ptr->evaluate();
+		m.value = -board_ptr->evaluate(shallowness);
 		table_ptr->store(hash, 0, EXACT, m);
 		return m;
 	}
