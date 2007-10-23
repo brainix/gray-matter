@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*\
- |	search_mtdf.cpp - move search implementation			      |
+ |	search_mtdf.cpp - MTD(f) move search implementation		      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
