@@ -11,7 +11,7 @@
   * ~~To generate/accept all/only legal moves (including en passant and castling!) and correctly detect checkmate/stalemate.~~
   * To implement Crafty's evaluator.
   * To ~~adopt a version numbering standard and~~ provide builds.
-  * To earn a provisional rating.
+  * To earn a rating.
 
 ===Mid Term Goals (for the Next Year)===
   * To design and implement ~~[http://www.cs.vu.nl/~aske/mtdf.html MTD(f)], strong pondering,~~ null-move pruning, and quiescence search.
