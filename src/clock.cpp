@@ -44,8 +44,8 @@ void chess_clock::set_mode(int color, int new_moves, int new_csecs, int new_inc)
 {
 
 // Set the mode.  We allow different modes for white and black.  A mode is
-// specified as a number of moves, which must be made in a number of seconds,
-// with an increment of time added to the clock after each move.
+// specified as a number of moves, which must be made in a period of time, with
+// an increment of time added to the clock after each move.
 
 	total_moves[color] = new_moves;
 	remaining_moves[color] = new_moves;
@@ -96,7 +96,11 @@ void chess_clock::set_alarm(int color) const
 
 // Set the alarm.
 
-	timer_set(GREATER(remaining_csecs[color] / (remaining_moves[color] ? remaining_moves[color] : 40) + inc[color] - overhead, 1));
+	int csecs = remaining_csecs[color];
+	int moves = remaining_moves[color] ? remaining_moves[color] : 40;
+	int csecs_per_move = csecs / moves + inc[color] - overhead;
+	csecs_per_move = GREATER(csecs_per_move, 1);
+	timer_set(csecs_per_move);
 }
 
 /*----------------------------------------------------------------------------*\
