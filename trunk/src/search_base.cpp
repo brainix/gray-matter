@@ -303,9 +303,9 @@ void search_base::extract_pv()
 void search_base::extract_hint(int s)
 {
 
-// Extract the hint from the principal variation.  We call this method after
-// extracting the principal variation either at various times during thinking or
-// just once before pondering.
+// Extract the hint (what we think our opponent should do) from the principal
+// variation.  We call this method after extracting the principal variation
+// either at various times during thinking or just once before pondering.
 
 	if (s == THINKING && pv.size() >= 2)
 	{
@@ -320,6 +320,8 @@ void search_base::extract_hint(int s)
 		// 1st move is what we think our opponent should do.
 		hint = pv.front();
 	else
+		// The principal variation isn't long enough.  We don't know
+		// what our opponent should do.
 		SET_NULL_MOVE(hint);
 }
 
