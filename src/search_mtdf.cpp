@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*\
- |	search_mtdf.cpp - MTD(f) move search implementation		      |
+ |	search_mtdf.cpp - move search implementation			      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
@@ -136,8 +136,7 @@ void search_mtdf::iterate(int s)
 		}
 	}
 
-	// If we've just finished thinking, cancel the alarm and extract the
-	// hint.
+	// If we've just finished thinking, cancel the alarm.
 	if (s == THINKING)
 	{
 		clock_ptr->cancel_alarm();
@@ -153,7 +152,7 @@ void search_mtdf::iterate(int s)
 	board_ptr->unlock();
 
 	// If we've just finished thinking, inform XBoard of our favorite move.
-	if (s == THINKING)
+	if (s == THINKING && search_status != QUITTING)
 		xboard_ptr->print_result(m);
 }
 

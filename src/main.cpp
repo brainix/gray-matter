@@ -53,13 +53,12 @@ int main(int argc, char **argv)
 		switch (c)
 		{
 			case 'e':
-				// Specifying the move search engine to use.
+				// Specifying which move search engine to use.
 				search_engine = optarg;
-				if (search_engine != "BogoSearch" &&
-				    search_engine != "MTD(f)")
+				if (search_engine != "MTD(f)")
 				{
-					cout << "move search engine must be "
-					     << "BogoSearch or MTD(f)"
+					cout << "move search engine "
+					     << "must be MTD(f)"
 					     << endl;
 					exit(EXIT_FAILURE);
 				}
@@ -69,8 +68,8 @@ int main(int argc, char **argv)
 				// table.
 				if ((xpos_table_mb = atoi(optarg)) < 1)
 				{
-					cout << "transposition table must be "
-					     << ">= 1 MB"
+					cout << "transposition table "
+					     << "must be >= 1 MB"
 					     << endl;
 					exit(EXIT_FAILURE);
 				}
@@ -90,11 +89,11 @@ int main(int argc, char **argv)
 				break;
 			case 'm':
 				// Specifying the number of moves to read per
-				// game from the opening book.
+				// game in the opening book.
 				if ((book_moves = atoi(optarg)) < 1)
 				{
-					cout << "number of book moves must be "
-					     << ">= 1 ply"
+					cout << "number of book moves "
+					     << "must be >= 1 ply"
 					     << endl;
 					exit(EXIT_FAILURE);
 				}
@@ -103,8 +102,8 @@ int main(int argc, char **argv)
 				// Specifying the move search overhead.
 				if ((overhead = atoi(optarg)) < 1)
 				{
-					cout << "move search overhead must be "
-					     << ">= 1 centisecond"
+					cout << "move search overhead "
+					     << "must be >= 1 centisecond"
 					     << endl;
 					exit(EXIT_FAILURE);
 				}
@@ -133,12 +132,9 @@ int main(int argc, char **argv)
 	book o(&t, book_name, book_moves); // Opening book object.
 
 	// Based on the -s command-line option, choose the move search engine
-	// and cast it as a generic version.
-	search_base *s;
-	if (search_engine == "BogoSearch")
-		s = new search_bogo(&t, &h, &c, &x);
-	else if (search_engine == "MTD(f)")
-		s = new search_mtdf(&t, &h, &c, &x);
+	// and cast it as a generic version.  Thus far, we've only implemented
+	// one move search engine, MTD(f).
+	search_base *s = new search_mtdf(&t, &h, &c, &x);
 
 	// Launch the event loop.
 	x.loop(s, &c, &o);

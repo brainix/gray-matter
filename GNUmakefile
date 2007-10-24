@@ -31,7 +31,6 @@ OBJS = bin/board_base.o      \
        bin/library.o         \
        bin/main.o            \
        bin/search_base.o     \
-       bin/search_bogo.o     \
        bin/search_mtdf.o     \
        bin/table.o           \
        bin/xboard.o

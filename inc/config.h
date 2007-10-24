@@ -35,7 +35,7 @@
 /*----------------------------------------------------------------------------*\
 \*----------------------------------------------------------------------------*/
 
-#define SEARCH_ENGINE	"MTD(f)"   // Move search engine: BogoSearch or MTD(f)
+#define SEARCH_ENGINE	"MTD(f)"   // Move search engine.
 #define BOOK_NAME	"book.pgn" // Opening book file name.
 
 // All of the values in this section must be >= 1.

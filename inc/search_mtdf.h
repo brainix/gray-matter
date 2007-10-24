@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*\
- |	search_mtdf.h - MTD(f) move search interface			      |
+ |	search_mtdf.h - move search interface				      |
  |									      |
  |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
