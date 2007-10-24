@@ -49,25 +49,10 @@ search_bogo::~search_bogo()
 void search_bogo::iterate(int s)
 {
 	list<move_t> l;
-	move_t m;
-
-	if (s != THINKING)
-		return;
 
 	board_ptr->lock();
-
 	board_ptr->generate(l, true);
-	l.sort(shuffle);
-	table_ptr->store(board_ptr->get_hash(), 0, EXACT, m = l.front());
-
-	board_ptr->make(m);
-	board_ptr->generate(l, true);
-	l.sort(shuffle);
-	table_ptr->store(board_ptr->get_hash(), 0, EXACT, l.front());
-	board_ptr->unmake();
-
-	extract_pv();
-	extract_hint(THINKING);
 	board_ptr->unlock();
-	xboard_ptr->print_result(m);
+	l.sort(shuffle);
+	xboard_ptr->print_result(l.front());
 }

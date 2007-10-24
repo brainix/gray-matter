@@ -136,7 +136,8 @@ void search_mtdf::iterate(int s)
 		}
 	}
 
-	// If we've just finished thinking, cancel the alarm.
+	// If we've just finished thinking, cancel the alarm and extract the
+	// hint.
 	if (s == THINKING)
 	{
 		clock_ptr->cancel_alarm();
@@ -152,7 +153,7 @@ void search_mtdf::iterate(int s)
 	board_ptr->unlock();
 
 	// If we've just finished thinking, inform XBoard of our favorite move.
-	if (s == THINKING && search_status != QUITTING)
+	if (s == THINKING)
 		xboard_ptr->print_result(m);
 }
 
