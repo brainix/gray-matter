@@ -48,14 +48,4 @@ search_bogo::~search_bogo()
 \*----------------------------------------------------------------------------*/
 void search_bogo::iterate(int s)
 {
-	list<move_t> l;
-
-	if (s != THINKING)
-		return;
-
-	board_ptr->lock();
-	board_ptr->generate(l, true);
-	board_ptr->unlock();
-	l.sort(shuffle);
-	xboard_ptr->print_result(l.front());
 }
