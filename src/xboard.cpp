@@ -68,13 +68,17 @@ void xboard::vomit(char *message) const
 \*----------------------------------------------------------------------------*/
 void xboard::loop(search_base *s, chess_clock *c, book *o)
 {
+
+// This is the event loop.
+
 	board_ptr = new board_heuristic();
 	search_ptr = s;
 	clock_ptr = c;
 	book_ptr = o;
 
-	for (fgets(buffer, 80, stdin); strncmp(buffer, "quit", 4); fgets(buffer, 80, stdin))
+	do
 	{
+		fgets(buffer, 80, stdin);
 		if (!strncmp(buffer, "xboard", 6))
 			do_xboard();
 		else if (!strncmp(buffer, "protover", 8))
@@ -85,6 +89,8 @@ void xboard::loop(search_base *s, chess_clock *c, book *o)
 			do_rejected();
 		else if (!strncmp(buffer, "new", 3))
 			do_new();
+		else if (!strncmp(buffer, "quit", 4))
+			do_quit();
 		else if (!strncmp(buffer, "force", 5))
 			do_force();
 		else if (!strncmp(buffer, "go", 2))
@@ -125,8 +131,7 @@ void xboard::loop(search_base *s, chess_clock *c, book *o)
 			do_nopost();
 		else
 			do_unknown();
-	}
-	do_quit();
+	} while (strncmp(buffer, "quit", 4));
 }
 
 /*----------------------------------------------------------------------------*\
@@ -151,15 +156,23 @@ void xboard::print_output(int ply, int value, int time, int nodes, list<move_t> 
 \*----------------------------------------------------------------------------*/
 void xboard::print_result(move_t m)
 {
+
+// We've just finished thinking.  Update the board and clock, inform XBoard of
+// the move we're making, and change the move search engine's mode.
+
+	// Update the board and clock.
 	board_ptr->make(m);
 	clock_ptr->dec_remaining_moves(!board_ptr->get_whose());
 
+	// Inform XBoard of the move we're making.
 	printf("move ");
 	print_move(m);
 	printf("\n");
 
+	// Change the move search engine's mode.
 	int status = game_over();
-	search_ptr->change(ponder && status == IN_PROGRESS ? PONDERING : IDLING, *board_ptr);
+	int mode = ponder && status == IN_PROGRESS ? PONDERING : IDLING;
+	search_ptr->change(mode, *board_ptr);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -167,6 +180,10 @@ void xboard::print_result(move_t m)
 \*----------------------------------------------------------------------------*/
 void xboard::print_resignation() const
 {
+
+// We've determined our situation to be hopeless.  If our opponent had offered a
+// draw before, accept it now.  Otherwise, resign.
+
 	printf("%s\n", draw ? "offer draw" : "resign");
 }
 
@@ -325,7 +342,8 @@ void xboard::do_sd() const
 void xboard::do_time() const
 {
 	if (sync)
-		clock_ptr->update_remaining_csecs(!board_ptr->get_whose(), str_to_num(&buffer[5]));
+		clock_ptr->update_remaining_csecs(!board_ptr->get_whose(),
+		                                  str_to_num(&buffer[5]));
 }
 
 /*----------------------------------------------------------------------------*\
@@ -334,7 +352,8 @@ void xboard::do_time() const
 void xboard::do_otim() const
 {
 	if (sync)
-		clock_ptr->update_remaining_csecs(board_ptr->get_whose(), str_to_num(&buffer[5]));
+		clock_ptr->update_remaining_csecs(board_ptr->get_whose(),
+		                                  str_to_num(&buffer[5]));
 }
 
 /*----------------------------------------------------------------------------*\
@@ -389,6 +408,10 @@ void xboard::do_usermove()
 \*----------------------------------------------------------------------------*/
 void xboard::do_question() const
 {
+
+// Our opponent has grown impatient.  Move now, even if there's still thinking
+// time left.
+
 	search_ptr->move_now();
 }
 
@@ -410,6 +433,9 @@ void xboard::do_ping()
 \*----------------------------------------------------------------------------*/
 void xboard::do_draw()
 {
+
+// Our opponent has offered a draw.  Just note this for now.
+
 	draw = true;
 }
 
@@ -517,11 +543,24 @@ int xboard::game_over()
 
 	switch (status)
 	{
-		case STALEMATE    : printf("1/2-1/2 {Stalemate}\n");                                              break;
-		case INSUFFICIENT : printf("1/2-1/2 {Insufficient material}\n");                                  break;
-		case THREE        : printf("1/2-1/2 {Threefold repetition}\n");                                   break;
-		case FIFTY        : printf("1/2-1/2 {Fifty move rule}\n");                                        break;
-		case CHECKMATE    : printf("%s mates}\n", !board_ptr->get_whose() == WHITE ? "1-0 {White" : "0-1 {Black"); break;
+		case STALEMATE:
+			printf("1/2-1/2 {Stalemate}\n");
+			break;
+		case INSUFFICIENT:
+			printf("1/2-1/2 {Insufficient material}\n");
+			break;
+		case THREE:
+			printf("1/2-1/2 {Threefold repetition}\n");
+			break;
+		case FIFTY:
+			printf("1/2-1/2 {Fifty move rule}\n");
+			break;
+		case CHECKMATE:
+			if (!board_ptr->get_whose() == WHITE)
+				printf("1-0 {White mates}\n");
+			else
+				printf("0-1 {Black mates}\n");
+			break;
 	}
 	return status;
 }
