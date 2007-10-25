@@ -71,7 +71,7 @@ private:
 	table *table_ptr;          // Transposition table object.
 
 	// Based on the PGN file, the following methods populate the token list,
-	// the game list, and the transposition table.
+	// game list, and transposition table.
 	void populate_tokens(istream& stream, list<string>& tokens);
 	void populate_games(list<string>& tokens);
 	void populate_table();
