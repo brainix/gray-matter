@@ -37,9 +37,9 @@ book::book(table *t, string& file_name, int n)
 	table_ptr = t;
 	num_moves = n;
 
-	stream.open(file_name.c_str());  // Open the file.
+	stream.open(file_name.c_str());  // Open the PGN file.
 	populate_tokens(stream, tokens); // Populate the token list.
-	stream.close();                  // Close the file.
+	stream.close();                  // Close the PGN file.
 	populate_games(tokens);          // Populate the game list.
 }
 
@@ -48,6 +48,11 @@ book::book(table *t, string& file_name, int n)
 \*----------------------------------------------------------------------------*/
 void book::read()
 {
+
+// At this point, we've already populated the game list.  Now, we're actually
+// starting a new game.  Based on the game list, populate the transposition
+// table.
+
 	populate_table();
 }
 
@@ -57,7 +62,7 @@ void book::read()
 void book::populate_tokens(istream& stream, list<string>& tokens)
 {
 
-// Based on the PGN opening book file stream, populate the token list.
+// Based on the PGN file, populate the token list.
 
 	string token;
 
@@ -130,8 +135,8 @@ void book::populate_table()
 int book::tokenize(istream& stream, string& token)
 {
 
-// Forward past the stream's next token, save it (null terminated), and return
-// its type.
+// Forward past the PGN opening book file stream's next token, save it (null
+// terminated), and return its type.
 
 	if (tokenize_space(stream, token))
 		return TOKEN_SPACE;

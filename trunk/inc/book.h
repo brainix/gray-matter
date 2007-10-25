@@ -70,9 +70,13 @@ private:
 	board_base *board_ptr;     // Board representation object.
 	table *table_ptr;          // Transposition table object.
 
+	// Based on the PGN file, the following methods populate the token list,
+	// the game list, and the transposition table.
 	void populate_tokens(istream& stream, list<string>& tokens);
 	void populate_games(list<string>& tokens);
 	void populate_table();
+
+	//
 	int tokenize(istream& stream, string& token);
 	bool tokenize_space(istream& stream, string& token);
 	bool tokenize_string(istream& stream, string& token);
@@ -80,6 +84,8 @@ private:
 	bool tokenize_punctuation(istream& stream, string& token);
 	bool tokenize_glyph(istream& stream, string& token);
 	bool tokenize_symbol(istream& stream, string& token);
+
+	// The following method is the most magnificent hack of my life.
 	static bool shuffle(list<move_t> l1, list<move_t> l2);
 };
 
