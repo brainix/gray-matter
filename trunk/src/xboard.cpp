@@ -308,8 +308,9 @@ void xboard::do_level() const
 	while (*p++ != ' ')
 		;
 	int inc = str_to_num(p);
-	for (int color = WHITE; color <= BLACK; color++)
-		clock_ptr->set_mode(color, moves, secs * 100, inc * 100);
+
+	clock_ptr->set_mode(WHITE, moves, secs * 100, inc * 100);
+	clock_ptr->set_mode(BLACK, moves, secs * 100, inc * 100);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -321,8 +322,8 @@ void xboard::do_st()
 // Set the maximum search time.
 
 	sync = false;
-	for (int color = WHITE; color <= BLACK; color++)
-		clock_ptr->set_mode(color, 1, str_to_num(&buffer[3]) * 100, 0);
+	clock_ptr->set_mode(WHITE, 1, str_to_num(&buffer[3]) * 100, 0);
+	clock_ptr->set_mode(BLACK, 1, str_to_num(&buffer[3]) * 100, 0);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -477,8 +478,8 @@ void xboard::do_remove()
 
 	board_ptr->unmake();
 	board_ptr->unmake();
-	for (int color = WHITE; color <= BLACK; color++)
-		clock_ptr->inc_remaining_moves(color);
+	clock_ptr->inc_remaining_moves(WHITE);
+	clock_ptr->inc_remaining_moves(BLACK);
 	search_ptr->change(ponder ? PONDERING : IDLING, *board_ptr);
 }
 
