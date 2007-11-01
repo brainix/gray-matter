@@ -133,6 +133,9 @@ void table::store(bitboard_t hash, int depth, int type, move_t move)
 \*----------------------------------------------------------------------------*/
 history::history()
 {
+
+// Constructor.
+
 	try
 	{
 		data = new int****[COLORS];
@@ -163,6 +166,9 @@ history::history()
 \*----------------------------------------------------------------------------*/
 history::~history()
 {
+
+// Destructor.
+
 	for (int color = WHITE; color <= BLACK; color++)
 	{
 		for (int x1 = 0; x1 <= 7; x1++)
@@ -185,6 +191,9 @@ history::~history()
 \*----------------------------------------------------------------------------*/
 void history::clear()
 {
+
+// Clear the history table.
+
 	for (int color = WHITE; color <= BLACK; color++)
 		for (int x1 = 0; x1 <= 7; x1++)
 			for (int y1 = 0; y1 <= 7; y1++)
