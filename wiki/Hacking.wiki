@@ -5,7 +5,7 @@
 
 Today, chess engines running on commodity hardware pose serious challenges to the strongest human players.  In order to compete at that level, chess engines have had to grow large and complex.  Just as it'd be difficult to learn about the basic principles of aerodynamics by examining the most sophisticated supersonic aircraft, it's difficult to learn about the basic principles of artificial intelligence by examining these competitive chess engines (many of which are proprietary and not even available in source code form).
 
-*Gray Matter* is a pedagogical, open source chess engine.  Our main goal is to learn and teach the craft of chess programming.  Experimenting with Gray Matter could make for an interesting hobby, high school, undergraduate, or even graduate project.  Here, in this document, we hope to provide a gentle introduction to the Gray Matter code.  This document assumes some familiarity with object oriented programming and the C++ programming language.
+*Gray Matter* is a pedagogical, open source chess engine.  Our main goal is to learn and teach the craft of chess programming.  Experimenting with Gray Matter could make for an interesting hobby, high school, undergraduate, or even graduate project.  In this document, we hope to provide a gentle introduction to the Gray Matter code.  This document assumes some familiarity with object oriented programming and the C++ programming language.
 
 =Details=
 
