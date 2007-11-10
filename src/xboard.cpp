@@ -78,7 +78,7 @@ void xboard::loop(search_base *s, chess_clock *c, book *o)
 
 	do
 	{
-		bzero(buffer, 80);
+		memset(buffer, '\0', 80);
 		fgets(buffer, 80, stdin);
 		if (!strncmp(buffer, "xboard", 6))
 			do_xboard();
