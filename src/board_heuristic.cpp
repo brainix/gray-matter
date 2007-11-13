@@ -112,9 +112,10 @@ static int weight_king_position[8][8] =
 };
 
 // The values of various pawn structure features:
-static const int weight_pawn_isolated[9]         = {0, -8, -20, -40, -60, -70, -80, -80, -80};
-static const int weight_pawn_isolated_doubled[9] = {0, -5, -10, -15, -15, -15, -15, -15, -15};
+static const int weight_pawn_passed[8]           = {0, 12,  20,  48,  72, 120, 150,   0}
 static const int weight_pawn_doubled[9]          = {0,  0,  -4,  -7, -10, -10, -10, -10, -10};
+static const int weight_pawn_isolated_doubled[9] = {0, -5, -10, -15, -15, -15, -15, -15, -15};
+static const int weight_pawn_isolated[9]         = {0, -8, -20, -40, -60, -70, -80, -80, -80};
 static const int weight_pawn_duo = 2;
 
 // The penalty for giving up castling:
@@ -247,7 +248,9 @@ int board_heuristic::evaluate_pawns() const
 					sum += sign * weight_pawn_duo;
 			}
 
-			// TODO: Reward passed pawns.
+			// Reward passed pawns.
+			if (!(state.piece[!color][PAWN] & squares_pawn_potential_attacks[!color][x][y]))
+				sum += sign * weight_pawn_passed[!color ? y : 7 - y];
 
 			// TODO: Reward hidden passed pawns.
 		}
@@ -432,7 +435,7 @@ void board_heuristic::precomp_pawn() const
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
-		sign = !color ? 1 : -1;
+		sign = !color ? -1 : 1;
 		for (int n = 0; n <= 63; n++)
 		{
 			int x = n & 0x7;
