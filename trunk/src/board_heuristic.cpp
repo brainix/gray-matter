@@ -129,6 +129,7 @@ pawn pawn_table;
 bool precomputed_board_heuristic = false;
 extern bitboard_t squares_adj_cols[];
 bitboard_t squares_pawn_duo[8][8];
+bitboard_t squares_pawn_potential_attacks[COLORS][8][8];
 
 /*----------------------------------------------------------------------------*\
  |			       board_heuristic()			      |
@@ -427,5 +428,19 @@ void board_heuristic::precomp_pawn() const
 		if (y == 0 || y == 7)
 			continue;
 		squares_pawn_duo[x][y] = squares_adj_cols[x] & ROW_MSK(y);
+	}
+
+	for (int color = WHITE; color <= BLACK; color++)
+	{
+		sign = !color ? 1 : -1;
+		for (int n = 0; n <= 63; n++)
+		{
+			int x = n & 0x7;
+			int y = n >> 3;
+
+			squares_pawn_potential_attacks[color][x][y] = 0;
+			for (int k = y + sign; k >= 1 && k <= 6; k += sign)
+				squares_pawn_potential_attacks[color][x][y] |= ROW_MSK(k) & squares_adj_cols[x];
+		}
 	}
 }
