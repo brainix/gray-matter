@@ -22,11 +22,11 @@
 #include "gray.h"
 #include "board_heuristic.h"
 
-//
+// The values of the pieces:
 static int value_material[SHAPES] = {VALUE_PAWN, VALUE_KNIGHT, VALUE_BISHOP,
                                      VALUE_ROOK, VALUE_QUEEN,  VALUE_KING};
 
-//
+// The values of having different pieces on different squares:
 static int value_position[SHAPES][8][8] =
 {
 	       // White pawns:
@@ -96,10 +96,10 @@ static int value_position[SHAPES][8][8] =
 	       //   1    2    3    4    5    6    7    8
 };
 
-//
+// The values of having the white king on different squares during an endgame
+// with pawns (of both colors) only on the queen side:
 static int value_king_position[8][8] =
 {
-	       // White king:
 	/* A */ {-20,   0,  20,  40,  40,  40,  40,  -20},
 	/* B */ {-20,   0,  20,  40,  60,  60,  40,  -20},
 	/* C */ {-20,   0,  20,  40,  60,  60,  40,  -20},
@@ -290,6 +290,10 @@ int board_heuristic::evaluate_knights() const
 
 			// Penalize bad position or reward good position.
 			sum += sign * value_position[KNIGHT][x][y];
+
+			// TODO: Reward outposts.
+
+			// TODO: Reward blocking center pawns.
 		}
 	}
 	return sum;
@@ -305,6 +309,8 @@ int board_heuristic::evaluate_bishops() const
 
 	int sign, sum = 0;
 	bitboard_t b;
+	static bitboard_t squares_both_sides = COL_MSK(0) | COL_MSK(1) | COL_MSK(2) |
+	                                       COL_MSK(5) | COL_MSK(6) | COL_MSK(7);
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
@@ -320,6 +326,18 @@ int board_heuristic::evaluate_bishops() const
 
 			// Penalize bad position or reward good position.
 			sum += sign * value_position[BISHOP][x][y];
+
+			// TODO: Reward blocking center pawns.
+
+			// TODO: Reward bishops (over knights) during endgames
+			// with pawns on both sides of the board.
+
+			// TODO: Penalize trapped or potentially trapped
+			// bishops.
+
+			// TODO: Penalize bad bishops.
+
+			// TODO: Reward having two bishops.
 		}
 	}
 	return sum;
