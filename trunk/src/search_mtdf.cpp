@@ -124,7 +124,7 @@ void search_mtdf::iterate(int s)
 			if (s == PONDERING && !IS_NULL_MOVE(hint))
 				pv.pop_front();
 		}
-		if (ABS(m.value) >= WEIGHT_KING - MAX_DEPTH)
+		if (ABS(m.value) >= VALUE_KING - MAX_DEPTH)
 			// Oops.  The game will be over at this depth.  There's
 			// no point in searching deeper.  Eyes on the prize.
 			break;
@@ -225,7 +225,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 	if (status != IN_PROGRESS)
 	{
 		SET_NULL_MOVE(m);
-		m.value = status >= INSUFFICIENT && status <= FIFTY ? +WEIGHT_CONTEMPT : -WEIGHT_ILLEGAL;
+		m.value = status >= INSUFFICIENT && status <= FIFTY ? +VALUE_CONTEMPT : -VALUE_ILLEGAL;
 		return m;
 	}
 
@@ -272,12 +272,12 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 		// highly to force it to the front of the list to score it first
 		// to hopefully cause an earlier cutoff.  Otherwise, score this
 		// move according to the history heuristic.
-		it->value = *it == m ? WEIGHT_KING : history_ptr->probe(whose, *it);
+		it->value = *it == m ? VALUE_KING : history_ptr->probe(whose, *it);
 	l.sort(descend);
 
 	// Score each move in the list.
 	SET_NULL_MOVE(m);
-	m.value = -WEIGHT_ILLEGAL;
+	m.value = -VALUE_ILLEGAL;
 	for (it = l.begin(); it != l.end(); it++)
 	{
 		board_ptr->make(*it);
@@ -290,14 +290,14 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 	}
 
 	// Was there a legal move in the list?
-	if (m.value == -WEIGHT_ILLEGAL)
+	if (m.value == -VALUE_ILLEGAL)
 	{
 		// Nope, there was no legal move in the list.  The current
 		// position must either be stalemate or checkmate.  How can we
 		// tell which?  Easily.  If we're not in check, we're
 		// stalemated; if we're in check, we're checkmated.
 		SET_NULL_MOVE(m);
-		m.value = !board_ptr->check() ? +WEIGHT_CONTEMPT : -WEIGHT_KING + shallowness;
+		m.value = !board_ptr->check() ? +VALUE_CONTEMPT : -VALUE_KING + shallowness;
 		if (!timeout_flag || !depth_flag)
 			table_ptr->store(hash, depth, EXACT, m);
 		return m;
