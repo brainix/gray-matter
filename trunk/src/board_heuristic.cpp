@@ -309,8 +309,9 @@ int board_heuristic::evaluate_bishops() const
 
 	int sign, sum = 0;
 	bitboard_t b;
-	static bitboard_t squares_both_sides = COL_MSK(0) | COL_MSK(1) | COL_MSK(2) |
-	                                       COL_MSK(5) | COL_MSK(6) | COL_MSK(7);
+	static bitboard_t squares_both_sides =
+		COL_MSK(0) | COL_MSK(1) | COL_MSK(2) |
+		COL_MSK(5) | COL_MSK(6) | COL_MSK(7);
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
@@ -426,11 +427,20 @@ int board_heuristic::evaluate_kings(int depth) const
 			sum += sign * value_king_cant_castle;
 
 		// Penalize bad position or reward good position.
-		bitboard_t pawns = state.piece[WHITE][PAWN] | state.piece[BLACK][PAWN];
+		bitboard_t pawns = state.piece[WHITE][PAWN] |
+		                   state.piece[BLACK][PAWN];
 		if (pawns & SQUARES_QUEEN_SIDE && pawns & SQUARES_KING_SIDE)
-			sum += sign * value_position[KING][x][!color ? y : 7 - y];
+		{
+			int j = x;
+			int k = !color ? y : 7 - y;
+			sum += sign * value_position[KING][j][k];
+		}
 		else if (pawns)
-			sum += sign * value_king_position[pawns & SQUARES_QUEEN_SIDE ? x : 7 - x][!color ? y : 7 - y];
+		{
+			int j = pawns & SQUARES_QUEEN_SIDE ? x : 7 - x;
+			int k = !color ? y : 7 - y;
+			sum += sign * value_king_position[j][k];
+		}
 	}
 	return sum;
 }
@@ -461,7 +471,8 @@ void board_heuristic::precomp_pawn() const
 
 			squares_pawn_potential_attacks[color][x][y] = 0;
 			for (int k = y + sign; k >= 1 && k <= 6; k += sign)
-				squares_pawn_potential_attacks[color][x][y] |= ROW_MSK(k) & squares_adj_cols[x];
+				squares_pawn_potential_attacks[color][x][y] |=
+					ROW_MSK(k) & squares_adj_cols[x];
 		}
 	}
 }
