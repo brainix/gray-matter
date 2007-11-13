@@ -52,16 +52,16 @@
 \*----------------------------------------------------------------------------*/
 
 // Values of material (in centipawns):
-#define WEIGHT_PAWN		  100
-#define WEIGHT_KNIGHT		  300
-#define WEIGHT_BISHOP		  300
-#define WEIGHT_ROOK		  500
-#define WEIGHT_QUEEN		  900
-#define WEIGHT_KING		10000
-#define WEIGHT_ILLEGAL		20000
+#define VALUE_PAWN		  100
+#define VALUE_KNIGHT		  300
+#define VALUE_BISHOP		  300
+#define VALUE_ROOK		  500
+#define VALUE_QUEEN		  900
+#define VALUE_KING		10000
+#define VALUE_ILLEGAL		20000
 
 //
-#define WEIGHT_CONTEMPT		    0 // How much we hate our opponent.
+#define VALUE_CONTEMPT		    0 // How much we hate our opponent.
 
 
 

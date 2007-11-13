@@ -23,11 +23,11 @@
 #include "board_heuristic.h"
 
 //
-static int weight_material[SHAPES] = {WEIGHT_PAWN, WEIGHT_KNIGHT, WEIGHT_BISHOP,
-                                      WEIGHT_ROOK, WEIGHT_QUEEN,  WEIGHT_KING};
+static int value_material[SHAPES] = {VALUE_PAWN, VALUE_KNIGHT, VALUE_BISHOP,
+                                     VALUE_ROOK, VALUE_QUEEN,  VALUE_KING};
 
 //
-static int weight_position[SHAPES][8][8] =
+static int value_position[SHAPES][8][8] =
 {
 	       // White pawns:
 	/* A */ {{  0,   0,   1,   3,   6,  10,  40,   0},
@@ -97,7 +97,7 @@ static int weight_position[SHAPES][8][8] =
 };
 
 //
-static int weight_king_position[8][8] =
+static int value_king_position[8][8] =
 {
 	       // White king:
 	/* A */ {-20,   0,  20,  40,  40,  40,  40,  -20},
@@ -112,14 +112,14 @@ static int weight_king_position[8][8] =
 };
 
 // The values of various pawn structure features:
-static const int weight_pawn_passed[8]           = {0, 12,  20,  48,  72, 120, 150,   0}
-static const int weight_pawn_doubled[9]          = {0,  0,  -4,  -7, -10, -10, -10, -10, -10};
-static const int weight_pawn_isolated_doubled[9] = {0, -5, -10, -15, -15, -15, -15, -15, -15};
-static const int weight_pawn_isolated[9]         = {0, -8, -20, -40, -60, -70, -80, -80, -80};
-static const int weight_pawn_duo = 2;
+static const int value_pawn_passed[8]           = {0, 12,  20,  48,  72, 120, 150,   0}
+static const int value_pawn_doubled[9]          = {0,  0,  -4,  -7, -10, -10, -10, -10, -10};
+static const int value_pawn_isolated[9]         = {0, -8, -20, -40, -60, -70, -80, -80, -80};
+static const int value_pawn_isolated_doubled[9] = {0, -5, -10, -15, -15, -15, -15, -15, -15};
+static const int value_pawn_duo = 2;
 
 // The penalty for giving up castling:
-static const int weight_king_cant_castle = -20;
+static const int value_king_cant_castle = -20;
 
 // Since pawn structure remains relatively static, we maintain a hash table of
 // previous pawn structure evaluations.  According to my tests, this hash table
@@ -219,10 +219,10 @@ int board_heuristic::evaluate_pawns() const
 			y = n >> 3;
 
 			// Reward material.
-			sum += sign * weight_material[PAWN];
+			sum += sign * value_material[PAWN];
 
 			// Penalize bad position or reward good position.
-			sum += sign * weight_position[PAWN][x][y];
+			sum += sign * value_position[PAWN][x][y];
 
 			//
 			bitboard_t pawns = state.piece[color][PAWN];
@@ -234,29 +234,29 @@ int board_heuristic::evaluate_pawns() const
 				// Count isolated pawns and penalize isolated
 				// doubled pawns.
 				num_isolated++;
-				sum += sign * weight_pawn_isolated_doubled[num_on_col];
+				sum += sign * value_pawn_isolated_doubled[num_on_col];
 			}
 			else
 			{
 				// TODO: Penalize weak pawns.
 
 				// Penalize doubled pawns.
-				sum += sign * weight_pawn_doubled[num_on_col];
+				sum += sign * value_pawn_doubled[num_on_col];
 
 				// Reward pawn duos.
 				if (state.piece[color][PAWN] & squares_pawn_duo[x][y])
-					sum += sign * weight_pawn_duo;
+					sum += sign * value_pawn_duo;
 			}
 
 			// Reward passed pawns.
 			if (!(state.piece[!color][PAWN] & squares_pawn_potential_attacks[!color][x][y]))
-				sum += sign * weight_pawn_passed[!color ? y : 7 - y];
+				sum += sign * value_pawn_passed[!color ? y : 7 - y];
 
 			// TODO: Reward hidden passed pawns.
 		}
 
 		// Penalize isolated pawns.
-		sum += sign * weight_pawn_isolated[num_isolated];
+		sum += sign * value_pawn_isolated[num_isolated];
 	}
 
 	pawn_table.store(pawn_hash, sum);
@@ -286,10 +286,10 @@ int board_heuristic::evaluate_knights() const
 			y = n >> 3;
 
 			// Reward material.
-			sum += sign * weight_material[KNIGHT];
+			sum += sign * value_material[KNIGHT];
 
 			// Penalize bad position or reward good position.
-			sum += sign * weight_position[KNIGHT][x][y];
+			sum += sign * value_position[KNIGHT][x][y];
 		}
 	}
 	return sum;
@@ -316,10 +316,10 @@ int board_heuristic::evaluate_bishops() const
 			y = n >> 3;
 
 			// Reward material.
-			sum += sign * weight_material[BISHOP];
+			sum += sign * value_material[BISHOP];
 
 			// Penalize bad position or reward good position.
-			sum += sign * weight_position[BISHOP][x][y];
+			sum += sign * value_position[BISHOP][x][y];
 		}
 	}
 	return sum;
@@ -346,10 +346,10 @@ int board_heuristic::evaluate_rooks() const
 			y = n >> 3;
 
 			// Reward material.
-			sum += sign * weight_material[ROOK];
+			sum += sign * value_material[ROOK];
 
 			// Penalize bad position or reward good position.
-			sum += sign * weight_position[ROOK][x][y];
+			sum += sign * value_position[ROOK][x][y];
 		}
 	}
 	return sum;
@@ -376,10 +376,10 @@ int board_heuristic::evaluate_queens() const
 			y = n >> 3;
 
 			// Reward material.
-			sum += sign * weight_material[QUEEN];
+			sum += sign * value_material[QUEEN];
 
 			// Penalize bad position or reward good position.
-			sum += sign * weight_position[QUEEN][x][y];
+			sum += sign * value_position[QUEEN][x][y];
 		}
 	}
 	return sum;
@@ -405,14 +405,14 @@ int board_heuristic::evaluate_kings(int depth) const
 		// Penalize giving up castling.
 		if (state.castle[color][QUEEN_SIDE] == CANT_CASTLE &&
 		    state.castle[color][ KING_SIDE] == CANT_CASTLE)
-			sum += sign * weight_king_cant_castle;
+			sum += sign * value_king_cant_castle;
 
 		// Penalize bad position or reward good position.
 		bitboard_t pawns = state.piece[WHITE][PAWN] | state.piece[BLACK][PAWN];
 		if (pawns & SQUARES_QUEEN_SIDE && pawns & SQUARES_KING_SIDE)
-			sum += sign * weight_position[KING][x][!color ? y : 7 - y];
+			sum += sign * value_position[KING][x][!color ? y : 7 - y];
 		else if (pawns)
-			sum += sign * weight_king_position[pawns & SQUARES_QUEEN_SIDE ? x : 7 - x][!color ? y : 7 - y];
+			sum += sign * value_king_position[pawns & SQUARES_QUEEN_SIDE ? x : 7 - x][!color ? y : 7 - y];
 	}
 	return sum;
 }
