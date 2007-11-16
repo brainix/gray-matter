@@ -10,3 +10,9 @@ Today, chess engines running on commodity hardware pose serious challenges to th
 =Details=
 
 Gray Matter employs good object oriented practices and is written in C++.
+
+There are two types of people who might be interested in hacking Gray Matter: chess players who are also interested in programming, and programmers who are also interested in chess.
+
+=For Chess Players=
+
+=For Programmers=
