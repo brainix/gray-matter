@@ -9,7 +9,7 @@
     * Setting up a testing box to run on [http://www.freechess.org/ FICS]~~, and~~
     * ~~Making friends.~~
   * ~~To generate/accept all/only legal moves (including en passant and castling!) and correctly detect checkmate/stalemate.~~
-  * To implement Crafty's evaluator.
+  * To implement Crafty's heuristic evaluator.
   * To ~~adopt a version numbering standard and~~ provide builds.
   * To earn a rating.
 
@@ -26,7 +26,7 @@
   * To earn a master-level rating.
 
 =Quotes=
-This section contains quotes about Gray Matter and its hackers.
+This section contains quotes about Gray Matter and her hackers.
 
   * Smack my bishop! - Prodigy
 
