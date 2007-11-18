@@ -1297,8 +1297,9 @@ void board_base::precomp_pawn() const
 				// rank 1 or 2.  Similarly, a black pawn can
 				// never attack a square in rank 6 or 7.
 				continue;
-			squares_pawn_attacks = ROW_MSK(y + (color ? 1 : -1));
-			squares_pawn_attacks &= squares_adj_cols[x];
+			bitboard_t row = ROW_MSK(y + (!color ? -1 : 1));
+			bitboard_t cols = squares_adj_cols[x];
+			squares_pawn_attacks[color][x][y] =  row & cols;
 		}
 }
 
