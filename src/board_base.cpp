@@ -1283,7 +1283,10 @@ void board_base::precomp_pawn() const
 	}
 
 	// For both colors and every square on the board, pre-compute the
-	// squares from which pawns of the color can attack.
+	// squares from which pawns of the color can attack.  In other words,
+	// squares_pawn_attacks[color][x][y] is the BitBoard representing the
+	// "from" squares and (x, y) are the coordinates representing the "to"
+	// square.
 	for (int color = WHITE; color <= BLACK; color++)
 		for (int n = 0; n <= 63; n++)
 		{
