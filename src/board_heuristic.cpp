@@ -115,22 +115,22 @@ static int value_king_position[8][8] =
 static const int value_pawn_passed[8]           = {0, 12,  20,  48,  72, 120, 150,   0}
 static const int value_pawn_doubled[9]          = {0,  0,  -4,  -7, -10, -10, -10, -10, -10};
 static const int value_pawn_isolated[9]         = {0, -8, -20, -40, -60, -70, -80, -80, -80};
-static const int value_pawn_isolated_doubled[9] = {0, -5, -10, -15, -15, -15, -15, -15, -15};
+static const int value_pawn_doubled_isolated[9] = {0, -5, -10, -15, -15, -15, -15, -15, -15};
 static const int value_pawn_duo = 2;
 
 // The penalty for giving up castling:
 static const int value_king_cant_castle = -20;
+
+bool precomputed_board_heuristic = false;
+extern bitboard_t squares_adj_cols[];
+bitboard_t squares_pawn_duo[8][8];
+bitboard_t squares_pawn_potential_attacks[COLORS][8][8];
 
 // Since pawn structure remains relatively static, we maintain a hash table of
 // previous pawn structure evaluations.  According to my tests, this hash table
 // sustains a hit rate of around 97%.  This enables us to perform sophisticated
 // pawn structure analysis pretty much for free.
 pawn pawn_table;
-
-bool precomputed_board_heuristic = false;
-extern bitboard_t squares_adj_cols[];
-bitboard_t squares_pawn_duo[8][8];
-bitboard_t squares_pawn_potential_attacks[COLORS][8][8];
 
 /*----------------------------------------------------------------------------*\
  |			       board_heuristic()			      |
@@ -234,7 +234,7 @@ int board_heuristic::evaluate_pawns() const
 				// Count isolated pawns and penalize isolated
 				// doubled pawns.
 				num_isolated++;
-				sum += sign * value_pawn_isolated_doubled[num_on_col];
+				sum += sign * value_pawn_doubled_isolated[num_on_col];
 			}
 			else
 			{
