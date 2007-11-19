@@ -112,7 +112,7 @@ static int value_king_position[8][8] =
 };
 
 // The values of various pawn structure features:
-static const int value_pawn_passed[8]           = {0, 12,  20,  48,  72, 120, 150,   0}
+static const int value_pawn_passed[8]           = {0, 12,  20,  48,  72, 120, 150,   0};
 static const int value_pawn_doubled[9]          = {0,  0,  -4,  -7, -10, -10, -10, -10, -10};
 static const int value_pawn_isolated[9]         = {0, -8, -20, -40, -60, -70, -80, -80, -80};
 static const int value_pawn_doubled_isolated[9] = {0, -5, -10, -15, -15, -15, -15, -15, -15};
@@ -182,7 +182,8 @@ int board_heuristic::evaluate(int depth) const
 	int sum = 0;
 
 	if (!state.piece[ON_MOVE][KING])
-		return WEIGHT_ILLEGAL;
+		// return WEIGHT_ILLEGAL; FIXME: no such thing defined anywhere
+		return VALUE_ILLEGAL;
 
 	sum += evaluate_pawns();
 	sum += evaluate_knights();
@@ -463,7 +464,7 @@ void board_heuristic::precomp_pawn() const
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
-		sign = !color ? -1 : 1;
+		int sign = !color ? -1 : 1;
 		for (int n = 0; n <= 63; n++)
 		{
 			int x = n & 0x7;
