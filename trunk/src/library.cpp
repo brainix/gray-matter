@@ -135,7 +135,7 @@ int mutex_unlock(mutex_t *mutex)
 #if defined(LINUX) || defined(OS_X)
 	return pthread_mutex_unlock(mutex) ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
-	return ReleaseMutex(*mutex) ? SUCCESSFUL : CRITICAL;
+	return !ReleaseMutex(*mutex) ? CRITICAL : SUCCESSFUL;
 #endif
 }
 
@@ -147,7 +147,7 @@ int mutex_destroy(mutex_t *mutex)
 #if defined(LINUX) || defined(OS_X)
 	return pthread_mutex_destroy(mutex) ? CRITICAL : SUCCESSFUL;
 #elif defined(WINDOWS)
-	return CloseHandle(*mutex) ? SUCCESSFUL : CRITICAL;
+	return !CloseHandle(*mutex) ? CRITICAL : SUCCESSFUL;
 #endif
 }
 
