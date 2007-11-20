@@ -182,7 +182,6 @@ int board_heuristic::evaluate(int depth) const
 	int sum = 0;
 
 	if (!state.piece[ON_MOVE][KING])
-		// return WEIGHT_ILLEGAL; FIXME: no such thing defined anywhere
 		return VALUE_ILLEGAL;
 
 	sum += evaluate_pawns();
@@ -451,6 +450,11 @@ int board_heuristic::evaluate_kings(int depth) const
 \*----------------------------------------------------------------------------*/
 void board_heuristic::precomp_pawn() const
 {
+	// A pawn duo is two friendly pawns that are side by side.  In endgame,
+	// a pawn duo is powerful because the two pawns can advance together and
+	// protect one another.  For each square on the board, pretend that a
+	// pawn is on that square and compute the squares on which one friendly
+	// pawn must sit in order to form a pawn duo.
 	for (int n = 0; n <= 63; n++)
 	{
 		int x = n & 0x7;
@@ -458,6 +462,8 @@ void board_heuristic::precomp_pawn() const
 
 		squares_pawn_duo[x][y] = 0;
 		if (y == 0 || y == 7)
+			// There can never be any pawn (of either color) on rank
+			// 1 or rank 7.
 			continue;
 		squares_pawn_duo[x][y] = squares_adj_cols[x] & ROW_MSK(y);
 	}
