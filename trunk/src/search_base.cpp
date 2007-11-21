@@ -159,7 +159,8 @@ void search_base::change(int s, const board_base& now)
 {
 
 // Synchronize the board to the position we're to search from (if necessary) and
-// change the search status (to idling, thinking, pondering, or quitting).
+// change the search status (to idling, analyzing, thinking, pondering, or
+// quitting).
 //
 // Subtle!  start() and change() operate on the same search object (therefore
 // the same board object) but are called from different threads.  Unless we take
@@ -192,7 +193,7 @@ void search_base::change(int s, const board_base& now)
 
 	// Wait for the board, grab the board, set the board position, and
 	// release the board.
-	if (s == THINKING || s == PONDERING)
+	if (s == ANALYZING || s == THINKING || s == PONDERING)
 	{
 		board_ptr->lock();
 		*board_ptr = now;
@@ -259,8 +260,11 @@ void search_base::start()
 		old_search_status = search_status;
 		mutex_unlock(&search_mutex);
 
-		// Do the requested work - idle, think, ponder, or quit.
-		if (search_status == THINKING || search_status == PONDERING)
+		// Do the requested work - idle, analyze, think, ponder, or
+		// quit.
+		if (search_status == ANALYZING ||
+		    search_status == THINKING  ||
+		    search_status == PONDERING)
 		{
 			mutex_lock(&timeout_mutex);
 			timeout_flag = false;
@@ -305,9 +309,13 @@ void search_base::extract_hint(int s)
 
 // Extract the hint (what we think our opponent should do) from the principal
 // variation.  We call this method after extracting the principal variation
-// either at various times during thinking or just once before pondering.
+// either at various times during analyzing and thinking or just once before
+// pondering.
 
-	if (s == THINKING && pv.size() >= 2)
+	if (s == ANALYZING && !pv.empty())
+		// We're analyzing.
+		hint = pv.front();
+	else if (s == THINKING && pv.size() >= 2)
 	{
 		// We're thinking.  That means the principal variation's 1st
 		// move is what we think we should do, and the 2nd move is what
