@@ -38,7 +38,7 @@
 
 // Search statuses:
 #define IDLING		0 // Masturbating.
-#define ANALYZING	1 // Analyzing (thinking forever).
+#define ANALYZING	1 // Analyzing (thinking indefinitely).
 #define THINKING	2 // Thinking (on our own time).
 #define PONDERING	3 // Pondering (on our opponent's time).
 #define QUITTING	4 // Terminating search thread.
