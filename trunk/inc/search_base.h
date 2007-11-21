@@ -38,10 +38,11 @@
 
 // Search statuses:
 #define IDLING		0 // Masturbating.
-#define THINKING	1 // Thinking (on our own time).
-#define PONDERING	2 // Pondering (on our opponent's time).
-#define QUITTING	3 // Terminating search thread.
-#define SEARCH_STATS	4
+#define ANALYZING	1 // Analyzing (thinking forever).
+#define THINKING	2 // Thinking (on our own time).
+#define PONDERING	3 // Pondering (on our opponent's time).
+#define QUITTING	4 // Terminating search thread.
+#define SEARCH_STATS	5
 
 // Forward declarations:
 class board_base;

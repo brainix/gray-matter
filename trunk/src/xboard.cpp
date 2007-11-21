@@ -35,6 +35,7 @@ xboard::xboard()
 	setbuf(stdin, NULL);
 
 	// Initialize the variables.
+	analyze = false;
 	ponder = true;
 	force = false;
 	draw = false;
@@ -130,6 +131,10 @@ void xboard::loop(search_base *s, chess_clock *c, book *o)
 			do_post();
 		else if (!strncmp(buffer, "nopost", 6))
 			do_nopost();
+		else if (!strncmp(buffer, "analyze", 7))
+			do_analyze();
+		else if (!strncmp(buffer, "exit", 4))
+			do_exit();
 		else
 			do_unknown();
 	} while (strncmp(buffer, "quit", 4));
@@ -526,6 +531,22 @@ void xboard::do_nopost() const
 // Turn off thinking output.
 
 	search_ptr->set_output(false);
+}
+
+/*----------------------------------------------------------------------------*\
+ |				  do_analyze()				      |
+\*----------------------------------------------------------------------------*/
+void xboard::do_analyze()
+{
+	analyze = true;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   do_exit()				      |
+\*----------------------------------------------------------------------------*/
+void xboard::do_exit()
+{
+	analyze = false;
 }
 
 /*----------------------------------------------------------------------------*\
