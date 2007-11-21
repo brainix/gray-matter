@@ -56,6 +56,7 @@ public:
 	void print_resignation() const;
 private:
 	char buffer[80];         // Input buffer.
+	bool analyze;            // Whether we're analyzing.
 	bool ponder;             // Whether we're to ponder.
 	bool force;              // Whether we're in force mode.
 	bool draw;               // Whether our opponent has offered a draw.
@@ -92,6 +93,8 @@ private:
 	void do_easy();
 	void do_post() const;
 	void do_nopost() const;
+	void do_analyze();
+	void do_exit();
 	void do_unknown() const;
 
 	int game_over();
