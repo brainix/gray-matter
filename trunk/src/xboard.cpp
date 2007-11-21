@@ -262,6 +262,8 @@ void xboard::do_new()
 	search_ptr->change(IDLING, *board_ptr);
 	search_ptr->set_depth(MAX_DEPTH);
 	book_ptr->read();
+	if (analyze)
+		search_ptr->change(ANALYZING, *board_ptr);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -407,7 +409,7 @@ void xboard::do_usermove()
 
 	// Alright, so the move was legal, and it didn't just end the game, and
 	// we're not in force mode.  Formulate a response.
-	search_ptr->change(THINKING, *board_ptr);
+	search_ptr->change(analyze ? ANALYZING : THINKING, *board_ptr);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -452,7 +454,7 @@ void xboard::do_draw()
 void xboard::do_hint() const
 {
 
-// Aww, poor baby.  Our opponent needs us to hold her hand.  Give her a hint.
+// Give our opponent a hint.
 
 	move_t m = search_ptr->get_hint();
 	if (IS_NULL_MOVE(m))
@@ -472,6 +474,8 @@ void xboard::do_undo()
 
 	board_ptr->unmake();
 	clock_ptr->inc_remaining_moves(board_ptr->get_whose());
+	if (analyze)
+		search_ptr->change(ANALYZING, *board_ptr);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -495,7 +499,7 @@ void xboard::do_remove()
 void xboard::do_hard()
 {
 
-// Turn on pondering.  No sleep for the wicked.
+// Turn on pondering.
 
 	ponder = true;
 }
@@ -506,7 +510,7 @@ void xboard::do_hard()
 void xboard::do_easy()
 {
 
-// Turn off pondering.  Grab a piña colada.
+// Turn off pondering.
 
 	ponder = false;
 }
@@ -538,6 +542,9 @@ void xboard::do_nopost() const
 \*----------------------------------------------------------------------------*/
 void xboard::do_analyze()
 {
+
+// Enter analyze mode.
+
 	analyze = true;
 }
 
@@ -546,6 +553,9 @@ void xboard::do_analyze()
 \*----------------------------------------------------------------------------*/
 void xboard::do_exit()
 {
+
+// Exit analyze mode.
+
 	analyze = false;
 }
 
