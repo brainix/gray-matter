@@ -227,7 +227,7 @@ void xboard::do_protover() const
 	printf("feature time=1\n");                     //
 	printf("feature draw=1\n");                     //
 	printf("feature sigint=0\n");                   //
-	printf("feature analyze=0\n");                  //
+	printf("feature analyze=1\n");                  //
 	printf("feature myname=\"Gray Matter 0.0\"\n"); //
 	printf("feature variants=\"normal\"\n");        //
 	printf("feature colors=0\n");                   //

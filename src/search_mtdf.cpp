@@ -62,8 +62,9 @@ search_mtdf& search_mtdf::operator=(const search_mtdf& that)
 void search_mtdf::iterate(int s)
 {
 
-// Perform iterative deepening.  This method handles both thinking (on our own
-// time) and pondering (on our opponent's time) since they're so similar.
+// Perform iterative deepening.  This method handles analyzing (thinking
+// indefinitely), thinking (on our own time), and pondering (on our opponent's
+// time) since they're so similar.
 
 	int depth;
 	move_t guess[2], m;
@@ -83,8 +84,8 @@ void search_mtdf::iterate(int s)
 	}
 
 	// Note the start time.  If we're to think, set the alarm.  (If we're to
-	// ponder, there's no need to set the alarm.  We ponder indefinitely
-	// until our opponent has moved.)
+	// analyze or ponder, there's no need to set the alarm.  We analyze or
+	// ponder indefinitely until our opponent has moved.)
 	clock_ptr->note_time();
 	if (s == THINKING)
 		clock_ptr->set_alarm(board_ptr->get_whose());
@@ -103,8 +104,8 @@ void search_mtdf::iterate(int s)
 	}
 
 	// Perform iterative deepening until the alarm has sounded (if we're
-	// thinking), our opponent has moved (if we're pondering), or we've
-	// reached the maximum depth (either way).
+	// thinking), our opponent has moved (if we're analyzing or pondering),
+	// or we've reached the maximum depth (in any case).
 	for (depth = 1; depth <= max_depth; depth++)
 	{
 		guess[depth & 1] = mtdf(depth, guess[depth & 1].value);
