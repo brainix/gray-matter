@@ -255,7 +255,7 @@ bool board_base::set_board_fen(string& fen)
 		if (isalpha(fen[index]))
 		{
 			int color = isupper(fen[index]) ? WHITE : BLACK;
-			int shape;
+			int shape = PAWN;
 			switch (toupper(fen[index]))
 			{
 				case 'P' : shape = PAWN;   break;
@@ -266,9 +266,9 @@ bool board_base::set_board_fen(string& fen)
 				case 'K' : shape = KING;   break;
 				default  : goto failure;   break;
 			}
-			BIT_SET(state.piece[color][shape], x, y);
-			if (++x > 7)
+			if (x > 7)
 				goto failure;
+			BIT_SET(state.piece[color][shape], x++, y);
 		}
 		else if (isdigit(fen[index]))
 			if ((x += fen[index] - '0') > 7)
@@ -312,7 +312,21 @@ bool board_base::set_board_fen(string& fen)
 	if (fen[index++] != ' ')
 		goto failure;
 
-	// TODO: Parse the en passant target square.
+	// Parse the en passant target square.
+	if (fen[index] == '-')
+		state.en_passant = -1;
+	else
+	{
+		if (fen[index] < 'a' || fen[index] > 'h')
+			goto failure;
+		state.en_passant = fen[index++] - 'a';
+		if (fen[index] < '1' || fen[index] > '8')
+			goto failure;
+	}
+	index++;
+	if (fen[index++] != ' ')
+		goto failure;
+
 	// TODO: Parse the halfmove clock.
 	// TODO: Parse the fullmove number.
 
