@@ -79,8 +79,8 @@ void xboard::loop(search_base *s, chess_clock *c, book *o)
 
 	do
 	{
-		memset(buffer, '\0', 80);
-		fgets(buffer, 80, stdin);
+		memset(buffer, '\0', BUFFER_SIZE);
+		fgets(buffer, BUFFER_SIZE, stdin);
 		if (!strncmp(buffer, "xboard", 6))
 			do_xboard();
 		else if (!strncmp(buffer, "protover", 8))
@@ -117,6 +117,8 @@ void xboard::loop(search_base *s, chess_clock *c, book *o)
 			do_ping();
 		else if (!strncmp(buffer, "draw", 4))
 			do_draw();
+		else if (!strncmp(buffer, "setboard", 8))
+			do_setboard();
 		else if (!strncmp(buffer, "hint", 4))
 			do_hint();
 		else if (!strncmp(buffer, "undo", 4))
@@ -222,6 +224,7 @@ void xboard::do_xboard() const
 void xboard::do_protover() const
 {
 	printf("feature ping=1\n");                     //
+	printf("feature setboard=1\n");                 //
 	printf("feature playother=1\n");                //
 	printf("feature usermove=1\n");                 //
 	printf("feature sigint=0\n");                   //
@@ -443,6 +446,15 @@ void xboard::do_draw()
 // Our opponent has offered a draw.  Just note this for now.
 
 	draw = true;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				 do_setboard()				      |
+\*----------------------------------------------------------------------------*/
+void xboard::do_setboard() const
+{
+	if (!board_ptr->set_board_fen(&buffer[9]))
+		printf("tellusererror Illegal position\n");
 }
 
 /*----------------------------------------------------------------------------*\
