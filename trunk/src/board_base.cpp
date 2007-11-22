@@ -327,8 +327,18 @@ bool board_base::set_board_fen(string& fen)
 	if (fen[index++] != ' ')
 		goto failure;
 
-	// TODO: Parse the halfmove clock.
-	// TODO: Parse the fullmove number.
+	// Parse the halfmove clock.
+	if (!isdigit(fen[index]))
+		goto failure;
+	state.fifty = 0;
+	while (isdigit(fen[index]))
+		state.fifty = state.fifty * 10 + fen[index++] - '0';
+	if (fen[index++] != ' ')
+		goto failure;
+
+	// TODO: Sanity check the current state of the board resulting from the
+	// FEN.  For now, just make sure both colors have kings and the color
+	// off move isn't in check.
 
 	init_rotation();
 	init_hash();
