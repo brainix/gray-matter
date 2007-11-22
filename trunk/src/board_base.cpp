@@ -227,11 +227,96 @@ board_base& board_base::operator=(const board_base& that)
 void board_base::set_board()
 {
 
-// Set the board.
+// Set the board to the initial position.
 
 	init_state();
 	init_rotation();
 	init_hash();
+}
+
+/*----------------------------------------------------------------------------*\
+ |				set_board_fen()				      |
+\*----------------------------------------------------------------------------*/
+bool board_base::set_board_fen(string& fen)
+{
+
+// Set the board according to the Forsyth-Edwards Notation (FEN) string.
+
+	int index = 0, x = 0, y = 7;
+
+	states.clear();
+	for (int color = WHITE; color <= BLACK; color++)
+		for (int shape = PAWN; shape <= KING; shape++)
+			state.piece[color][shape] = 0;
+
+	// Parse the piece placement data.
+	for (; fen[index] != ' '; index++)
+	{
+		if (isalpha(fen[index]))
+		{
+			int color = isupper(fen[index]) ? WHITE : BLACK;
+			int shape;
+			switch (toupper(fen[index]))
+			{
+				case 'P' : shape = PAWN;   break;
+				case 'N' : shape = KNIGHT; break;
+				case 'B' : shape = BISHOP; break;
+				case 'R' : shape = ROOK;   break;
+				case 'Q' : shape = QUEEN;  break;
+				case 'K' : shape = KING;   break;
+				default  : goto failure;   break;
+			}
+			BIT_SET(state.piece[color][shape], x, y);
+			if (++x > 7)
+				goto failure;
+		}
+		else if (isdigit(fen[index]))
+			if ((x += fen[index] - '0') > 7)
+				goto failure;
+		else if (fen[index] == '/')
+		{
+			x = 0;
+			if (--y < 0)
+				goto failure;
+		}
+		else
+			goto failure;
+	}
+	index++;
+
+	// Parse the active color.
+	switch (fen[index++])
+	{
+		case 'w' : state.whose = WHITE; break;
+		case 'b' : state.whose = BLACK; break;
+		default  : goto failure;        break;
+	}
+	if (index++ != ' ')
+		goto failure;
+
+	// TODO: Parse the castling availability.
+	// TODO: Parse the en passant target square.
+	// TODO: Parse the halfmove clock.
+	// TODO: Parse the fullmove number.
+
+	init_rotation();
+	init_hash();
+	return true;
+
+failure:
+	for (int color = WHITE; color <= BLACK; color++)
+	{
+		for (int shape = PAWN; shape <= KING; shape++)
+			state.piece[color][shape] = 0;
+		for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
+			state.castle[color][side] = CANT_CASTLE;
+	}
+	state.en_passant = -1;
+	state.whose = WHITE;
+	state.fifty = 0;
+	init_rotation();
+	init_hash();
+	return false;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -875,10 +960,11 @@ void board_base::init_hash()
 			hash ^= key_castle[color][side][state.castle[color][side]];
 	}
 
-	hash ^= key_no_en_passant;
-	pawn_hash ^= key_no_en_passant;
+	hash ^= state.en_passant == -1 ? key_no_en_passant : key_en_passant[state.en_passant];
+	pawn_hash ^= state.en_passant == -1 ? key_no_en_passant : key_en_passant[state.en_passant];
 
-	hash ^= key_whose;
+	if (state.whose == WHITE)
+		hash ^= key_whose;
 }
 
 /*----------------------------------------------------------------------------*\

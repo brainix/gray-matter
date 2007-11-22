@@ -254,6 +254,7 @@ public:
 	virtual ~board_base();
 	virtual board_base& operator=(const board_base& that);
 	virtual void set_board();
+	virtual bool set_board_fen(string& fen);
 	virtual void lock();
 	virtual void unlock();
 
