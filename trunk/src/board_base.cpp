@@ -291,10 +291,27 @@ bool board_base::set_board_fen(string& fen)
 		case 'b' : state.whose = BLACK; break;
 		default  : goto failure;        break;
 	}
-	if (index++ != ' ')
+	if (fen[index++] != ' ')
 		goto failure;
 
-	// TODO: Parse the castling availability.
+	// Parse the castling availability.
+	for (int color = WHITE; color <= BLACK; color++)
+		for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
+			state.castle[color][side] = CANT_CASTLE;
+	if (fen[index] != '-')
+		for (; fen[index] != ' '; index++)
+		{
+			if (toupper(fen[index]) != 'K' && toupper(fen[index]) != 'Q')
+				goto failure;
+			int color = isupper(fen[index]) ? WHITE : BLACK;
+			int side = toupper(fen[index]) == 'K' ? KING_SIDE : QUEEN_SIDE;
+			state.castle[color][side] = CAN_CASTLE;
+		}
+	else
+		index++;
+	if (fen[index++] != ' ')
+		goto failure;
+
 	// TODO: Parse the en passant target square.
 	// TODO: Parse the halfmove clock.
 	// TODO: Parse the fullmove number.
