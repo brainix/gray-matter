@@ -240,7 +240,8 @@ void board_base::set_board()
 bool board_base::set_board_fen(string& fen)
 {
 
-// Set the board according to the Forsyth-Edwards Notation (FEN) string.
+// Set the board according to the Forsyth-Edwards Notation (FEN) string.  Return
+// whether the FEN string represents a legal position.
 
 	int index = 0, x = 0, y = 7;
 
@@ -336,9 +337,14 @@ bool board_base::set_board_fen(string& fen)
 	if (fen[index++] != ' ')
 		goto failure;
 
-	// TODO: Sanity check the current state of the board resulting from the
-	// FEN.  For now, just make sure both colors have kings and the color
-	// off move isn't in check.
+	// Sanity check the current state of the board resulting from the FEN
+	// string.  For now, just make sure both colors have one king each and
+	// the color off move isn't in check.
+	for (int color = WHITE; color <= BLACK; color++)
+		if (count_64(state.piece[color][KING]) != 1)
+			goto failure;
+	if (check(state.piece[OFF_MOVE][KING], ON_MOVE))
+		goto failure;
 
 	init_rotation();
 	init_hash();
