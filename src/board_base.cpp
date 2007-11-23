@@ -971,17 +971,17 @@ void board_base::coord_to_san(move_t m, string& san)
 				it->x2 == m.x2 && it->y2 == m.y2) {
 			  // We found another 'shape' that can move to the 'to' square
 			  if(it->x1 != m.x1) {
-				// It suffices to add rank of 'from' square
-				add_rank = true;
-			  } else {
-				// Files must differ, so adding file of 'from' square
+				// It suffices to add file of 'from' square
 				add_file = true;
+			  } else {
+				// Ranks must differ, so adding rank of 'from' square
+				add_rank = true;
 			  }
 			}
 		}
-		if(add_rank)
-		  sanstr << static_cast<char>(m.x1 + 'a');
 		if(add_file)
+		  sanstr << static_cast<char>(m.x1 + 'a');
+		if(add_rank)
 		  sanstr << static_cast<char>(m.y1 + '1');
 
 		// Add 'x' for captures.
