@@ -70,7 +70,7 @@ private:
 	chess_clock *clock_ptr;   // Chess clock object.
 	book *book_ptr;           // Opening book object.
 
-	void print_move(move_t m) const;
+	void print_move(move_t m, bool SAN=false) const;
 	void do_xboard() const;
 	void do_protover() const;
 	void do_accepted() const;
