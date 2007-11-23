@@ -953,9 +953,36 @@ void board_base::coord_to_san(move_t m, string& san)
 		if (shape == PAWN && m.x1 != m.x2)
 		  sanstr << static_cast<char>(m.x1 + 'a');
 
-		// XXX: Check whether another piece of the same shape can reach the to square
+		// Check whether another piece of the same shape can reach the to square
 		// If possible first try to distinguish the two by adding from file
 		// If from files are the same, then use from rank
+		list<move_t> l;
+		bool add_rank = false, add_file = false;
+		switch (shape)
+		{
+			case QUEEN  : generate_queen(l);  break;
+			case ROOK   : generate_rook(l);   break;
+			case BISHOP : generate_bishop(l); break;
+			case KNIGHT : generate_knight(l); break;
+			case PAWN   : generate_pawn(l);   break;
+		}
+		for (list<move_t>::iterator it = l.begin(); it != l.end(); it++) {
+			if ((it->x1 != m.x1 || it->y1 != m.y1) &&
+				it->x2 == m.x2 && it->y2 == m.y2) {
+			  // We found another 'shape' that can move to the 'to' square
+			  if(it->x1 != m.x1) {
+				// It suffices to add rank of 'from' square
+				add_rank = true;
+			  } else {
+				// Files must differ, so adding file of 'from' square
+				add_file = true;
+			  }
+			}
+		}
+		if(add_rank)
+		  sanstr << static_cast<char>(m.x1 + 'a');
+		if(add_file)
+		  sanstr << static_cast<char>(m.y1 + '1');
 
 		// Add 'x' for captures.
 		// Drunk pawns are assumed to be captures (possibly en passant).
