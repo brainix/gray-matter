@@ -26,6 +26,7 @@ using namespace std;
 
 // C++ stuff:
 #include <list>
+#include <string>
 
 // Default Gray Matter stuff:
 #include "config.h"

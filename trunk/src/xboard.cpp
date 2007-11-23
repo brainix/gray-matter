@@ -453,7 +453,8 @@ void xboard::do_draw()
 \*----------------------------------------------------------------------------*/
 void xboard::do_setboard() const
 {
-	if (!board_ptr->set_board_fen(&buffer[9]))
+	string fen(buffer + 9);
+	if (!board_ptr->set_board_fen(fen))
 		printf("tellusererror Illegal position\n");
 }
 
