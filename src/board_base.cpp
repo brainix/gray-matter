@@ -251,7 +251,7 @@ bool board_base::set_board_fen(string& fen)
 			state.piece[color][shape] = 0;
 
 	// Parse the piece placement data.
-	for (; fen[index] != ' '; index++)
+	while (fen[index] != ' ')
 	{
 		if (isalpha(fen[index]))
 		{
@@ -282,17 +282,24 @@ bool board_base::set_board_fen(string& fen)
 		}
 		else
 			goto failure;
+		if (++index >= fen.length())
+			goto failure;
 	}
-	index++;
+	if (++index >= fen.length())
+		goto failure;
 
 	// Parse the active color.
-	switch (fen[index++])
+	switch (fen[index])
 	{
 		case 'w' : state.whose = WHITE; break;
 		case 'b' : state.whose = BLACK; break;
 		default  : goto failure;        break;
 	}
-	if (fen[index++] != ' ')
+	if (++index >= fen.length())
+		goto failure;
+	if (fen[index] != ' ')
+		goto failure;
+	if (++index >= fen.length())
 		goto failure;
 
 	// Parse the castling availability.
@@ -300,17 +307,21 @@ bool board_base::set_board_fen(string& fen)
 		for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
 			state.castle[color][side] = CANT_CASTLE;
 	if (fen[index] != '-')
-		for (; fen[index] != ' '; index++)
+		while (fen[index] != ' ')
 		{
 			if (toupper(fen[index]) != 'K' && toupper(fen[index]) != 'Q')
 				goto failure;
 			int color = isupper(fen[index]) ? WHITE : BLACK;
 			int side = toupper(fen[index]) == 'K' ? KING_SIDE : QUEEN_SIDE;
 			state.castle[color][side] = CAN_CASTLE;
+			if (++index >= fen.length())
+				goto failure;
 		}
-	else
-		index++;
-	if (fen[index++] != ' ')
+	else if (++index >= fen.length())
+		goto failure;
+	if (fen[index] != ' ')
+		goto failure;
+	if (++index >= fen.length())
 		goto failure;
 
 	// Parse the en passant target square.
@@ -320,12 +331,17 @@ bool board_base::set_board_fen(string& fen)
 	{
 		if (fen[index] < 'a' || fen[index] > 'h')
 			goto failure;
-		state.en_passant = fen[index++] - 'a';
+		state.en_passant = fen[index] - 'a';
+		if (++index >= fen.length())
+			goto failure;
 		if (fen[index] < '1' || fen[index] > '8')
 			goto failure;
 	}
-	index++;
-	if (fen[index++] != ' ')
+	if (++index >= fen.length())
+		goto failure;
+	if (fen[index] != ' ')
+		goto failure;
+	if (++index >= fen.length())
 		goto failure;
 
 	// Parse the halfmove clock.
@@ -333,8 +349,14 @@ bool board_base::set_board_fen(string& fen)
 		goto failure;
 	state.fifty = 0;
 	while (isdigit(fen[index]))
-		state.fifty = state.fifty * 10 + fen[index++] - '0';
-	if (fen[index++] != ' ')
+	{
+		state.fifty = state.fifty * 10 + fen[index] - '0';
+		if (++index >= fen.length())
+			goto failure;
+	}
+	if (fen[index] != ' ')
+		goto failure;
+	if (++index >= fen.length())
 		goto failure;
 
 	// Sanity check the current state of the board resulting from the FEN
@@ -735,33 +757,41 @@ move_t board_base::san_to_coord(string& san)
 	// assume we're moving a pawn.
 	switch (san[index])
 	{
-		case 'K' : index++; shape = KING;   break;
-		case 'Q' : index++; shape = QUEEN;  break;
-		case 'R' : index++; shape = ROOK;   break;
-		case 'B' : index++; shape = BISHOP; break;
-		case 'N' : index++; shape = KNIGHT; break;
-		case 'P' : index++; shape = PAWN;   break;
-		default  :          shape = PAWN;   break;
+		case 'K' :          shape = KING;   break;
+		case 'Q' :          shape = QUEEN;  break;
+		case 'R' :          shape = ROOK;   break;
+		case 'B' :          shape = BISHOP; break;
+		case 'N' :          shape = KNIGHT; break;
+		case 'P' :          shape = PAWN;   break;
+		default  : index--; shape = PAWN;   break;
 	}
+	if (++index >= san.length())
+		return m;
 
 	// If there's an 'x' here, it means the move is a capture.  Note this
 	// (to verify it's a capture later).
 	if (san[index] == 'x')
 	{
-		index++;
+		if (++index >= san.length())
+			return m;
 		capture = true;
 	}
 
 	// If there's a letter between 'a' and 'h' here, assume it specifies the
 	// destination file.
 	if (san[index] >= 'a' && san[index] <= 'h')
-		x2 = san[index++] - 'a';
+	{
+		x2 = san[index] - 'a';
+		if (++index >= san.length())
+			return m;
+	}
 
 	// If there's an 'x' here, it means the move is a capture.  Note this
 	// (to verify it's a capture later).
 	if (san[index] == 'x')
 	{
-		index++;
+		if (++index >= san.length())
+			return m;
 		capture = true;
 	}
 
@@ -772,9 +802,10 @@ move_t board_base::san_to_coord(string& san)
 
 	// If there's an 'x' here, it means the move is a capture.  Note this
 	// (to verify it's a capture later).
-	if (san[index] == 'x')
+	if (index < san.length() && san[index] == 'x')
 	{
-		index++;
+		if (++index >= san.length())
+			return m;
 		capture = true;
 	}
 
@@ -783,11 +814,13 @@ move_t board_base::san_to_coord(string& san)
 	// wrong - the previous letter and/or number actually specified the
 	// source file and/or rank, and the current letter and number specify
 	// the destination file and rank.
-	if (san[index] >= 'a' && san[index] <= 'h')
+	if (index < san.length() && san[index] >= 'a' && san[index] <= 'h')
 	{
 		x1 = x2;
 		y1 = y2;
-		x2 = san[index++] - 'a';
+		x2 = san[index] - 'a';
+		if (++index >= san.length())
+			return m;
 		y2 = san[index++] - '1';
 	}
 
@@ -796,15 +829,19 @@ move_t board_base::san_to_coord(string& san)
 	// following letter represents the piece we're promoting to: a queen,
 	// rook, bishop, or knight respectively.  If there's no = sign here, it
 	// means we're not promoting a pawn.
-	if (san[index] == '=')
-		switch (san[++index])
+	if (index < san.length() && san[index] == '=')
+	{
+		if (++index >= san.length())
+			return m;
+		switch (san[index])
 		{
 			case 'Q' : index++; promo = QUEEN;  break;
 			case 'R' : index++; promo = ROOK;   break;
 			case 'B' : index++; promo = BISHOP; break;
 			case 'N' : index++; promo = KNIGHT; break;
-			default  : return m;                break;
+			default  :          return m;       break;
 		}
+	}
 	else
 		promo = 0;
 
