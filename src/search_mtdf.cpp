@@ -173,6 +173,11 @@ move_t search_mtdf::mtdf(int depth, int guess)
 
 	while (upper > lower && (!timeout_flag || !depth_flag))
 	{
+		// XXX FIXME BUG HELP WHAAA
+		// XXX Sometimes, timeout_flag is set here and depth_flag is not !
+		// XXX In these cases Gray will hang forever, because minimax never
+		// XXX changes the value of the depth_flag and we still have a lock
+		// XXX on the board_ptr. Houston, now over to you...
 		beta = m.value + (m.value == lower);
 		m = minimax(depth, 0, beta - 1, beta);
 		upper = m.value < beta ? m.value : upper;

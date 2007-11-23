@@ -243,7 +243,8 @@ bool board_base::set_board_fen(string& fen)
 // Set the board according to the Forsyth-Edwards Notation (FEN) string.  Return
 // whether the FEN string represents a legal position.
 
-	int index = 0, x = 0, y = 7;
+	size_t index = 0;
+	int x = 0, y = 7;
 
 	states.clear();
 	for (int color = WHITE; color <= BLACK; color++)
@@ -728,7 +729,7 @@ move_t board_base::san_to_coord(string& san)
 // In the current position, if the SAN string doesn't represent a legal move,
 // return the null move.
 
-	int index = 0;
+	size_t index = 0;
 	int shape = -1, x1 = -1, y1 = -1, x2 = -1, y2 = -1, promo = -1;
 	bool capture = false;
 	move_t m;
