@@ -918,9 +918,81 @@ void board_base::coord_to_san(move_t m, string& san)
 
 // Convert a move from coordinate notation to Standard Algebraic Notation (SAN).
 // In the current position, if the move in coordinate notation doesn't represent
-// a legal move, return the empty string.
+// a legal move, san is set to an empty string (but do not rely on this).
 
-	san.erase(0, san.length());
+	int shape;
+	ostringstream sanstr;
+
+	// What shape is being moved?
+	for (shape = PAWN; shape <= KING; shape++)
+		if (BIT_GET(state.piece[ON_MOVE][shape], m.x1, m.y1))
+		  break;
+
+	if (shape == KING && ABS(m.x2 - m.x1) == 2) {
+		// Must be a castling move
+		int side = m.x2 > m.x1 ? KING_SIDE : QUEEN_SIDE;
+		if (state.castle[ON_MOVE][side] == CAN_CASTLE &&
+			!(squares_castle[ON_MOVE][side][UNOCCUPIED] & rotation[ZERO][COLORS]) &&
+			!check(squares_castle[ON_MOVE][side][UNATTACKED], OFF_MOVE))
+			sanstr << (side == QUEEN_SIDE ? "O-O-O" : "O-O");
+
+	} else if (shape <= KING) {
+		// If shape > KING, the move was illegal.
+		// We're not castling, so start with the piece name.
+		switch(shape) {
+			case KING:		sanstr << "K"; break;
+			case QUEEN:		sanstr << "Q"; break;
+			case ROOK:		sanstr << "R"; break;
+			case BISHOP:	sanstr << "B"; break;
+			case KNIGHT:	sanstr << "N"; break;
+			case PAWN:		break; // piece name omitted
+			default:		break;
+		}
+
+		// In case of a pawn capture, insert from rank
+		if (shape == PAWN && m.x1 != m.x2)
+		  sanstr << static_cast<char>(m.x1 + 'a');
+
+		// XXX: Check whether another piece of the same shape can reach the to square
+		// If possible first try to distinguish the two by adding from file
+		// If from files are the same, then use from rank
+
+		// Add 'x' for captures.
+		// Drunk pawns are assumed to be captures (possibly en passant).
+		if (BIT_GET(ALL(state, OFF_MOVE), m.x2, m.y2) ||
+			(shape == PAWN && m.x1 != m.x2))
+		  sanstr << "x";
+
+		// Add target square to notation
+		sanstr << static_cast<char>(m.x2 + 'a') << static_cast<char>(m.y2 + '1');
+
+		// Add promotion piece
+		switch(m.promo) {
+			case QUEEN:		sanstr << "=Q"; break;
+			case ROOK:		sanstr << "=R"; break;
+			case BISHOP:	sanstr << "=B"; break;
+			case KNIGHT:	sanstr << "=N"; break;
+			default:		break;
+		}
+
+		// If it's a pawn capture and the target square is empty,
+		// indicate the move is en passant
+		if (shape == PAWN && m.x1 != m.x2 &&
+			!BIT_GET(ALL(state, OFF_MOVE), m.x2, m.y2)) {
+		  sanstr << " e.p.";
+		}
+
+		// Check for check '+' or checkmate '#'
+		make(m);
+		if (get_status(true) == CHECKMATE)
+		  sanstr << "#";
+		else if(check(state.piece[ON_MOVE][KING], OFF_MOVE))
+		  sanstr << "+";
+		unmake();
+	}
+
+	// Replace san
+	san.replace(0, san.length(), sanstr.str());
 }
 
 /*----------------------------------------------------------------------------*\

@@ -154,7 +154,13 @@ void xboard::print_output(int ply, int value, int time, int nodes, list<move_t> 
 	for (list<move_t>::iterator it = pv.begin(); it != pv.end(); it++)
 	{
 		printf(" ");
-		print_move(*it);
+		print_move(*it, true);
+		// XXX: I'm assuming *it always represents a valid move here
+		board_ptr->make(*it);
+	}
+	for (list<move_t>::iterator it = pv.begin(); it != pv.end(); it++)
+	{
+		board_ptr->unmake();
 	}
 	printf("\n");
 }
@@ -198,16 +204,24 @@ void xboard::print_resignation() const
 /*----------------------------------------------------------------------------*\
  |				  print_move()				      |
 \*----------------------------------------------------------------------------*/
-void xboard::print_move(move_t m) const
+void xboard::print_move(move_t m, bool SAN) const
 {
-	printf("%c%c", m.x1 + 'a', m.y1 + '1');
-	printf("%c%c", m.x2 + 'a', m.y2 + '1');
-	switch (m.promo)
-	{
-		case KNIGHT : printf("n"); break;
-		case BISHOP : printf("b"); break;
-		case ROOK   : printf("r"); break;
-		case QUEEN  : printf("q"); break;
+	if(SAN) {
+		// Standard Algebraic Notation
+		string str;
+		board_ptr->coord_to_san(m, str);
+		printf("%s", str.c_str());
+	} else {
+		// Coordinate Notation
+		printf("%c%c", m.x1 + 'a', m.y1 + '1');
+		printf("%c%c", m.x2 + 'a', m.y2 + '1');
+		switch (m.promo)
+		{
+			case KNIGHT : printf("n"); break;
+			case BISHOP : printf("b"); break;
+			case ROOK   : printf("r"); break;
+			case QUEEN  : printf("q"); break;
+		}
 	}
 }
 
