@@ -43,7 +43,6 @@
 #define PAWN_TABLE_MB	 1         // Pawn table size (in MB).
 #define BOOK_MOVES	40         // Num moves per game from book (in plies).
 #define OVERHEAD	 1         // Move search overhead (in centiseconds).
-#define MIN_DEPTH	 2         // Minimum search depth (in plies).
 #define MAX_DEPTH	16         // Maximum search depth (in plies).
 
 
@@ -88,12 +87,8 @@
 #error "In inc/config.h, OVERHEAD must be >= 1."
 #endif
 
-#if MIN_DEPTH < 1
-#error "In inc/config.h, MIN_DEPTH must be >= 1."
-#endif
-
-#if MIN_DEPTH >= MAX_DEPTH
-#error "In inc/config.h, MIN_DEPTH must be < MAX_DEPTH."
+#if MAX_DEPTH < 1
+#error "In inc/config.h, MAX_DEPTH must be >= 1."
 #endif
 
 // Piece colors:
