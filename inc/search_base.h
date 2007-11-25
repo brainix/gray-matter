@@ -91,12 +91,8 @@ protected:
 	xboard *xboard_ptr;     // Chess Engine Communication Protocol object.
 
 	mutex_t timeout_mutex;  // The lock that protects...
-	bool timeout_flag;      // ...one flag that determines when to stop
+	bool timeout_flag;      // ...the flag that determines when to stop
 	                        // thinking or pondering!  :-D
-
-	mutex_t depth_mutex;    // The lock that protects...
-	bool depth_flag;        // ...the other flag that determines when to 
-	                        // stop thinking or pondering!  :-D
 
 	mutex_t search_mutex;   // The lock that protects...
 	cond_t search_cond;     // ...the condition that controls...

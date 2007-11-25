@@ -109,7 +109,7 @@ void search_mtdf::iterate(int s)
 	for (depth = 1; depth <= max_depth; depth++)
 	{
 		guess[depth & 1] = mtdf(depth, guess[depth & 1].value);
-		if (timeout_flag && depth_flag || IS_NULL_MOVE(guess[depth & 1]))
+		if (timeout_flag || IS_NULL_MOVE(guess[depth & 1]))
 			// Oops.  Either the alarm has interrupted this
 			// iteration (and the results are incomplete and
 			// unreliable), or there's no legal move in this
@@ -129,12 +129,6 @@ void search_mtdf::iterate(int s)
 			// Oops.  The game will be over at this depth.  There's
 			// no point in searching deeper.  Eyes on the prize.
 			break;
-		if (depth >= MIN_DEPTH)
-		{
-			mutex_lock(&depth_mutex);
-			depth_flag = true;
-			mutex_unlock(&depth_mutex);
-		}
 	}
 
 	// If we've just finished thinking, cancel the alarm.
@@ -171,13 +165,8 @@ move_t search_mtdf::mtdf(int depth, int guess)
 	m.value = guess;
 	int upper = +INFINITY, lower = -INFINITY, beta;
 
-	while (upper > lower && (!timeout_flag || !depth_flag))
+	while (upper > lower && !timeout_flag)
 	{
-		// XXX FIXME BUG HELP WHAAA
-		// XXX Sometimes, timeout_flag is set here and depth_flag is not !
-		// XXX In these cases Gray will hang forever, because minimax never
-		// XXX changes the value of the depth_flag and we still have a lock
-		// XXX on the board_ptr. Houston, now over to you...
 		beta = m.value + (m.value == lower);
 		m = minimax(depth, 0, beta - 1, beta);
 		upper = m.value < beta ? m.value : upper;
@@ -291,7 +280,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 		board_ptr->unmake();
 		if (it->value > m.value)
 			alpha = GREATER(alpha, (m = *it).value);
-		if (it->value >= beta || timeout_flag && depth_flag)
+		if (it->value >= beta || timeout_flag)
 			break;
 	}
 
@@ -304,13 +293,13 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 		// stalemated; if we're in check, we're checkmated.
 		SET_NULL_MOVE(m);
 		m.value = !board_ptr->check() ? +VALUE_CONTEMPT : -VALUE_KING + shallowness;
-		if (!timeout_flag || !depth_flag)
+		if (!timeout_flag)
 			table_ptr->store(hash, depth, EXACT, m);
 		return m;
 	}
 
 	// Was the search interrupted?
-	if (!timeout_flag || !depth_flag)
+	if (!timeout_flag)
 	{
 		// Nope, the results are complete and reliable.  Save them for
 		// progeny.

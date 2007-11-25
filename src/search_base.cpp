@@ -43,7 +43,6 @@ search_base::search_base(table *t, history *h, chess_clock *c, xboard *x)
 
 	mutex_create(&timeout_mutex);
 	clock_ptr->set_callback((clock_callback_t) _handle, this);
-	mutex_create(&depth_mutex);
 	mutex_create(&search_mutex);
 	cond_create(&search_cond, NULL);
 	thread_create(&search_thread, (entry_t) _start, this);
@@ -59,7 +58,6 @@ search_base::~search_base()
 
 	cond_destroy(&search_cond);
 	mutex_destroy(&search_mutex);
-	mutex_destroy(&depth_mutex);
 	mutex_destroy(&timeout_mutex);
 }
 
@@ -86,7 +84,6 @@ class search_base& search_base::operator=(const search_base& that)
 	xboard_ptr = that.xboard_ptr;
 
 	timeout_mutex = that.timeout_mutex;
-	depth_flag = that.depth_flag;
 	search_mutex = that.search_mutex;
 	search_thread = that.search_thread;
 	search_status = that.search_status;
@@ -269,9 +266,6 @@ void search_base::start()
 			mutex_lock(&timeout_mutex);
 			timeout_flag = false;
 			mutex_unlock(&timeout_mutex);
-			mutex_lock(&depth_mutex);
-			depth_flag = false;
-			mutex_unlock(&depth_mutex);
 			iterate(search_status);
 		}
 	} while (search_status != QUITTING);
