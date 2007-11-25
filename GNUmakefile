@@ -17,8 +17,8 @@ ARCH = pentium3
 
 CXX  = g++
 LANG = -ansi
-WARN = -Wall -Werror
-OPTI = -O3 -fomit-frame-pointer
+WARN = -Wall #-Werror
+OPTI = -g -O3 -fomit-frame-pointer
 PREP = -D$(PLAT)
 LINK = -lpthread
 DIR  = -Iinc
@@ -26,6 +26,7 @@ MACH = -march=$(ARCH)
 
 OBJS = bin/board_base.o      \
        bin/board_heuristic.o \
+	   bin/testing.o         \
        bin/book.o            \
        bin/clock.o           \
        bin/library.o         \

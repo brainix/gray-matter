@@ -305,7 +305,7 @@ void xboard::do_force()
 void xboard::do_go()
 {
 	force = false;
-	search_ptr->change(THINKING, *board_ptr);
+	search_ptr->change(analyze ? ANALYZING : THINKING, *board_ptr);
 }
 
 /*----------------------------------------------------------------------------*\
