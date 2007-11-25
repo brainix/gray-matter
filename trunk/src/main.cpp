@@ -30,6 +30,7 @@
 #include "search_base.h"
 #include "search_mtdf.h"
 #include "book.h"
+#include "testing.h"
 
 // Function prototypes:
 int main(int argc, char **argv);
@@ -48,7 +49,7 @@ int main(int argc, char **argv)
 
 	// Parse the command-line arguments and possibly change the default
 	// settings.
-	for (int c; (c = getopt(argc, argv, "e:x:n:m:o:")) != -1;)
+	for (int c; (c = getopt(argc, argv, "e:x:n:m:o:p:")) != -1;)
 		switch (c)
 		{
 			case 'e':
@@ -98,6 +99,13 @@ int main(int argc, char **argv)
 					exit(EXIT_FAILURE);
 				}
 				break;
+			case 'p':
+			{
+				// Specifying a performance test
+				testing t(optarg);
+				t.start();
+				break;
+			}
 			default:
 				// Specifying the user doesn't know how to read.
 				cout << "unknown option: -" << optopt << endl;
