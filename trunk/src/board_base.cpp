@@ -1040,7 +1040,7 @@ void board_base::coord_to_san(move_t m, string& san)
 /*----------------------------------------------------------------------------*\
  |				    perft()				      |
 \*----------------------------------------------------------------------------*/
-unsigned long board_base::perft(int depth)
+uint64_t board_base::perft(int depth)
 {
 
 // From the current position, grow the move tree to the given depth and count
@@ -1049,7 +1049,7 @@ unsigned long board_base::perft(int depth)
 
 	list<move_t> l;
 	list<move_t>::iterator it;
-	unsigned long nodes = 0;
+	uint64_t nodes = 0;
 
 	// Base case.
 	if (depth == 0)
