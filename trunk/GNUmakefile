@@ -45,7 +45,6 @@ bin/%.o : src/%.cpp
 	$(CXX) -c -o $@ $< $(LANG) $(WARN) $(OPTI) $(PREP) $(DIR) $(MACH)
 
 bin/gray : $(OBJS)
-	@echo "OBJS = $(OBJS)"
 	$(CXX) -o $@ $(LANG) $(WARN) $(OPTI) $(PREP) $(LINK) $(DIR) $(MACH) $(OBJS)
 
 bin/%.d: src/%.cpp
