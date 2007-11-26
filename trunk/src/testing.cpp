@@ -55,12 +55,12 @@ void testing::test_perft_1() {
 	perft_score.push_back(perft1);
 
 	// This position is very good because it catches many possible bugs.
-	fen.push_back("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -");
+	fen.push_back("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
 	unsigned long fen2[] = {48, 2039, 97862, 4085603, 193690690/*, 8031647685*/};
 	vector<unsigned long> perft2(fen2, fen2 + sizeof(fen2) / sizeof(unsigned long *));
 	perft_score.push_back(perft2);
 
-	fen.push_back("8/3K4/2p5/p2b2r1/5k2/8/8/1q6 b - 1 67");
+	fen.push_back("8/3K4/2p5/p2b2r1/5k2/8/8/1q6 b - - 1 67");
 	unsigned long fen3[] = {50, 279};
 	vector<unsigned long> perft3(fen3, fen3 + sizeof(fen3) / sizeof(unsigned long *));
 	perft_score.push_back(perft3);
@@ -75,7 +75,7 @@ void testing::test_perft_1() {
 	vector<unsigned long> perft5(fen5, fen5 + sizeof(fen5) / sizeof(unsigned long *));
 	perft_score.push_back(perft5);
 
-	fen.push_back("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - -");
+	fen.push_back("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1");
 	unsigned long fen6[] = {0,0,0,0,0,11030083,178633661};
 	vector<unsigned long> perft6(fen6, fen6 + sizeof(fen6) / sizeof(unsigned long *));
 	perft_score.push_back(perft6);
@@ -108,6 +108,7 @@ void testing::test_perft_1() {
 
 		  if(!board_ptr->set_board_fen(fen[feni])) {
 			cout << "Error setting fen." << endl;
+			exit(EXIT_FAILURE);
 		  }
 		  board_str = board_ptr->to_string();
 		  pval = board_ptr->perft(depth+1);

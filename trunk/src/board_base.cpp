@@ -534,11 +534,11 @@ string board_base::to_string() const {
 	for(y = 7; y >= 0; y--) {
 		for(x = 0; x <= 7; x++) {
 			for(shape = PAWN; shape <= KING; shape++) {
-				if(BIT_GET(state.piece[ON_MOVE][shape], x, y)) {
-					color = ON_MOVE ? 1 : 0;
+				if(BIT_GET(state.piece[WHITE][shape], x, y)) {
+					color = WHITE;
 					break;
-				} else if(BIT_GET(state.piece[OFF_MOVE][shape], x, y)) {
-					color = OFF_MOVE ? 0 : 1;
+				} else if(BIT_GET(state.piece[BLACK][shape], x, y)) {
+					color = BLACK;
 					break;
 				}
 			}
