@@ -268,6 +268,7 @@ public:
 	virtual int evaluate(int depth) const = 0; // Force sub-classes to override.
 	virtual bool check() const;
 	virtual bool zugzwang() const;
+	virtual string to_string() const;
 
 	// These methods generate, make, and take back moves.
 	virtual void generate(list<move_t> &l, bool only_legal_moves = false, bool only_captures = false);
