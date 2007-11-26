@@ -94,7 +94,7 @@ void testing::test_perft_1() {
 	int depth = 0;
 	unsigned long pval;
 	board_base *board_ptr = new board_heuristic();
-	string move_str;
+	string move_str, board_str;
 
 	while(tests_left) {
 	  tests_left = false;
@@ -106,11 +106,16 @@ void testing::test_perft_1() {
 		if(depth < static_cast<signed>(perft_score[feni].size()) && 
 		   perft_score[feni][depth] != 0) { // zero means value is unknown
 
-		  board_ptr->set_board_fen(fen[feni]);
+		  if(!board_ptr->set_board_fen(fen[feni])) {
+			cout << "Error setting fen." << endl;
+		  }
+		  board_str = board_ptr->to_string();
 		  pval = board_ptr->perft(depth+1);
 
 		  if(pval != perft_score[feni][depth]) {
 			cout << "Problem with fen = '" << fen[feni] << "'" << endl;
+			cout << board_str;
+
 			cout << "At depth " << (depth+1) << ":" << endl;
 			cout << "  Expected perft = " << perft_score[feni][depth] << endl;
 			cout << "  Computed perft = " << pval << endl;

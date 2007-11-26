@@ -521,6 +521,46 @@ bool board_base::zugzwang() const
 }
 
 /*----------------------------------------------------------------------------*\
+ |				   to_string()				      |
+\*----------------------------------------------------------------------------*/
+string board_base::to_string() const {
+  ostringstream ostr;
+
+// Convert the board to a string
+//
+	int y, x, shape, color;
+
+	ostr << "+---+---+---+---+---+---+---+---+" << endl;
+	for(y = 7; y >= 0; y--) {
+		for(x = 0; x <= 7; x++) {
+			for(shape = PAWN; shape <= KING; shape++) {
+				if(BIT_GET(state.piece[ON_MOVE][shape], x, y)) {
+					color = ON_MOVE ? 1 : 0;
+					break;
+				} else if(BIT_GET(state.piece[OFF_MOVE][shape], x, y)) {
+					color = OFF_MOVE ? 0 : 1;
+					break;
+				}
+			}
+			switch(shape) {
+				case KING:		ostr << (color == WHITE ? "| K " : "| k "); break;
+				case QUEEN:		ostr << (color == WHITE ? "| Q " : "| q "); break;
+				case ROOK:		ostr << (color == WHITE ? "| R " : "| r "); break;
+				case BISHOP:	ostr << (color == WHITE ? "| B " : "| b "); break;
+				case KNIGHT:	ostr << (color == WHITE ? "| N " : "| n "); break;
+				case PAWN:		ostr << (color == WHITE ? "| P " : "| p "); break;
+				default:		ostr << "|   "; break;
+			}
+		} // x
+		ostr << "| " << (y+1) << endl;
+		ostr << "+---+---+---+---+---+---+---+---+" << endl;
+	} // y
+	ostr << "  a   b   c   d   e   f   g   h" << endl;
+
+	return ostr.str();
+}
+
+/*----------------------------------------------------------------------------*\
  |				   generate()				      |
 \*----------------------------------------------------------------------------*/
 void board_base::generate(list<move_t> &l, bool only_legal_moves, bool only_captures)
