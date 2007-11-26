@@ -57,7 +57,7 @@ int main(int argc, char **argv)
 				search_engine = optarg;
 				if (search_engine != "MTD(f)")
 				{
-					cout << "move search engine "
+					cerr << "move search engine "
 					     << "must be MTD(f)"
 					     << endl;
 					exit(EXIT_FAILURE);
@@ -68,7 +68,7 @@ int main(int argc, char **argv)
 				// table.
 				if ((xpos_table_mb = atoi(optarg)) < 1)
 				{
-					cout << "transposition table "
+					cerr << "transposition table "
 					     << "must be >= 1 MB"
 					     << endl;
 					exit(EXIT_FAILURE);
@@ -83,7 +83,7 @@ int main(int argc, char **argv)
 				// game in the opening book.
 				if ((book_moves = atoi(optarg)) < 1)
 				{
-					cout << "number of book moves "
+					cerr << "number of book moves "
 					     << "must be >= 1 ply"
 					     << endl;
 					exit(EXIT_FAILURE);
@@ -93,7 +93,7 @@ int main(int argc, char **argv)
 				// Specifying the move search overhead.
 				if ((overhead = atoi(optarg)) < 1)
 				{
-					cout << "move search overhead "
+					cerr << "move search overhead "
 					     << "must be >= 1 centisecond"
 					     << endl;
 					exit(EXIT_FAILURE);
@@ -101,21 +101,21 @@ int main(int argc, char **argv)
 				break;
 			case 'p':
 			{
-				// Specifying a performance test
+				// Specifying correctness and performance tests.
 				testing t(optarg);
 				t.start();
 				break;
 			}
 			default:
 				// Specifying the user doesn't know how to read.
-				cout << "unknown option: -" << optopt << endl;
+				cerr << "unknown option: -" << optopt << endl;
 				exit(EXIT_FAILURE);
 				break;
 		}
 	if (optind < argc)
 	{
 		// Specifying the user doesn't know how to read.
-		cout << "unknown argument: " << argv[optind] << endl;
+		cerr << "unknown argument: " << argv[optind] << endl;
 		exit(EXIT_FAILURE);
 	}
 
