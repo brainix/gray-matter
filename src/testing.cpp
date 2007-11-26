@@ -45,54 +45,54 @@ void testing::start() {
 //
 void testing::test_perft_1() {
 	vector <string> fen;
-	vector <vector <unsigned long> > perft_score;
+	vector <vector <uint64_t> > perft_score;
 
 	// Initial position
 	fen.push_back("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-	unsigned long fen1[] = {20, 400, 8902, 197281, 4865609, 119060324/*,
+	uint64_t fen1[] = {20, 400, 8902, 197281, 4865609, 119060324/*,
 		3195901860, 84998978956, 2439530234167, 69352859712417*/};
-	vector<unsigned long> perft1(fen1, fen1 + sizeof(fen1) / sizeof(unsigned long *));
+	vector<uint64_t> perft1(fen1, fen1 + sizeof(fen1) / sizeof(uint64_t));
 	perft_score.push_back(perft1);
 
 	// This position is very good because it catches many possible bugs.
 	fen.push_back("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
-	unsigned long fen2[] = {48, 2039, 97862, 4085603, 193690690/*, 8031647685*/};
-	vector<unsigned long> perft2(fen2, fen2 + sizeof(fen2) / sizeof(unsigned long *));
+	uint64_t fen2[] = {48, 2039, 97862, 4085603, 193690690/*, 8031647685*/};
+	vector<uint64_t> perft2(fen2, fen2 + sizeof(fen2) / sizeof(uint64_t));
 	perft_score.push_back(perft2);
 
 	fen.push_back("8/3K4/2p5/p2b2r1/5k2/8/8/1q6 b - - 1 67");
-	unsigned long fen3[] = {50, 279};
-	vector<unsigned long> perft3(fen3, fen3 + sizeof(fen3) / sizeof(unsigned long *));
+	uint64_t fen3[] = {50, 279};
+	vector<uint64_t> perft3(fen3, fen3 + sizeof(fen3) / sizeof(uint64_t));
 	perft_score.push_back(perft3);
 
 	fen.push_back("8/7p/p5pb/4k3/P1pPn3/8/P5PP/1rB2RK1 b - d3 0 28");
-	unsigned long fen4[] = {0,0,0,0,0,38633283};
-	vector<unsigned long> perft4(fen4, fen4 + sizeof(fen4) / sizeof(unsigned long *));
+	uint64_t fen4[] = {0,0,0,0,0,38633283};
+	vector<uint64_t> perft4(fen4, fen4 + sizeof(fen4) / sizeof(uint64_t));
 	perft_score.push_back(perft4);
 
 	fen.push_back("rnbqkb1r/ppppp1pp/7n/4Pp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6 0 3");
-	unsigned long fen5[] = {0,0,0,0,11139762};
-	vector<unsigned long> perft5(fen5, fen5 + sizeof(fen5) / sizeof(unsigned long *));
+	uint64_t fen5[] = {0,0,0,0,11139762};
+	vector<uint64_t> perft5(fen5, fen5 + sizeof(fen5) / sizeof(uint64_t));
 	perft_score.push_back(perft5);
 
 	fen.push_back("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1");
-	unsigned long fen6[] = {0,0,0,0,0,11030083,178633661};
-	vector<unsigned long> perft6(fen6, fen6 + sizeof(fen6) / sizeof(unsigned long *));
+	uint64_t fen6[] = {0,0,0,0,0,11030083,178633661};
+	vector<uint64_t> perft6(fen6, fen6 + sizeof(fen6) / sizeof(uint64_t));
 	perft_score.push_back(perft6);
 
 	// Print all test results
 	cout << "This performance test compares to the following data:" << endl;
 	for(size_t i = 0; i < fen.size(); i++) {
-	  cout << "FEN: " << fen[i] << endl << "\t";
+	  cout << "FEN[" << i << "]: " << fen[i] << endl << "\t";
 	  copy(perft_score[i].begin(), perft_score[i].end()-1, 
-		  ostream_iterator<unsigned long>(cout, ", "));
+		  ostream_iterator<uint64_t>(cout, ", "));
 	  cout << perft_score[i].back() << endl;
 	}
 
 	// Now run the tests
 	bool tests_left = true;
 	int depth = 0;
-	unsigned long pval;
+	uint64_t pval;
 	board_base *board_ptr = new board_heuristic();
 	string move_str, board_str;
 
@@ -106,6 +106,7 @@ void testing::test_perft_1() {
 		if(depth < static_cast<signed>(perft_score[feni].size()) && 
 		   perft_score[feni][depth] != 0) { // zero means value is unknown
 
+		  cout << "Testing FEN[" << feni << "] at depth " << (depth+1) << endl;
 		  if(!board_ptr->set_board_fen(fen[feni])) {
 			cout << "Error setting fen." << endl;
 			exit(EXIT_FAILURE);
@@ -129,12 +130,10 @@ void testing::test_perft_1() {
 			  board_ptr->coord_to_san(*it, move_str);
 			  board_ptr->make(*it);
 			  pval = board_ptr->perft(depth);
-			  cout << "  "
-				   << static_cast<char>(it->x1+'a') << static_cast<char>(it->y1+'1')
-				   << static_cast<char>(it->x2+'a') << static_cast<char>(it->y2+'1')
-				   << " " << move_str << " : " << pval << endl;
+			  cout << move_str << " : " << pval << ", ";
 			  board_ptr->unmake();
 			}
+			cout << endl;
 		  }
 		}
 	  }
