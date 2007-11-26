@@ -15,34 +15,42 @@ PLAT = LINUX
 # c3-2.
 ARCH = pentium3
 
+# Subversion macros
+SVNDEF := -D'SVN_REV="$(shell svnversion -n .)"'
+
 CXX  = g++
 LANG = -ansi
 WARN = -Wall #-Werror
-OPTI = -g -O3 -fomit-frame-pointer
+OPTI = -g -O3 -fomit-frame-pointer $(SVNDEF)
 PREP = -D$(PLAT)
 LINK = -lpthread
 DIR  = -Iinc
 MACH = -march=$(ARCH)
 
-OBJS = bin/board_base.o      \
-       bin/board_heuristic.o \
-	   bin/testing.o         \
-       bin/book.o            \
-       bin/clock.o           \
-       bin/library.o         \
-       bin/main.o            \
-       bin/search_base.o     \
-       bin/search_mtdf.o     \
-       bin/table.o           \
-       bin/xboard.o
+SRCS = $(wildcard src/*.cpp)
+OBJS = $(addprefix bin/,$(notdir $(subst .cpp,.o,$(SRCS))))
+DEPS = $(addsuffix .d,$(basename $(OBJS)))
 
 all : bin/gray
 
+# If not cleaning, etc., use dependencies
+ifeq ($(filter clean,$(MAKECMDGOALS)),)
+-include $(DEPS)
+endif
+
 clean :
-	rm -f $(OBJS) bin/gray
+	rm -f $(DEPS) $(OBJS) bin/gray
 
 bin/%.o : src/%.cpp
 	$(CXX) -c -o $@ $< $(LANG) $(WARN) $(OPTI) $(PREP) $(DIR) $(MACH)
 
 bin/gray : $(OBJS)
+	@echo "OBJS = $(OBJS)"
 	$(CXX) -o $@ $(LANG) $(WARN) $(OPTI) $(PREP) $(LINK) $(DIR) $(MACH) $(OBJS)
+
+bin/%.d: src/%.cpp
+	@set -e; $(CC) $(CPPFLAGS) -Iinc -DBUILDDEPS -MM $< \
+		| sed 's/\($*\)\.o[ :]*/bin\/\1.o bin\/$*.d : /g' > $@; \
+		[ -s $@ ] || rm -f $@
+
+

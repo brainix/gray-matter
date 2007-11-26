@@ -94,6 +94,7 @@ void testing::test_perft_1() {
 	int depth = 0;
 	unsigned long pval;
 	board_base *board_ptr = new board_heuristic();
+	string move_str;
 
 	while(tests_left) {
 	  tests_left = false;
@@ -113,6 +114,21 @@ void testing::test_perft_1() {
 			cout << "At depth " << (depth+1) << ":" << endl;
 			cout << "  Expected perft = " << perft_score[feni][depth] << endl;
 			cout << "  Computed perft = " << pval << endl;
+			cout << "Repeating perft() with more details:" << endl;
+
+			list<move_t> l;
+			list<move_t>::iterator it;
+			board_ptr->generate(l, true);
+			for(it = l.begin(); it != l.end(); it++) {
+			  board_ptr->coord_to_san(*it, move_str);
+			  board_ptr->make(*it);
+			  pval = board_ptr->perft(depth);
+			  cout << "  "
+				   << static_cast<char>(it->x1+'a') << static_cast<char>(it->y1+'1')
+				   << static_cast<char>(it->x2+'a') << static_cast<char>(it->y2+'1')
+				   << " " << move_str << " : " << pval << endl;
+			  board_ptr->unmake();
+			}
 		  }
 		}
 	  }

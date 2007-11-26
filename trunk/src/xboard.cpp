@@ -242,7 +242,11 @@ void xboard::do_protover() const
 	printf("feature playother=1\n");                //
 	printf("feature usermove=1\n");                 //
 	printf("feature sigint=0\n");                   //
+#ifdef SVN_REV
+	printf("feature myname=\"Gray Matter rev %s\"\n", SVN_REV); //
+#else
 	printf("feature myname=\"Gray Matter 0.0\"\n"); //
+#endif
 	printf("feature variants=\"normal\"\n");        //
 	printf("feature colors=0\n");                   //
 	printf("feature done=1\n");                     //
