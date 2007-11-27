@@ -137,6 +137,10 @@ void xboard::loop(search_base *s, chess_clock *c, book *o)
 			do_analyze();
 		else if (!strncmp(buffer, "exit", 4))
 			do_exit();
+		// These are not really part of the interface,
+		// but come in handy to us
+		else if (!strncmp(buffer, "display", 7))
+			do_display();
 		else
 			do_unknown();
 	} while (strncmp(buffer, "quit", 4));
@@ -585,6 +589,14 @@ void xboard::do_exit()
 // Exit analyze mode.
 
 	analyze = false;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   do_display()				      |
+\*----------------------------------------------------------------------------*/
+void xboard::do_display() const
+{
+	cout << board_ptr->to_string();
 }
 
 /*----------------------------------------------------------------------------*\

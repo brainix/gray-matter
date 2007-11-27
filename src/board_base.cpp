@@ -529,8 +529,9 @@ string board_base::to_string() const {
 // Convert the board to a string
 //
 	int y, x, shape, color;
+	string const prefix = "  ";
 
-	ostr << "+---+---+---+---+---+---+---+---+" << endl;
+	ostr << prefix << "+---+---+---+---+---+---+---+---+" << endl << prefix;
 	for(y = 7; y >= 0; y--) {
 		for(x = 0; x <= 7; x++) {
 			for(shape = PAWN; shape <= KING; shape++) {
@@ -553,7 +554,7 @@ string board_base::to_string() const {
 			}
 		} // x
 		ostr << "| " << (y+1) << endl;
-		ostr << "+---+---+---+---+---+---+---+---+" << endl;
+		ostr << prefix << "+---+---+---+---+---+---+---+---+" << endl << prefix;
 	} // y
 	ostr << "  a   b   c   d   e   f   g   h" << endl;
 

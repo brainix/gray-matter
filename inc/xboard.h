@@ -99,6 +99,7 @@ private:
 	void do_nopost() const;
 	void do_analyze();
 	void do_exit();
+	void do_display() const;
 	void do_unknown() const;
 
 	int game_over();
