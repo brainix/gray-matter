@@ -163,14 +163,16 @@ move_t search_mtdf::mtdf(int depth, int guess)
 	move_t m;
 	SET_NULL_MOVE(m);
 	m.value = guess;
-	int upper = +INFINITY, lower = -INFINITY, beta;
+	int upper = +INFINITY, lower = -INFINITY, 
+		beta, mval = m.value & 0xFFFF;
 
 	while (upper > lower && !timeout_flag)
 	{
-		beta = m.value + (m.value == lower);
+		beta = mval + (mval == lower);
 		m = minimax(depth, 0, beta - 1, beta);
-		upper = m.value < beta ? m.value : upper;
-		lower = m.value < beta ? lower : m.value;
+		mval = m.value & 0xFFFF;
+		upper = mval < beta ? mval : upper;
+		lower = mval < beta ? lower : mval;
 	}
 	return m;
 }
