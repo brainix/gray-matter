@@ -578,6 +578,7 @@ void xboard::do_analyze()
 // Enter analyze mode.
 
 	analyze = true;
+	search_ptr->change(ANALYZING, *board_ptr);
 }
 
 /*----------------------------------------------------------------------------*\
