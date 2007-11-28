@@ -205,8 +205,8 @@ move_t search_mtdf::minimax(int depth, int shallowness, int16_t alpha, int16_t b
 	bool whose = board_ptr->get_whose();     // The color on move.
 	bitboard_t hash = board_ptr->get_hash(); // This position's hash.
 	int status = board_ptr->get_status(0);   // Whether the game is over.
-	int saved_alpha = alpha;                 // Saved lower bound on score.
-	int saved_beta = beta;                   // Saved upper bound on score.
+	int16_t saved_alpha = alpha;             // Saved lower bound on score.
+	int16_t saved_beta = beta;               // Saved upper bound on score.
 	list<move_t> l;                          // The move list.
 	list<move_t>::iterator it;               // The move list's iterator.
 	move_t m;                                // The best move and score.
