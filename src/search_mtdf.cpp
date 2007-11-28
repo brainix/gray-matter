@@ -163,16 +163,14 @@ move_t search_mtdf::mtdf(int depth, int guess)
 	move_t m;
 	SET_NULL_MOVE(m);
 	m.value = guess;
-	int upper = +INFINITY, lower = -INFINITY, 
-		beta, mval = m.value & 0xFFFF;
+	int16_t upper = +INFINITY, lower = -INFINITY, beta;
 
 	while (upper > lower && !timeout_flag)
 	{
-		beta = mval + (mval == lower);
+		beta = m.value + (m.value == lower);
 		m = minimax(depth, 0, beta - 1, beta);
-		mval = m.value & 0xFFFF;
-		upper = mval < beta ? mval : upper;
-		lower = mval < beta ? lower : mval;
+		upper = m.value < beta ? m.value : upper;
+		lower = m.value < beta ? lower : m.value;
 	}
 	return m;
 }
@@ -180,7 +178,7 @@ move_t search_mtdf::mtdf(int depth, int guess)
 /*----------------------------------------------------------------------------*\
  |				   minimax()				      |
 \*----------------------------------------------------------------------------*/
-move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
+move_t search_mtdf::minimax(int depth, int shallowness, int16_t alpha, int16_t beta)
 {
 
 // From the current position, search for the best move.  This method implements
@@ -261,6 +259,8 @@ move_t search_mtdf::minimax(int depth, int shallowness, int alpha, int beta)
 	}
 
 	// Generate and re-order the move list.
+	// FIXME: shouldn't we say something like shallowness < 3 here to
+	//        avoid invalid moves in the PV up to this depth?
 	board_ptr->generate(l, !shallowness);
 	for (it = l.begin(); it != l.end(); it++)
 		// If according to the transposition table, a previous search
