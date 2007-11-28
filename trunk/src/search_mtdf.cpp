@@ -68,14 +68,20 @@ void search_mtdf::iterate(int s)
 
 	int depth;
 	move_t guess[2], m;
+	list<move_t> l;
 
 	// Wait for the board, then grab the board.
 	board_ptr->lock();
 
-	// For the current position, does the opening book recommend a move?
-	if (s == THINKING && table_ptr->probe(board_ptr->get_hash(), MAX_DEPTH, BOOK, &m))
+	// There is no need for THINKING if either the opening book recommends
+	// a move for the current position, or if there's only one valid move. 
+	board_ptr->generate(l, true);
+	if (s == THINKING && 
+		(table_ptr->probe(board_ptr->get_hash(), MAX_DEPTH, BOOK, &m) || l.size() == 1))
 	{
 		// Yes.  Make the prescribed move.
+	 	if(l.size() == 1)
+		  m = l.front();
 		extract_pv();
 		extract_hint(THINKING);
 		board_ptr->unlock();
