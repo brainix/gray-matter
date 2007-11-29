@@ -254,10 +254,12 @@ bool board_base::set_board_fen(string& fen)
 	// Parse the piece placement data.
 	while (fen[index] != ' ')
 	{
-		if (isalpha(fen[index])) {
+		if (isalpha(fen[index]))
+		{
 			int color = isupper(fen[index]) ? WHITE : BLACK;
 			int shape = PAWN;
-			switch (toupper(fen[index])) {
+			switch (toupper(fen[index]))
+			{
 				case 'P' : shape = PAWN;   break;
 				case 'N' : shape = KNIGHT; break;
 				case 'B' : shape = BISHOP; break;
@@ -266,32 +268,28 @@ bool board_base::set_board_fen(string& fen)
 				case 'K' : shape = KING;   break;
 				default  : return set_board_fen_error(fen, "Invalid piece.", x, y); break;
 			}
-			if (x > 8) {
-			  return set_board_fen_error(fen, "Too many columns specified (1).", x, y);
-			}
+			if (x > 7)
+				return set_board_fen_error(fen, "Too many columns specified (1).", x, y);
 			BIT_SET(state.piece[color][shape], x++, y);
 		}
-		else if (isdigit(fen[index])) {
-			if ((x += fen[index] - '0') > 8) {
+		else if (isdigit(fen[index]))
+		{
+			if ((x += fen[index] - '0') > 7)
 				return set_board_fen_error(fen, "Too many columns specified (2).", x, y);
-			}
 		}
-		else if (fen[index] == '/') {
+		else if (fen[index] == '/')
+		{
 			x = 0;
-			if (--y < 0) {
+			if (--y < 0)
 				return set_board_fen_error(fen, "Too many rows specified.", x, y);
-			}
 		}
-		else {
+		else
 			return set_board_fen_error(fen, "Illegal character found.", x, y);
-		}
-		if (++index >= fen.length()) {
+		if (++index >= fen.length())
 			return set_board_fen_error(fen, "FEN string too short (1).", x, y);
-		}
 	}
-	if (++index >= fen.length()) {
+	if (++index >= fen.length())
 		return set_board_fen_error(fen, "FEN string too short (2).", x, y);
-	}
 
 	// Parse the active color.
 	switch (fen[index])
@@ -339,7 +337,8 @@ bool board_base::set_board_fen(string& fen)
 		state.en_passant = fen[index] - 'a';
 		if (++index >= fen.length())
 			return set_board_fen_error(fen, "FEN string too short (8).", x, y);
-		if (fen[index] < '1' || fen[index] > '8')
+		if (state.whose == WHITE && fen[index] != '5' ||
+		    state.whose == WHITE && fen[index] != '4')
 			return set_board_fen_error(fen, "Invalid en passant rank.", x, y);
 	}
 	if (++index >= fen.length())
@@ -379,7 +378,7 @@ bool board_base::set_board_fen(string& fen)
 }
 
 /*----------------------------------------------------------------------------*\
- |				     set_board_fen_error()				      |
+ |			     set_board_fen_error()			      |
 \*----------------------------------------------------------------------------*/
 bool board_base::set_board_fen_error(string& fen, string reason, int x, int y) {
 
