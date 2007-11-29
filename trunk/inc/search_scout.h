@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------*\
- |	search_mtdf.h - MTD(f) move search interface			      |
+ |	search_scout.h - NegaScout move search interface		      |
  |									      |
- |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
+ |	Copyright Â© 2005-2007, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
 
 /*
@@ -19,8 +19,8 @@
  | this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SEARCH_MTDF_H
-#define SEARCH_MTDF_H
+#ifndef SEARCH_SCOUT_H
+#define SEARCH_SCOUT_H
 
 using namespace std;
 
@@ -43,17 +43,12 @@ class history;
 class chess_clock;
 class xboard;
 
-class search_mtdf : public search_base
+class search_scout : public search_base
 {
 public:
-	search_mtdf(table *t, history *h, chess_clock *c, xboard *x);
-	~search_mtdf();
-	search_mtdf& operator=(const search_mtdf& that);
-private:
-	void iterate(int s);
-	move_t mtdf(int depth, int guess = 0);
-	move_t minimax(int depth, int shallowness = 0, 
-	               int16_t alpha = -INFINITY, int16_t beta = +INFINITY);
+	search_scout(table *t, history *h, chess_clock *c, xboard *x);
+	~search_scout();
+	search_scout& operator=(const search_scout& that);
 };
 
 #endif
