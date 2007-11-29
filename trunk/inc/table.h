@@ -96,7 +96,7 @@ private:
 typedef struct pawn_slot
 {
 	bitboard_t hash;               // Zobrist hash key.    64 bits
-	int16_t value;                 // Score.             + 16 bits
+	value_t value;                 // Score.             + 16 bits
 } __attribute__((packed)) pawn_slot_t; //                    = 80 bits
 
 class pawn
@@ -105,8 +105,8 @@ public:
 	pawn(int mb = PAWN_TABLE_MB);
 	~pawn();
 	void clear();
-	bool probe(bitboard_t hash, int *value_ptr);
-	void store(bitboard_t hash, int value);
+	bool probe(bitboard_t hash, value_t *value_ptr);
+	void store(bitboard_t hash, value_t value);
 private:
 	uint64_t slots;    // The number of slots.
 	pawn_slot_t *data; // The slots themselves.

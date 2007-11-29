@@ -276,7 +276,7 @@ void pawn::clear()
 /*----------------------------------------------------------------------------*\
  |				 pawn::probe()				      |
 \*----------------------------------------------------------------------------*/
-bool pawn::probe(bitboard_t hash, int *value_ptr)
+bool pawn::probe(bitboard_t hash, value_t *value_ptr)
 {
 
 // Given the pawn structure described in hash, check the pawn table to see if
@@ -295,7 +295,7 @@ bool pawn::probe(bitboard_t hash, int *value_ptr)
 /*----------------------------------------------------------------------------*\
  |				 pawn::store()				      |
 \*----------------------------------------------------------------------------*/
-void pawn::store(bitboard_t hash, int value)
+void pawn::store(bitboard_t hash, value_t value)
 {
 
 // We've just evaluated the pawn structure described in hash.  Save its
