@@ -22,6 +22,7 @@ OBJS = bin/board_base.o      \
        bin/main.o            \
        bin/search_base.o     \
        bin/search_mtdf.o     \
+       bin/search_scout.o    \
        bin/table.o           \
        bin/xboard.o
 

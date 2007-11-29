@@ -49,6 +49,8 @@ public:
 	search_scout(table *t, history *h, chess_clock *c, xboard *x);
 	~search_scout();
 	search_scout& operator=(const search_scout& that);
+private:
+	void iterate(int s);
 };
 
 #endif

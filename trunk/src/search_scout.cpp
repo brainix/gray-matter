@@ -55,3 +55,15 @@ search_scout& search_scout::operator=(const search_scout& that)
 		search_base::operator=(that);
 	return *this;
 }
+
+/*----------------------------------------------------------------------------*\
+ |				   iterate()				      |
+\*----------------------------------------------------------------------------*/
+void search_scout::iterate(int s)
+{
+
+// Perform iterative deepening.  This method handles analyzing (thinking
+// indefinitely), thinking (on our own time), and pondering (on our opponent's
+// time) since they're so similar.
+
+}

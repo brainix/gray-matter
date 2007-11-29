@@ -55,10 +55,11 @@ int main(int argc, char **argv)
 			case 'e':
 				// Specifying which move search engine to use.
 				search_engine = optarg;
-				if (search_engine != "MTD(f)")
+				if (search_engine != "MTD(f)" &&
+				    search_engine != "NegaScout")
 				{
 					cerr << "move search engine "
-					     << "must be MTD(f)"
+					     << "must be MTD(f) or NegaScout"
 					     << endl;
 					exit(EXIT_FAILURE);
 				}
@@ -132,7 +133,11 @@ int main(int argc, char **argv)
 	// Based on the -s command-line option, choose the move search engine
 	// and cast it as a generic version.  Thus far, we've only implemented
 	// one move search engine, MTD(f).
-	search_base *s = new search_mtdf(&t, &h, &c, &x);
+	search_base *s;
+	if (search_engine == "MTD(f)")
+		s = new search_mtdf(&t, &h, &c, &x);
+	else if (search_engine == "NegaScout")
+		s = new search_scout(&t, &h, &c, &x);
 
 	// Launch the event loop.
 	x.loop(s, &c, &o);
