@@ -131,10 +131,10 @@ void search_mtdf::iterate(int s)
 		extract_pv();
 		if (output)
 		{
-			if (s == PONDERING && !IS_NULL_MOVE(hint))
+			if (strong_pondering)
 				pv.push_front(hint);
 			xboard_ptr->print_output(depth, m.value, clock_ptr->get_elapsed(), nodes, pv);
-			if (s == PONDERING && !IS_NULL_MOVE(hint))
+			if (strong_pondering)
 				pv.pop_front();
 		}
 		if (ABS(m.value) >= VALUE_KING - MAX_DEPTH)
@@ -271,8 +271,6 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 	}
 
 	// Generate and re-order the move list.
-	// FIXME: shouldn't we say something like shallowness < 3 here to
-	//        avoid invalid moves in the PV up to this depth?
 	board_ptr->generate(l, !shallowness);
 	for (it = l.begin(); it != l.end(); it++)
 		// If according to the transposition table, a previous search
