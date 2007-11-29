@@ -47,6 +47,7 @@
 #define BOOK_MOVES	40 // Num moves to read per game in book (in plies).
 #define OVERHEAD	 1 // Move search overhead (in centiseconds).
 #define MAX_DEPTH	16 // Maximum search depth (in plies).
+#define R		 2 // Null move pruning depth reduction factor (in plies).
 
 
 

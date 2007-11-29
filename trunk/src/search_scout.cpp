@@ -166,7 +166,7 @@ void search_scout::iterate(int s)
 /*----------------------------------------------------------------------------*\
  |				    scout()				      |
 \*----------------------------------------------------------------------------*/
-move_t search_scout::scout(int depth, int shallowness, value_t alpha, value_t beta)
+move_t search_scout::scout(int depth, int shallowness, value_t alpha, value_t beta, bool try_null_move)
 {
 
 // From the current position, search for the best move.  This method implements
@@ -197,6 +197,7 @@ move_t search_scout::scout(int depth, int shallowness, value_t alpha, value_t be
 	int status = board_ptr->get_status(0);   // Whether the game is over.
 	value_t saved_alpha = alpha;             // Saved lower bound on score.
 	value_t saved_beta = beta;               // Saved upper bound on score.
+	move_t null_move;                        // The all-important null move.
 	list<move_t> l;                          // The move list.
 	list<move_t>::iterator it;               // The move list's iterator.
 	move_t m;                                // The best move and score.
@@ -242,6 +243,17 @@ move_t search_scout::scout(int depth, int shallowness, value_t alpha, value_t be
 		return m;
 	}
 
+	//
+	if (try_null_move && !board_ptr->zugzwang())
+	{
+		SET_NULL_MOVE(null_move);
+		board_ptr->make(null_move);
+		null_move = scout(depth - R - 1, shallowness + R + 1, -beta, -beta + 1, false);
+		board_ptr->unmake();
+		if ((null_move.value *= -1) >= beta)
+			return null_move;
+	}
+
 	// Generate and re-order the move list.
 	board_ptr->generate(l, !shallowness);
 	for (it = l.begin(); it != l.end(); it++)
@@ -260,9 +272,9 @@ move_t search_scout::scout(int depth, int shallowness, value_t alpha, value_t be
 	for (it = l.begin(); it != l.end(); it++)
 	{
 		board_ptr->make(*it);
-		it->value = -scout(depth - 1, shallowness + 1, -beta, -alpha).value;
+		it->value = -scout(depth - 1, shallowness + 1, -beta, -alpha, true).value;
 		if (alpha < it->value && it->value < saved_beta && it != l.begin() && depth > 1)
-			alpha = -scout(depth - 1, shallowness + 1, -saved_beta, -it->value).value;
+			alpha = -scout(depth - 1, shallowness + 1, -saved_beta, -it->value, true).value;
 		board_ptr->unmake();
 		if (it->value > m.value)
 			alpha = GREATER(alpha, (m = *it).value);
