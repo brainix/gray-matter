@@ -274,7 +274,7 @@ bool board_base::set_board_fen(string& fen)
 		}
 		else if (isdigit(fen[index]))
 		{
-			if ((x += fen[index] - '0') > 7)
+			if ((x += fen[index] - '0') > 8)
 				return set_board_fen_error(fen, "Too many columns specified (2).", x, y);
 		}
 		else if (fen[index] == '/')
