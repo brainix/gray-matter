@@ -51,7 +51,7 @@ public:
 	search_scout& operator=(const search_scout& that);
 private:
 	void iterate(int s);
-	move_t scout(int depth, int shallowness = 0, value_t alpha = -INFINITY, value_t beta = +INFINITY);
+	move_t scout(int depth, int shallowness = 0, value_t alpha = -INFINITY, value_t beta = +INFINITY, bool try_null_move = true);
 };
 
 #endif
