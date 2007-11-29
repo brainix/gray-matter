@@ -190,6 +190,8 @@ move_t search_scout::scout(int depth, int shallowness, value_t alpha, value_t be
 // lower bound (>= beta) on the exact score.
 //
 // On top of FailSoft, this method implements NegaScout.
+//
+// On top of NegaScout, this method implements null move pruning.
 
 	// Local variables that pertain to the current position:
 	bool whose = board_ptr->get_whose();     // The color on move.
@@ -243,8 +245,8 @@ move_t search_scout::scout(int depth, int shallowness, value_t alpha, value_t be
 		return m;
 	}
 
-	//
-	if (try_null_move && !board_ptr->zugzwang())
+	// Perform null move pruning.
+	if (depth >= R + 1 && try_null_move && !board_ptr->zugzwang())
 	{
 		SET_NULL_MOVE(null_move);
 		board_ptr->make(null_move);
@@ -273,7 +275,7 @@ move_t search_scout::scout(int depth, int shallowness, value_t alpha, value_t be
 	{
 		board_ptr->make(*it);
 		it->value = -scout(depth - 1, shallowness + 1, -beta, -alpha, true).value;
-		if (alpha < it->value && it->value < saved_beta && it != l.begin() && depth > 1)
+		if (it->value > alpha && it->value < saved_beta && it != l.begin() && depth > 1)
 			alpha = -scout(depth - 1, shallowness + 1, -saved_beta, -it->value, true).value;
 		board_ptr->unmake();
 		if (it->value > m.value)
