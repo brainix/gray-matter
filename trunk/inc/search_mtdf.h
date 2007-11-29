@@ -51,8 +51,8 @@ public:
 	search_mtdf& operator=(const search_mtdf& that);
 private:
 	void iterate(int s);
-	move_t mtdf(int depth, int guess = 0);
-	move_t minimax(int depth, int shallowness = 0, int16_t alpha = -INFINITY, int16_t beta = +INFINITY);
+	move_t mtdf(int depth, value_t guess = 0);
+	move_t minimax(int depth, int shallowness = 0, value_t alpha = -INFINITY, value_t beta = +INFINITY);
 };
 
 #endif

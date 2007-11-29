@@ -23,11 +23,11 @@
 #include "board_heuristic.h"
 
 // The values of the pieces:
-static int value_material[SHAPES] = {VALUE_PAWN, VALUE_KNIGHT, VALUE_BISHOP,
-                                     VALUE_ROOK, VALUE_QUEEN,  VALUE_KING};
+static value_t value_material[SHAPES] = {VALUE_PAWN, VALUE_KNIGHT, VALUE_BISHOP,
+                                         VALUE_ROOK, VALUE_QUEEN,  VALUE_KING};
 
 // The values of having different pieces on different squares:
-static int value_position[SHAPES][8][8] =
+static value_t value_position[SHAPES][8][8] =
 {
 	       // White pawns:
 	/* A */ {{  0,   0,   1,   3,   6,  10,  40,   0},
@@ -98,7 +98,7 @@ static int value_position[SHAPES][8][8] =
 
 // The values of having the white king on different squares during an endgame
 // with pawns (of both colors) only on the queen side:
-static int value_king_position[8][8] =
+static value_t value_king_position[8][8] =
 {
 	/* A */ {-20,   0,  20,  40,  40,  40,  40,  -20},
 	/* B */ {-20,   0,  20,  40,  60,  60,  40,  -20},
@@ -112,14 +112,14 @@ static int value_king_position[8][8] =
 };
 
 // The values of various pawn structure features:
-static const int value_pawn_passed[8]           = {0, 12,  20,  48,  72, 120, 150,   0};
-static const int value_pawn_doubled[9]          = {0,  0,  -4,  -7, -10, -10, -10, -10, -10};
-static const int value_pawn_isolated[9]         = {0, -8, -20, -40, -60, -70, -80, -80, -80};
-static const int value_pawn_doubled_isolated[9] = {0, -5, -10, -15, -15, -15, -15, -15, -15};
-static const int value_pawn_duo = 2;
+static const value_t value_pawn_passed[8]           = {0, 12,  20,  48,  72, 120, 150,   0};
+static const value_t value_pawn_doubled[9]          = {0,  0,  -4,  -7, -10, -10, -10, -10, -10};
+static const value_t value_pawn_isolated[9]         = {0, -8, -20, -40, -60, -70, -80, -80, -80};
+static const value_t value_pawn_doubled_isolated[9] = {0, -5, -10, -15, -15, -15, -15, -15, -15};
+static const value_t value_pawn_duo = 2;
 
 // The penalty for giving up castling:
-static const int value_king_cant_castle = -20;
+static const value_t value_king_cant_castle = -20;
 
 bool precomputed_board_heuristic = false;
 extern bitboard_t squares_adj_cols[];
@@ -173,13 +173,13 @@ board_heuristic& board_heuristic::operator=(const board_heuristic& that)
 /*----------------------------------------------------------------------------*\
  |				   evaluate()				      |
 \*----------------------------------------------------------------------------*/
-int board_heuristic::evaluate(int depth) const
+value_t board_heuristic::evaluate(int depth) const
 {
 
 // Evaluate the current state.  For simplicity's sake, evaluate from the
 // perspective of the player who's just moved (the color that's off move).
 
-	int sum = 0;
+	value_t sum = 0;
 
 	if (!state.piece[ON_MOVE][KING])
 		return VALUE_ILLEGAL;
@@ -196,12 +196,12 @@ int board_heuristic::evaluate(int depth) const
 /*----------------------------------------------------------------------------*\
  |				evaluate_pawns()			      |
 \*----------------------------------------------------------------------------*/
-int board_heuristic::evaluate_pawns() const
+value_t board_heuristic::evaluate_pawns() const
 {
 
 // Evaluate pawn structure.
 
-	int sign, sum = 0;
+	value_t sign, sum = 0;
 
 	// If we've already evaluated this pawn structure, return our previous
 	// evaluation.
@@ -268,12 +268,12 @@ end:
 /*----------------------------------------------------------------------------*\
  |			       evaluate_knights()			      |
 \*----------------------------------------------------------------------------*/
-int board_heuristic::evaluate_knights() const
+value_t board_heuristic::evaluate_knights() const
 {
 
 //
 
-	int sign, sum = 0;
+	value_t sign, sum = 0;
 	bitboard_t b;
 
 	for (int color = WHITE; color <= BLACK; color++)
@@ -302,12 +302,12 @@ int board_heuristic::evaluate_knights() const
 /*----------------------------------------------------------------------------*\
  |			       evaluate_bishops()			      |
 \*----------------------------------------------------------------------------*/
-int board_heuristic::evaluate_bishops() const
+value_t board_heuristic::evaluate_bishops() const
 {
 
 //
 
-	int sign, sum = 0;
+	value_t sign, sum = 0;
 	bitboard_t b;
 	static bitboard_t squares_both_sides =
 		COL_MSK(0) | COL_MSK(1) | COL_MSK(2) |
@@ -347,12 +347,12 @@ int board_heuristic::evaluate_bishops() const
 /*----------------------------------------------------------------------------*\
  |				evaluate_rooks()			      |
 \*----------------------------------------------------------------------------*/
-int board_heuristic::evaluate_rooks() const
+value_t board_heuristic::evaluate_rooks() const
 {
 
 //
 
-	int sign, sum = 0;
+	value_t sign, sum = 0;
 	bitboard_t b;
 
 	for (int color = WHITE; color <= BLACK; color++)
@@ -377,12 +377,12 @@ int board_heuristic::evaluate_rooks() const
 /*----------------------------------------------------------------------------*\
  |			       evaluate_queens()			      |
 \*----------------------------------------------------------------------------*/
-int board_heuristic::evaluate_queens() const
+value_t board_heuristic::evaluate_queens() const
 {
 
 //
 
-	int sign, sum = 0;
+	value_t sign, sum = 0;
 	bitboard_t b;
 
 	for (int color = WHITE; color <= BLACK; color++)
@@ -407,12 +407,12 @@ int board_heuristic::evaluate_queens() const
 /*----------------------------------------------------------------------------*\
  |				evaluate_kings()			      |
 \*----------------------------------------------------------------------------*/
-int board_heuristic::evaluate_kings(int depth) const
+value_t board_heuristic::evaluate_kings(int depth) const
 {
 
 // Evaluate king position.
 
-	int sign, sum = 0;
+	value_t sign, sum = 0;
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{

@@ -193,6 +193,8 @@ typedef struct state
  |				      Move				      |
 \*----------------------------------------------------------------------------*/
 
+typedef int16_t value_t;
+
 // This structure describes a move.  It contains the from and to coordinates,
 // the pawn promotion information, and the MiniMax score.  We use a BitField to
 // tightly pack this information into 32 bits because some of our methods return
@@ -206,7 +208,7 @@ typedef struct move
 	unsigned y2      :  3; // To y coordinate.             +  3 bits
 	unsigned promo   :  3; // Pawn promotion information.  +  3 bits
 	unsigned padding :  1; // The Evil Bit (TM).           +  1 bit
-	  signed value   : 16; // MiniMax score.               + 16 bits
+	value_t  value;        // MiniMax score.               + 16 bits
 	                       //                              = 32 bits
 
 	// Overloaded equality test operator.
@@ -265,7 +267,7 @@ public:
 	virtual bitboard_t get_hash() const;
 	virtual int get_status(bool mate_test);
 	virtual int get_num_moves() const;
-	virtual int evaluate(int depth) const = 0; // Force sub-classes to override.
+	virtual value_t evaluate(int depth) const = 0; // Force sub-classes to override.
 	virtual bool check() const;
 	virtual bool zugzwang() const;
 	virtual string to_string() const;
