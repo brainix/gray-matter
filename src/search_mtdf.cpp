@@ -320,9 +320,9 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 			// search should never return an exact score.  I've only
 			// accounted for this in the interest of robustness.
 			table_ptr->store(hash, depth, EXACT, m);
-		if (m.value <= saved_alpha)
+		else if (m.value <= saved_alpha)
 			table_ptr->store(hash, depth, UPPER, m);
-		if (m.value >= saved_beta)
+		else // m.value >= saved_beta
 			table_ptr->store(hash, depth, LOWER, m);
 		history_ptr->store(whose, m, depth);
 	}

@@ -260,12 +260,15 @@ move_t search_scout::scout(int depth, int shallowness, value_t alpha, value_t be
 	for (it = l.begin(); it != l.end(); it++)
 	{
 		board_ptr->make(*it);
-		it->value = -minimax(depth - 1, shallowness + 1, -beta, -alpha).value;
+		it->value = -scout(depth - 1, shallowness + 1, -beta, -alpha).value;
+		if (alpha < it->value && it->value < saved_beta && it != l.begin() && depth > 1)
+			alpha = -scout(depth - 1, shallowness + 1, -saved_beta, -it->value).value;
 		board_ptr->unmake();
 		if (it->value > m.value)
 			alpha = GREATER(alpha, (m = *it).value);
 		if (it->value >= beta || timeout_flag)
 			break;
+		beta = alpha + 1;
 	}
 
 	// Was there a legal move in the list?
@@ -289,9 +292,9 @@ move_t search_scout::scout(int depth, int shallowness, value_t alpha, value_t be
 		// progeny.
 		if (m.value > saved_alpha && m.value < saved_beta)
 			table_ptr->store(hash, depth, EXACT, m);
-		if (m.value <= saved_alpha)
+		else if (m.value <= saved_alpha)
 			table_ptr->store(hash, depth, UPPER, m);
-		if (m.value >= saved_beta)
+		else // m.value >= saved_beta
 			table_ptr->store(hash, depth, LOWER, m);
 		history_ptr->store(whose, m, depth);
 	}
