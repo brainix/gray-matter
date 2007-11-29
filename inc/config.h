@@ -35,15 +35,18 @@
 /*----------------------------------------------------------------------------*\
 \*----------------------------------------------------------------------------*/
 
-#define SEARCH_ENGINE	"MTD(f)"   // Move search engine.
-#define BOOK_NAME	"book.pgn" // Opening book file name.
+// Default move search engine - must be "MTD(f)" or "NegaScout":
+#define SEARCH_ENGINE	"MTD(f)"
 
-// All of the values in this section must be >= 1.
-#define XPOS_TABLE_MB	64         // Transposition table size (in MB).
-#define PAWN_TABLE_MB	 1         // Pawn table size (in MB).
-#define BOOK_MOVES	40         // Num moves per game from book (in plies).
-#define OVERHEAD	 1         // Move search overhead (in centiseconds).
-#define MAX_DEPTH	16         // Maximum search depth (in plies).
+// Default opening book file name:
+#define BOOK_NAME	"book.pgn"
+
+// All of the default values in this section must be >= 1.
+#define XPOS_TABLE_MB	64 // Transposition table size (in MB).
+#define PAWN_TABLE_MB	 1 // Pawn table size (in MB).
+#define BOOK_MOVES	40 // Num moves to read per game in book (in plies).
+#define OVERHEAD	 1 // Move search overhead (in centiseconds).
+#define MAX_DEPTH	16 // Maximum search depth (in plies).
 
 
 

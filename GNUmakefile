@@ -15,7 +15,7 @@ PLAT = LINUX
 # c3-2.
 ARCH = pentium3
 
-# Subversion macros
+# Subversion macros.
 SVNDEF := -D'SVN_REV="$(shell svnversion -n .)"'
 
 CXX  = g++
@@ -33,13 +33,13 @@ DEPS = $(addsuffix .d,$(basename $(OBJS)))
 
 all : bin/gray
 
-# If not cleaning, etc., use dependencies
+# If not cleaning, etc., use dependencies.
 ifeq ($(filter clean,$(MAKECMDGOALS)),)
 -include $(DEPS)
 endif
 
 clean :
-	rm -f $(DEPS) $(OBJS) bin/gray
+	rm -f $(OBJS) $(DEPS) bin/gray
 
 bin/%.o : src/%.cpp
 	$(CXX) -c -o $@ $< $(LANG) $(WARN) $(OPTI) $(PREP) $(DIR) $(MACH)
@@ -51,5 +51,4 @@ bin/%.d: src/%.cpp
 	@set -e; $(CC) $(CPPFLAGS) -Iinc -DBUILDDEPS -MM $< \
 		| sed 's/\($*\)\.o[ :]*/bin\/\1.o bin\/$*.d : /g' > $@; \
 		[ -s $@ ] || rm -f $@
-
 
