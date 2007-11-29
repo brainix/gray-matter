@@ -29,6 +29,7 @@
 #include "xboard.h"
 #include "search_base.h"
 #include "search_mtdf.h"
+#include "search_scout.h"
 #include "book.h"
 #include "testing.h"
 
@@ -133,7 +134,7 @@ int main(int argc, char **argv)
 	// Based on the -s command-line option, choose the move search engine
 	// and cast it as a generic version.  Thus far, we've only implemented
 	// one move search engine, MTD(f).
-	search_base *s;
+	search_base *s = 0;
 	if (search_engine == "MTD(f)")
 		s = new search_mtdf(&t, &h, &c, &x);
 	else if (search_engine == "NegaScout")

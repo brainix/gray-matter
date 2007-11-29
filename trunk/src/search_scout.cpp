@@ -66,7 +66,7 @@ void search_scout::iterate(int s)
 // indefinitely), thinking (on our own time), and pondering (on our opponent's
 // time) since they're so similar.
 
-	move_t tmp, m;
+	move_t guess[2], tmp, m;
 	bool strong_pondering = false;
 
 	// Wait for the board, then grab the board.
