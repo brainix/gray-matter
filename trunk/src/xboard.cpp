@@ -137,8 +137,8 @@ void xboard::loop(search_base *s, chess_clock *c, book *o)
 			do_analyze();
 		else if (!strncmp(buffer, "exit", 4))
 			do_exit();
-		// These are not really part of the interface,
-		// but come in handy to us
+		// These are not part of the interface protocol, but come in
+		// handy to us.
 		else if (!strncmp(buffer, "display", 7))
 			do_display();
 		else
@@ -593,7 +593,7 @@ void xboard::do_exit()
 }
 
 /*----------------------------------------------------------------------------*\
- |				   do_display()				      |
+ |				  do_display()				      |
 \*----------------------------------------------------------------------------*/
 void xboard::do_display() const
 {

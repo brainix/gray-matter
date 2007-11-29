@@ -380,13 +380,14 @@ bool board_base::set_board_fen(string& fen)
 /*----------------------------------------------------------------------------*\
  |			     set_board_fen_error()			      |
 \*----------------------------------------------------------------------------*/
-bool board_base::set_board_fen_error(string& fen, string reason, int x, int y) {
+bool board_base::set_board_fen_error(string& fen, string reason, int x, int y)
+{
 
 // This proc is called when there was an error in the specified FEN string
 
-	//cout << "# debug: Faulty FEN: " << fen << endl;
-	//cout << "# debug: location: x = " << x << ", y = " << y << endl;
-	//cout << "# debug: Reason: " << reason << endl;
+	//cerr << "# Debug: Faulty FEN: " << fen << endl;
+	//cerr << "# Debug: Location: (" << x << ", " << y << ")" << endl;
+	//cerr << "# Debug: Reason: " << reason << endl;
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
@@ -1542,7 +1543,7 @@ void board_base::precomp_row() const
 
 	// Imagine a sliding piece on square x.  For each possible occupancy
 	// (combination) of enemy pieces along the sliding piece's row, mark the
-	// sliding piece's legal moves in the bitrow squares_row[x][occ].
+	// sliding piece's legal moves in the BitRow squares_row[x][occ].
 	for (int x = 0; x <= 7; x++)
 		for (int occ = 0; occ <= 0xFF; occ++)
 		{
