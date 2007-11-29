@@ -66,27 +66,30 @@ void search_mtdf::iterate(int s)
 // indefinitely), thinking (on our own time), and pondering (on our opponent's
 // time) since they're so similar.
 
-	int depth;
 	move_t guess[2], m;
-	list<move_t> l;
+	bool strong_pondering = false;
 
 	// Wait for the board, then grab the board.
 	board_ptr->lock();
 
-	// There is no need for THINKING if either the opening book recommends
-	// a move for the current position, or if there's only one valid move. 
-	board_ptr->generate(l, true);
-	if (s == THINKING && 
-		(table_ptr->probe(board_ptr->get_hash(), MAX_DEPTH, BOOK, &m) || l.size() == 1))
+	// If we're to think:  For the current position, does the opening book
+	// recommend a move?  Or, in the current position, is there only one
+	// legal move?
+	if (s == THINKING)
 	{
-		// Yes.  Make the prescribed move.
-	 	if(l.size() == 1)
-		  m = l.front();
-		extract_pv();
-		extract_hint(THINKING);
-		board_ptr->unlock();
-		xboard_ptr->print_result(m);
-		return;
+		list<move_t> l;
+		board_ptr->generate(l, true);
+		if (table_ptr->probe(board_ptr->get_hash(), MAX_DEPTH, BOOK, &m) || l.size() == 1)
+		{
+			// Yes.  Make the move.
+			if(l.size() == 1)
+				m = l.front();
+			extract_pv();
+			extract_hint(THINKING);
+			board_ptr->unlock();
+			xboard_ptr->print_result(m);
+			return;
+		}
 	}
 
 	// Note the start time.  If we're to think, set the alarm.  (If we're to
@@ -99,11 +102,14 @@ void search_mtdf::iterate(int s)
 	// If we're to ponder, pretend our opponent has made the move we think
 	// she'll make, then think about our best response.
 	if (s == PONDERING && !IS_NULL_MOVE(hint))
+	{
+		strong_pondering = true;
 		board_ptr->make(hint);
+	}
 
 	// Initialize the number of nodes searched.
 	nodes = 0;
-	for (depth = 0; depth <= 1; depth++)
+	for (int depth = 0; depth <= 1; depth++)
 	{
 		SET_NULL_MOVE(guess[depth]);
 		guess[depth].value = 0;
@@ -112,7 +118,7 @@ void search_mtdf::iterate(int s)
 	// Perform iterative deepening until the alarm has sounded (if we're
 	// thinking), our opponent has moved (if we're analyzing or pondering),
 	// or we've reached the maximum depth (in any case).
-	for (depth = 1; depth <= max_depth; depth++)
+	for (int depth = 1; depth <= max_depth; depth++)
 	{
 		guess[depth & 1] = mtdf(depth, guess[depth & 1].value);
 		if (timeout_flag || IS_NULL_MOVE(guess[depth & 1]))
@@ -146,7 +152,7 @@ void search_mtdf::iterate(int s)
 
 	// If we've just finished pondering, take back the move we thought our
 	// opponent would've made.
-	if (s == PONDERING && !IS_NULL_MOVE(hint))
+	if (strong_pondering)
 		board_ptr->unmake();
 
 	// Release the board.
