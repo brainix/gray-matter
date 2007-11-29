@@ -166,7 +166,7 @@ void search_mtdf::iterate(int s)
 /*----------------------------------------------------------------------------*\
  |				     mtdf()				      |
 \*----------------------------------------------------------------------------*/
-move_t search_mtdf::mtdf(int depth, int guess)
+move_t search_mtdf::mtdf(int depth, value_t guess)
 {
 
 // From the current position, search for the best move.  This method implements
@@ -175,7 +175,7 @@ move_t search_mtdf::mtdf(int depth, int guess)
 	move_t m;
 	SET_NULL_MOVE(m);
 	m.value = guess;
-	int16_t upper = +INFINITY, lower = -INFINITY, beta;
+	value_t upper = +INFINITY, lower = -INFINITY, beta;
 
 	while (upper > lower && !timeout_flag)
 	{
@@ -190,7 +190,7 @@ move_t search_mtdf::mtdf(int depth, int guess)
 /*----------------------------------------------------------------------------*\
  |				   minimax()				      |
 \*----------------------------------------------------------------------------*/
-move_t search_mtdf::minimax(int depth, int shallowness, int16_t alpha, int16_t beta)
+move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t beta)
 {
 
 // From the current position, search for the best move.  This method implements
@@ -217,8 +217,8 @@ move_t search_mtdf::minimax(int depth, int shallowness, int16_t alpha, int16_t b
 	bool whose = board_ptr->get_whose();     // The color on move.
 	bitboard_t hash = board_ptr->get_hash(); // This position's hash.
 	int status = board_ptr->get_status(0);   // Whether the game is over.
-	int16_t saved_alpha = alpha;             // Saved lower bound on score.
-	int16_t saved_beta = beta;               // Saved upper bound on score.
+	value_t saved_alpha = alpha;             // Saved lower bound on score.
+	value_t saved_beta = beta;               // Saved upper bound on score.
 	list<move_t> l;                          // The move list.
 	list<move_t>::iterator it;               // The move list's iterator.
 	move_t m;                                // The best move and score.

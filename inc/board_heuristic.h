@@ -41,14 +41,14 @@ public:
 	board_heuristic();
 	~board_heuristic();
 	board_heuristic& operator=(const board_heuristic& that);
-	int evaluate(int depth) const;
+	value_t evaluate(int depth) const;
 private:
-	int evaluate_pawns() const;
-	int evaluate_knights() const;
-	int evaluate_bishops() const;
-	int evaluate_rooks() const;
-	int evaluate_queens() const;
-	int evaluate_kings(int depth) const;
+	value_t evaluate_pawns() const;
+	value_t evaluate_knights() const;
+	value_t evaluate_bishops() const;
+	value_t evaluate_rooks() const;
+	value_t evaluate_queens() const;
+	value_t evaluate_kings(int depth) const;
 	void precomp_pawn() const;
 };
 
