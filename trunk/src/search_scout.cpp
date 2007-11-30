@@ -66,7 +66,7 @@ void search_scout::iterate(int s)
 // indefinitely), thinking (on our own time), and pondering (on our opponent's
 // time) since they're so similar.
 
-	move_t guess[2], tmp, m;
+	move_t tmp, m;
 	bool strong_pondering = false;
 
 	// Wait for the board, then grab the board.
@@ -109,11 +109,8 @@ void search_scout::iterate(int s)
 
 	// Initialize the number of nodes searched.
 	nodes = 0;
-	for (int depth = 0; depth <= 1; depth++)
-	{
-		SET_NULL_MOVE(guess[depth]);
-		guess[depth].value = 0;
-	}
+	SET_NULL_MOVE(m);
+	m.value = 0;
 
 	// Perform iterative deepening until the alarm has sounded (if we're
 	// thinking), our opponent has moved (if we're analyzing or pondering),

@@ -159,13 +159,10 @@ void xboard::print_output(int ply, int value, int time, int nodes, list<move_t> 
 	{
 		printf(" ");
 		print_move(*it, true);
-		// XXX: I'm assuming *it always represents a valid move here
 		board_ptr->make(*it);
 	}
 	for (list<move_t>::iterator it = pv.begin(); it != pv.end(); it++)
-	{
 		board_ptr->unmake();
-	}
 	printf("\n");
 }
 
@@ -175,8 +172,17 @@ void xboard::print_output(int ply, int value, int time, int nodes, list<move_t> 
 void xboard::print_result(move_t m)
 {
 
-// We've just finished thinking.  Update the board and clock, inform XBoard of
-// the move we're making, and change the move search engine's mode.
+// We've just finished thinking.  If we came up with a move, update the board
+// and clock, inform XBoard of the move we're making, and change the move search
+// engine's mode.
+
+	// Did we come up with a move?
+	if (IS_NULL_MOVE(m))
+	{
+		// No.  :'(  Give up.
+		print_resignation();
+		return;
+	}
 
 	// Update the board and clock.
 	board_ptr->make(m);
@@ -196,7 +202,7 @@ void xboard::print_result(move_t m)
 /*----------------------------------------------------------------------------*\
  |			      print_resignation()			      |
 \*----------------------------------------------------------------------------*/
-void xboard::print_resignation() const
+void xboard::print_resignation()
 {
 
 // We've determined our situation to be hopeless.  If our opponent had offered a
@@ -208,15 +214,18 @@ void xboard::print_resignation() const
 /*----------------------------------------------------------------------------*\
  |				  print_move()				      |
 \*----------------------------------------------------------------------------*/
-void xboard::print_move(move_t m, bool SAN) const
+void xboard::print_move(move_t m, bool san) const
 {
-	if(SAN) {
-		// Standard Algebraic Notation
+	if(san)
+	{
+		// Standard Algebraic Notation.
 		string str;
 		board_ptr->coord_to_san(m, str);
 		printf("%s", str.c_str());
-	} else {
-		// Coordinate Notation
+	}
+	else
+	{
+		// Coordinate notation.
 		printf("%c%c", m.x1 + 'a', m.y1 + '1');
 		printf("%c%c", m.x2 + 'a', m.y2 + '1');
 		switch (m.promo)
