@@ -56,7 +56,7 @@ public:
 	void loop(search_base *s, chess_clock *c, book *o);
 	void print_output(int ply, int value, int time, int nodes, list<move_t> &pv) const;
 	void print_result(move_t m);
-	void print_resignation() const;
+	void print_resignation();
 private:
 	char buffer[BUFFER_SIZE]; // Input buffer.
 	bool analyze;             // Whether we're analyzing.
@@ -70,7 +70,7 @@ private:
 	chess_clock *clock_ptr;   // Chess clock object.
 	book *book_ptr;           // Opening book object.
 
-	void print_move(move_t m, bool SAN=false) const;
+	void print_move(move_t m, bool san = false) const;
 	void do_xboard() const;
 	void do_protover() const;
 	void do_accepted() const;
