@@ -1035,7 +1035,8 @@ void board_base::coord_to_san(move_t m, string& san)
 			  }
 			}
 		}
-		if(add_file)
+		// For capturing pawns the file is already added
+		if(add_file && shape != PAWN)
 		  sanstr << static_cast<char>(m.x1 + 'a');
 		if(add_rank)
 		  sanstr << static_cast<char>(m.y1 + '1');
