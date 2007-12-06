@@ -208,7 +208,7 @@ void xboard::print_result(move_t m)
 
 	// In TestSuite mode, continue processing TestSuite
 	if (ts_mode)
-	  test_suite_next();
+	  test_suite_next(m);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -635,6 +635,7 @@ void xboard::do_test() {
 	if (pos != string::npos)
 		testfile = testfile.substr(0, pos+1);
 
+	int i = 0;
 	string line;
 	string TESTFILE = testfile;
 	ifstream inputfile(testfile.c_str());
@@ -653,7 +654,13 @@ void xboard::do_test() {
 			getline(inputfile, line);
 			string::size_type idx = line.find("bm");
 			if(idx != string::npos) {
+				// Store FEN
 				ts_fen.push_back(line.substr(0, idx-1));
+				// Store description
+				ostringstream ostr;
+				ostr << testfile << "-" << ++i;
+				ts_desc.push_back(ostr.str());
+				// Store solution
 				string::size_type idx2 = line.find(";", idx);
 				ts_sol.push_back(line.substr(idx+3, idx2 == string::npos ? 0 : idx2-idx-3));
 			} else if (line.size()){
@@ -677,18 +684,36 @@ void xboard::do_test() {
 	}
 }
 
-void xboard::test_suite_next() {
+void xboard::test_suite_next(move_t m) {
 
-	if (ts_fen.size()) {
-		// Check whether we did the right thing
+	// Check whether we did the right thing
+	if (ts_sol.size()) {
 		string solution = ts_sol.front();
 		ts_sol.erase(ts_sol.begin());
-		cerr << "Did the last move match: " << solution << " ???" << endl;
+		string desc = ts_desc.front();
+		ts_desc.erase(ts_desc.begin());
+		// Convert our move to san
+		string str;
+		board_ptr->unmake();
+		board_ptr->coord_to_san(m, str);
+		// Compare result
+		if (solution == str) {
+		  cerr << desc << " : '" << solution << "' == '" << str << "'" << endl;
+		  ts_success++;
+		} else {
+		  cerr << desc << " : '" << solution << "' != '" << str << "'" << endl;
+		  ts_failure++;
+		}
+	}
+
+	if (ts_fen.size()) {
+		// Go on to the next test position
 		string fen = ts_fen.front();
 		ts_fen.erase(ts_fen.begin());
 		do_setboard(fen);
 		do_go();
 	} else {
+		// Test suite finished
 		ts_mode = false;
 		// Output statistics
 		cout << "Test Suite statistics" << endl

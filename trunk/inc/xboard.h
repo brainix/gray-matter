@@ -74,7 +74,7 @@ private:
 	book *book_ptr;           // Opening book object.
 
 	vector <string> ts_fen;	  // Test Suite Data
-	vector <string> ts_sol;
+	vector <string> ts_sol, ts_desc;
 	bool ts_mode;
 	int ts_erroneous;		  // Test Suite statistics.
 	int ts_success, ts_failure;
@@ -117,7 +117,7 @@ private:
 	int str_to_secs(const char *p) const;
 	int char_to_shape(char c) const;
 	bool test_move(move_t m);
-	void test_suite_next();
+	void test_suite_next(move_t m);
 };
 
 #endif
