@@ -245,6 +245,10 @@ bool board_base::set_board_fen(string& fen)
 
 	size_t index = 0;
 	int x = 0, y = 7;
+	bool no_move_counts = false;
+
+	// Grab the board
+	lock();
 
 	states.clear();
 	for (int color = WHITE; color <= BLACK; color++)
@@ -342,25 +346,27 @@ bool board_base::set_board_fen(string& fen)
 			return set_board_fen_error(fen, "Invalid en passant rank.", x, y);
 	}
 	if (++index >= fen.length())
-		return set_board_fen_error(fen, "FEN string too short (9).", x, y);
-	if (fen[index] != ' ')
+		// It often happens there is no halfmove clock and move number,
+		// so the FEN string is actually too short. Let's just allow this.
+		no_move_counts = true;
+	else if (fen[index] != ' ')
 		return set_board_fen_error(fen, "No space after en passant data.", x, y);
-	if (++index >= fen.length())
+	else if (++index >= fen.length())
 		return set_board_fen_error(fen, "FEN string too short (10).", x, y);
 
 	// Parse the halfmove clock.
-	if (!isdigit(fen[index]))
+	if (!no_move_counts && !isdigit(fen[index]))
 		return set_board_fen_error(fen, "Halfmove clock is no digit.", x, y);
 	state.fifty = 0;
-	while (isdigit(fen[index]))
+	while (!no_move_counts && isdigit(fen[index]))
 	{
 		state.fifty = state.fifty * 10 + fen[index] - '0';
 		if (++index >= fen.length())
 			return set_board_fen_error(fen, "FEN string too short (11).", x, y);
 	}
-	if (fen[index] != ' ')
+	if (!no_move_counts && fen[index] != ' ')
 		return set_board_fen_error(fen, "No space after halfmove clock.", x, y);
-	if (++index >= fen.length())
+	if (!no_move_counts && ++index >= fen.length())
 		return set_board_fen_error(fen, "FEN string too short (12).", x, y);
 
 	// Sanity check the current state of the board resulting from the FEN
@@ -374,6 +380,9 @@ bool board_base::set_board_fen(string& fen)
 
 	init_rotation();
 	init_hash();
+
+	// Release the board
+	unlock();
 	return true;
 }
 
@@ -385,7 +394,7 @@ bool board_base::set_board_fen_error(string& fen, string reason, int x, int y)
 
 // This proc is called when there was an error in the specified FEN string
 
-	//cerr << "# Debug: Faulty FEN: " << fen << endl;
+	//cerr << "# Debug: Faulty FEN: '" << fen << "'" << endl;
 	//cerr << "# Debug: Location: (" << x << ", " << y << ")" << endl;
 	//cerr << "# Debug: Reason: " << reason << endl;
 
@@ -401,6 +410,9 @@ bool board_base::set_board_fen_error(string& fen, string reason, int x, int y)
 	state.fifty = 0;
 	init_rotation();
 	init_hash();
+
+	// Release the board
+	unlock();
 	return false;
 }
 
@@ -978,6 +990,11 @@ void board_base::coord_to_san(move_t m, string& san)
 
 	int shape;
 	ostringstream sanstr;
+
+	if (IS_NULL_MOVE(m)) {
+		san.erase(san.begin(), san.end());
+		return;
+	}
 
 	// What shape is being moved?
 	for (shape = PAWN; shape <= KING; shape++)

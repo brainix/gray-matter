@@ -247,15 +247,39 @@ void search_base::start()
 // commands us to quit.
 
 	int old_search_status = search_status = IDLING;
+	bitboard_t old_board_hash = 0, new_board_hash = 0;
 
+	/* FIXME: Raj, here's why I added the old_board_hash == current_hash (below):
+	 * For the test suite, I call xboard::do_setboard(fen) followed by
+	 * xboard::do_go() in a sequence. The I/O thread quickly changes state from
+	 * THINKING to IDLE to THINKING (cond_signal fires signal). But only after
+	 * going back to THINKING, the search thread finishes the iterate() call and
+	 * the below do-loop continues. The search thread executes the cond_wait(),
+	 * because it thinks the search_state still equals the old_search_state (while
+	 * it actually changed twice).
+	 * So, I thought we should check whether the board is also still the same.
+	 * I'm not sure whether it's required that I lock the board for computing the hash.
+	 * Please check, and remove this comment ;)
+	 */
 	do
 	{
+	  	// Verify current board hash
+		board_ptr->lock();
+		new_board_hash = board_ptr->get_hash();
+		board_ptr->unlock();
+
 		// Wait for the status to change.
 		mutex_lock(&search_mutex);
-		while (old_search_status == search_status)
+		while (old_search_status == search_status &&
+			   old_board_hash == new_board_hash)
 			cond_wait(&search_cond, &search_mutex);
+
 		old_search_status = search_status;
 		mutex_unlock(&search_mutex);
+
+		board_ptr->lock();
+		old_board_hash = board_ptr->get_hash();
+		board_ptr->unlock();
 
 		// Do the requested work - idle, analyze, think, ponder, or
 		// quit.
