@@ -27,6 +27,9 @@ using namespace std;
 // C++ stuff:
 #include <list>
 #include <string>
+#include <fstream>
+#include <algorithm>
+#include <vector>
 
 // Default Gray Matter stuff:
 #include "config.h"
@@ -70,6 +73,12 @@ private:
 	chess_clock *clock_ptr;   // Chess clock object.
 	book *book_ptr;           // Opening book object.
 
+	vector <string> ts_fen;	  // Test Suite Data
+	vector <string> ts_sol;
+	bool ts_mode;
+	int ts_erroneous;		  // Test Suite statistics.
+	int ts_success, ts_failure;
+
 	void print_move(move_t m, bool san = false) const;
 	void do_xboard() const;
 	void do_protover() const;
@@ -89,7 +98,7 @@ private:
 	void do_question() const;
 	void do_ping();
 	void do_draw();
-	void do_setboard() const;
+	void do_setboard(string argfen="") const;
 	void do_hint() const;
 	void do_undo();
 	void do_remove();
@@ -100,6 +109,7 @@ private:
 	void do_analyze();
 	void do_exit();
 	void do_display() const;
+	void do_test();
 	void do_unknown() const;
 
 	int game_over();
@@ -107,6 +117,7 @@ private:
 	int str_to_secs(const char *p) const;
 	int char_to_shape(char c) const;
 	bool test_move(move_t m);
+	void test_suite_next();
 };
 
 #endif

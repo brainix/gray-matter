@@ -40,6 +40,12 @@ xboard::xboard()
 	force = false;
 	draw = false;
 	sync = true;
+
+	// Initialize TestSuite statistics
+	ts_mode = false;
+	ts_erroneous = 0;
+	ts_success = 0;
+	ts_failure = 0;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -141,6 +147,8 @@ void xboard::loop(search_base *s, chess_clock *c, book *o)
 		// handy to us.
 		else if (!strncmp(buffer, "display", 7))
 			do_display();
+		else if (!strncmp(buffer, "test", 4))
+			do_test();
 		else
 			do_unknown();
 	} while (strncmp(buffer, "quit", 4));
@@ -197,6 +205,10 @@ void xboard::print_result(move_t m)
 	int status = game_over();
 	int mode = ponder && status == IN_PROGRESS ? PONDERING : IDLING;
 	search_ptr->change(mode, *board_ptr);
+
+	// In TestSuite mode, continue processing TestSuite
+	if (ts_mode)
+	  test_suite_next();
 }
 
 /*----------------------------------------------------------------------------*\
@@ -482,11 +494,16 @@ void xboard::do_draw()
 /*----------------------------------------------------------------------------*\
  |				 do_setboard()				      |
 \*----------------------------------------------------------------------------*/
-void xboard::do_setboard() const
+void xboard::do_setboard(string argfen) const
 {
-	string fen(buffer + 9);
-	if (!board_ptr->set_board_fen(fen))
-		printf("tellusererror Illegal position\n");
+	if (argfen.size()) {
+		if (!board_ptr->set_board_fen(argfen))
+			printf("tellusererror Illegal position\n");
+	} else {
+		string fen(buffer + 9);
+		if (!board_ptr->set_board_fen(fen))
+			printf("tellusererror Illegal position\n");
+	}
 }
 
 /*----------------------------------------------------------------------------*\
@@ -610,6 +627,78 @@ void xboard::do_display() const
 }
 
 /*----------------------------------------------------------------------------*\
+ |				  test()				      |
+\*----------------------------------------------------------------------------*/
+void xboard::do_test() {
+	string testfile(buffer + 5);
+	string::size_type pos = testfile.find_last_not_of("\n \t");
+	if (pos != string::npos)
+		testfile = testfile.substr(0, pos+1);
+
+	string line;
+	string TESTFILE = testfile;
+	ifstream inputfile(testfile.c_str());
+
+	transform(TESTFILE.begin(), TESTFILE.end(),
+		TESTFILE.begin(), (int(*)(int))std::toupper);
+
+	// Parse the test suite
+	if(!inputfile) {
+		cerr << "Cannot open '" << testfile << "'" << endl;
+	} else if (TESTFILE.find(".EPD") != string::npos) {
+		// Extended Positinal Diagram, format is:
+		// FEN bm (best move) am (avoid move) 
+		//   pm (predicted move) pv (predicted variation)
+		do {
+			getline(inputfile, line);
+			string::size_type idx = line.find("bm");
+			if(idx != string::npos) {
+				ts_fen.push_back(line.substr(0, idx-1));
+				string::size_type idx2 = line.find(";", idx);
+				ts_sol.push_back(line.substr(idx+3, idx2 == string::npos ? 0 : idx2-idx-3));
+			} else if (line.size()){
+				ts_erroneous++;
+			}
+		} while (inputfile.good());
+	} else if (TESTFILE.find(".PGN") != string::npos) {
+		cerr << "Cannot parse .pgn files yet." << endl;
+	} else {
+		cerr << "Unknown file type '" << testfile << "'" << endl;
+	}
+
+	if (ts_fen.size()) {
+		ts_mode = true;
+		do_post();
+		do_easy();
+		string fen = ts_fen.front();
+		ts_fen.erase(ts_fen.begin());
+		do_setboard(fen);
+		do_go();
+	}
+}
+
+void xboard::test_suite_next() {
+
+	if (ts_fen.size()) {
+		// Check whether we did the right thing
+		string solution = ts_sol.front();
+		ts_sol.erase(ts_sol.begin());
+		cerr << "Did the last move match: " << solution << " ???" << endl;
+		string fen = ts_fen.front();
+		ts_fen.erase(ts_fen.begin());
+		do_setboard(fen);
+		do_go();
+	} else {
+		ts_mode = false;
+		// Output statistics
+		cout << "Test Suite statistics" << endl
+			 << "Total successes:          " << ts_success << endl
+			 << "Total failures:           " << ts_failure << endl
+			 << "Total non-parseble lines: " << ts_erroneous << endl;
+	}
+}
+
+/*----------------------------------------------------------------------------*\
  |				  do_unknown()				      |
 \*----------------------------------------------------------------------------*/
 void xboard::do_unknown() const
@@ -705,3 +794,4 @@ bool xboard::test_move(move_t m)
 			return true;
 	return false;
 }
+
