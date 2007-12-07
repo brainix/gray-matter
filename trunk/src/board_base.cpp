@@ -250,6 +250,12 @@ bool board_base::set_board_fen(string& fen)
 	// Grab the board
 	lock();
 
+	// Remove newlines and whitespace at the end
+	string::size_type pos = fen.find_last_not_of("\n \t");
+	if (pos != string::npos)
+		fen = fen.substr(0, pos+1);
+
+	// Clear the board and history
 	states.clear();
 	for (int color = WHITE; color <= BLACK; color++)
 		for (int shape = PAWN; shape <= KING; shape++)
@@ -369,6 +375,9 @@ bool board_base::set_board_fen(string& fen)
 	if (!no_move_counts && ++index >= fen.length())
 		return set_board_fen_error(fen, "FEN string too short (12).", x, y);
 
+	init_rotation();
+	init_hash();
+
 	// Sanity check the current state of the board resulting from the FEN
 	// string.  For now, just make sure both colors have one king each and
 	// the color off move isn't in check.
@@ -377,9 +386,6 @@ bool board_base::set_board_fen(string& fen)
 			return set_board_fen_error(fen, "At least one side has no king.", x, y);
 	if (check(state.piece[OFF_MOVE][KING], ON_MOVE))
 		return set_board_fen_error(fen, "The player off move cannot be in check.", x, y);
-
-	init_rotation();
-	init_hash();
 
 	// Release the board
 	unlock();
