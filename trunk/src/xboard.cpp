@@ -675,7 +675,6 @@ void xboard::do_test() {
 
 	if (ts_fen.size()) {
 		ts_mode = true;
-		do_post();
 		do_easy();
 		string fen = ts_fen.front();
 		ts_fen.erase(ts_fen.begin());
