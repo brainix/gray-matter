@@ -28,6 +28,7 @@ using namespace std;
 #include <list>
 #include <string>
 #include <fstream>
+#include <sstream>
 #include <algorithm>
 #include <vector>
 

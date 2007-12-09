@@ -263,7 +263,7 @@ void search_base::start()
 	 */
 	do
 	{
-	  	// Verify current board hash
+	  	// Retrieve current board hash
 		board_ptr->lock();
 		new_board_hash = board_ptr->get_hash();
 		board_ptr->unlock();
