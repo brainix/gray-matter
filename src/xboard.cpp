@@ -652,25 +652,105 @@ void xboard::do_test() {
 		//   pm (predicted move) pv (predicted variation)
 		do {
 			getline(inputfile, line);
-			string::size_type idx = line.find("bm");
-			if(idx != string::npos) {
+			string::size_type idx;
+			if((idx = line.find("bm")) != string::npos) {
 				// Store FEN
 				ts_fen.push_back(line.substr(0, idx-1));
 				// Store description
 				ostringstream ostr;
-				ostr << testfile << "-" << ++i;
+				ostr << testfile << " " << ++i;
 				ts_desc.push_back(ostr.str());
 				// Store solution
 				string::size_type idx2 = line.find(";", idx);
 				ts_sol.push_back(line.substr(idx+3, idx2 == string::npos ? 0 : idx2-idx-3));
+			} else if ((idx = line.find("1.")) != string::npos) {
+				// Store FEN
+				string::size_type idx_colon = line.find(";");
+				ts_fen.push_back(line.substr(0, idx_colon-1));
+				// Store description
+				ostringstream ostr;
+				ostr << testfile << " " << ++i;
+				ts_desc.push_back(ostr.str());
+				// Store solution
+				while(idx < line.size() && line.at(idx) == '.') idx++;
+				idx_colon = line.find(";", idx);
+				ts_sol.push_back(line.substr(idx, 
+					idx_colon == string::npos ? string::npos : idx_colon-idx));
 			} else if (line.size()){
 				ts_erroneous++;
 			}
 		} while (inputfile.good());
 	} else if (TESTFILE.find(".PGN") != string::npos) {
-		cerr << "Cannot parse .pgn files yet." << endl;
+		// Portable Game Notation
+		int status = 0;
+		string::size_type idx, pos;
+		do {
+			getline(inputfile, line);
+			switch (status) {
+				case 0: // In tag pair section
+					if (line.find("[") != string::npos)
+						status = 1;
+					// continue with next case
+				case 1: // Tag opened "[..."
+					if (line.find("]") != string::npos)
+						status = 0;
+					if ((idx = line.find("FEN")) != string::npos) {
+						// Parse FEN position
+						string fen = line.substr(idx+3);
+						// Strip from the end
+						pos = fen.find_last_not_of("\r\n \t\"]");
+						if (pos != string::npos)
+							fen = fen.substr(0, pos+1);
+						// Strip from the start
+						pos = fen.find_first_not_of("\r\n \t\"");
+						if (pos != string::npos)
+							fen = fen.substr(pos);
+						// Store FEN and description
+						ts_fen.push_back(fen);
+						ostringstream ostr;
+						ostr << testfile << " " << ++i;
+						ts_desc.push_back(ostr.str());
+					}
+					idx = line.find("key:");
+					if(idx == string::npos)
+						idx = line.find("Key:");
+					if (idx != string::npos) {
+						// Key: best-move
+						string solution = line.substr(idx+4);
+						// Strip from the end
+						pos = solution.find_last_not_of("\r\n \t\"]");
+						if (pos != string::npos)
+							solution = solution.substr(0, pos+1);
+						// Strip from the start
+						pos = solution.find_first_not_of("\r\n \t\"");
+						if (pos != string::npos)
+							solution = solution.substr(pos);
+						// Strip subsequent moves, if any
+					 	pos = solution.find_first_of(" \t");
+						if (pos != string::npos)
+							solution = solution.substr(0, pos);
+						// Store solution
+						ts_sol.push_back(solution);
+					}
+					break;
+				case 2: // Movetext section, SAN moves
+					if (line.find("*")   != string::npos ||
+						line.find("1-0") != string::npos ||
+						line.find("0-1") != string::npos ||
+						line.find("1/2-1/2") != string::npos) {
+						// Game termination marker found
+						status = 0;
+					}
+					break;
+				default:
+					break;
+			}
+		} while (inputfile.good());
 	} else {
 		cerr << "Unknown file type '" << testfile << "'" << endl;
+	}
+
+	if (ts_fen.size() != ts_sol.size()) {
 	}
 
 	if (ts_fen.size()) {
@@ -691,10 +771,21 @@ void xboard::test_suite_next(move_t m) {
 		ts_sol.erase(ts_sol.begin());
 		string desc = ts_desc.front();
 		ts_desc.erase(ts_desc.begin());
+
+		// Remove several characters from solution, from the end:
+		string::size_type pos = solution.find_last_not_of("\r\n \t\":!?");
+		if (pos != string::npos)
+			solution = solution.substr(0, pos+1);
+		// Remove from the beginning:
+		pos = solution.find_first_not_of("\r\n \t1.");
+		if (pos != string::npos)
+			solution = solution.substr(pos);
+
 		// Convert our move to san
 		string str;
 		board_ptr->unmake();
 		board_ptr->coord_to_san(m, str);
+
 		// Compare result
 		if (solution == str) {
 		  cerr << desc << " : '" << solution << "' == '" << str << "'" << endl;
