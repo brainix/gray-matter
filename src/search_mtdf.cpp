@@ -180,7 +180,7 @@ move_t search_mtdf::mtdf(int depth, value_t guess)
 	while (upper > lower && !timeout_flag)
 	{
 		beta = m.value + (m.value == lower);
-		m = minimax(depth, 0, beta - 1, beta);
+		m = minimax(depth, 0, beta - 1, beta, true);
 		upper = m.value < beta ? m.value : upper;
 		lower = m.value < beta ? lower : m.value;
 	}
@@ -190,7 +190,7 @@ move_t search_mtdf::mtdf(int depth, value_t guess)
 /*----------------------------------------------------------------------------*\
  |				   minimax()				      |
 \*----------------------------------------------------------------------------*/
-move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t beta)
+move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t beta, bool try_null_move)
 {
 
 // From the current position, search for the best move.  This method implements
@@ -212,6 +212,8 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 // the window) or beta (to represent the exact score is higher than the window).
 // On the other hand, FailSoft returns either an upper bound (<= alpha) or a
 // lower bound (>= beta) on the exact score.
+//
+// On top of AlphaBeta, this method implements null move pruning.
 
 	// Local variables that pertain to the current position:
 	bool whose = board_ptr->get_whose();     // The color on move.
@@ -219,6 +221,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 	int status = board_ptr->get_status(0);   // Whether the game is over.
 	value_t saved_alpha = alpha;             // Saved lower bound on score.
 	value_t saved_beta = beta;               // Saved upper bound on score.
+	move_t null_move;                        // The all-important null move.
 	list<move_t> l;                          // The move list.
 	list<move_t>::iterator it;               // The move list's iterator.
 	move_t m;                                // The best move and score.
@@ -270,6 +273,17 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 		return m;
 	}
 
+	// TODO: Perform null move pruning.
+//	if (depth >= R + 1 && try_null_move && !board_ptr->zugzwang())
+//	{
+//		SET_NULL_MOVE(null_move);
+//		board_ptr->make(null_move);
+//		null_move = minimax(depth - R - 1, shallowness + R + 1, -beta, -beta + 1, false);
+//		board_ptr->unmake();
+//		if ((null_move.value *= -1) >= beta)
+//			return null_move;
+//	}
+
 	// Generate and re-order the move list.
 //	board_ptr->generate(l, !shallowness);
 	board_ptr->generate(l, true);
@@ -289,7 +303,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 	for (it = l.begin(); it != l.end(); it++)
 	{
 		board_ptr->make(*it);
-		it->value = -minimax(depth - 1, shallowness + 1, -beta, -alpha).value;
+		it->value = -minimax(depth - 1, shallowness + 1, -beta, -alpha, true).value;
 		board_ptr->unmake();
 		if (it->value > m.value)
 			alpha = GREATER(alpha, (m = *it).value);

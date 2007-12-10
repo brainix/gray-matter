@@ -242,16 +242,16 @@ move_t search_scout::scout(int depth, int shallowness, value_t alpha, value_t be
 		return m;
 	}
 
-	// Perform null move pruning.
-	if (depth >= R + 1 && try_null_move && !board_ptr->zugzwang())
-	{
-		SET_NULL_MOVE(null_move);
-		board_ptr->make(null_move);
-		null_move = scout(depth - R - 1, shallowness + R + 1, -beta, -beta + 1, false);
-		board_ptr->unmake();
-		if ((null_move.value *= -1) >= beta)
-			return null_move;
-	}
+	// TODO: Perform null move pruning.
+//	if (depth >= R + 1 && try_null_move && !board_ptr->zugzwang())
+//	{
+//		SET_NULL_MOVE(null_move);
+//		board_ptr->make(null_move);
+//		null_move = scout(depth - R - 1, shallowness + R + 1, -beta, -beta + 1, false);
+//		board_ptr->unmake();
+//		if ((null_move.value *= -1) >= beta)
+//			return null_move;
+//	}
 
 	// Generate and re-order the move list.
 //	board_ptr->generate(l, !shallowness);

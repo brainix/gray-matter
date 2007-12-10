@@ -184,8 +184,10 @@ typedef struct state
 #define ON_MOVE		(state.whose)
 #define OFF_MOVE	(!state.whose)
 
-// This macro assembles a BitBoard which contains all of a color's pieces.
-#define ALL(s, c)	((s).piece[c][PAWN] | (s).piece[c][KNIGHT] | (s).piece[c][BISHOP] | (s).piece[c][ROOK] | (s).piece[c][QUEEN] | (s).piece[c][KING])
+// This macro assembles a BitBoard that contains all of a color's pieces.
+#define ALL(s, c)	((s).piece[c][PAWN]   | (s).piece[c][KNIGHT] | \
+			 (s).piece[c][BISHOP] | (s).piece[c][ROOK]   | \
+			 (s).piece[c][QUEEN]  | (s).piece[c][KING])
 
 
 
