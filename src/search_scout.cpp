@@ -254,7 +254,8 @@ move_t search_scout::scout(int depth, int shallowness, value_t alpha, value_t be
 	}
 
 	// Generate and re-order the move list.
-	board_ptr->generate(l, !shallowness);
+//	board_ptr->generate(l, !shallowness);
+	board_ptr->generate(l, true);
 	for (it = l.begin(); it != l.end(); it++)
 		// If according to the transposition table, a previous search
 		// from this position determined this move to be best, then in
