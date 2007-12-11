@@ -235,7 +235,17 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 	if (status != IN_PROGRESS)
 	{
 		SET_NULL_MOVE(m);
-		m.value = status >= INSUFFICIENT && status <= FIFTY ? +VALUE_CONTEMPT : -VALUE_ILLEGAL;
+		switch (status)
+		{
+			case IN_PROGRESS  : m.value = -board_ptr->evaluate(shallowness); break;
+			case STALEMATE    : m.value = +VALUE_CONTEMPT;                   break;
+			case INSUFFICIENT : m.value = +VALUE_CONTEMPT;                   break;
+			case THREE        : m.value = +VALUE_CONTEMPT;                   break;
+			case FIFTY        : m.value = +VALUE_CONTEMPT;                   break;
+			case CHECKMATE    : m.value = -VALUE_KING;                       break;
+			case ILLEGAL      : m.value = -VALUE_ILLEGAL;                    break;
+			default           : m.value = -board_ptr->evaluate(shallowness); break;
+		}
 		return m;
 	}
 
