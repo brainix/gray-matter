@@ -473,8 +473,17 @@ int board_base::get_status(bool mate_test)
 {
 	int type;
 
+	// If a king is missing
 	if (!state.piece[WHITE][KING] || !state.piece[BLACK][KING])
 		return ILLEGAL;
+	// If kings are next to each other
+	// FIXME: I bet Raj has a nice one-liner for this (perhaps generating king captures?)
+	int n, wkx, wky, bkx, bky;
+	n = FST(state.piece[ON_MOVE][KING]), wkx = n & 0x7, wky = n >> 3;
+	n = FST(state.piece[OFF_MOVE][KING]), bkx = n & 0x7, bky = n >> 3;
+	if(ABS(wkx - bkx) <= 1 && ABS(wky - bky) <= 1)
+		return ILLEGAL;
+
 	if (mate_test)
 		if ((type = mate()) != IN_PROGRESS)
 			return type;

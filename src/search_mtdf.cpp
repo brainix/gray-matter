@@ -295,8 +295,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 //	}
 
 	// Generate and re-order the move list.
-//	board_ptr->generate(l, !shallowness);
-	board_ptr->generate(l, true);
+	board_ptr->generate(l, !shallowness);
 	for (it = l.begin(); it != l.end(); it++)
 		// If according to the transposition table, a previous search
 		// from this position determined this move to be best, then in
@@ -315,9 +314,13 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 		board_ptr->make(*it);
 		it->value = -minimax(depth - 1, shallowness + 1, -beta, -alpha, true).value;
 		board_ptr->unmake();
-		if (it->value > m.value)
-			alpha = GREATER(alpha, (m = *it).value);
-		if (it->value >= beta || timeout_flag)
+		if (it->value != VALUE_ILLEGAL) {
+			if (it->value > m.value)
+				alpha = GREATER(alpha, (m = *it).value);
+			if (it->value >= beta)
+				break;
+		}
+		if (timeout_flag)
 			break;
 	}
 
