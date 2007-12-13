@@ -471,21 +471,30 @@ bitboard_t board_base::get_hash() const
 \*----------------------------------------------------------------------------*/
 int board_base::get_status(bool mate_test)
 {
-	int type;
 
-	// If a king is missing
+// Determine the status of the game.  This must be one of:
+//	· illegal position
+//	· checkmated
+//	· stalemated
+//	· drawn due to insufficient material
+//	· drawn due to threefold repetition
+//	· drawn due to the fifty move rule
+//	· still in progress
+
+	// Is a king missing?
 	if (!state.piece[WHITE][KING] || !state.piece[BLACK][KING])
 		return ILLEGAL;
-	// If kings are next to each other
-	// FIXME: I bet Raj has a nice one-liner for this (perhaps generating king captures?)
-	int n, wkx, wky, bkx, bky;
-	n = FST(state.piece[ON_MOVE][KING]), wkx = n & 0x7, wky = n >> 3;
-	n = FST(state.piece[OFF_MOVE][KING]), bkx = n & 0x7, bky = n >> 3;
-	if(ABS(wkx - bkx) <= 1 && ABS(wky - bky) <= 1)
+
+	// Are the kings attacking one other?
+	int white_king_n = FST(state.piece[WHITE][KING]);
+	int white_king_x = white_king_n & 0x7;
+	int white_king_y = white_king_n >> 3;
+	bitboard_t white_king_takes = squares_king[white_king_x][white_king_y];
+	if (white_king_takes & state.piece[BLACK][KING])
 		return ILLEGAL;
 
 	if (mate_test)
-		if ((type = mate()) != IN_PROGRESS)
+		if ((int type = mate()) != IN_PROGRESS)
 			return type;
 	if (insufficient())
 		return INSUFFICIENT;
@@ -493,6 +502,7 @@ int board_base::get_status(bool mate_test)
 		return THREE;
 	if (fifty())
 		return FIFTY;
+
 	return IN_PROGRESS;
 }
 
