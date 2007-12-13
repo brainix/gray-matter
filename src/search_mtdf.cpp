@@ -82,7 +82,7 @@ void search_mtdf::iterate(int s)
 		if (table_ptr->probe(board_ptr->get_hash(), MAX_DEPTH, BOOK, &m) || l.size() == 1)
 		{
 			// Yes.  Make the move.
-			if(l.size() == 1)
+			if (l.size() == 1)
 				m = l.front();
 			extract_pv();
 			extract_hint(THINKING);
@@ -283,16 +283,19 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 		return m;
 	}
 
-	// TODO: Perform null move pruning.
-//	if (depth >= R + 1 && try_null_move && !board_ptr->zugzwang())
-//	{
-//		SET_NULL_MOVE(null_move);
-//		board_ptr->make(null_move);
-//		null_move = minimax(depth - R - 1, shallowness + R + 1, -beta, -beta + 1, false);
-//		board_ptr->unmake();
-//		if ((null_move.value *= -1) >= beta)
-//			return null_move;
-//	}
+	// Perform null move pruning.
+	if (try_null_move && !board_ptr->zugzwang())
+	{
+		SET_NULL_MOVE(null_move);
+		board_ptr->make(null_move);
+		null_move = minimax(depth - R - 1, shallowness + R + 1, -beta, -beta + 1, false);
+		board_ptr->unmake();
+		if ((null_move.value *= -1) >= beta)
+		{
+			null_move.value = beta;
+			return null_move;
+		}
+	}
 
 	// Generate and re-order the move list.
 	board_ptr->generate(l, !shallowness);
