@@ -1112,7 +1112,7 @@ void board_base::coord_to_san(move_t m, string& san)
 		make(m);
 		if (get_status(true) == CHECKMATE)
 		  sanstr << "#";
-		else if(check(state.piece[ON_MOVE][KING], OFF_MOVE))
+		else if(check(state.piece[OFF_MOVE][KING], ON_MOVE))
 		  sanstr << "+";
 		unmake();
 	}
