@@ -1292,22 +1292,23 @@ void board_base::generate_king(list<move_t> &l, bool only_captures) const
 	{
 		bitboard_t moves = squares_king[x][y] & ~rotation[ZERO][COLORS];
 		insert(x, y, moves, ZERO, l, BACK);
-	}
-
-	for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
-	{
-		if (state.castle[ON_MOVE][side] != CAN_CASTLE)
-			continue; // The king or rook has already moved.
-		if (squares_castle[ON_MOVE][side][UNOCCUPIED] & rotation[ZERO][COLORS])
-			continue; // There's a piece in the way.
-		if (check(squares_castle[ON_MOVE][side][UNATTACKED], OFF_MOVE))
-			continue; // One of the squares is being attacked.
-
-		move_t m;
-		m.x2 = (m.x1 = 4) + (side ? 2 : -2);
-		m.y2 = m.y1 = ON_MOVE ? 7 : 0;
-		m.value = m.promo = 0;
-		l.push_front(m);
+		for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
+		{
+			if (state.castle[ON_MOVE][side] != CAN_CASTLE)
+				continue; // The king or rook has already moved.
+			if (squares_castle[ON_MOVE][side][UNOCCUPIED] &
+			    rotation[ZERO][COLORS])
+				continue; // There's a piece in the way.
+			if (check(squares_castle[ON_MOVE][side][UNATTACKED],
+			          OFF_MOVE))
+				continue; // One of the squares is being
+				          // attacked.
+			move_t m;
+			m.x2 = (m.x1 = 4) + (side ? 2 : -2);
+			m.y2 = m.y1 = ON_MOVE ? 7 : 0;
+			m.value = m.promo = 0;
+			l.push_front(m);
+		}
 	}
 }
 
