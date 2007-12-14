@@ -111,7 +111,8 @@ int main(int argc, char **argv)
 			default:
 				// Specifying the user doesn't know how to read.
 				cerr << "unknown option: -" 
-					<< static_cast<char>(optopt) << endl;
+				     << static_cast<char>(optopt)
+				     << endl;
 				exit(EXIT_FAILURE);
 				break;
 		}
