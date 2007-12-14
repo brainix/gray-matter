@@ -247,9 +247,6 @@ bool board_base::set_board_fen(string& fen)
 	int x = 0, y = 7;
 	bool no_move_counts = false;
 
-	// Grab the board
-	lock();
-
 	// Remove newlines and whitespace at the end
 	string::size_type pos = fen.find_last_not_of("\n \t");
 	if (pos != string::npos)
@@ -387,8 +384,6 @@ bool board_base::set_board_fen(string& fen)
 	if (check(state.piece[OFF_MOVE][KING], ON_MOVE))
 		return set_board_fen_error(fen, "The player off move cannot be in check.", x, y);
 
-	// Release the board
-	unlock();
 	return true;
 }
 
@@ -417,8 +412,6 @@ bool board_base::set_board_fen_error(string& fen, string reason, int x, int y)
 	init_rotation();
 	init_hash();
 
-	// Release the board
-	unlock();
 	return false;
 }
 
