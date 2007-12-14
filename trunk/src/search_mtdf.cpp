@@ -318,10 +318,9 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 		board_ptr->make(*it);
 		it->value = -minimax(depth - 1, shallowness + 1, -beta, -alpha, true).value;
 		board_ptr->unmake();
-		if (it->value != VALUE_ILLEGAL)
+		if (it->value > m.value && it->value != VALUE_ILLEGAL)
 		{
-			if (it->value > m.value)
-				alpha = GREATER(alpha, (m = *it).value);
+			alpha = GREATER(alpha, (m = *it).value);
 			if (it->value >= beta)
 				break;
 		}
