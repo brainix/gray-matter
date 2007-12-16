@@ -21,7 +21,7 @@
 
 #ifndef SEARCH_BASE_H
 #define SEARCH_BASE_H
-#define DEBUG_SEARCH 1
+//#define DEBUG_SEARCH
 
 // C++ stuff:
 #include <list>
@@ -136,7 +136,7 @@ protected:
 	search_base::debug_pv = search_base::debug_pv.substr \
 	(0, search_base::debug_pv.find_last_of(" ")); } while(0)
 #else
-#define DEBUG_SEARCH_INIT()
+#define DEBUG_SEARCH_INIT(prefix)
 #define DEBUG_SEARCH_PRINT(format, args...)
 #define DEBUG_SEARCH_PRINTM(m, format, args...)
 #define DEBUG_SEARCH_ADD_MOVE(m)
