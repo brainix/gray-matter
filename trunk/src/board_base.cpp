@@ -479,16 +479,16 @@ int board_base::get_status(bool mate_test)
 		return ILLEGAL;
 
 	// Are the kings attacking one other?
-	int white_king_n = FST(state.piece[WHITE][KING]);
-	int white_king_x = white_king_n & 0x7;
-	int white_king_y = white_king_n >> 3;
+	int n = FST(state.piece[WHITE][KING]);
+	int white_king_x = n & 0x7;
+	int white_king_y = n >> 3;
 	bitboard_t white_king_takes = squares_king[white_king_x][white_king_y];
 	if (white_king_takes & state.piece[BLACK][KING])
 		return ILLEGAL;
 
 	if (mate_test)
-		if ((int type = mate()) != IN_PROGRESS)
-			return type;
+		if ((n = mate()) != IN_PROGRESS)
+			return n;
 	if (insufficient())
 		return INSUFFICIENT;
 	if (three())
