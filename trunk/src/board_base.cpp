@@ -1010,7 +1010,7 @@ void board_base::coord_to_san(move_t m, string& san)
 	ostringstream sanstr;
 
 	if (IS_NULL_MOVE(m)) {
-		san.erase(san.begin(), san.end());
+		san.replace(0, san.length(), "null");
 		return;
 	}
 

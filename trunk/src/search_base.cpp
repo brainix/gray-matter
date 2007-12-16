@@ -21,6 +21,12 @@
 
 #include "search_base.h"
 
+#ifdef DEBUG_SEARCH
+string search_base::debug_pv = "";
+string search_base::debug_mv = "";
+string search_base::debug_pv_prefix = "";
+#endif
+
 /*----------------------------------------------------------------------------*\
  |				 search_base()				      |
 \*----------------------------------------------------------------------------*/

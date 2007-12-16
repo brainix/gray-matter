@@ -121,6 +121,7 @@ void search_mtdf::iterate(int s)
 	for (int depth = 1; depth <= max_depth; depth++)
 	{
 //		guess[depth & 1] = mtdf(depth, guess[depth & 1].value);
+		DEBUG_SEARCH_INIT("");
 		guess[depth & 1] = minimax(depth);
 		if (timeout_flag || IS_NULL_MOVE(guess[depth & 1]))
 			// Oops.  Either the alarm has interrupted this
@@ -247,6 +248,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 			case ILLEGAL      : m.value = -VALUE_ILLEGAL;                    break;
 			default           : m.value = -board_ptr->evaluate(shallowness); break;
 		}
+		DEBUG_SEARCH_PRINT("terminal state %d.", status);
 		return m;
 	}
 
@@ -281,6 +283,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 		SET_NULL_MOVE(m);
 		m.value = -board_ptr->evaluate(shallowness);
 		table_ptr->store(hash, 0, EXACT, m);
+		DEBUG_SEARCH_PRINT("evaluate() says %d.", m.value);
 		return m;
 	}
 
@@ -288,9 +291,11 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 	if (try_null_move && !board_ptr->zugzwang())
 	{
 		SET_NULL_MOVE(null_move);
+		DEBUG_SEARCH_ADD_MOVE(null_move);
 		board_ptr->make(null_move);
 		null_move = minimax(depth - R - 1, shallowness + R + 1, -beta, -beta + 1, false);
 		board_ptr->unmake();
+		DEBUG_SEARCH_DEL_MOVE(null_move);
 		if ((null_move.value *= -1) >= beta)
 		{
 			null_move.value = beta;
@@ -315,9 +320,11 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 	m.value = -VALUE_ILLEGAL;
 	for (it = l.begin(); it != l.end(); it++)
 	{
+		DEBUG_SEARCH_ADD_MOVE(*it);
 		board_ptr->make(*it);
 		it->value = -minimax(depth - 1, shallowness + 1, -beta, -alpha, true).value;
 		board_ptr->unmake();
+		DEBUG_SEARCH_DEL_MOVE(*it);
 		if (it->value > m.value && it->value != VALUE_ILLEGAL)
 		{
 			alpha = GREATER(alpha, (m = *it).value);
@@ -339,6 +346,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 		m.value = !board_ptr->check() ? +VALUE_CONTEMPT : -VALUE_KING + shallowness;
 		if (!timeout_flag)
 			table_ptr->store(hash, depth, EXACT, m);
+		DEBUG_SEARCH_PRINT("no legal moves.");
 		return m;
 	}
 
@@ -358,5 +366,6 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 			table_ptr->store(hash, depth, LOWER, m);
 		history_ptr->store(whose, m, depth);
 	}
+	DEBUG_SEARCH_PRINTM(m, "max of childs %d.", m.value);
 	return m;
 }

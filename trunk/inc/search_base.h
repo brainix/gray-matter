@@ -21,6 +21,7 @@
 
 #ifndef SEARCH_BASE_H
 #define SEARCH_BASE_H
+#define DEBUG_SEARCH 1
 
 // C++ stuff:
 #include <list>
@@ -65,6 +66,10 @@ public:
 	virtual void verify_prediction(move_t m);
 	virtual void change(int s, const board_base& now);
 
+#ifdef DEBUG_SEARCH
+	static string debug_pv, debug_mv, debug_pv_prefix;
+#endif
+
 protected:
 	static void _handle(void *arg);            // Proxy clock callback.
 	virtual void handle();                     // C++ clock callback.
@@ -103,5 +108,33 @@ protected:
 	// construction.
 	search_base();
 };
+
+#ifdef DEBUG_SEARCH
+#define DEBUG_SEARCH_PRINT(format, args...) do { \
+	fprintf(stderr, "%s: ", search_base::debug_pv.c_str()); \
+	fprintf(stderr, format, ##args); \
+	fprintf(stderr, "\n"); } while(0)
+#define DEBUG_SEARCH_PRINTM(m, format, args...) do { \
+	board_ptr->coord_to_san(m, search_base::debug_mv); \
+	fprintf(stderr, "%s (%s): ", \
+		search_base::debug_pv.c_str(), search_base::debug_mv.c_str()); \
+	fprintf(stderr, format, ##args); \
+	fprintf(stderr, "\n"); } while(0)
+#define DEBUG_SEARCH_INIT(prefix) do { \
+	search_base::debug_pv = ""; \
+	search_base::debug_pv_prefix = prefix; } while(0)
+#define DEBUG_SEARCH_ADD_MOVE(m) do { \
+	board_ptr->coord_to_san(m, search_base::debug_mv); \
+	search_base::debug_pv += " " + search_base::debug_mv; } while(0)
+#define DEBUG_SEARCH_DEL_MOVE(m) do { \
+	search_base::debug_pv = search_base::debug_pv.substr \
+	(0, search_base::debug_pv.find_last_of(" ")); } while(0)
+#else
+#define DEBUG_SEARCH_INIT()
+#define DEBUG_SEARCH_PRINT(format, args...)
+#define DEBUG_SEARCH_PRINTM(m, format, args...)
+#define DEBUG_SEARCH_ADD_MOVE(m)
+#define DEBUG_SEARCH_DEL_MOVE(m)
+#endif
 
 #endif
