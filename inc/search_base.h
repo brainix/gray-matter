@@ -111,15 +111,21 @@ protected:
 
 #ifdef DEBUG_SEARCH
 #define DEBUG_SEARCH_PRINT(format, args...) do { \
-	fprintf(stderr, "%s: ", search_base::debug_pv.c_str()); \
-	fprintf(stderr, format, ##args); \
-	fprintf(stderr, "\n"); } while(0)
+	if (!search_base::debug_pv_prefix.size() || search_base::debug_pv.substr(0, \
+			search_base::debug_pv_prefix.size()) == search_base::debug_pv_prefix) { \
+		fprintf(stderr, "%s: ", search_base::debug_pv.c_str()); \
+		fprintf(stderr, format, ##args); \
+		fprintf(stderr, "\n"); \
+	} } while(0)
 #define DEBUG_SEARCH_PRINTM(m, format, args...) do { \
-	board_ptr->coord_to_san(m, search_base::debug_mv); \
-	fprintf(stderr, "%s (%s): ", \
-		search_base::debug_pv.c_str(), search_base::debug_mv.c_str()); \
-	fprintf(stderr, format, ##args); \
-	fprintf(stderr, "\n"); } while(0)
+	if (!search_base::debug_pv_prefix.size() || search_base::debug_pv.substr(0, \
+			search_base::debug_pv_prefix.size()) == search_base::debug_pv_prefix) { \
+		board_ptr->coord_to_san(m, search_base::debug_mv); \
+		fprintf(stderr, "%s (%s): ", \
+			search_base::debug_pv.c_str(), search_base::debug_mv.c_str()); \
+		fprintf(stderr, format, ##args); \
+		fprintf(stderr, "\n"); \
+	} } while(0)
 #define DEBUG_SEARCH_INIT(prefix) do { \
 	search_base::debug_pv = ""; \
 	search_base::debug_pv_prefix = prefix; } while(0)
