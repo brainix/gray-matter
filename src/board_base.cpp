@@ -476,7 +476,7 @@ int board_base::get_status(bool mate_test)
 
 	// Is a king missing?
 	if (!state.piece[WHITE][KING] || !state.piece[BLACK][KING])
-		return ILLEGAL;
+		return CHECKMATE;
 
 	// Are the kings attacking one other?
 	int n = FST(state.piece[WHITE][KING]);
