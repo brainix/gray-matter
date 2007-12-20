@@ -43,7 +43,7 @@ using namespace std;
 #include "clock.h"
 #include "book.h"
 
-#define BUFFER_SIZE	80
+#define BUFFER_SIZE	160
 
 // Forward declarations:
 class board_base;
