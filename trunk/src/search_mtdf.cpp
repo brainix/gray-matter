@@ -120,8 +120,8 @@ void search_mtdf::iterate(int s)
 	// or we've reached the maximum depth (in any case).
 	for (int depth = 1; depth <= max_depth; depth++)
 	{
-//		guess[depth & 1] = mtdf(depth, guess[depth & 1].value);
 		DEBUG_SEARCH_INIT("");
+//		guess[depth & 1] = mtdf(depth, guess[depth & 1].value);
 		guess[depth & 1] = minimax(depth);
 		if (timeout_flag || IS_NULL_MOVE(guess[depth & 1]))
 			// Oops.  Either the alarm has interrupted this
@@ -135,7 +135,9 @@ void search_mtdf::iterate(int s)
 		{
 			if (strong_pondering)
 				pv.push_front(hint);
-			xboard_ptr->print_output(depth, m.value, clock_ptr->get_elapsed(), nodes, pv);
+			xboard_ptr->print_output(depth, 
+				board_ptr->get_whose() ? -m.value : m.value, 
+				clock_ptr->get_elapsed(), nodes, pv);
 			if (strong_pondering)
 				pv.pop_front();
 		}
@@ -296,7 +298,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 		null_move = minimax(depth - R - 1, shallowness + R + 1, -beta, -beta + 1, false);
 		board_ptr->unmake();
 		DEBUG_SEARCH_DEL_MOVE(null_move);
-		if ((null_move.value *= -1) >= beta)
+		if (-null_move.value >= beta)
 		{
 			null_move.value = beta;
 			return null_move;
