@@ -466,7 +466,6 @@ int board_base::get_status(bool mate_test)
 {
 
 // Determine the status of the game.  This must be one of:
-//	· illegal position
 //	· checkmated
 //	· stalemated
 //	· drawn due to insufficient material
@@ -478,17 +477,11 @@ int board_base::get_status(bool mate_test)
 	if (!state.piece[WHITE][KING] || !state.piece[BLACK][KING])
 		return CHECKMATE;
 
-	// Are the kings attacking one other?
-	int n = FST(state.piece[WHITE][KING]);
-	int white_king_x = n & 0x7;
-	int white_king_y = n >> 3;
-	bitboard_t white_king_takes = squares_king[white_king_x][white_king_y];
-	if (white_king_takes & state.piece[BLACK][KING])
-		return ILLEGAL;
-
-	if (mate_test)
-		if ((n = mate()) != IN_PROGRESS)
-			return n;
+	if (mate_test) {
+		int type = mate();
+		if (type != IN_PROGRESS)
+			return type;
+	}
 	if (insufficient())
 		return INSUFFICIENT;
 	if (three())
@@ -510,9 +503,12 @@ int board_base::get_num_moves() const
 /*----------------------------------------------------------------------------*\
  |				    check()				      |
 \*----------------------------------------------------------------------------*/
-bool board_base::check() const
+bool board_base::check(bool off_move) const
 {
-	return check(state.piece[ON_MOVE][KING], OFF_MOVE);
+	if (off_move)
+		return check(state.piece[OFF_MOVE][KING], ON_MOVE);
+	else
+		return check(state.piece[ON_MOVE][KING], OFF_MOVE);
 }
 
 /*----------------------------------------------------------------------------*\
