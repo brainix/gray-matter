@@ -270,7 +270,7 @@ public:
 	virtual int get_status(bool mate_test);
 	virtual int get_num_moves() const;
 	virtual value_t evaluate(int depth) const = 0; // Force sub-classes to override.
-	virtual bool check() const;
+	virtual bool check(bool off_move = false) const;
 	virtual bool zugzwang() const;
 	virtual string to_string() const;
 
