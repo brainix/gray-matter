@@ -120,7 +120,7 @@ void search_mtdf::iterate(int s)
 	// or we've reached the maximum depth (in any case).
 	for (int depth = 1; depth <= max_depth; depth++)
 	{
-		DEBUG_SEARCH_INIT("");
+		DEBUG_SEARCH_INIT(1, "");
 //		guess[depth & 1] = mtdf(depth, guess[depth & 1].value);
 		guess[depth & 1] = minimax(depth);
 		if (timeout_flag || IS_NULL_MOVE(guess[depth & 1]))
@@ -294,7 +294,12 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 		SET_NULL_MOVE(null_move);
 		DEBUG_SEARCH_ADD_MOVE(null_move);
 		board_ptr->make(null_move);
-		null_move = minimax(depth - R - 1, shallowness + R + 1, -beta, -beta + 1, false);
+		if (!board_ptr->check(true))
+			// Compute value of not moving at all
+			null_move = minimax(depth - R - 1, shallowness + R + 1, -beta, -beta + 1, false);
+		else
+			// Prevent -null_move.value >= beta
+			null_move.value = 1 - beta;
 		board_ptr->unmake();
 		DEBUG_SEARCH_DEL_MOVE(null_move);
 		if (-null_move.value >= beta)
@@ -326,6 +331,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 		if (board_ptr->check(true)) {
 			// Pseudo-legal move leaves us in check
 			board_ptr->unmake();
+			DEBUG_SEARCH_DEL_MOVE(*it);
 			continue;
 		}
 		it->value = -minimax(depth - 1, shallowness + 1, -beta, -alpha, true).value;

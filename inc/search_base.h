@@ -21,7 +21,7 @@
 
 #ifndef SEARCH_BASE_H
 #define SEARCH_BASE_H
-//#define DEBUG_SEARCH
+#define DEBUG_SEARCH
 
 // C++ stuff:
 #include <list>
@@ -68,6 +68,7 @@ public:
 
 #ifdef DEBUG_SEARCH
 	static string debug_pv, debug_mv, debug_pv_prefix;
+	static int debug_maxdepth, debug_depth;
 #endif
 
 protected:
@@ -111,6 +112,7 @@ protected:
 
 #ifdef DEBUG_SEARCH
 #define DEBUG_SEARCH_PRINT(format, args...) do { \
+	if (search_base::debug_depth <= search_base::debug_maxdepth) \
 	if (!search_base::debug_pv_prefix.size() || search_base::debug_pv.substr(0, \
 			search_base::debug_pv_prefix.size()) == search_base::debug_pv_prefix) { \
 		fprintf(stderr, "%s: ", search_base::debug_pv.c_str()); \
@@ -118,6 +120,7 @@ protected:
 		fprintf(stderr, "\n"); \
 	} } while(0)
 #define DEBUG_SEARCH_PRINTM(m, format, args...) do { \
+	if (search_base::debug_depth <= search_base::debug_maxdepth) \
 	if (!search_base::debug_pv_prefix.size() || search_base::debug_pv.substr(0, \
 			search_base::debug_pv_prefix.size()) == search_base::debug_pv_prefix) { \
 		board_ptr->coord_to_san(m, search_base::debug_mv); \
@@ -126,17 +129,21 @@ protected:
 		fprintf(stderr, format, ##args); \
 		fprintf(stderr, "\n"); \
 	} } while(0)
-#define DEBUG_SEARCH_INIT(prefix) do { \
+#define DEBUG_SEARCH_INIT(maxdepth, prefix) do { \
 	search_base::debug_pv = ""; \
+	search_base::debug_depth = 0; \
+	search_base::debug_maxdepth = maxdepth; \
 	search_base::debug_pv_prefix = prefix; } while(0)
 #define DEBUG_SEARCH_ADD_MOVE(m) do { \
+	search_base::debug_depth++; \
 	board_ptr->coord_to_san(m, search_base::debug_mv); \
 	search_base::debug_pv += " " + search_base::debug_mv; } while(0)
 #define DEBUG_SEARCH_DEL_MOVE(m) do { \
+	search_base::debug_depth--; \
 	search_base::debug_pv = search_base::debug_pv.substr \
 	(0, search_base::debug_pv.find_last_of(" ")); } while(0)
 #else
-#define DEBUG_SEARCH_INIT(prefix)
+#define DEBUG_SEARCH_INIT(maxdepth, prefix)
 #define DEBUG_SEARCH_PRINT(format, args...)
 #define DEBUG_SEARCH_PRINTM(m, format, args...)
 #define DEBUG_SEARCH_ADD_MOVE(m)

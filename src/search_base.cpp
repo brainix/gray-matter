@@ -22,6 +22,8 @@
 #include "search_base.h"
 
 #ifdef DEBUG_SEARCH
+int search_base::debug_depth = 0;
+int search_base::debug_maxdepth = 0;
 string search_base::debug_pv = "";
 string search_base::debug_mv = "";
 string search_base::debug_pv_prefix = "";
