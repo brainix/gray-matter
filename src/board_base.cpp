@@ -477,17 +477,27 @@ int board_base::get_status(bool mate_test)
 	if (!state.piece[WHITE][KING] || !state.piece[BLACK][KING])
 		return CHECKMATE;
 
-	if (mate_test) {
-		int type = mate();
-		if (type != IN_PROGRESS)
-			return type;
-	}
+	if (mate_test)
+		switch (mate())
+		{
+			case STALEMATE: seen_stalemate++; return STALEMATE;
+			case CHECKMATE: seen_checkmate++; return CHECKMATE;
+		}
 	if (insufficient())
+	{
+		seen_insufficient++;
 		return INSUFFICIENT;
+	}
 	if (three())
+	{
+		seen_three++;
 		return THREE;
+	}
 	if (fifty())
+	{
+		seen_fifty++;
 		return FIFTY;
+	}
 
 	return IN_PROGRESS;
 }
@@ -1699,7 +1709,8 @@ int board_base::mate()
 	// Otherwise, the game is over due to checkmate.
 	if (!check(state.piece[ON_MOVE][KING], OFF_MOVE))
 		return STALEMATE;
-	return CHECKMATE;
+	else
+		return CHECKMATE;
 }
 
 /*----------------------------------------------------------------------------*\
