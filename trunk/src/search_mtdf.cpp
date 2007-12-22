@@ -300,8 +300,8 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 		else
 			// Prevent -null_move.value >= beta
 			null_move.value = 1 - beta;
-		board_ptr->unmake();
 		DEBUG_SEARCH_DEL_MOVE(null_move);
+		board_ptr->unmake();
 		if (-null_move.value >= beta)
 		{
 			null_move.value = beta;
@@ -328,15 +328,16 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 	{
 		DEBUG_SEARCH_ADD_MOVE(*it);
 		board_ptr->make(*it);
-		if (board_ptr->check(true)) {
+		if (board_ptr->check(true))
+		{
 			// Pseudo-legal move leaves us in check
-			board_ptr->unmake();
 			DEBUG_SEARCH_DEL_MOVE(*it);
+			board_ptr->unmake();
 			continue;
 		}
 		it->value = -minimax(depth - 1, shallowness + 1, -beta, -alpha, true).value;
-		board_ptr->unmake();
 		DEBUG_SEARCH_DEL_MOVE(*it);
+		board_ptr->unmake();
 		if (it->value > m.value)
 			alpha = GREATER(alpha, (m = *it).value);
 		if (it->value >= beta || timeout_flag)
