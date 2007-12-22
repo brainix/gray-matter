@@ -262,18 +262,18 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 	{
 		if (m.value <= alpha)
 			return m;
-		// XXX: When doing MTD(f) zero-window searches, our window
-		// should never be resized here.  I've only accounted for this
-		// in the interest of robustness.
+		// When doing MTD(f) zero-window searches, our window should
+		// never be resized here.  I've only accounted for this in the
+		// interest of robustness.
 		beta = LESSER(beta, m.value);
 	}
 	if (table_ptr->probe(hash, depth, LOWER, &m))
 	{
 		if (m.value >= beta)
 			return m;
-		// XXX: When doing MTD(f) zero-window searches, our window
-		// should never be resized here.  I've only accounted for this
-		// in the interest of robustness.
+		// When doing MTD(f) zero-window searches, our window should
+		// never be resized here.  I've only accounted for this in the
+		// interest of robustness.
 		alpha = GREATER(alpha, m.value);
 	}
 
@@ -324,6 +324,8 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 	{
 		DEBUG_SEARCH_ADD_MOVE(*it);
 		board_ptr->make(*it);
+		// XXX: We should remove this at some point; this is terribly
+		// inefficient.  :-(
 		if (board_ptr->check(true))
 		{
 			// Pseudo-legal move leaves us in check
@@ -361,7 +363,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 		// Nope, the results are complete and reliable.  Save them for
 		// progeny.
 		if (m.value > saved_alpha && m.value < saved_beta)
-			// XXX: When doing MTD(f) zero-window searches, our move
+			// When doing MTD(f) zero-window searches, our move
 			// search should never return an exact score.  I've only
 			// accounted for this in the interest of robustness.
 			table_ptr->store(hash, depth, EXACT, m);
