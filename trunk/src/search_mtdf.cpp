@@ -294,12 +294,8 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 		SET_NULL_MOVE(null_move);
 		DEBUG_SEARCH_ADD_MOVE(null_move);
 		board_ptr->make(null_move);
-		if (!board_ptr->check(true))
-			// Compute value of not moving at all
-			null_move = minimax(depth - R - 1, shallowness + R + 1, -beta, -beta + 1, false);
-		else
-			// Prevent -null_move.value >= beta
-			null_move.value = 1 - beta;
+		// board_ptr->zugzwang() ensures we can never be in check here.
+		null_move = minimax(depth - R - 1, shallowness + R + 1, -beta, -beta + 1, false);
 		DEBUG_SEARCH_DEL_MOVE(null_move);
 		board_ptr->unmake();
 		if (-null_move.value >= beta)
