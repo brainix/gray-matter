@@ -293,12 +293,12 @@ protected:
 	bitboard_t pawn_hash;                           // Current pawn hash key.
 	mutex_t mutex;				        // Lock.
 
-	static int seen_stalemate = 0;
-	static int seen_insufficient = 0;
-	static int seen_three = 0;
-	static int seen_fifty = 0;
-	static int seen_checkmate = 0;
-	static int seen_illegal = 0;
+	static int seen_stalemate;
+	static int seen_insufficient;
+	static int seen_three;
+	static int seen_fifty;
+	static int seen_checkmate;
+	static int seen_illegal;
 
 	// These methods start up games.
 	virtual void init_state();

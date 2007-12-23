@@ -154,6 +154,13 @@ bitboard_t key_no_en_passant;
 bitboard_t key_en_passant[8];
 bitboard_t key_whose;
 
+int board_base::seen_stalemate = 0;
+int board_base::seen_insufficient = 0;
+int board_base::seen_three = 0;
+int board_base::seen_fifty = 0;
+int board_base::seen_checkmate = 0;
+int board_base::seen_illegal = 0;
+
 /*----------------------------------------------------------------------------*\
  |				  board_base()				      |
 \*----------------------------------------------------------------------------*/
