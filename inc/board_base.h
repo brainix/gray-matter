@@ -298,6 +298,7 @@ protected:
 	static int seen_three = 0;
 	static int seen_fifty = 0;
 	static int seen_checkmate = 0;
+	static int seen_illegal = 0;
 
 	// These methods start up games.
 	virtual void init_state();

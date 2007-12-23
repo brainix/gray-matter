@@ -476,7 +476,10 @@ int board_base::get_status(bool mate_test)
 
 	// Is a king missing?
 	if (!state.piece[WHITE][KING] || !state.piece[BLACK][KING])
+	{
+		seen_illegal++;
 		return ILLEGAL;
+	}
 
 	if (mate_test)
 		switch (mate())
