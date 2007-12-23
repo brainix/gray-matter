@@ -466,16 +466,17 @@ int board_base::get_status(bool mate_test)
 {
 
 // Determine the status of the game.  This must be one of:
-//	· checkmated
+//	· still in progress
 //	· stalemated
 //	· drawn due to insufficient material
 //	· drawn due to threefold repetition
 //	· drawn due to the fifty move rule
-//	· still in progress
+//	· checkmated
+//	· illegal position
 
 	// Is a king missing?
 	if (!state.piece[WHITE][KING] || !state.piece[BLACK][KING])
-		return CHECKMATE;
+		return ILLEGAL;
 
 	if (mate_test)
 		switch (mate())
