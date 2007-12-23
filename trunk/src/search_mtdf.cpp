@@ -295,7 +295,6 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 		SET_NULL_MOVE(null_move);
 		DEBUG_SEARCH_ADD_MOVE(null_move);
 		board_ptr->make(null_move);
-		// board_ptr->zugzwang() ensures we can never be in check here.
 		null_move = minimax(depth - R - 1, shallowness + R + 1, -beta, -beta + 1, false);
 		DEBUG_SEARCH_DEL_MOVE(null_move);
 		board_ptr->unmake();
@@ -344,7 +343,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 		// tell which?  Easily.  If we're not in check, we're
 		// stalemated; if we're in check, we're checkmated.
 		SET_NULL_MOVE(m);
-		m.value = !board_ptr->check() ? +VALUE_CONTEMPT : -VALUE_KING + shallowness;
+		m.value = !board_ptr->check() ? +VALUE_CONTEMPT : -(VALUE_KING - shallowness);
 		if (!timeout_flag)
 			table_ptr->store(hash, depth, EXACT, m);
 		DEBUG_SEARCH_PRINT("no legal moves.");
