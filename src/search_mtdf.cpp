@@ -247,6 +247,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 			case THREE        : m.value = +VALUE_CONTEMPT;                   break;
 			case FIFTY        : m.value = +VALUE_CONTEMPT;                   break;
 			case CHECKMATE    : m.value = -VALUE_KING;                       break;
+			case ILLEGAL      : m.value = -VALUE_ILLEGAL;                    break;
 			default           : m.value = -board_ptr->evaluate(shallowness); break;
 		}
 		DEBUG_SEARCH_PRINT("terminal state %d.", status);
@@ -324,18 +325,11 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 	{
 		DEBUG_SEARCH_ADD_MOVE(*it);
 		board_ptr->make(*it);
-		// XXX: We should remove this at some point; this is terribly
-		// inefficient.  :-(
-		if (board_ptr->check(true))
-		{
-			// Pseudo-legal move leaves us in check
-			DEBUG_SEARCH_DEL_MOVE(*it);
-			board_ptr->unmake();
-			continue;
-		}
 		it->value = -minimax(depth - 1, shallowness + 1, -beta, -alpha, true).value;
 		DEBUG_SEARCH_DEL_MOVE(*it);
 		board_ptr->unmake();
+		if (it->value == VALUE_ILLEGAL)
+			continue;
 		if (it->value > m.value)
 			alpha = GREATER(alpha, (m = *it).value);
 		if (it->value >= beta || timeout_flag)
