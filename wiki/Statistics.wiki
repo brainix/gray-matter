@@ -13,4 +13,4 @@ first (Correct + Failed) positions of the database.
 
 || Test suite || GM svn revision || Correct / Failed || Total || Info ||
 || ECE3.PGN || 1402 || 26 / 12 || 1797 || Not much time ||
-|| ECE3.PGN || 1402 || 203 / 209 || 1797 || Resigned position 1403? ||
+|| ECE3.PGN || 1402 || 203 / 209 || 1797 || Resigned position 413? ||
