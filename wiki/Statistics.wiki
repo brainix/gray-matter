@@ -4,8 +4,12 @@
 = Introduction =
 
 This page presents statistics that have been gathered for Gray matter.
+This includes test suites that are readily available at the WWW.
 
 = Details =
 
-|| Testing || hi ||
-|| a || table ||
+Note that if Correct + Failed < Total, this means we only tested the
+first (Correct + Failed) positions of the database.
+
+|| Test suite || GM svn revision || Correct / Failed || Total ||
+|| ECE3.PGN || 1402 || 26 / 12 || 1797 ||
