@@ -491,7 +491,10 @@ int board_base::get_status(bool mate_test)
 	int n = FST(state.piece[WHITE][KING]);
 	bitboard_t white_king_takes = squares_king[n & 0x7][n >> 3];
 	if (white_king_takes & state.piece[BLACK][KING])
+	{
+		seen_illegal++;
 		return ILLEGAL;
+	}
 
 	if (mate_test)
 		switch (mate())
