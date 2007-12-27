@@ -1,0 +1,11 @@
+#summary Statistics about Gray matter.
+#labels Featured
+
+= Introduction =
+
+This page presents statistics that have been gathered for Gray matter.
+
+= Details =
+
+|| Testing || with
+|| a || table
