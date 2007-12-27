@@ -275,7 +275,7 @@ public:
 	virtual string to_string() const;
 
 	// These methods generate, make, and take back moves.
-	virtual void generate(list<move_t> &l, bool only_legal_moves = false, bool only_captures = false);
+	virtual bool generate(list<move_t> &l, bool only_legal_moves = false, bool only_captures = false);
 	virtual bool make(move_t m);
 	virtual bool unmake();
 	virtual move_t san_to_coord(string& san);
@@ -292,6 +292,7 @@ protected:
 	list<bitboard_t> pawn_hashes;                   // Previous pawn hash keys.
 	bitboard_t pawn_hash;                           // Current pawn hash key.
 	mutex_t mutex;				        // Lock.
+	bool generated_king_capture;
 
 	static int seen_stalemate;
 	static int seen_insufficient;
@@ -307,12 +308,12 @@ protected:
 	virtual void precomp_key() const;
 
 	// These methods generate moves.
-	virtual void generate_king(list<move_t> &l, bool only_captures = false) const;
-	virtual void generate_queen(list<move_t> &l, bool only_captures = false) const;
-	virtual void generate_rook(list<move_t> &l, bool only_captures = false) const;
-	virtual void generate_bishop(list<move_t> &l, bool only_captures = false) const;
-	virtual void generate_knight(list<move_t> &l, bool only_captures = false) const;
-	virtual void generate_pawn(list<move_t> &l, bool only_captures = false) const;
+	virtual void generate_king(list<move_t> &l, bool only_captures = false);
+	virtual void generate_queen(list<move_t> &l, bool only_captures = false);
+	virtual void generate_rook(list<move_t> &l, bool only_captures = false);
+	virtual void generate_bishop(list<move_t> &l, bool only_captures = false);
+	virtual void generate_knight(list<move_t> &l, bool only_captures = false);
+	virtual void generate_pawn(list<move_t> &l, bool only_captures = false);
 	virtual void precomp_king() const;
 	virtual void precomp_row() const;
 	virtual void precomp_knight() const;
@@ -327,7 +328,7 @@ protected:
 
 	// These methods manipulate BitBoards.
 	virtual bitboard_t rotate(bitboard_t b1, int map, int angle) const;
-	virtual void insert(int x, int y, bitboard_t b, int angle, list<move_t> &l, bool pos) const;
+	virtual void insert(int x, int y, bitboard_t b, int angle, list<move_t> &l, bool pos);
 };
 
 

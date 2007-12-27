@@ -487,6 +487,11 @@ int board_base::get_status(bool mate_test)
 		seen_illegal++;
 		return ILLEGAL;
 	}
+	// Are the kings attacking one other?
+	int n = FST(state.piece[WHITE][KING]);
+	bitboard_t white_king_takes = squares_king[n & 0x7][n >> 3];
+	if (white_king_takes & state.piece[BLACK][KING])
+		return ILLEGAL;
 
 	if (mate_test)
 		switch (mate())
@@ -611,8 +616,11 @@ string board_base::to_string() const {
 /*----------------------------------------------------------------------------*\
  |				   generate()				      |
 \*----------------------------------------------------------------------------*/
-void board_base::generate(list<move_t> &l, bool only_legal_moves, bool only_captures)
+bool board_base::generate(list<move_t> &l, bool only_legal_moves, bool only_captures)
 {
+	// Reset whether opponent's king can be captured
+	generated_king_capture = false;
+
 	generate_king(l, only_captures);
 	generate_queen(l, only_captures);
 	generate_rook(l, only_captures);
@@ -630,6 +638,8 @@ void board_base::generate(list<move_t> &l, bool only_legal_moves, bool only_capt
 				it++;
 			unmake();
 		}
+
+	return !generated_king_capture;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -1290,7 +1300,7 @@ void board_base::precomp_key() const
 /*----------------------------------------------------------------------------*\
  |				generate_king()				      |
 \*----------------------------------------------------------------------------*/
-void board_base::generate_king(list<move_t> &l, bool only_captures) const
+void board_base::generate_king(list<move_t> &l, bool only_captures)
 {
 
 // Generate the king moves.
@@ -1325,7 +1335,7 @@ void board_base::generate_king(list<move_t> &l, bool only_captures) const
 /*----------------------------------------------------------------------------*\
  |				generate_queen()			      |
 \*----------------------------------------------------------------------------*/
-void board_base::generate_queen(list<move_t> &l, bool only_captures) const
+void board_base::generate_queen(list<move_t> &l, bool only_captures)
 {
 
 // Generate the queen moves.
@@ -1379,7 +1389,7 @@ void board_base::generate_queen(list<move_t> &l, bool only_captures) const
 /*----------------------------------------------------------------------------*\
  |				generate_rook()				      |
 \*----------------------------------------------------------------------------*/
-void board_base::generate_rook(list<move_t> &l, bool only_captures) const
+void board_base::generate_rook(list<move_t> &l, bool only_captures)
 {
 
 // Generate the rook moves.
@@ -1412,7 +1422,7 @@ void board_base::generate_rook(list<move_t> &l, bool only_captures) const
 /*----------------------------------------------------------------------------*\
  |			       generate_bishop()			      |
 \*----------------------------------------------------------------------------*/
-void board_base::generate_bishop(list<move_t> &l, bool only_captures) const
+void board_base::generate_bishop(list<move_t> &l, bool only_captures)
 {
 
 // Generate the bishop moves.
@@ -1446,7 +1456,7 @@ void board_base::generate_bishop(list<move_t> &l, bool only_captures) const
 /*----------------------------------------------------------------------------*\
  |			       generate_knight()			      |
 \*----------------------------------------------------------------------------*/
-void board_base::generate_knight(list<move_t> &l, bool only_captures) const
+void board_base::generate_knight(list<move_t> &l, bool only_captures)
 {
 
 // Generate the knight moves.
@@ -1470,7 +1480,7 @@ void board_base::generate_knight(list<move_t> &l, bool only_captures) const
 /*----------------------------------------------------------------------------*\
  |				generate_pawn()				      |
 \*----------------------------------------------------------------------------*/
-void board_base::generate_pawn(list<move_t> &l, bool only_captures) const
+void board_base::generate_pawn(list<move_t> &l, bool only_captures)
 {
 
 // Generate the pawn moves.
@@ -1539,10 +1549,15 @@ void board_base::generate_pawn(list<move_t> &l, bool only_captures) const
 		b >>= ON_MOVE ? x == -1 ? 9 : 7 : 0;
 		COL_CLR(b, x == -1 ? 7 : 0);
 		b &= rotation[ZERO][OFF_MOVE];
+
+		if (state.piece[OFF_MOVE][KING] & b)
+			generated_king_capture = true;
+
 		for (int n; (n = FST(b)) != -1; BIT_CLR(b, m.x2, m.y2))
 		{
 			m.x1 = (m.x2 = n & 0x7) - x;
 			m.y1 = (m.y2 = n >> 3) + (ON_MOVE ? 1 : -1);
+	
 			if (m.y2 != (ON_MOVE ? 0 : 7))
 			{
 				l.push_front(m);
@@ -1884,7 +1899,7 @@ bitboard_t board_base::rotate(bitboard_t b1, int map, int angle) const
 /*----------------------------------------------------------------------------*\
  |				    insert()				      |
 \*----------------------------------------------------------------------------*/
-void board_base::insert(int x, int y, bitboard_t b, int angle, list<move_t> &l, bool pos) const
+void board_base::insert(int x, int y, bitboard_t b, int angle, list<move_t> &l, bool pos)
 {
 
 // Prepend or append a piece's possible moves to a list.
@@ -1894,12 +1909,20 @@ void board_base::insert(int x, int y, bitboard_t b, int angle, list<move_t> &l, 
 	m.y1 = y;
 	m.value = m.promo = 0;
 
+	// Check if among the moves there is one that captures the opponent's king,
+	// if so, we are evaluating an illegal position.
+	// FIXME: we can consider a speed-up here. If generated_king_capture is true, we
+	// are in fact not interested in the rest of the possible moves.
+	if (rotate(state.piece[OFF_MOVE][KING], MAP, angle) & b)
+		generated_king_capture = true;
+
 	for (int n; (n = FST(b)) != -1; BIT_CLR(b, x, y))
 	{
 		x = n & 0x7;
 		y = n >> 3;
 		m.x2 = coord[UNMAP][angle][x][y][X];
 		m.y2 = coord[UNMAP][angle][x][y][Y];
+
 		if (pos == FRONT)
 			l.push_front(m);
 		else

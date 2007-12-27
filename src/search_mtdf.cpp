@@ -285,7 +285,8 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 		SET_NULL_MOVE(m);
 		m.value = -board_ptr->evaluate(shallowness);
 		table_ptr->store(hash, 0, EXACT, m);
-		DEBUG_SEARCH_PRINT("evaluate() says %d.", m.value);
+		DEBUG_SEARCH_PRINT("evaluate() says %d.",
+			board_ptr->get_whose() ? -m.value : m.value);
 		return m;
 	}
 
@@ -306,7 +307,15 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 	}
 
 	// Generate and re-order the move list.
-	board_ptr->generate(l, !shallowness);
+	if (!board_ptr->generate(l, !shallowness)) {
+		// There is a move in the list that captures the opponent's king,
+		// which means we are in an illegal position.
+		SET_NULL_MOVE(m);
+		m.value = VALUE_ILLEGAL;
+		DEBUG_SEARCH_PRINT("Opponent's king can be captured - illegal position.");
+		return m;
+	}
+
 	for (it = l.begin(); it != l.end(); it++)
 		// If according to the transposition table, a previous search
 		// from this position determined this move to be best, then in
@@ -327,7 +336,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 		it->value = -minimax(depth - 1, shallowness + 1, -beta, -alpha, true).value;
 		DEBUG_SEARCH_DEL_MOVE(*it);
 		board_ptr->unmake();
-		if (it->value == VALUE_ILLEGAL)
+		if (ABS(it->value) == VALUE_ILLEGAL)
 			continue;
 		if (it->value > m.value)
 			alpha = GREATER(alpha, (m = *it).value);
@@ -338,15 +347,23 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 	// Was there a legal move in the list?
 	if (m.value == -VALUE_ILLEGAL)
 	{
-		// Nope, there was no legal move in the list.  The current
-		// position must either be stalemate or checkmate.  How can we
-		// tell which?  Easily.  If we're not in check, we're
-		// stalemated; if we're in check, we're checkmated.
+		// Nope, there was no legal move in the list.  
+		// There are three possibilities now. The position is illegal, it is
+		// a stalemate, or it is a checkmate. How can we tell which?
+		// Well, if our opponent is in check, the position is illegal.
+		// If we're not in check, we're stalemated; if we're in check,
+		// we're checkmated.
 		SET_NULL_MOVE(m);
-		m.value = !board_ptr->check() ? +VALUE_CONTEMPT : -(VALUE_KING - shallowness);
+		if (board_ptr->check(true))
+			// Opponent is in check, illegal position
+			m.value = VALUE_ILLEGAL;
+		else
+			// Checkmate or stalemate
+			m.value = board_ptr->check() ? -(VALUE_KING - shallowness) : +VALUE_CONTEMPT;
 		if (!timeout_flag)
 			table_ptr->store(hash, depth, EXACT, m);
-		DEBUG_SEARCH_PRINT("no legal moves.");
+		DEBUG_SEARCH_PRINT("%s.", m.value == VALUE_ILLEGAL ? "Illegal position" :
+			m.value == VALUE_CONTEMPT ? "Stalemated" : "Checkmated");
 		return m;
 	}
 
@@ -366,6 +383,6 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 			table_ptr->store(hash, depth, LOWER, m);
 		history_ptr->store(whose, m, depth);
 	}
-	DEBUG_SEARCH_PRINTM(m, "max of childs %d.", m.value);
+	DEBUG_SEARCH_PRINTM(m, "max of %d childs %d.", l.size(), m.value);
 	return m;
 }
