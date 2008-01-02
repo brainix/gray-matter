@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------*\
  |	search_scout.h - NegaScout move search interface		      |
  |									      |
- |	Copyright © 2005-2007, The Gray Matter Team, original authors.	      |
+ |	Copyright © 2005-2008, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
 
 /*
