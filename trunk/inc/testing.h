@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------*\
- |      testing.h                                                                |
- |                                                                            |
- |      Copyright � 2005-2007, The Gray Matter Team, original authors.        |
+ |	testing.h - correctness and performance tests interface		      |
+ |									      |
+ |	Copyright © 2005-2008, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
 
 /*

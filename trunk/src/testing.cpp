@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------*\
- |  testing.cpp - correctness and performance tests              |
- |                                        |
- |  Copyright © 2005-2007, The Gray Matter Team, original authors.        |
+ |	testing.cpp - correctness and performance tests implementation	      |
+ |									      |
+ |	Copyright © 2005-2008, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
 
 /*
