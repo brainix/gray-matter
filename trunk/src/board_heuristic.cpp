@@ -118,6 +118,24 @@ static const value_t value_pawn_isolated[9]         = {0, -8, -20, -40, -60, -70
 static const value_t value_pawn_doubled_isolated[9] = {0, -5, -10, -15, -15, -15, -15, -15, -15};
 static const value_t value_pawn_duo = 2;
 
+//
+static value_t value_knight_outpost_position[8][8] =
+{
+	/* A */ {  0,   0,   0,   0,   0,   0,   0,    0},
+	/* B */ {  0,   0,   0,   5,   5,   0,   0,    0},
+	/* C */ {  0,   0,   0,  10,  10,  10,   0,    0},
+	/* D */ {  0,   0,   0,  20,  24,  24,   0,    0},
+	/* E */ {  0,   0,   0,  20,  24,  24,   0,    0},
+	/* F */ {  0,   0,   0,  10,  10,  10,   0,    0},
+	/* G */ {  0,   0,   0,   5,   5,   0,   0,    0},
+	/* H */ {  0,   0,   0,   0,   0,   0,   0,    0}
+	       //   1    2    3    4    5    6    7    8
+};
+
+//
+static value_t value_bishop_over_knight_endgame = 36;
+static value_t value_bishop_trapped = -174;
+
 // The penalty for giving up castling:
 static const value_t value_king_cant_castle = -20;
 
@@ -125,6 +143,7 @@ bool precomputed_board_heuristic = false;
 extern bitboard_t squares_adj_cols[];
 bitboard_t squares_pawn_duo[8][8];
 bitboard_t squares_pawn_potential_attacks[COLORS][8][8];
+bitboard_t squares_pawn_defenses[COLORS][8][8];
 
 // Since pawn structure remains relatively static, we maintain a hash table of
 // previous pawn structure evaluations.  According to my tests, this hash table
@@ -291,7 +310,18 @@ value_t board_heuristic::evaluate_knights() const
 			// Penalize bad position or reward good position.
 			sum += sign * value_position[KNIGHT][x][y];
 
-			// TODO: Reward outposts.
+			// Reward outposts.
+			bitboard_t pawn_potential_attacks =
+				squares_pawn_potential_attacks[!color][x][y] &
+				state.piece[!color][PAWN];
+			bitboard_t pawn_defenses =
+				squares_pawn_defenses[color][x][y] &
+				state.piece[color][PAWN];
+			int lookup_y = color == WHITE ? y : 7 - y;
+			value_t value_outpost =
+				value_knight_outpost_position[x][lookup_y];
+			if (!pawn_potential_attacks && pawn_defenses)
+				sum += sign * value_outpost;
 
 			// TODO: Reward blocking center pawns.
 		}
@@ -309,9 +339,6 @@ value_t board_heuristic::evaluate_bishops() const
 
 	value_t sign, sum = 0;
 	bitboard_t b;
-	static bitboard_t squares_both_sides =
-		COL_MSK(0) | COL_MSK(1) | COL_MSK(2) |
-		COL_MSK(5) | COL_MSK(6) | COL_MSK(7);
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
@@ -330,11 +357,37 @@ value_t board_heuristic::evaluate_bishops() const
 
 			// TODO: Reward blocking center pawns.
 
-			// TODO: Reward bishops (over knights) during endgames
-			// with pawns on both sides of the board.
+			// Reward bishops (over knights) during endgames with
+			// pawns on both sides of the board.
+			int friendly_piece_count = count(ALL(state, color));
+			bool endgame = friendly_piece_count < 7;
+			bool enemy_bishop_present = state.piece[!color][BISHOP];
+			bitboard_t all_pawns = state.piece[WHITE][PAWN] |
+			                       state.piece[BLACK][PAWN];
+			bitboard_t squares_both_sides =
+				COL_MSK(0) | COL_MSK(1) | COL_MSK(2) |
+				COL_MSK(5) | COL_MSK(6) | COL_MSK(7);
+			bool pawns_both_sides = all_pawns & squares_both_sides;
+			if (endgame && !enemy_bishop_present && pawns_both_sides)
+				sum += sign * value_bishop_over_knight_endgame;
 
-			// TODO: Penalize trapped or potentially trapped
-			// bishops.
+			// Penalize trapped or potentially trapped bishops.
+			if (color == WHITE)
+			{
+				if ((x == 0 && y == 6 && BIT_GET(state.piece[BLACK][PAWN], 1, 5)) ||
+				    (x == 1 && y == 7 && BIT_GET(state.piece[BLACK][PAWN], 2, 6)) ||
+				    (x == 7 && y == 6 && BIT_GET(state.piece[BLACK][PAWN], 6, 5)) ||
+				    (x == 6 && y == 7 && BIT_GET(state.piece[BLACK][PAWN], 5, 6)))
+					sum += sign * value_bishop_trapped;
+			}
+			else // color == BLACK
+			{
+				if ((x == 0 && y == 1 && BIT_GET(state.piece[WHITE][PAWN], 1, 2)) ||
+				    (x == 1 && y == 0 && BIT_GET(state.piece[WHITE][PAWN], 2, 1)) ||
+				    (x == 7 && y == 1 && BIT_GET(state.piece[WHITE][PAWN], 6, 2)) ||
+				    (x == 6 && y == 0 && BIT_GET(state.piece[WHITE][PAWN], 5, 1)))
+					sum += sign * value_bishop_trapped;
+			}
 
 			// TODO: Penalize bad bishops.
 
@@ -470,7 +523,7 @@ void board_heuristic::precomp_pawn() const
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
-		int sign = !color ? -1 : 1;
+		int sign = color == WHITE ? -1 : 1;
 		for (int n = 0; n <= 63; n++)
 		{
 			int x = n & 0x7;
@@ -480,6 +533,16 @@ void board_heuristic::precomp_pawn() const
 			for (int k = y + sign; k >= 1 && k <= 6; k += sign)
 				squares_pawn_potential_attacks[color][x][y] |=
 					ROW_MSK(k) & squares_adj_cols[x];
+
+			if (color == WHITE && (y == 0 || y == 1) ||
+			    color == BLACK && (y == 6 || y == 7))
+				// A white pawn can never defend a white piece
+				// in rank 1 or 2.  Similarly, a black pawn can
+				// never defend a black piece in rank 6 or 7.
+				squares_pawn_defenses[color][x][y] = 0;
+			else
+				squares_pawn_defenses[color][x][y] =
+					ROW_MSK(y + sign) & squares_adj_cols[x];
 		}
 	}
 }
