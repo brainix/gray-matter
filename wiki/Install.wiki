@@ -7,4 +7,4 @@
 
 [http://gray-matter.googlecode.com/files/WinBoard.jpg]
 
-The game starts, and Gray Matter defaults to playing black and awaits your move.  Have a lot of fun!  :-)
+The game starts, and Gray Matter defaults to playing black and awaits your move.  Have fun!  :-)
