@@ -359,7 +359,7 @@ value_t board_heuristic::evaluate_bishops() const
 
 			// Reward bishops (over knights) during endgames with
 			// pawns on both sides of the board.
-			int friendly_piece_count = count(ALL(state, color));
+			int friendly_piece_count = count_64(ALL(state, color));
 			bool endgame = friendly_piece_count < 7;
 			bool enemy_bishop_present = state.piece[!color][BISHOP];
 			bitboard_t all_pawns = state.piece[WHITE][PAWN] |
