@@ -22,6 +22,9 @@
 #ifndef CLOCK_H
 #define CLOCK_H
 
+#include <string>
+#include <sstream>
+
 // Default Gray Matter stuff:
 #include "config.h"
 #include "library.h"
@@ -38,6 +41,7 @@ class chess_clock
 public:
 	chess_clock(int o);
 	void set_mode(int color, int new_moves, int new_csecs, int new_inc);
+	std::string to_string(int color);
 	void update_remaining_csecs(int color, int new_csecs);
 	void dec_remaining_moves(int color);
 	void inc_remaining_moves(int color);
