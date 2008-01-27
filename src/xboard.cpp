@@ -759,6 +759,7 @@ void xboard::do_test() {
 		string fen = ts_fen.front();
 		ts_fen.erase(ts_fen.begin());
 		do_setboard(fen);
+		clock_ptr->set_mode(board_ptr->get_whose(), 40, 5 * 60 * 100, 0);
 		do_go();
 	}
 }
@@ -801,6 +802,8 @@ void xboard::test_suite_next(move_t m) {
 		string fen = ts_fen.front();
 		ts_fen.erase(ts_fen.begin());
 		do_setboard(fen);
+		clock_ptr->set_mode(board_ptr->get_whose(), 40, 5 * 60 * 100, 0);
+		//cout << "Clock: " << clock_ptr->to_string(board_ptr->get_whose()) << endl;
 		do_go();
 	} else {
 		// Test suite finished
