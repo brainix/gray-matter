@@ -133,8 +133,12 @@ static value_t value_knight_outpost_position[8][8] =
 };
 
 //
-static value_t value_bishop_over_knight_endgame = 36;
-static value_t value_bishop_trapped = -174;
+static const value_t value_bishop_over_knight_endgame = 36;
+static const value_t value_bishop_trapped = -174;
+
+//
+static const value_t value_rook_on_7th = 24;
+static const value_t value_rooks_on_7th = 10;
 
 // The penalty for giving up castling:
 static const value_t value_king_cant_castle = -20;
@@ -422,6 +426,28 @@ value_t board_heuristic::evaluate_rooks() const
 
 			// Penalize bad position or reward good position.
 			sum += sign * value_position[ROOK][x][y];
+
+			//
+			int seventh = color == WHITE ? 6 : 1;
+			bool rook_on_7th = y == seventh;
+			if (rook_on_7th)
+			{
+				bool enemy_pawns_on_7th = state.piece[!color][PAWN] & ROW_MSK(seventh);
+				if (enemy_pawns_on_7th)
+				{
+					int enemy_king_n = FST(state.piece[!color][KING]);
+					int enemy_king_y = enemy_king_n >> 3;
+					int eighth = color == WHITE ? 7 : 0;
+					bool enemy_king_on_7th_or_8th = enemy_king_y == seventh || enemy_king_y == eighth;
+					if (enemy_king_on_7th_or_8th)
+					{
+						sum += value_rook_on_7th;
+						bool rooks_on_7th = count_64(state.piece[color][ROOK] & ROW_MSK(seventh)) >= 2;
+						if (rooks_on_7th)
+							sum += value_rooks_on_7th;
+					}
+				}
+			}
 		}
 	}
 	return sum;
