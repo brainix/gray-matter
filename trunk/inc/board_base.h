@@ -300,13 +300,6 @@ protected:
 	mutex_t mutex;				        // Lock.
 	bool generated_king_capture;
 
-	static int seen_stalemate;
-	static int seen_insufficient;
-	static int seen_three;
-	static int seen_fifty;
-	static int seen_checkmate;
-	static int seen_illegal;
-
 	// These methods start up games.
 	virtual void init_state();
 	virtual void init_rotation();

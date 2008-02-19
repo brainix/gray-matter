@@ -154,13 +154,6 @@ bitboard_t key_no_en_passant;
 bitboard_t key_en_passant[8];
 bitboard_t key_whose;
 
-int board_base::seen_stalemate = 0;
-int board_base::seen_insufficient = 0;
-int board_base::seen_three = 0;
-int board_base::seen_fifty = 0;
-int board_base::seen_checkmate = 0;
-int board_base::seen_illegal = 0;
-
 /*----------------------------------------------------------------------------*\
  |				  board_base()				      |
 \*----------------------------------------------------------------------------*/
@@ -254,12 +247,12 @@ bool board_base::set_board_fen(string& fen)
 	int x = 0, y = 7;
 	bool no_move_counts = false;
 
-	// Remove newlines and whitespace at the end
+	// Prepare the FEN string - remove newlines and whitespace at the end.
 	string::size_type pos = fen.find_last_not_of("\n \t");
 	if (pos != string::npos)
 		fen = fen.substr(0, pos+1);
 
-	// Clear the board and history
+	// Clear the board and history.
 	states.clear();
 	for (int color = WHITE; color <= BLACK; color++)
 		for (int shape = PAWN; shape <= KING; shape++)
@@ -283,22 +276,22 @@ bool board_base::set_board_fen(string& fen)
 				default  : return set_board_fen_error(fen, "Invalid piece.", x, y); break;
 			}
 			if (x > 7)
-				return set_board_fen_error(fen, "Too many columns specified (1).", x, y);
+				return set_board_fen_error(fen, "Too many columns (1).", x, y);
 			BIT_SET(state.piece[color][shape], x++, y);
 		}
 		else if (isdigit(fen[index]))
 		{
 			if ((x += fen[index] - '0') > 8)
-				return set_board_fen_error(fen, "Too many columns specified (2).", x, y);
+				return set_board_fen_error(fen, "Too many columns (2).", x, y);
 		}
 		else if (fen[index] == '/')
 		{
 			x = 0;
 			if (--y < 0)
-				return set_board_fen_error(fen, "Too many rows specified.", x, y);
+				return set_board_fen_error(fen, "Too many rows.", x, y);
 		}
 		else
-			return set_board_fen_error(fen, "Illegal character found.", x, y);
+			return set_board_fen_error(fen, "Illegal character.", x, y);
 		if (++index >= fen.length())
 			return set_board_fen_error(fen, "FEN string too short (1).", x, y);
 	}
@@ -310,12 +303,12 @@ bool board_base::set_board_fen(string& fen)
 	{
 		case 'w' : state.whose = WHITE; break;
 		case 'b' : state.whose = BLACK; break;
-		default  : return set_board_fen_error(fen, "Invalid side to move.", x, y); break;
+		default  : return set_board_fen_error(fen, "Invalid active color.", x, y); break;
 	}
 	if (++index >= fen.length())
 		return set_board_fen_error(fen, "FEN string too short (3).", x, y);
 	if (fen[index] != ' ')
-		return set_board_fen_error(fen, "No space after side to move.", x, y);
+		return set_board_fen_error(fen, "No space after active color.", x, y);
 	if (++index >= fen.length())
 		return set_board_fen_error(fen, "FEN string too short (4).", x, y);
 
@@ -327,7 +320,7 @@ bool board_base::set_board_fen(string& fen)
 		while (fen[index] != ' ')
 		{
 			if (toupper(fen[index]) != 'K' && toupper(fen[index]) != 'Q')
-				return set_board_fen_error(fen, "Error in castling data.", x, y);
+				return set_board_fen_error(fen, "Invalid castling side.", x, y);
 			int color = isupper(fen[index]) ? WHITE : BLACK;
 			int side = toupper(fen[index]) == 'K' ? KING_SIDE : QUEEN_SIDE;
 			state.castle[color][side] = CAN_CASTLE;
@@ -337,7 +330,7 @@ bool board_base::set_board_fen(string& fen)
 	else if (++index >= fen.length())
 		return set_board_fen_error(fen, "FEN string too short (6).", x, y);
 	if (fen[index] != ' ')
-		return set_board_fen_error(fen, "No space after castling data.", x, y);
+		return set_board_fen_error(fen, "No space after castling availability.", x, y);
 	if (++index >= fen.length())
 		return set_board_fen_error(fen, "FEN string too short (7).", x, y);
 
@@ -347,26 +340,27 @@ bool board_base::set_board_fen(string& fen)
 	else
 	{
 		if (fen[index] < 'a' || fen[index] > 'h')
-			return set_board_fen_error(fen, "Invalid en passant file.", x, y);
+			return set_board_fen_error(fen, "Invalid en passant target file.", x, y);
 		state.en_passant = fen[index] - 'a';
 		if (++index >= fen.length())
 			return set_board_fen_error(fen, "FEN string too short (8).", x, y);
 		if (state.whose == WHITE && fen[index] != '5' ||
 		    state.whose == WHITE && fen[index] != '4')
-			return set_board_fen_error(fen, "Invalid en passant rank.", x, y);
+			return set_board_fen_error(fen, "Invalid en passant target rank.", x, y);
 	}
 	if (++index >= fen.length())
-		// It often happens there is no halfmove clock and move number,
-		// so the FEN string is actually too short. Let's just allow this.
+		// Often, there is no halfmove clock or move number, so the FEN
+		// string is actually too short.  Don't be too pedantic; just
+		// allow this.
 		no_move_counts = true;
 	else if (fen[index] != ' ')
-		return set_board_fen_error(fen, "No space after en passant data.", x, y);
+		return set_board_fen_error(fen, "No space after en passant target square.", x, y);
 	else if (++index >= fen.length())
 		return set_board_fen_error(fen, "FEN string too short (10).", x, y);
 
 	// Parse the halfmove clock.
 	if (!no_move_counts && !isdigit(fen[index]))
-		return set_board_fen_error(fen, "Halfmove clock is no digit.", x, y);
+		return set_board_fen_error(fen, "Halfmove clock not digit.", x, y);
 	state.fifty = 0;
 	while (!no_move_counts && isdigit(fen[index]))
 	{
@@ -383,13 +377,13 @@ bool board_base::set_board_fen(string& fen)
 	init_hash();
 
 	// Sanity check the current state of the board resulting from the FEN
-	// string.  For now, just make sure both colors have one king each and
-	// the color off move isn't in check.
+	// string.  For now, just make sure that both colors have one king each
+	// and that the color off move isn't in check.
 	for (int color = WHITE; color <= BLACK; color++)
 		if (count_64(state.piece[color][KING]) != 1)
-			return set_board_fen_error(fen, "At least one side has no king.", x, y);
+			return set_board_fen_error(fen, "One color has no king.", x, y);
 	if (check(state.piece[OFF_MOVE][KING], ON_MOVE))
-		return set_board_fen_error(fen, "The player off move cannot be in check.", x, y);
+		return set_board_fen_error(fen, "Color off move is in check.", x, y);
 
 	return true;
 }
@@ -400,7 +394,8 @@ bool board_base::set_board_fen(string& fen)
 bool board_base::set_board_fen_error(string& fen, string reason, int x, int y)
 {
 
-// This proc is called when there was an error in the specified FEN string
+// There is an error in the specified FEN string.  Clear the board and return
+// false (indicating a broken FEN string).
 
 	//cerr << "# Debug: Faulty FEN: '" << fen << "'" << endl;
 	//cerr << "# Debug: Location: (" << x << ", " << y << ")" << endl;
@@ -483,40 +478,25 @@ int board_base::get_status(bool mate_test)
 
 	// Is a king missing?
 	if (!state.piece[WHITE][KING] || !state.piece[BLACK][KING])
-	{
-		seen_illegal++;
 		return ILLEGAL;
-	}
 
 	// Are the kings attacking one other?
 	int n = FST(state.piece[WHITE][KING]);
 	if (squares_king[n & 0x7][n >> 3] & state.piece[BLACK][KING])
-	{
-		seen_illegal++;
 		return ILLEGAL;
-	}
 
 	if (mate_test)
 		switch (mate())
 		{
-			case STALEMATE: seen_stalemate++; return STALEMATE;
-			case CHECKMATE: seen_checkmate++; return CHECKMATE;
+			case STALEMATE: return STALEMATE;
+			case CHECKMATE: return CHECKMATE;
 		}
 	if (insufficient())
-	{
-		seen_insufficient++;
 		return INSUFFICIENT;
-	}
 	if (three())
-	{
-		seen_three++;
 		return THREE;
-	}
 	if (fifty())
-	{
-		seen_fifty++;
 		return FIFTY;
-	}
 
 	return IN_PROGRESS;
 }
@@ -578,37 +558,45 @@ bool board_base::zugzwang() const
 /*----------------------------------------------------------------------------*\
  |				   to_string()				      |
 \*----------------------------------------------------------------------------*/
-string board_base::to_string() const {
-  ostringstream ostr;
+string board_base::to_string() const
+{
+	ostringstream ostr;
 
-// Convert the board to a string
-//
-	int y, x, shape, color;
+// Convert the board to a string.
+
 	string const prefix = "  ";
+	int x, y, color, shape;
 
 	ostr << prefix << "+---+---+---+---+---+---+---+---+" << endl << prefix;
-	for(y = 7; y >= 0; y--) {
-		for(x = 0; x <= 7; x++) {
-			for(shape = PAWN; shape <= KING; shape++) {
-				if(BIT_GET(state.piece[WHITE][shape], x, y)) {
+	for (y = 7; y >= 0; y--)
+	{
+		for (x = 0; x <= 7; x++)
+		{
+			for (shape = PAWN; shape <= KING; shape++)
+			{
+				if (BIT_GET(state.piece[WHITE][shape], x, y))
+				{
 					color = WHITE;
 					break;
-				} else if(BIT_GET(state.piece[BLACK][shape], x, y)) {
+				}
+				if (BIT_GET(state.piece[BLACK][shape], x, y))
+				{
 					color = BLACK;
 					break;
 				}
 			}
-			switch(shape) {
-				case KING:		ostr << (color == WHITE ? "| K " : "| k "); break;
-				case QUEEN:		ostr << (color == WHITE ? "| Q " : "| q "); break;
-				case ROOK:		ostr << (color == WHITE ? "| R " : "| r "); break;
-				case BISHOP:	ostr << (color == WHITE ? "| B " : "| b "); break;
-				case KNIGHT:	ostr << (color == WHITE ? "| N " : "| n "); break;
-				case PAWN:		ostr << (color == WHITE ? "| P " : "| p "); break;
-				default:		ostr << "|   "; break;
+			switch (shape)
+			{
+				case PAWN   : ostr << (color == WHITE ? "| P " : "| p "); break;
+				case KNIGHT : ostr << (color == WHITE ? "| N " : "| n "); break;
+				case BISHOP : ostr << (color == WHITE ? "| B " : "| b "); break;
+				case ROOK   : ostr << (color == WHITE ? "| R " : "| r "); break;
+				case QUEEN  : ostr << (color == WHITE ? "| Q " : "| q "); break;
+				case KING   : ostr << (color == WHITE ? "| K " : "| k "); break;
+				default     : ostr << "|   "; break;
 			}
 		} // x
-		ostr << "| " << (y+1) << endl;
+		ostr << "| " << y + 1 << endl;
 		ostr << prefix << "+---+---+---+---+---+---+---+---+" << endl << prefix;
 	} // y
 	ostr << "  a   b   c   d   e   f   g   h" << endl;
@@ -621,7 +609,7 @@ string board_base::to_string() const {
 \*----------------------------------------------------------------------------*/
 bool board_base::generate(list<move_t> &l, bool only_legal_moves, bool only_captures)
 {
-	// Reset whether opponent's king can be captured
+	// Reset whether the opponent's king can be captured.
 	generated_king_capture = false;
 
 	generate_king(l, only_captures);
@@ -1039,7 +1027,8 @@ void board_base::coord_to_san(move_t m, string& san)
 	int shape;
 	ostringstream sanstr;
 
-	if (IS_NULL_MOVE(m)) {
+	if (IS_NULL_MOVE(m))
+	{
 		san.replace(0, san.length(), "null");
 		return;
 	}
@@ -1047,32 +1036,35 @@ void board_base::coord_to_san(move_t m, string& san)
 	// What shape is being moved?
 	for (shape = PAWN; shape <= KING; shape++)
 		if (BIT_GET(state.piece[ON_MOVE][shape], m.x1, m.y1))
-		  break;
+			break;
 
-	if (shape == KING && ABS(m.x2 - m.x1) == 2) {
+	if (shape == KING && ABS(m.x2 - m.x1) == 2)
+	{
 		// Must be a castling move
 		int side = m.x2 > m.x1 ? KING_SIDE : QUEEN_SIDE;
 		if (state.castle[ON_MOVE][side] == CAN_CASTLE &&
-			!(squares_castle[ON_MOVE][side][UNOCCUPIED] & rotation[ZERO][COLORS]) &&
-			!check(squares_castle[ON_MOVE][side][UNATTACKED], OFF_MOVE))
+		    !(squares_castle[ON_MOVE][side][UNOCCUPIED] & rotation[ZERO][COLORS]) &&
+		    !check(squares_castle[ON_MOVE][side][UNATTACKED], OFF_MOVE))
 			sanstr << (side == QUEEN_SIDE ? "O-O-O" : "O-O");
-
-	} else if (shape <= KING) {
+	}
+	else if (shape <= KING)
+	{
 		// If shape > KING, the move was illegal.
 		// We're not castling, so start with the piece name.
-		switch(shape) {
-			case KING:		sanstr << "K"; break;
-			case QUEEN:		sanstr << "Q"; break;
-			case ROOK:		sanstr << "R"; break;
-			case BISHOP:	sanstr << "B"; break;
-			case KNIGHT:	sanstr << "N"; break;
-			case PAWN:		break; // piece name omitted
-			default:		break;
+		switch (shape)
+		{
+			case KING   : sanstr << "K"; break;
+			case QUEEN  : sanstr << "Q"; break;
+			case ROOK   : sanstr << "R"; break;
+			case BISHOP : sanstr << "B"; break;
+			case KNIGHT : sanstr << "N"; break;
+			case PAWN   :                break; // piece name omitted
+			default     :                break;
 		}
 
 		// In case of a pawn capture, insert from rank
 		if (shape == PAWN && m.x1 != m.x2)
-		  sanstr << static_cast<char>(m.x1 + 'a');
+			sanstr << static_cast<char> (m.x1 + 'a');
 
 		// Check whether another piece of the same shape can reach the to square
 		// If possible first try to distinguish the two by adding from file
@@ -1087,56 +1079,52 @@ void board_base::coord_to_san(move_t m, string& san)
 			case KNIGHT : generate_knight(l); break;
 			case PAWN   : generate_pawn(l);   break;
 		}
-		for (list<move_t>::iterator it = l.begin(); it != l.end(); it++) {
-			if ((it->x1 != m.x1 || it->y1 != m.y1) &&
-				it->x2 == m.x2 && it->y2 == m.y2) {
-			  // We found another 'shape' that can move to the 'to' square
-			  if(it->x1 != m.x1) {
-				// It suffices to add file of 'from' square
-				add_file = true;
-			  } else {
-				// Ranks must differ, so adding rank of 'from' square
-				add_rank = true;
-			  }
+		for (list<move_t>::iterator it = l.begin(); it != l.end(); it++)
+			if ((it->x1 != m.x1 || it->y1 != m.y1) && it->x2 == m.x2 && it->y2 == m.y2)
+			{
+				// We found another 'shape' that can move to the 'to' square
+				if (it->x1 != m.x1)
+					// It suffices to add file of 'from' square
+					add_file = true;
+				else
+					// Ranks must differ, so adding rank of 'from' square
+					add_rank = true;
 			}
-		}
 		// For capturing pawns the file is already added
-		if(add_file && shape != PAWN)
-		  sanstr << static_cast<char>(m.x1 + 'a');
-		if(add_rank)
-		  sanstr << static_cast<char>(m.y1 + '1');
+		if (add_file && shape != PAWN)
+			sanstr << static_cast<char>(m.x1 + 'a');
+		if (add_rank)
+			sanstr << static_cast<char>(m.y1 + '1');
 
 		// Add 'x' for captures.
 		// Drunk pawns are assumed to be captures (possibly en passant).
-		if (BIT_GET(ALL(state, OFF_MOVE), m.x2, m.y2) ||
-			(shape == PAWN && m.x1 != m.x2))
-		  sanstr << "x";
+		if (BIT_GET(ALL(state, OFF_MOVE), m.x2, m.y2) || (shape == PAWN && m.x1 != m.x2))
+			sanstr << "x";
 
 		// Add target square to notation
-		sanstr << static_cast<char>(m.x2 + 'a') << static_cast<char>(m.y2 + '1');
+		sanstr << static_cast<char> (m.x2 + 'a') << static_cast<char> (m.y2 + '1');
 
 		// Add promotion piece
-		switch(m.promo) {
-			case QUEEN:		sanstr << "=Q"; break;
-			case ROOK:		sanstr << "=R"; break;
-			case BISHOP:	sanstr << "=B"; break;
-			case KNIGHT:	sanstr << "=N"; break;
-			default:		break;
+		switch (m.promo)
+		{
+			case QUEEN  : sanstr << "=Q"; break;
+			case ROOK   : sanstr << "=R"; break;
+			case BISHOP : sanstr << "=B"; break;
+			case KNIGHT : sanstr << "=N"; break;
+			default     :                 break;
 		}
 
 		// If it's a pawn capture and the target square is empty,
 		// indicate the move is en passant
-		if (shape == PAWN && m.x1 != m.x2 &&
-			!BIT_GET(ALL(state, OFF_MOVE), m.x2, m.y2)) {
-		  sanstr << " e.p.";
-		}
+		if (shape == PAWN && m.x1 != m.x2 && !BIT_GET(ALL(state, OFF_MOVE), m.x2, m.y2))
+			sanstr << " e.p.";
 
 		// Check for check '+' or checkmate '#'
 		make(m);
 		if (get_status(true) == CHECKMATE)
-		  sanstr << "#";
-		else if(check())
-		  sanstr << "+";
+			sanstr << "#";
+		else if (check())
+			sanstr << "+";
 		unmake();
 	}
 
