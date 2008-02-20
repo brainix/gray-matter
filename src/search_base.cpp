@@ -250,44 +250,30 @@ void *search_base::_start(void *arg)
 void search_base::start()
 {
 
-// Think of this method as main() for the search thread.  Wait for the status to
-// change, then do the requested work.  Rinse, lather, and repeat, until XBoard
-// commands us to quit.
+// Think of this method as main() for the search thread.  Wait for either the
+// status or the board to change, then do the requested work.  Rinse, lather,
+// and repeat, until XBoard commands us to quit.
 
 	int old_search_status = search_status = IDLING;
-	bitboard_t old_board_hash = 0, new_board_hash = 0;
+	bitboard_t old_board_hash = board_ptr->get_hash(), board_hash = board_ptr->get_hash();
 
-	/* FIXME: Raj, here's why I added the old_board_hash == current_hash (below):
-	 * For the test suite, I call xboard::do_setboard(fen) followed by
-	 * xboard::do_go() in a sequence. The I/O thread quickly changes state from
-	 * THINKING to IDLE to THINKING (cond_signal fires signal). But only after
-	 * going back to THINKING, the search thread finishes the iterate() call and
-	 * the below do-loop continues. The search thread executes the cond_wait(),
-	 * because it thinks the search_state still equals the old_search_state (while
-	 * it actually changed twice).
-	 * So, I thought we should check whether the board is also still the same.
-	 * I'm not sure whether it's required that I lock the board for computing the hash.
-	 * Please check, and remove this comment ;)
-	 */
 	do
 	{
-	  	// Retrieve current board hash
-		board_ptr->lock();
-		new_board_hash = board_ptr->get_hash();
-		board_ptr->unlock();
-
-		// Wait for the status to change.
+		// Wait for either the status or the board to change.
 		mutex_lock(&search_mutex);
 		while (old_search_status == search_status &&
-			   old_board_hash == new_board_hash)
+		       old_board_hash == board_hash)
+		{
 			cond_wait(&search_cond, &search_mutex);
-
+			board_ptr->lock();
+			board_hash = board_ptr->get_hash();
+			board_ptr->unlock();
+		}
 		old_search_status = search_status;
-		mutex_unlock(&search_mutex);
-
 		board_ptr->lock();
 		old_board_hash = board_ptr->get_hash();
 		board_ptr->unlock();
+		mutex_unlock(&search_mutex);
 
 		// Do the requested work - idle, analyze, think, ponder, or
 		// quit.
@@ -316,9 +302,10 @@ void search_base::extract_pv()
 	move_t m;
 	pv.clear();
 
+	board_ptr->lock();
 	for (table_ptr->probe(board_ptr->get_hash(), 0, EXACT, &m); 
-		 !IS_NULL_MOVE(m) && board_ptr->get_status(true) == IN_PROGRESS; 
-		 table_ptr->probe(board_ptr->get_hash(), 0, EXACT, &m))
+	     !IS_NULL_MOVE(m) && board_ptr->get_status(true) == IN_PROGRESS; 
+	     table_ptr->probe(board_ptr->get_hash(), 0, EXACT, &m))
 	{
 		pv.push_back(m);
 		board_ptr->make(m);
@@ -327,6 +314,7 @@ void search_base::extract_pv()
 	}
 	for (size_t j = 0; j < pv.size(); j++)
 		board_ptr->unmake();
+	board_ptr->unlock();
 }
 
 /*----------------------------------------------------------------------------*\
