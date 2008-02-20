@@ -53,6 +53,8 @@ private:
 	void iterate(int s);
 	move_t mtdf(int depth, value_t guess = 0);
 	move_t minimax(int depth, int shallowness = 0, value_t alpha = -INFINITY, value_t beta = +INFINITY, bool try_null_move = true);
+	value_t quiesce(int shallowness, value_t alpha, value_t beta);
+	int find_shape(int x, int y) const;
 };
 
 #endif
