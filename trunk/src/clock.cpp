@@ -53,16 +53,6 @@ void chess_clock::set_mode(int color, int new_moves, int new_csecs, int new_inc)
 	inc[color] = new_inc;
 }
 
-std::string chess_clock::to_string(int color)
-{
-	std::ostringstream ostr;
-  	ostr << remaining_moves[color] << "<"
-	     << total_moves[color] << " "
-		 << remaining_csecs[color] << "+"
-		 << inc[color];
-	return ostr.str();
-}
-
 /*----------------------------------------------------------------------------*\
  |			    update_remaining_csecs()			      |
 \*----------------------------------------------------------------------------*/
@@ -178,4 +168,16 @@ void chess_clock::swap_clocks()
 	inc[BLACK] ^= inc[WHITE];
 	inc[WHITE] ^= inc[BLACK];
 	inc[BLACK] ^= inc[WHITE];
+}
+
+/*----------------------------------------------------------------------------*\
+\*----------------------------------------------------------------------------*/
+std::string chess_clock::to_string(int color)
+{
+	std::ostringstream ostr;
+  	ostr << remaining_moves[color] << "<"
+	     << total_moves[color]     << " "
+	     << remaining_csecs[color] << "+"
+	     << inc[color];
+	return ostr.str();
 }
