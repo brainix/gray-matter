@@ -119,7 +119,7 @@ static const value_t value_pawn_doubled_isolated[9] = {0, -5, -10, -15, -15, -15
 static const value_t value_pawn_duo = 2;
 
 //
-static value_t value_knight_outpost_position[8][8] =
+static value_t value_knight_outpost[8][8] =
 {
 	/* A */ {  0,   0,   0,   0,   0,   0,   0,    0},
 	/* B */ {  0,   0,   0,   5,   5,   0,   0,    0},
@@ -330,9 +330,8 @@ value_t board_heuristic::evaluate_knights() const
 				state.piece[color][PAWN];
 			if (!pawn_defenses)
 				goto end_outpost;
-			int lookup_y = color == WHITE ? y : 7 - y;
-			value_t value_outpost =
-				value_knight_outpost_position[x][lookup_y];
+			int tmp_y = color == WHITE ? y : 7 - y;
+			value_t value_outpost = value_knight_outpost[x][tmp_y];
 			sum += sign * value_outpost;
 end_outpost:
 

@@ -285,8 +285,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 		SET_NULL_MOVE(m);
 		m.value = -board_ptr->evaluate(shallowness);
 		table_ptr->store(hash, 0, EXACT, m);
-		DEBUG_SEARCH_PRINT("evaluate() says %d.",
-			board_ptr->get_whose() ? -m.value : m.value);
+		DEBUG_SEARCH_PRINT("evaluate() says %d.", board_ptr->get_whose() ? -m.value : m.value);
 		return m;
 	}
 
