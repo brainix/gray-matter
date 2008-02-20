@@ -241,14 +241,14 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 		SET_NULL_MOVE(m);
 		switch (status)
 		{
-			case IN_PROGRESS  : m.value = -board_ptr->evaluate(shallowness); break;
-			case STALEMATE    : m.value = +VALUE_CONTEMPT;                   break;
-			case INSUFFICIENT : m.value = +VALUE_CONTEMPT;                   break;
-			case THREE        : m.value = +VALUE_CONTEMPT;                   break;
-			case FIFTY        : m.value = +VALUE_CONTEMPT;                   break;
-			case CHECKMATE    : m.value = -VALUE_KING;                       break;
-			case ILLEGAL      : m.value = -VALUE_ILLEGAL;                    break;
-			default           : m.value = -board_ptr->evaluate(shallowness); break;
+			case IN_PROGRESS  : m.value = -quiesce(shallowness, alpha, beta); break;
+			case STALEMATE    : m.value = +VALUE_CONTEMPT;                    break;
+			case INSUFFICIENT : m.value = +VALUE_CONTEMPT;                    break;
+			case THREE        : m.value = +VALUE_CONTEMPT;                    break;
+			case FIFTY        : m.value = +VALUE_CONTEMPT;                    break;
+			case CHECKMATE    : m.value = -VALUE_KING;                        break;
+			case ILLEGAL      : m.value = -VALUE_ILLEGAL;                     break;
+			default           : m.value = -quiesce(shallowness, alpha, beta); break;
 		}
 		DEBUG_SEARCH_PRINT("terminal state %d.", status);
 		return m;
@@ -283,7 +283,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 	if (depth <= 0)
 	{
 		SET_NULL_MOVE(m);
-		m.value = -board_ptr->evaluate(shallowness);
+		m.value = -quiesce(shallowness, alpha, beta);
 		table_ptr->store(hash, 0, EXACT, m);
 		DEBUG_SEARCH_PRINT("evaluate() says %d.", board_ptr->get_whose() ? -m.value : m.value);
 		return m;
@@ -389,4 +389,79 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 	}
 	DEBUG_SEARCH_PRINTM(m, "max of %d children: %d.", l.size(), m.value);
 	return m;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   quiesce()				      |
+\*----------------------------------------------------------------------------*/
+value_t search_mtdf::quiesce(int shallowness, value_t alpha, value_t beta)
+{
+	value_t stand_pat;             //
+	list<move_t> l;                // The move list.
+	list<move_t>::iterator it;     // The move list's iterator.
+	int capturing_piece;           // The capturing piece.
+	int captured_piece;            // The captured piece.
+	value_t value_capturing_piece; // The value of the capturing piece.
+	value_t value_captured_piece;  // The value of the captured piece.
+
+	static value_t value_material[SHAPES + 1] =
+	{
+		VALUE_PAWN, VALUE_KNIGHT, VALUE_BISHOP,
+		VALUE_ROOK, VALUE_QUEEN,  VALUE_KING,
+		0
+	};
+
+	// Increment the number of positions searched.
+	nodes++;
+
+	if (shallowness >= MAX_DEPTH)
+		return beta;
+
+	stand_pat = board_ptr->evaluate(shallowness);
+	if (stand_pat > alpha)
+		alpha = stand_pat;
+	if (stand_pat >= beta)
+		return stand_pat;
+
+	// Generate and re-order the move list.
+	board_ptr->generate(l, false, true);
+	for (it = l.begin(); it != l.end(); it++)
+	{
+		capturing_piece = find_shape(it->old_x, it->old_y);
+		captured_piece = find_shape(it->new_x, it->new_y);
+		value_capturing_piece = value_material[capturing_piece];
+		value_captured_piece = value_material[captured_piece];
+		it->value = -value_capturing_piece + value_captured_piece;
+	}
+	l.sort(descend);
+
+	// Score each move in the list.
+	for (it = l.begin(); it != l.end(); it++)
+	{
+		board_ptr->make(*it);
+		it->value = -quiesce(shallowness + 1, -beta, -alpha);
+		board_ptr->unmake();
+		if (it->value > alpha)
+			alpha = it->value;
+		if (it->value >= beta || timeout_flag)
+			return it->value;
+	}
+
+	return alpha;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				  find_shape()				      |
+\*----------------------------------------------------------------------------*/
+int search_mtdf::find_shape(int x, int y) const
+{
+	bitboard_t b;
+
+	for (int shape = PAWN; shape <= KING; shape++)
+	{
+		b = state.piece[WHITE][shape] | state.piece[BLACK][shape];
+		if (BIT_GET(b, x, y))
+			break;
+	}
+	return shape;
 }
