@@ -141,7 +141,8 @@ static const value_t value_rook_on_7th = 24;
 static const value_t value_rooks_on_7th = 10;
 
 //
-static const value_t value_queen_rook_on_7th = 0;
+static const value_t value_queen_rook_on_7th = 50;
+static const value_t value_queen_offside = -30;
 
 // The penalty for giving up castling:
 static const value_t value_king_cant_castle = -20;
@@ -514,6 +515,17 @@ value_t board_heuristic::evaluate_queens() const
 				goto end_queen_on_7th;
 			sum += sign * value_queen_rook_on_7th;
 end_queen_on_7th:
+
+			//
+			if (count_64(state.piece[color][PAWN]) <= 4)
+				goto end_queen_offside;
+			int enemy_king_n = FST(state.piece[!color][KING]);
+			int enemy_king_x = enemy_king_n & 0x7;
+			if (!(x <= 1 && enemy_king_x >= 5 ||
+			      x >= 6 && enemy_king_x <= 2))
+				goto end_queen_offside;
+			sum += sign * value_queen_offside;
+end_queen_offside:
 		}
 	}
 	return sum;
@@ -546,12 +558,16 @@ value_t board_heuristic::evaluate_kings(int depth) const
 		                   state.piece[BLACK][PAWN];
 		if (pawns & SQUARES_QUEEN_SIDE && pawns & SQUARES_KING_SIDE)
 		{
+			// There are pawns on both sides of the board.  The king
+			// should be in the middle.
 			int j = x;
 			int k = !color ? y : 7 - y;
 			sum += sign * value_position[KING][j][k];
 		}
 		else if (pawns)
 		{
+			// There are pawns on only one side of the board.  The
+			// king should be on that side.
 			int j = pawns & SQUARES_QUEEN_SIDE ? x : 7 - x;
 			int k = !color ? y : 7 - y;
 			sum += sign * value_king_position[j][k];
