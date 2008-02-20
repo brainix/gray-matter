@@ -133,7 +133,7 @@ static value_t value_knight_outpost_position[8][8] =
 };
 
 //
-static const value_t value_bishop_over_knight_endgame = 36;
+static const value_t value_bishop_over_knight = 36;
 static const value_t value_bishop_trapped = -174;
 
 //
@@ -252,7 +252,7 @@ value_t board_heuristic::evaluate_pawns() const
 			bitboard_t pawns_on_col = pawns & COL_MSK(y);
 			int num_on_col = count_64(pawns_on_col);
 
-			if (!(state.piece[color][PAWN] & squares_adj_cols[x]))
+			if (!(pawns & squares_adj_cols[x]))
 			{
 				// Count isolated pawns and penalize isolated
 				// doubled pawns.
@@ -267,7 +267,7 @@ value_t board_heuristic::evaluate_pawns() const
 				sum += sign * value_pawn_doubled[num_on_col];
 
 				// Reward pawn duos.
-				if (state.piece[color][PAWN] & squares_pawn_duo[x][y])
+				if (pawns & squares_pawn_duo[x][y])
 					sum += sign * value_pawn_duo;
 			}
 
@@ -318,14 +318,18 @@ value_t board_heuristic::evaluate_knights() const
 			bitboard_t pawn_potential_attacks =
 				squares_pawn_potential_attacks[!color][x][y] &
 				state.piece[!color][PAWN];
+			if (pawn_potential_attacks)
+				goto end_outpost;
 			bitboard_t pawn_defenses =
 				squares_pawn_defenses[color][x][y] &
 				state.piece[color][PAWN];
+			if (!pawn_defenses)
+				goto end_outpost;
 			int lookup_y = color == WHITE ? y : 7 - y;
 			value_t value_outpost =
 				value_knight_outpost_position[x][lookup_y];
-			if (!pawn_potential_attacks && pawn_defenses)
-				sum += sign * value_outpost;
+			sum += sign * value_outpost;
+end_outpost:
 
 			// TODO: Reward blocking center pawns.
 		}
@@ -365,15 +369,21 @@ value_t board_heuristic::evaluate_bishops() const
 			// pawns on both sides of the board.
 			int friendly_piece_count = count_64(ALL(state, color));
 			bool endgame = friendly_piece_count < 7;
+			if (!endgame)
+				goto end_bishop_over_knight;
 			bool enemy_bishop_present = state.piece[!color][BISHOP];
+			if (enemy_bishop_present)
+				goto end_bishop_over_knight;
 			bitboard_t all_pawns = state.piece[WHITE][PAWN] |
 			                       state.piece[BLACK][PAWN];
 			bitboard_t squares_both_sides =
 				COL_MSK(0) | COL_MSK(1) | COL_MSK(2) |
 				COL_MSK(5) | COL_MSK(6) | COL_MSK(7);
 			bool pawns_both_sides = all_pawns & squares_both_sides;
-			if (endgame && !enemy_bishop_present && pawns_both_sides)
-				sum += sign * value_bishop_over_knight_endgame;
+			if (!pawns_both_sides)
+				goto end_bishop_over_knight;
+			sum += sign * value_bishop_over_knight;
+end_bishop_over_knight:
 
 			// Penalize trapped or potentially trapped bishops.
 			if (color == WHITE)
@@ -429,25 +439,29 @@ value_t board_heuristic::evaluate_rooks() const
 
 			//
 			int seventh = color == WHITE ? 6 : 1;
-			bool rook_on_7th = y == seventh;
-			if (rook_on_7th)
-			{
-				bool enemy_pawns_on_7th = state.piece[!color][PAWN] & ROW_MSK(seventh);
-				if (enemy_pawns_on_7th)
-				{
-					int enemy_king_n = FST(state.piece[!color][KING]);
-					int enemy_king_y = enemy_king_n >> 3;
-					int eighth = color == WHITE ? 7 : 0;
-					bool enemy_king_on_7th_or_8th = enemy_king_y == seventh || enemy_king_y == eighth;
-					if (enemy_king_on_7th_or_8th)
-					{
-						sum += value_rook_on_7th;
-						bool rooks_on_7th = count_64(state.piece[color][ROOK] & ROW_MSK(seventh)) >= 2;
-						if (rooks_on_7th)
-							sum += value_rooks_on_7th;
-					}
-				}
-			}
+			bool is_rook_on_7th = y == seventh;
+			if (!is_rook_on_7th)
+				goto end_rook_on_7th;
+			bitboard_t enemy_pawns = state.piece[!color][PAWN];
+			bitboard_t seventh_row = ROW_MSK(seventh);
+			bool is_enemy_pawn_on_7th = enemy_pawns & seventh_row;
+			if (!is_enemy_pawn_on_7th)
+				goto end_rook_on_7th;
+			bitboard_t enemy_king = state.piece[!color][KING];
+			int eighth = color == WHITE ? 7 : 0;
+			bitboard_t eighth_row = ROW_MSK(eighth);
+			bool is_enemy_king_on_7th = enemy_king & seventh_row;
+			bool is_enemy_king_on_8th = enemy_king & eighth_row;
+			if (!is_enemy_king_on_7th && !is_enemy_king_on_8th)
+				goto end_rook_on_7th;
+			sum += value_rook_on_7th;
+			bitboard_t rooks = state.piece[color][ROOK];
+			bitboard_t rooks_on_7th = rooks & seventh_row;
+			int num_rooks_on_7th = count_64(rooks_on_7th);
+			if (num_rooks_on_7th < 2)
+				goto end_rook_on_7th;
+			sum += value_rooks_on_7th;
+end_rook_on_7th:
 		}
 	}
 	return sum;
