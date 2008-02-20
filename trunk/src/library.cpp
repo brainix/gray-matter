@@ -439,15 +439,12 @@ int count_64(uint64_t n)
 /*----------------------------------------------------------------------------*\
  |				   find_64()				      |
 \*----------------------------------------------------------------------------*/
-int find_64(int64_t n)
+int find_64(uint64_t n)
 {
 
 // Find the first (least significant) set bit in a 64-bit integer.  The return
 // value ranges from 0 (for no bit set), to 1 (for the least significant bit
 // set), to 64 (for only the most significant bit set).
-//
-// XXX: This may crash under Windows.  If it does, simply change the function
-// definition to: int find_64(uint64_t n)
 
 #if defined(OS_X) || defined(WINDOWS)
 	n &= -n;
@@ -466,15 +463,12 @@ int find_64(int64_t n)
 /*----------------------------------------------------------------------------*\
  |				   find_32()				      |
 \*----------------------------------------------------------------------------*/
-int find_32(int32_t n)
+int find_32(uint32_t n)
 {
 
 // Find the first (least significant) set bit in a 32-bit integer.  The return
 // value ranges from 0 (for no bit set), to 1 (for the least significant bit
 // set), to 32 (for only the most significant bit set).
-//
-// XXX: This may crash under Windows.  If it does, simply change the function
-// definition to: int find_32(uint32_t n)
 
 #if defined(LINUX) || defined(OS_X)
 	return ffs(n);
