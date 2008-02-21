@@ -230,9 +230,6 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 	list<move_t>::iterator it;               // The move list's iterator.
 	move_t m;                                // The best move and score.
 
-	// Increment the number of positions searched.
-	nodes++;
-
 	// If this position is terminal (the end of the game), there's no legal
 	// move - all we have to do is determine if the game is drawn or lost.
 	// (Subtle!  We couldn't have just won because our opponent moved last.)
@@ -288,6 +285,9 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 		DEBUG_SEARCH_PRINT("evaluate() says %d.", board_ptr->get_whose() ? -m.value : m.value);
 		return m;
 	}
+
+	// Increment the number of positions searched.
+	nodes++;
 
 	// Perform null move pruning.
 	if (try_null_move && !board_ptr->zugzwang())
@@ -396,20 +396,10 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 \*----------------------------------------------------------------------------*/
 value_t search_mtdf::quiesce(int shallowness, value_t alpha, value_t beta)
 {
-	value_t stand_pat;             //
+	// Local variables that pertain to the current position:
+	value_t value_stand_pat;       //
 	list<move_t> l;                // The move list.
 	list<move_t>::iterator it;     // The move list's iterator.
-	int capturing_piece;           // The capturing piece.
-	int captured_piece;            // The captured piece.
-	value_t value_capturing_piece; // The value of the capturing piece.
-	value_t value_captured_piece;  // The value of the captured piece.
-
-	static value_t value_material[SHAPES + 1] =
-	{
-		VALUE_PAWN, VALUE_KNIGHT, VALUE_BISHOP,
-		VALUE_ROOK, VALUE_QUEEN,  VALUE_KING,
-		0
-	};
 
 	// Increment the number of positions searched.
 	nodes++;
@@ -417,23 +407,15 @@ value_t search_mtdf::quiesce(int shallowness, value_t alpha, value_t beta)
 	if (shallowness >= MAX_DEPTH)
 		return beta;
 
-	stand_pat = board_ptr->evaluate(shallowness);
-	if (stand_pat > alpha)
-		alpha = stand_pat;
-	if (stand_pat >= beta)
-		return stand_pat;
+	//
+	value_stand_pat = board_ptr->evaluate(shallowness);
+	if (value_stand_pat > alpha)
+		alpha = value_stand_pat;
+	if (value_stand_pat >= beta)
+		return value_stand_pat;
 
-	// Generate and re-order the move list.
+	// Generate the move list.
 	board_ptr->generate(l, false, true);
-	for (it = l.begin(); it != l.end(); it++)
-	{
-		capturing_piece = find_shape(it->old_x, it->old_y);
-		captured_piece = find_shape(it->new_x, it->new_y);
-		value_capturing_piece = value_material[capturing_piece];
-		value_captured_piece = value_material[captured_piece];
-		it->value = -value_capturing_piece + value_captured_piece;
-	}
-	l.sort(descend);
 
 	// Score each move in the list.
 	for (it = l.begin(); it != l.end(); it++)
@@ -443,25 +425,11 @@ value_t search_mtdf::quiesce(int shallowness, value_t alpha, value_t beta)
 		board_ptr->unmake();
 		if (it->value > alpha)
 			alpha = it->value;
-		if (it->value >= beta || timeout_flag)
+		if (it->value >= beta)
 			return it->value;
+		if (timeout_flag)
+			return beta;
 	}
 
 	return alpha;
-}
-
-/*----------------------------------------------------------------------------*\
- |				  find_shape()				      |
-\*----------------------------------------------------------------------------*/
-int search_mtdf::find_shape(int x, int y) const
-{
-	bitboard_t b;
-
-	for (int shape = PAWN; shape <= KING; shape++)
-	{
-		b = state.piece[WHITE][shape] | state.piece[BLACK][shape];
-		if (BIT_GET(b, x, y))
-			break;
-	}
-	return shape;
 }
