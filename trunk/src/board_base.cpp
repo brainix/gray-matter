@@ -1291,7 +1291,7 @@ void board_base::precomp_key() const
 /*----------------------------------------------------------------------------*\
  |				generate_king()				      |
 \*----------------------------------------------------------------------------*/
-void board_base::generate_king(list<move_t> &l, bool only_captures)
+void board_base::generate_king(list<move_t>& l, bool only_captures)
 {
 
 // Generate the king moves.
@@ -1326,7 +1326,7 @@ void board_base::generate_king(list<move_t> &l, bool only_captures)
 /*----------------------------------------------------------------------------*\
  |				generate_queen()			      |
 \*----------------------------------------------------------------------------*/
-void board_base::generate_queen(list<move_t> &l, bool only_captures)
+void board_base::generate_queen(list<move_t>& l, bool only_captures)
 {
 
 // Generate the queen moves.
@@ -1380,7 +1380,7 @@ void board_base::generate_queen(list<move_t> &l, bool only_captures)
 /*----------------------------------------------------------------------------*\
  |				generate_rook()				      |
 \*----------------------------------------------------------------------------*/
-void board_base::generate_rook(list<move_t> &l, bool only_captures)
+void board_base::generate_rook(list<move_t>& l, bool only_captures)
 {
 
 // Generate the rook moves.
@@ -1413,7 +1413,7 @@ void board_base::generate_rook(list<move_t> &l, bool only_captures)
 /*----------------------------------------------------------------------------*\
  |			       generate_bishop()			      |
 \*----------------------------------------------------------------------------*/
-void board_base::generate_bishop(list<move_t> &l, bool only_captures)
+void board_base::generate_bishop(list<move_t>& l, bool only_captures)
 {
 
 // Generate the bishop moves.
@@ -1447,7 +1447,7 @@ void board_base::generate_bishop(list<move_t> &l, bool only_captures)
 /*----------------------------------------------------------------------------*\
  |			       generate_knight()			      |
 \*----------------------------------------------------------------------------*/
-void board_base::generate_knight(list<move_t> &l, bool only_captures)
+void board_base::generate_knight(list<move_t>& l, bool only_captures)
 {
 
 // Generate the knight moves.
@@ -1471,7 +1471,7 @@ void board_base::generate_knight(list<move_t> &l, bool only_captures)
 /*----------------------------------------------------------------------------*\
  |				generate_pawn()				      |
 \*----------------------------------------------------------------------------*/
-void board_base::generate_pawn(list<move_t> &l, bool only_captures)
+void board_base::generate_pawn(list<move_t>& l, bool only_captures)
 {
 
 // Generate the pawn moves.
@@ -1890,7 +1890,7 @@ bitboard_t board_base::rotate(bitboard_t b1, int map, int angle) const
 /*----------------------------------------------------------------------------*\
  |				    insert()				      |
 \*----------------------------------------------------------------------------*/
-void board_base::insert(int x, int y, bitboard_t b, int angle, list<move_t> &l, bool pos)
+void board_base::insert(int x, int y, bitboard_t b, int angle, list<move_t>& l, bool pos)
 {
 
 // Prepend or append a piece's possible moves to a list.

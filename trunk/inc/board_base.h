@@ -307,12 +307,12 @@ protected:
 	virtual void precomp_key() const;
 
 	// These methods generate moves.
-	virtual void generate_king(list<move_t> &l, bool only_captures = false);
-	virtual void generate_queen(list<move_t> &l, bool only_captures = false);
-	virtual void generate_rook(list<move_t> &l, bool only_captures = false);
-	virtual void generate_bishop(list<move_t> &l, bool only_captures = false);
-	virtual void generate_knight(list<move_t> &l, bool only_captures = false);
-	virtual void generate_pawn(list<move_t> &l, bool only_captures = false);
+	virtual void generate_king(list<move_t>& l, bool only_captures = false);
+	virtual void generate_queen(list<move_t>& l, bool only_captures = false);
+	virtual void generate_rook(list<move_t>& l, bool only_captures = false);
+	virtual void generate_bishop(list<move_t>& l, bool only_captures = false);
+	virtual void generate_knight(list<move_t>& l, bool only_captures = false);
+	virtual void generate_pawn(list<move_t>& l, bool only_captures = false);
 	virtual void precomp_king() const;
 	virtual void precomp_row() const;
 	virtual void precomp_knight() const;
@@ -327,7 +327,7 @@ protected:
 
 	// These methods manipulate BitBoards.
 	virtual bitboard_t rotate(bitboard_t b1, int map, int angle) const;
-	virtual void insert(int x, int y, bitboard_t b, int angle, list<move_t> &l, bool pos);
+	virtual void insert(int x, int y, bitboard_t b, int angle, list<move_t>& l, bool pos);
 };
 
 

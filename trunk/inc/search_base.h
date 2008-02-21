@@ -21,6 +21,7 @@
 
 #ifndef SEARCH_BASE_H
 #define SEARCH_BASE_H
+
 //#define DEBUG_SEARCH
 
 // C++ stuff:
