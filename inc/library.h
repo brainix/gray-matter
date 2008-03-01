@@ -114,7 +114,7 @@ int timer_cancel();
 // bitwise operations:
 uint64_t rand_64();
 int count_64(uint64_t n);
-int find_64(int64_t n);
-int find_32(int32_t n);
+int find_64(uint64_t n);
+int find_32(uint32_t n);
 
 #endif
