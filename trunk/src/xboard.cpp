@@ -208,7 +208,7 @@ void xboard::print_result(move_t m)
 
 	// In TestSuite mode, continue processing TestSuite
 	if (ts_mode)
-	  test_suite_next(m);
+		test_suite_next(m);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -221,6 +221,15 @@ void xboard::print_resignation()
 // draw before, accept it now.  Otherwise, resign.
 
 	printf("%s\n", draw ? "offer draw" : "resign");
+	
+	// In TestSuite mode, continue processing TestSuite
+	if (ts_mode)
+	{
+		// This code should not be reached ??!!
+		move_t m;
+		SET_NULL_MOVE(m);
+		test_suite_next(m);
+	}
 }
 
 /*----------------------------------------------------------------------------*\
@@ -788,12 +797,15 @@ void xboard::test_suite_next(move_t m) {
 		board_ptr->coord_to_san(m, str);
 
 		// Compare result
-		if (solution == str) {
-		  cerr << desc << " : '" << solution << "' == '" << str << "'" << endl;
-		  ts_success++;
+		if (str == "null") {
+			cerr << desc << " : error!" << endl;
+			ts_erroneous++;
+		} else if (solution == str) {
+			cerr << desc << " : '" << solution << "' == '" << str << "'" << endl;
+			ts_success++;
 		} else {
-		  cerr << desc << " : '" << solution << "' != '" << str << "'" << endl;
-		  ts_failure++;
+			cerr << desc << " : '" << solution << "' != '" << str << "'" << endl;
+			ts_failure++;
 		}
 	}
 
@@ -803,7 +815,7 @@ void xboard::test_suite_next(move_t m) {
 		ts_fen.erase(ts_fen.begin());
 		do_setboard(fen);
 		clock_ptr->set_mode(board_ptr->get_whose(), 40, 5 * 60 * 100, 0);
-		//cout << "Clock: " << clock_ptr->to_string(board_ptr->get_whose()) << endl;
+		// cout << "Clock: " << clock_ptr->to_string(board_ptr->get_whose()) << endl;
 		do_go();
 	} else {
 		// Test suite finished
@@ -812,7 +824,7 @@ void xboard::test_suite_next(move_t m) {
 		cout << "Test Suite statistics" << endl
 			 << "Total successes:          " << ts_success << endl
 			 << "Total failures:           " << ts_failure << endl
-			 << "Total non-parseble lines: " << ts_erroneous << endl;
+			 << "Total errors:             " << ts_erroneous << endl;
 	}
 }
 
