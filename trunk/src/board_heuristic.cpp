@@ -323,17 +323,18 @@ value_t board_heuristic::evaluate_knights() const
 			bitboard_t pawn_potential_attacks =
 				squares_pawn_potential_attacks[!color][x][y] &
 				state.piece[!color][PAWN];
-			if (pawn_potential_attacks)
-				goto end_outpost;
-			bitboard_t pawn_defenses =
-				squares_pawn_defenses[color][x][y] &
-				state.piece[color][PAWN];
-			if (!pawn_defenses)
-				goto end_outpost;
-			int tmp_y = color == WHITE ? y : 7 - y;
-			value_t value_outpost = value_knight_outpost[x][tmp_y];
-			sum += sign * value_outpost;
-end_outpost:
+			if (!pawn_potential_attacks)
+			{
+				bitboard_t pawn_defenses =
+					squares_pawn_defenses[color][x][y] &
+					state.piece[color][PAWN];
+				if (pawn_defenses)
+				{
+					int tmp_y = color == WHITE ? y : 7 - y;
+					value_t value_outpost = value_knight_outpost[x][tmp_y];
+					sum += sign * value_outpost;
+				}
+			}
 
 			// TODO: Reward blocking center pawns.
 		}
@@ -373,21 +374,21 @@ value_t board_heuristic::evaluate_bishops() const
 			// pawns on both sides of the board.
 			int friendly_piece_count = count_64(ALL(state, color));
 			bool endgame = friendly_piece_count < 7;
-			if (!endgame)
-				goto end_bishop_over_knight;
-			bool enemy_bishop_present = state.piece[!color][BISHOP];
-			if (enemy_bishop_present)
-				goto end_bishop_over_knight;
-			bitboard_t all_pawns = state.piece[WHITE][PAWN] |
-			                       state.piece[BLACK][PAWN];
-			bitboard_t squares_both_sides =
-				COL_MSK(0) | COL_MSK(1) | COL_MSK(2) |
-				COL_MSK(5) | COL_MSK(6) | COL_MSK(7);
-			bool pawns_both_sides = all_pawns & squares_both_sides;
-			if (!pawns_both_sides)
-				goto end_bishop_over_knight;
-			sum += sign * value_bishop_over_knight;
-end_bishop_over_knight:
+			if (endgame)
+			{	
+				bool enemy_bishop_present = state.piece[!color][BISHOP];
+				if (!enemy_bishop_present)
+				{
+					bitboard_t all_pawns = state.piece[WHITE][PAWN] |
+					                       state.piece[BLACK][PAWN];
+					bitboard_t squares_both_sides =
+						COL_MSK(0) | COL_MSK(1) | COL_MSK(2) |
+						COL_MSK(5) | COL_MSK(6) | COL_MSK(7);
+					bool pawns_both_sides = all_pawns & squares_both_sides;
+					if (pawns_both_sides)
+						sum += sign * value_bishop_over_knight;
+				}
+			}
 
 			// Penalize trapped or potentially trapped bishops.
 			if (color == WHITE)
@@ -444,25 +445,25 @@ value_t board_heuristic::evaluate_rooks() const
 			//
 			int seventh = color == WHITE ? 6 : 1;
 			bool is_rook_on_7th = y == seventh;
-			if (!is_rook_on_7th)
-				goto end_rook_on_7th;
-			bitboard_t enemy_pawns = state.piece[!color][PAWN];
-			bitboard_t seventh_row = ROW_MSK(seventh);
-			bool is_enemy_pawn_on_7th = enemy_pawns & seventh_row;
-			bitboard_t enemy_king = state.piece[!color][KING];
-			int eighth = color == WHITE ? 7 : 0;
-			bitboard_t eighth_row = ROW_MSK(eighth);
-			bool is_enemy_king_on_8th = enemy_king & eighth_row;
-			if (!is_enemy_pawn_on_7th && !is_enemy_king_on_8th)
-				goto end_rook_on_7th;
-			sum += sign * value_rook_on_7th;
-			bitboard_t rooks = state.piece[color][ROOK];
-			bitboard_t rooks_on_7th = rooks & seventh_row;
-			int num_rooks_on_7th = count_64(rooks_on_7th);
-			if (num_rooks_on_7th < 2)
-				goto end_rook_on_7th;
-			sum += sign * value_rooks_on_7th;
-end_rook_on_7th:
+			if (is_rook_on_7th)
+			{
+				bitboard_t enemy_pawns = state.piece[!color][PAWN];
+				bitboard_t seventh_row = ROW_MSK(seventh);
+				bool is_enemy_pawn_on_7th = enemy_pawns & seventh_row;
+				bitboard_t enemy_king = state.piece[!color][KING];
+				int eighth = color == WHITE ? 7 : 0;
+				bitboard_t eighth_row = ROW_MSK(eighth);
+				bool is_enemy_king_on_8th = enemy_king & eighth_row;
+				if (is_enemy_pawn_on_7th || is_enemy_king_on_8th)
+				{
+					sum += sign * value_rook_on_7th;
+					bitboard_t rooks = state.piece[color][ROOK];
+					bitboard_t rooks_on_7th = rooks & seventh_row;
+					int num_rooks_on_7th = count_64(rooks_on_7th);
+					if (num_rooks_on_7th >= 2)
+						sum += sign * value_rooks_on_7th;
+				}
+			}
 		}
 	}
 	return sum;
@@ -497,34 +498,33 @@ value_t board_heuristic::evaluate_queens() const
 			//
 			int seventh = color == WHITE ? 6 : 1;
 			bool is_queen_on_7th = y == seventh;
-			if (!is_queen_on_7th)
-				goto end_queen_on_7th;
-			bitboard_t enemy_pawns = state.piece[!color][PAWN];
-			bitboard_t seventh_row = ROW_MSK(seventh);
-			bool is_enemy_pawn_on_7th = enemy_pawns & seventh_row;
-			bitboard_t enemy_king = state.piece[!color][KING];
-			int eighth = color == WHITE ? 7 : 0;
-			bitboard_t eighth_row = ROW_MSK(eighth);
-			bool is_enemy_king_on_8th = enemy_king & eighth_row;
-			if (!is_enemy_pawn_on_7th && !is_enemy_king_on_8th)
-				goto end_queen_on_7th;
-			bitboard_t rooks = state.piece[color][ROOK];
-			bool is_rook_on_7th = rooks & seventh_row;
-			if (!is_rook_on_7th)
-				goto end_queen_on_7th;
-			sum += sign * value_queen_rook_on_7th;
-end_queen_on_7th:
+			if (is_queen_on_7th)
+			{
+				bitboard_t enemy_pawns = state.piece[!color][PAWN];
+				bitboard_t seventh_row = ROW_MSK(seventh);
+				bool is_enemy_pawn_on_7th = enemy_pawns & seventh_row;
+				bitboard_t enemy_king = state.piece[!color][KING];
+				int eighth = color == WHITE ? 7 : 0;
+				bitboard_t eighth_row = ROW_MSK(eighth);
+				bool is_enemy_king_on_8th = enemy_king & eighth_row;
+				if (is_enemy_pawn_on_7th || is_enemy_king_on_8th)
+				{
+					bitboard_t rooks = state.piece[color][ROOK];
+					bool is_rook_on_7th = rooks & seventh_row;
+					if (is_rook_on_7th)
+						sum += sign * value_queen_rook_on_7th;
+				}
+			}
 
 			//
-			if (count_64(state.piece[color][PAWN]) <= 4)
-				goto end_queen_offside;
-			int enemy_king_n = FST(state.piece[!color][KING]);
-			int enemy_king_x = enemy_king_n & 0x7;
-			if (!(x <= 1 && enemy_king_x >= 5 ||
-			      x >= 6 && enemy_king_x <= 2))
-				goto end_queen_offside;
-			sum += sign * value_queen_offside;
-end_queen_offside:
+			if (count_64(state.piece[color][PAWN]) > 4)
+			{
+				int enemy_king_n = FST(state.piece[!color][KING]);
+				int enemy_king_x = enemy_king_n & 0x7;
+				if (x <= 1 && enemy_king_x >= 5 ||
+				      x >= 6 && enemy_king_x <= 2)
+					sum += sign * value_queen_offside;
+			}
 		}
 	}
 	return sum;
