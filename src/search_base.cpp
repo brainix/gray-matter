@@ -209,6 +209,8 @@ void search_base::change(int s, const board_base& now)
 
 	// Send the command to think.
 	mutex_lock(&search_mutex);
+	DEBUG_SEARCH_PRINTA("search_base::change changes state from %s to %s.",
+		status_to_string(search_status).c_str(), status_to_string(s).c_str());
 	search_status = s;
 	cond_signal(&search_cond);
 	mutex_unlock(&search_mutex);
@@ -271,12 +273,14 @@ void search_base::start()
 		}
 		old_search_status = search_status;
 		board_ptr->lock();
-		old_board_hash = board_ptr->get_hash();
+		old_board_hash = board_hash;
 		board_ptr->unlock();
 		mutex_unlock(&search_mutex);
 
 		// Do the requested work - idle, analyze, think, ponder, or
 		// quit.
+		DEBUG_SEARCH_PRINTA("search_base::start doing requested work %s.",
+			status_to_string(search_status).c_str());
 		if (search_status == ANALYZING ||
 		    search_status == THINKING  ||
 		    search_status == PONDERING)
@@ -373,4 +377,25 @@ bool search_base::descend(move_t m1, move_t m2)
 // from highest to lowest by score.
 
 	return m1.value > m2.value;
+}
+
+/*----------------------------------------------------------------------------*\
+ |				   status_to_string()				      |
+\*----------------------------------------------------------------------------*/
+string search_base::status_to_string(int status)
+{
+
+// Convert status to a string
+
+	string str;
+	switch(status) 
+	{
+		case IDLING:	str = "IDLING";			break;
+		case ANALYZING:	str = "ANALYZING";		break;
+		case THINKING:	str = "THINKING";		break;
+		case PONDERING:	str = "PONDERING";		break;
+		case QUITTING:	str = "QUITTING";		break;
+		default:		str = "ILLEGAL_STATUS";	break;
+	}
+	return str;
 }
