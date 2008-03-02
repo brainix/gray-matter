@@ -22,8 +22,6 @@
 #ifndef SEARCH_BASE_H
 #define SEARCH_BASE_H
 
-#define DEBUG_SEARCH
-
 // C++ stuff:
 #include <list>
 
@@ -66,6 +64,7 @@ public:
 	virtual void move_now();
 	virtual void verify_prediction(move_t m);
 	virtual void change(int s, const board_base& now);
+	static string status_to_string(int status);
 
 #ifdef DEBUG_SEARCH
 	static string debug_pv, debug_mv, debug_pv_prefix;
