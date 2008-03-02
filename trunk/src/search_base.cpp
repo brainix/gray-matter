@@ -272,9 +272,7 @@ void search_base::start()
 			board_ptr->unlock();
 		}
 		old_search_status = search_status;
-		board_ptr->lock();
 		old_board_hash = board_hash;
-		board_ptr->unlock();
 		mutex_unlock(&search_mutex);
 
 		// Do the requested work - idle, analyze, think, ponder, or
