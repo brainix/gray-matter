@@ -302,7 +302,6 @@ void search_base::extract_pv()
 	move_t m;
 	pv.clear();
 
-	board_ptr->lock();
 	for (table_ptr->probe(board_ptr->get_hash(), 0, EXACT, &m); 
 	     !IS_NULL_MOVE(m) && board_ptr->get_status(true) == IN_PROGRESS; 
 	     table_ptr->probe(board_ptr->get_hash(), 0, EXACT, &m))
@@ -314,7 +313,6 @@ void search_base::extract_pv()
 	}
 	for (size_t j = 0; j < pv.size(); j++)
 		board_ptr->unmake();
-	board_ptr->unlock();
 }
 
 /*----------------------------------------------------------------------------*\

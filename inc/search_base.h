@@ -22,7 +22,7 @@
 #ifndef SEARCH_BASE_H
 #define SEARCH_BASE_H
 
-//#define DEBUG_SEARCH
+#define DEBUG_SEARCH
 
 // C++ stuff:
 #include <list>
@@ -112,6 +112,7 @@ protected:
 };
 
 #ifdef DEBUG_SEARCH
+// Print - conditional
 #define DEBUG_SEARCH_PRINT(format, args...) do { \
 	if (search_base::debug_depth <= search_base::debug_maxdepth) \
 	if (!search_base::debug_pv_prefix.size() || search_base::debug_pv.substr(0, \
@@ -120,6 +121,7 @@ protected:
 		fprintf(stderr, format, ##args); \
 		fprintf(stderr, "\n"); \
 	} } while(0)
+// Print with move - conditional
 #define DEBUG_SEARCH_PRINTM(m, format, args...) do { \
 	if (search_base::debug_depth <= search_base::debug_maxdepth) \
 	if (!search_base::debug_pv_prefix.size() || search_base::debug_pv.substr(0, \
@@ -130,15 +132,23 @@ protected:
 		fprintf(stderr, format, ##args); \
 		fprintf(stderr, "\n"); \
 	} } while(0)
+// Print - always, unconditional
+#define DEBUG_SEARCH_PRINTA(format, args...) do { \
+		fprintf(stderr, format, ##args); \
+		fprintf(stderr, "\n"); \
+	} while(0)
+// Initialize maximum depth and condition prefix
 #define DEBUG_SEARCH_INIT(maxdepth, prefix) do { \
 	search_base::debug_pv = ""; \
 	search_base::debug_depth = 0; \
 	search_base::debug_maxdepth = maxdepth; \
 	search_base::debug_pv_prefix = prefix; } while(0)
+// Add move to debug pv
 #define DEBUG_SEARCH_ADD_MOVE(m) do { \
 	search_base::debug_depth++; \
 	board_ptr->coord_to_san(m, search_base::debug_mv); \
 	search_base::debug_pv += " " + search_base::debug_mv; } while(0)
+// Remove move from debug pv
 #define DEBUG_SEARCH_DEL_MOVE(m) do { \
 	search_base::debug_depth--; \
 	search_base::debug_pv = search_base::debug_pv.substr \
@@ -147,6 +157,7 @@ protected:
 #define DEBUG_SEARCH_INIT(maxdepth, prefix)
 #define DEBUG_SEARCH_PRINT(format, args...)
 #define DEBUG_SEARCH_PRINTM(m, format, args...)
+#define DEBUG_SEARCH_PRINTA(format, args...)
 #define DEBUG_SEARCH_ADD_MOVE(m)
 #define DEBUG_SEARCH_DEL_MOVE(m)
 #endif
