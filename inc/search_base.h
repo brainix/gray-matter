@@ -104,6 +104,7 @@ protected:
 	cond_t search_cond;     // ...the condition that controls...
 	thread_t search_thread; // ...the search thread via...
 	int search_status;      // ...the search status!  :-D
+	int token_update;		// ...are there unprocessed requests?
 
 	// Prevent the class from being instantiated without the proper
 	// construction.
