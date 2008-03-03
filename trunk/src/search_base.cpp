@@ -212,6 +212,7 @@ void search_base::change(int s, const board_base& now)
 	DEBUG_SEARCH_PRINTA("search_base::change changes state from %s to %s.",
 		status_to_string(search_status).c_str(), status_to_string(s).c_str());
 	search_status = s;
+	token_update++;
 	cond_signal(&search_cond);
 	mutex_unlock(&search_mutex);
 }
@@ -257,28 +258,41 @@ void search_base::start()
 // and repeat, until XBoard commands us to quit.
 
 	int old_search_status = search_status = IDLING;
-	bitboard_t old_board_hash = board_ptr->get_hash(), board_hash = board_ptr->get_hash();
+	bitboard_t board_hash = board_ptr->get_hash(), 
+			   old_board_hash = board_hash;
 
 	do
 	{
 		// Wait for either the status or the board to change.
 		mutex_lock(&search_mutex);
-		while (old_search_status == search_status &&
-		       old_board_hash == board_hash)
+
+		while(!token_update)
 		{
 			cond_wait(&search_cond, &search_mutex);
+		}
+
+		/*while (old_search_status == search_status &&
+		       old_board_hash == board_hash)
+		{
+			DEBUG_SEARCH_PRINTA(
+				"search_base::start waiting for signal, hash = %llX, status = %s.", 
+				board_hash, status_to_string(search_status).c_str());
+			cond_wait(&search_cond, &search_mutex);
+
+			old_search_status = search_status;
+			old_board_hash = board_hash;
+
 			board_ptr->lock();
 			board_hash = board_ptr->get_hash();
 			board_ptr->unlock();
-		}
-		old_search_status = search_status;
-		old_board_hash = board_hash;
+		}*/
+		token_update = 0;
 		mutex_unlock(&search_mutex);
 
-		// Do the requested work - idle, analyze, think, ponder, or
-		// quit.
-		DEBUG_SEARCH_PRINTA("search_base::start doing requested work %s.",
-			status_to_string(search_status).c_str());
+		// Do the requested work - idle, analyze, think, ponder, or quit.
+		DEBUG_SEARCH_PRINTA("search_base::start doing requested work (hash = %llx, status = %s).",
+			board_hash, status_to_string(search_status).c_str());
+
 		if (search_status == ANALYZING ||
 		    search_status == THINKING  ||
 		    search_status == PONDERING)
