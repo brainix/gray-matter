@@ -217,7 +217,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 // On the other hand, FailSoft returns either an upper bound (<= alpha) or a
 // lower bound (>= beta) on the exact score.
 //
-// On top of AlphaBeta, this method implements null move pruning.
+// This method also implements null move pruning.
 
 	// Local variables that pertain to the current position:
 	bool whose = board_ptr->get_whose();     // The color on move.
@@ -225,7 +225,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 	int status = board_ptr->get_status(0);   // Whether the game is over.
 	value_t saved_alpha = alpha;             // Saved lower bound on score.
 	value_t saved_beta = beta;               // Saved upper bound on score.
-	move_t null_move;                        // The all-important null move.
+//	move_t null_move;                        // The all-important null move.
 	list<move_t> l;                          // The move list.
 	list<move_t>::iterator it;               // The move list's iterator.
 	move_t m;                                // The best move and score.
@@ -238,14 +238,16 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 		SET_NULL_MOVE(m);
 		switch (status)
 		{
-			case IN_PROGRESS  : m.value = -quiesce(shallowness, alpha, beta); break;
+//			case IN_PROGRESS  : m.value = -quiesce(shallowness, alpha, beta); break;
+			case IN_PROGRESS  : m.value = -board_ptr->evaluate();             break;
 			case STALEMATE    : m.value = +VALUE_CONTEMPT;                    break;
 			case INSUFFICIENT : m.value = +VALUE_CONTEMPT;                    break;
 			case THREE        : m.value = +VALUE_CONTEMPT;                    break;
 			case FIFTY        : m.value = +VALUE_CONTEMPT;                    break;
 			case CHECKMATE    : m.value = -VALUE_KING;                        break;
 			case ILLEGAL      : m.value = -VALUE_ILLEGAL;                     break;
-			default           : m.value = -quiesce(shallowness, alpha, beta); break;
+//			default           : m.value = -quiesce(shallowness, alpha, beta); break;
+			default           : m.value = -board_ptr->evaluate();             break;
 		}
 		DEBUG_SEARCH_PRINT("terminal state %d.", status);
 		return m;
@@ -256,31 +258,32 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 	// of our AlphaBeta window.
 	if (table_ptr->probe(hash, depth, EXACT, &m))
 		return m;
-	if (table_ptr->probe(hash, depth, UPPER, &m))
-	{
-		if (m.value <= alpha)
-			return m;
-		// When doing MTD(f) zero-window searches, our window should
-		// never be resized here.  I've only accounted for this in the
-		// interest of robustness.
-		beta = LESSER(beta, m.value);
-	}
-	if (table_ptr->probe(hash, depth, LOWER, &m))
-	{
-		if (m.value >= beta)
-			return m;
-		// When doing MTD(f) zero-window searches, our window should
-		// never be resized here.  I've only accounted for this in the
-		// interest of robustness.
-		alpha = GREATER(alpha, m.value);
-	}
+//	if (table_ptr->probe(hash, depth, UPPER, &m))
+//	{
+//		if (m.value <= alpha)
+//			return m;
+//		// When doing MTD(f) zero-window searches, our window should
+//		// never be resized here.  I've only accounted for this in the
+//		// interest of robustness.
+//		beta = LESSER(beta, m.value);
+//	}
+//	if (table_ptr->probe(hash, depth, LOWER, &m))
+//	{
+//		if (m.value >= beta)
+//			return m;
+//		// When doing MTD(f) zero-window searches, our window should
+//		// never be resized here.  I've only accounted for this in the
+//		// interest of robustness.
+//		alpha = GREATER(alpha, m.value);
+//	}
 
 	// If we've reached the maximum search depth, this node is a leaf - all
 	// we have to do is apply the static evaluator.
 	if (depth <= 0)
 	{
 		SET_NULL_MOVE(m);
-		m.value = -quiesce(shallowness, alpha, beta);
+//		m.value = -quiesce(shallowness, alpha, beta);
+		m.value = -board_ptr->evaluate();
 		table_ptr->store(hash, 0, EXACT, m);
 		DEBUG_SEARCH_PRINT("evaluate() says %d.", board_ptr->get_whose() ? -m.value : m.value);
 		return m;
@@ -290,20 +293,20 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 	nodes++;
 
 	// Perform null move pruning.
-	if (try_null_move && !board_ptr->zugzwang())
-	{
-		SET_NULL_MOVE(null_move);
-		DEBUG_SEARCH_ADD_MOVE(null_move);
-		board_ptr->make(null_move);
-		null_move = minimax(depth - R - 1, shallowness + R + 1, -beta, -beta + 1, false);
-		DEBUG_SEARCH_DEL_MOVE(null_move);
-		board_ptr->unmake();
-		if (-null_move.value >= beta)
-		{
-			null_move.value = beta;
-			return null_move;
-		}
-	}
+//	if (try_null_move && !board_ptr->zugzwang())
+//	{
+//		SET_NULL_MOVE(null_move);
+//		DEBUG_SEARCH_ADD_MOVE(null_move);
+//		board_ptr->make(null_move);
+//		null_move = minimax(depth - R - 1, shallowness + R + 1, -beta, -beta + 1, false);
+//		DEBUG_SEARCH_DEL_MOVE(null_move);
+//		board_ptr->unmake();
+//		if (-null_move.value >= beta)
+//		{
+//			null_move.value = beta;
+//			return null_move;
+//		}
+//	}
 
 	// Generate the move list.
 	if (!board_ptr->generate(l, !shallowness))
