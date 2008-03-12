@@ -88,27 +88,27 @@ using namespace std;
  |				    BitBoard				      |
 \*----------------------------------------------------------------------------*/
 
-// A BitBoard is a brilliant data structure based on this observation: there
-// are 64 bits in a uint64_t integer and 64 squares on a chess board.  See where
-// I'm going?  A BitBoard is an unsigned 64-bit integer in which every bit
-// corresponds to a square.
-//
-// A single BitBoard can't represent the entire state of the board.  A single
-// bit can only hold a value of 0 or 1 - enough to describe the absence or
-// presence of a piece on a square, but not enough to describe the piece's color
-// or type.  Therefore, we need 12 BitBoards to represent the entire state of
-// the board:
-//
-//		· white pawns		· black pawns
-//		· white knights		· black knights
-//		· white bishops		· black bishops
-//		· white rooks		· black rooks
-//		· white queens		· black queens
-//		· white kings		· black kings
-//
-// Similarly, BitRow is an unsigned 8-bit integer which represents up to 8
-// adjacent squares: a row in a 0° bitboard, a column in a 90° bitboard, or a
-// diagonal in a 45° bitboard.
+/// A BitBoard is a brilliant data structure based on this observation: there
+/// are 64 bits in a uint64_t integer and 64 squares on a chess board.  See where
+/// I'm going?  A BitBoard is an unsigned 64-bit integer in which every bit
+/// corresponds to a square.
+///
+/// A single BitBoard can't represent the entire state of the board.  A single
+/// bit can only hold a value of 0 or 1 - enough to describe the absence or
+/// presence of a piece on a square, but not enough to describe the piece's color
+/// or type.  Therefore, we need 12 BitBoards to represent the entire state of
+/// the board:
+///
+///		· white pawns		· black pawns
+///		· white knights		· black knights
+///		· white bishops		· black bishops
+///		· white rooks		· black rooks
+///		· white queens		· black queens
+///		· white kings		· black kings
+///
+/// Similarly, BitRow is an unsigned 8-bit integer which represents up to 8
+/// adjacent squares: a row in a 0° bitboard, a column in a 90° bitboard, or a
+/// diagonal in a 45° bitboard.
 typedef uint64_t bitboard_t;
 typedef uint8_t bitrow_t;
 
@@ -168,22 +168,22 @@ typedef uint8_t bitrow_t;
  |				     State				      |
 \*----------------------------------------------------------------------------*/
 
-// This structure describes the entire state of the board.  It contains the
-// aforementioned 12 BitBoards along with castling statuses, en passant
-// vulnerability, and the color on move.
-//
-// Subtle!  In the en passant vulnerability field, we need only store the file
-// of the pawn susceptible to en passant.  Its rank is implied by the color on
-// move (which is also kept in the state).  If white is on move, the pawn
-// susceptible to en passant must be black and on rank 5.  If black is on move,
-// the pawn susceptible to en passant must be white and on rank 4.
+/// This structure describes the entire state of the board.  It contains the
+/// aforementioned 12 BitBoards along with castling statuses, en passant
+/// vulnerability, and the color on move.
+///
+/// Subtle!  In the en passant vulnerability field, we need only store the file
+/// of the pawn susceptible to en passant.  Its rank is implied by the color on
+/// move (which is also kept in the state).  If white is on move, the pawn
+/// susceptible to en passant must be black and on rank 5.  If black is on move,
+/// the pawn susceptible to en passant must be white and on rank 4.
 typedef struct state
 {
-	bitboard_t piece[COLORS][SHAPES]; // Aforementioned 12 BitBoards.
-	int castle[COLORS][SIDES];        // Castling statuses.
-	int en_passant;                   // En passant vulnerability.
-	bool whose;                       // Color on move.
-	int fifty;                        // 50 move rule counter.
+	bitboard_t piece[COLORS][SHAPES]; ///< Aforementioned 12 BitBoards.
+	int castle[COLORS][SIDES];        ///< Castling statuses.
+	int en_passant;                   ///< En passant vulnerability.
+	bool whose;                       ///< Color on move.
+	int fifty;                        ///< 50 move rule counter.
 } state_t;
 
 // These macros represent the colors on and off move.
@@ -203,23 +203,23 @@ typedef struct state
 
 typedef int16_t value_t;
 
-// This structure describes a move.  It contains the from and to coordinates,
-// the pawn promotion information, and the MiniMax score.  We use a BitField to
-// tightly pack this information into 32 bits because some of our methods return
-// this structure (rather than a pointer to this structure or other similar
-// ugliness).
+/// This structure describes a move.  It contains the from and to coordinates,
+/// the pawn promotion information, and the MiniMax score.  We use a BitField to
+/// tightly pack this information into 32 bits because some of our methods return
+/// this structure (rather than a pointer to this structure or other similar
+/// ugliness).
 typedef struct move
 {
-	unsigned x1      :  3; // From x coordinate.              3 bits
-	unsigned y1      :  3; // From y coordinate.           +  3 bits
-	unsigned x2      :  3; // To x coordinate.             +  3 bits
-	unsigned y2      :  3; // To y coordinate.             +  3 bits
-	unsigned promo   :  3; // Pawn promotion information.  +  3 bits
-	unsigned padding :  1; // The Evil Bit (TM).           +  1 bit
-	value_t  value;        // MiniMax score.               + 16 bits
-	                       //                              = 32 bits
+	unsigned x1      :  3; ///< From x coordinate.              3 bits
+	unsigned y1      :  3; ///< From y coordinate.           +  3 bits
+	unsigned x2      :  3; ///< To x coordinate.             +  3 bits
+	unsigned y2      :  3; ///< To y coordinate.             +  3 bits
+	unsigned promo   :  3; ///< Pawn promotion information.  +  3 bits
+	unsigned padding :  1; ///< The Evil Bit (TM).           +  1 bit
+	value_t  value;        ///< MiniMax score.               + 16 bits
+	                       ///                              = 32 bits
 
-	// Overloaded equality test operator.
+	/// Overloaded equality test operator.
 	bool operator==(const struct move that) const
 	{
 		return this->x1 == that.x1 && this->y1 == that.y1 &&
@@ -227,7 +227,7 @@ typedef struct move
 		       this->promo == that.promo;
 	};
 
-	// Overloaded inequality test operator.
+	/// Overloaded inequality test operator.
 	bool operator!=(const struct move that) const
 	{
 		return this->x1 != that.x1 || this->y1 != that.y1 ||
@@ -235,7 +235,7 @@ typedef struct move
 		       this->promo != that.promo;
 	};
 
-	// Overloaded assignment operator.
+	/// Overloaded assignment operator.
 	struct move& operator=(const struct move& that)
 	{
 		x1 = that.x1;
@@ -257,6 +257,7 @@ typedef struct move
  |				     Board				      |
 \*----------------------------------------------------------------------------*/
 
+/// board representation interface
 class board_base
 {
 public:
@@ -289,15 +290,15 @@ public:
 	virtual uint64_t perft(int depth);
 
 protected:
-	list<state_t> states;                           // Previous states.
-	state_t state;                                  // Current state.
-	list<bitboard_t> rotations[ANGLES][COLORS + 1]; // Previous rotated BitBoards.
-	bitboard_t rotation[ANGLES][COLORS + 1];        // Current rotated BitBoard.
-	list<bitboard_t> hashes;                        // Previous Zobrist hash keys.
-	bitboard_t hash;                                // Current Zobrist hash key.
-	list<bitboard_t> pawn_hashes;                   // Previous pawn hash keys.
-	bitboard_t pawn_hash;                           // Current pawn hash key.
-	mutex_t mutex;				        // Lock.
+	list<state_t> states;                           ///< Previous states.
+	state_t state;                                  ///< Current state.
+	list<bitboard_t> rotations[ANGLES][COLORS + 1]; ///< Previous rotated BitBoards.
+	bitboard_t rotation[ANGLES][COLORS + 1];        ///< Current rotated BitBoard.
+	list<bitboard_t> hashes;                        ///< Previous Zobrist hash keys.
+	bitboard_t hash;                                ///< Current Zobrist hash key.
+	list<bitboard_t> pawn_hashes;                   ///< Previous pawn hash keys.
+	bitboard_t pawn_hash;                           ///< Current pawn hash key.
+	mutex_t mutex;				        ///< Lock.
 	bool generated_king_capture;
 
 	// These methods start up games.
