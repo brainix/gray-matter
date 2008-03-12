@@ -28,7 +28,7 @@
 chess_clock::chess_clock(int o)
 {
 
-// Constructor.
+/// Constructor.
 
 	for (int color = WHITE; color <= BLACK; color++)
 		set_mode(color, 40, 5 * 60 * 100, 0);
@@ -43,9 +43,9 @@ chess_clock::chess_clock(int o)
 void chess_clock::set_mode(int color, int new_moves, int new_csecs, int new_inc)
 {
 
-// Set the mode.  We allow different modes for white and black.  A mode is
-// specified as a number of moves, which must be made in a period of time, with
-// an increment of time added to the clock after each move.
+/// Set the mode.  We allow different modes for white and black.  A mode is
+/// specified as a number of moves, which must be made in a period of time, with
+/// an increment of time added to the clock after each move.
 
 	total_moves[color] = new_moves;
 	remaining_moves[color] = new_moves;
@@ -94,7 +94,7 @@ void chess_clock::set_callback(clock_callback_t cb, void *data)
 void chess_clock::set_alarm(int color) const
 {
 
-// Set the alarm.
+/// Set the alarm.
 
 	int csecs = remaining_csecs[color];
 	int moves = remaining_moves[color] ? remaining_moves[color] : 40;
@@ -109,7 +109,7 @@ void chess_clock::set_alarm(int color) const
 void chess_clock::sound_alarm(void *data)
 {
 
-// Sound the alarm.
+/// Sound the alarm.
 
 	chess_clock *clock = (chess_clock *) data;
 	clock->clock_callback(clock->clock_callback_data);
@@ -121,7 +121,7 @@ void chess_clock::sound_alarm(void *data)
 void chess_clock::cancel_alarm() const
 {
 
-// Cancel the alarm.
+/// Cancel the alarm.
 
 	timer_cancel();
 }
@@ -132,7 +132,7 @@ void chess_clock::cancel_alarm() const
 void chess_clock::note_time()
 {
 
-// Note the time.
+/// Note the time.
 
 	noted_time = clock();
 }
@@ -143,7 +143,7 @@ void chess_clock::note_time()
 int chess_clock::get_elapsed() const
 {
 
-// Return the number of seconds elapsed since the last noted time.
+/// Return the number of seconds elapsed since the last noted time.
 
 	return (clock() - noted_time) * 100 / CLOCKS_PER_SEC;
 }
