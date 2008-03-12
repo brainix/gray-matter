@@ -54,14 +54,14 @@ public:
 private:
 	static void sound_alarm(void *data);
 
-	int total_moves[COLORS];         ///
-	int remaining_moves[COLORS];     ///
-	int remaining_csecs[COLORS];     ///
-	int inc[COLORS];                 ///
-	int overhead;                    ///
-	clock_t noted_time;              ///
-	clock_callback_t clock_callback; ///
-	void *clock_callback_data;       ///
+	int total_moves[COLORS];         ///<
+	int remaining_moves[COLORS];     ///<
+	int remaining_csecs[COLORS];     ///<
+	int inc[COLORS];                 ///<
+	int overhead;                    ///<
+	clock_t noted_time;              ///<
+	clock_callback_t clock_callback; ///<
+	void *clock_callback_data;       ///<
 };
 
 #endif

@@ -62,17 +62,17 @@ public:
 	void print_result(move_t m);
 	void print_resignation();
 private:
-	char buffer[BUFFER_SIZE]; /// Input buffer.
-	bool analyze;             /// Whether we're analyzing.
-	bool ponder;              /// Whether we're to ponder.
-	bool force;               /// Whether we're in force mode.
-	bool draw;                /// Whether our opponent has offered a draw.
-	bool sync;                /// Whether to sync our clock with XBoard's.
+	char buffer[BUFFER_SIZE]; ///< Input buffer.
+	bool analyze;             ///< Whether we're analyzing.
+	bool ponder;              ///< Whether we're to ponder.
+	bool force;               ///< Whether we're in force mode.
+	bool draw;                ///< Whether our opponent has offered a draw.
+	bool sync;                ///< Whether to sync our clock with XBoard's.
 
-	board_base *board_ptr;    /// Board representation object.
-	search_base *search_ptr;  /// Move search engine object.
-	chess_clock *clock_ptr;   /// Chess clock object.
-	book *book_ptr;           /// Opening book object.
+	board_base *board_ptr;    ///< Board representation object.
+	search_base *search_ptr;  ///< Move search engine object.
+	chess_clock *clock_ptr;   ///< Chess clock object.
+	book *book_ptr;           ///< Opening book object.
 
 	vector <string> ts_fen;	  // Test Suite Data
 	vector <string> ts_sol, ts_desc;

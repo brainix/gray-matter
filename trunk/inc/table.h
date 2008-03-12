@@ -49,11 +49,11 @@
 // This structure describes a transposition table slot.
 typedef struct xpos_slot
 {
-	bitboard_t hash;               /// Zobrist hash key.           64 bits
-	uint16_t depth;                /// Depth of our search.     +  16 bits
-	uint16_t type;                 /// Upper, exact, or lower.  +  16 bits
-	move_t move;                   /// Best move and score.     +  32 bits
-} __attribute__((packed)) xpos_slot_t; ///                          = 128 bits
+	bitboard_t hash;               ///< Zobrist hash key.           64 bits
+	uint16_t depth;                ///< Depth of our search.     +  16 bits
+	uint16_t type;                 ///< Upper, exact, or lower.  +  16 bits
+	move_t move;                   ///< Best move and score.     +  32 bits
+} __attribute__((packed)) xpos_slot_t; ///<                          = 128 bits
 
 class table
 {
@@ -64,12 +64,12 @@ public:
 	bool probe(bitboard_t hash, int depth, int type, move_t *move_ptr);
 	void store(bitboard_t hash, int depth, int type, move_t move);
 private:
-	uint64_t slots;      /// The number of slots.
-	xpos_slot_t **data;  /// The slots themselves.
-	int successful;      /// The number of successful queries.
-	int semi_successful; /// The number of semi-successful queries.
-	int unsuccessful;    /// The number of unsuccessful queries;
-	int total;           /// The total number of queries.
+	uint64_t slots;      ///< The number of slots.
+	xpos_slot_t **data;  ///< The slots themselves.
+	int successful;      ///< The number of successful queries.
+	int semi_successful; ///< The number of semi-successful queries.
+	int unsuccessful;    ///< The number of unsuccessful queries;
+	int total;           ///< The total number of queries.
 };
 
 /*----------------------------------------------------------------------------*\
@@ -95,9 +95,9 @@ private:
 // This structure describes a pawn table slot.
 typedef struct pawn_slot
 {
-	bitboard_t hash;               /// Zobrist hash key.    64 bits
-	value_t value;                 /// Score.             + 16 bits
-} __attribute__((packed)) pawn_slot_t; ///                    = 80 bits
+	bitboard_t hash;               ///< Zobrist hash key.    64 bits
+	value_t value;                 ///< Score.             + 16 bits
+} __attribute__((packed)) pawn_slot_t; ///<                    = 80 bits
 
 class pawn
 {
@@ -108,11 +108,11 @@ public:
 	bool probe(bitboard_t hash, value_t *value_ptr);
 	void store(bitboard_t hash, value_t value);
 private:
-	uint64_t slots;    /// The number of slots.
-	pawn_slot_t *data; /// The slots themselves.
-	int successful;    /// The number of successful queries.
-	int unsuccessful;  /// The number of unsuccessful queries;
-	int total;         /// The total number of queries.
+	uint64_t slots;    ///< The number of slots.
+	pawn_slot_t *data; ///< The slots themselves.
+	int successful;    ///< The number of successful queries.
+	int unsuccessful;  ///< The number of unsuccessful queries;
+	int total;         ///< The total number of queries.
 };
 
 #endif

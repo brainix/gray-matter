@@ -88,27 +88,27 @@ using namespace std;
  |				    BitBoard				      |
 \*----------------------------------------------------------------------------*/
 
-/// A BitBoard is a brilliant data structure based on this observation: there
-/// are 64 bits in a uint64_t integer and 64 squares on a chess board.  See
-/// where I'm going?  A BitBoard is an unsigned 64-bit integer in which every
-/// bit corresponds to a square.
-///
-/// A single BitBoard can't represent the entire state of the board.  A single
-/// bit can only hold a value of 0 or 1 - enough to describe the absence or
-/// presence of a piece on a square, but not enough to describe the piece's
-/// color or type.  Therefore, we need 12 BitBoards to represent the entire
-/// state of the board:
-///
-///		· white pawns		· black pawns
-///		· white knights		· black knights
-///		· white bishops		· black bishops
-///		· white rooks		· black rooks
-///		· white queens		· black queens
-///		· white kings		· black kings
-///
-/// Similarly, BitRow is an unsigned 8-bit integer which represents up to 8
-/// adjacent squares: a row in a 0° bitboard, a column in a 90° bitboard, or a
-/// diagonal in a 45° bitboard.
+// A BitBoard is a brilliant data structure based on this observation: there are
+// 64 bits in a uint64_t integer, and there are 64 squares on a chess board.  Do
+// you see where I'm going with this?  A BitBoard is an unsigned 64-bit integer
+// in which every bit corresponds to a square.
+//
+// A single BitBoard can't represent the entire state of the board.  A single
+// bit can only hold a value of 0 or 1 - enough to describe the absence or
+// presence of a piece on a square, but not enough to describe the piece's
+// color or type.  Therefore, we need 12 BitBoards to represent the entire
+// state of the board:
+//
+//		· white pawns		· black pawns
+//		· white knights		· black knights
+//		· white bishops		· black bishops
+//		· white rooks		· black rooks
+//		· white queens		· black queens
+//		· white kings		· black kings
+//
+// Similarly, BitRow is an unsigned 8-bit integer which represents up to 8
+// adjacent squares: a row in a 0° bitboard, a column in a 90° bitboard, or a
+// diagonal in a 45° bitboard.
 typedef uint64_t bitboard_t;
 typedef uint8_t bitrow_t;
 
