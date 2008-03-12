@@ -166,7 +166,7 @@ pawn pawn_table;
 board_heuristic::board_heuristic() : board_base()
 {
 
-// Constructor.
+/// Constructor.
 
 	if (!precomputed_board_heuristic)
 	{
@@ -181,7 +181,7 @@ board_heuristic::board_heuristic() : board_base()
 board_heuristic::~board_heuristic()
 {
 
-// Destructor.
+/// Destructor.
 
 }
 
@@ -191,7 +191,7 @@ board_heuristic::~board_heuristic()
 board_heuristic& board_heuristic::operator=(const board_heuristic& that)
 {
 
-// Overloaded assignment operator.
+/// Overloaded assignment operator.
 
 	if (this != &that)
 		board_base::operator=(that);
@@ -204,8 +204,8 @@ board_heuristic& board_heuristic::operator=(const board_heuristic& that)
 value_t board_heuristic::evaluate(int depth) const
 {
 
-// Evaluate the current state.  For simplicity's sake, evaluate from the
-// perspective of the player who's just moved (the color that's off move).
+/// Evaluate the current state.  For simplicity's sake, evaluate from the
+/// perspective of the player who's just moved (the color that's off move).
 
 	value_t sum = 0;
 
@@ -227,7 +227,7 @@ value_t board_heuristic::evaluate(int depth) const
 value_t board_heuristic::evaluate_pawns() const
 {
 
-// Evaluate pawn structure.
+/// Evaluate pawn structure.
 
 	value_t sign, sum = 0;
 
@@ -299,7 +299,7 @@ end:
 value_t board_heuristic::evaluate_knights() const
 {
 
-//
+///
 
 	value_t sign, sum = 0;
 	bitboard_t b;
@@ -348,7 +348,7 @@ value_t board_heuristic::evaluate_knights() const
 value_t board_heuristic::evaluate_bishops() const
 {
 
-//
+///
 
 	value_t sign, sum = 0;
 	bitboard_t b;
@@ -422,7 +422,7 @@ value_t board_heuristic::evaluate_bishops() const
 value_t board_heuristic::evaluate_rooks() const
 {
 
-//
+///
 
 	value_t sign, sum = 0;
 	bitboard_t b;
@@ -475,7 +475,7 @@ value_t board_heuristic::evaluate_rooks() const
 value_t board_heuristic::evaluate_queens() const
 {
 
-//
+///
 
 	value_t sign, sum = 0;
 	bitboard_t b;
@@ -536,7 +536,7 @@ value_t board_heuristic::evaluate_queens() const
 value_t board_heuristic::evaluate_kings(int depth) const
 {
 
-// Evaluate king position.
+/// Evaluate king position.
 
 	value_t sign, sum = 0;
 

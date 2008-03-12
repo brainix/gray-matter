@@ -22,7 +22,7 @@
 #include "gray.h"
 #include "board_base.h"
 
-/// This array maps coordinates between rotated BitBoards:
+// This array maps coordinates between rotated BitBoards:
 static int coord[MAPS][ANGLES][8][8][COORDS] =
 {
 	// From 0° to 45° left:
@@ -196,13 +196,13 @@ board_base& board_base::operator=(const board_base& that)
 
 /// Overloaded assignment operator.
 
-	/// It's like this and like that and like this and uh.
-	/// It's like that and like this and like that and uh.
-	/// It's like this.  And who gives a f*ck about those?
-	/// So just chill, 'til the next episode.
-	///
-	///	Snoop Doggy Dogg and Dr. Dre on overloading the assignment
-	///	operator
+	// It's like this and like that and like this and uh.
+	// It's like that and like this and like that and uh.
+	// It's like this.  And who gives a f*ck about those?
+	// So just chill, 'til the next episode.
+	//
+	//	Snoop Doggy Dogg and Dr. Dre on overloading the assignment
+	//	operator
 	if (this == &that)
 		return *this;
 
@@ -240,8 +240,8 @@ void board_base::set_board()
 bool board_base::set_board_fen(string& fen)
 {
 
-/// Set the board according to the Forsyth-Edwards Notation (FEN) string.  Return
-/// whether the FEN string represents a legal position.
+/// Set the board according to the Forsyth-Edwards Notation (FEN) string.
+/// Return whether the FEN string represents a legal position.
 
 	size_t index = 0;
 	int x = 0, y = 7;
@@ -531,11 +531,11 @@ bool board_base::zugzwang() const
 /// In most positions, there's at least one move the color on move could make to
 /// improve her lot.  In these normal positions, null-move pruning works.
 /// However, in certain positions, her best move would be to pass (particularly
-/// in endgame).  These positions are called "zugzwang" (German for "compelled to
-/// move").  In these zugzwang positions, null-move pruning doesn't work.
+/// in endgame).  These positions are called "zugzwang" (German for "compelled
+/// to move").  In these zugzwang positions, null-move pruning doesn't work.
 ///
-/// The search class calls this method on a particular position to decide whether
-/// or not to try null-move pruning.
+/// The search class calls this method on a particular position to decide
+/// whether or not to try null-move pruning.
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
@@ -560,10 +560,10 @@ bool board_base::zugzwang() const
 \*----------------------------------------------------------------------------*/
 string board_base::to_string() const
 {
-	ostringstream ostr;
 
 /// Convert the board to a string.
 
+	ostringstream ostr;
 	string const prefix = "  ";
 	int x, y, color, shape;
 
@@ -829,9 +829,9 @@ bool board_base::unmake()
 move_t board_base::san_to_coord(string& san)
 {
 
-/// Convert a move from Standard Algebraic Notation (SAN) to coordinate notation.
-/// In the current position, if the SAN string doesn't represent a legal move,
-/// return the null move.
+/// Convert a move from Standard Algebraic Notation (SAN) to coordinate
+/// notation.  In the current position, if the SAN string doesn't represent a
+/// legal move, return the null move.
 
 	size_t index = 0;
 	int shape = -1, x1 = -1, y1 = -1, x2 = -1, y2 = -1, promo = -1;
@@ -1020,9 +1020,10 @@ move_t board_base::san_to_coord(string& san)
 void board_base::coord_to_san(move_t m, string& san)
 {
 
-/// Convert a move from coordinate notation to Standard Algebraic Notation (SAN).
-/// In the current position, if the move in coordinate notation doesn't represent
-/// a legal move, san is set to an empty string (but do not rely on this).
+/// Convert a move from coordinate notation to Standard Algebraic Notation
+/// (SAN).  In the current position, if the move in coordinate notation doesn't
+/// represent a legal move, san is set to an empty string (but do not rely on
+/// this).
 
 	int shape;
 	ostringstream sanstr;
@@ -1736,8 +1737,8 @@ int board_base::mate()
 bool board_base::check(bitboard_t b1, bool color) const
 {
 
-/// Is any of the specified squares being attacked by the specified color?  Check
-/// for check.  ;-)
+/// Is any of the specified squares being attacked by the specified color?
+/// Check for check.  ;-)
 
 	for (int n, x, y; (n = FST(b1)) != -1; BIT_CLR(b1, x, y))
 	{
@@ -1900,11 +1901,9 @@ void board_base::insert(int x, int y, bitboard_t b, int angle, list<move_t>& l, 
 	m.y1 = y;
 	m.value = m.promo = 0;
 
-	// Check if among the moves there is one that captures the opponent's king,
-	// if so, we are evaluating an illegal position.
-	// FIXME: we can consider a speed-up here. If generated_king_capture is true, we
-	// are in fact not interested in the rest of the possible moves.
-	if (rotate(state.piece[OFF_MOVE][KING], MAP, angle) & b)
+	// Does one of the possible moves capture the opponent's king?  If so,
+	// we are in an illegal position.
+	if (b & rotate(state.piece[OFF_MOVE][KING], MAP, angle))
 		generated_king_capture = true;
 
 	for (int n; (n = FST(b)) != -1; BIT_CLR(b, x, y))

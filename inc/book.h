@@ -67,11 +67,11 @@ public:
 	book(table *t, string& file_name, int n);
 	void read();
 private:
-	int num_moves;             //
-	list<list<move_t> > games; // Game list.
+	int num_moves;             ///
+	list<list<move_t> > games; /// Game list.
 
-	board_base *board_ptr;     // Board representation object.
-	table *table_ptr;          // Transposition table object.
+	board_base *board_ptr;     /// Board representation object.
+	table *table_ptr;          /// Transposition table object.
 
 	// Based on the PGN file, the following methods populate the token list,
 	// game list, and transposition table.

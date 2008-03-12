@@ -28,7 +28,7 @@
 xboard::xboard()
 {
 
-// Constructor.
+/// Constructor.
 
 	// Turn I/O buffering off.
 	setbuf(stdout, NULL);
@@ -54,7 +54,7 @@ xboard::xboard()
 xboard::~xboard()
 {
 
-// Destructor.
+/// Destructor.
 
 }
 
@@ -64,7 +64,7 @@ xboard::~xboard()
 void xboard::vomit(char *message) const
 {
 
-// Houston, we have a problem...
+/// Houston, we have a problem...
 
 	printf("tellusererror %s\n", message);
 	exit(EXIT_FAILURE);
@@ -76,7 +76,7 @@ void xboard::vomit(char *message) const
 void xboard::loop(search_base *s, chess_clock *c, book *o)
 {
 
-// This is the event loop.
+/// This is the event loop.
 
 	board_ptr = new board_heuristic();
 	search_ptr = s;
@@ -160,7 +160,7 @@ void xboard::loop(search_base *s, chess_clock *c, book *o)
 void xboard::print_output(int ply, int value, int time, int nodes, list<move_t> &pv) const
 {
 
-// Print thinking output.
+/// Print thinking output.
 
 	printf("%d %d %d %d", ply, value, time, nodes);
 	for (list<move_t>::iterator it = pv.begin(); it != pv.end(); it++)
@@ -180,9 +180,9 @@ void xboard::print_output(int ply, int value, int time, int nodes, list<move_t> 
 void xboard::print_result(move_t m)
 {
 
-// We've just finished thinking.  If we came up with a move, update the board
-// and clock, inform XBoard of the move we're making, and change the move search
-// engine's mode.
+/// We've just finished thinking.  If we came up with a move, update the board
+/// and clock, inform XBoard of the move we're making, and change the move
+/// search engine's mode.
 
 	// Did we come up with a move?
 	if (IS_NULL_MOVE(m))
@@ -217,8 +217,8 @@ void xboard::print_result(move_t m)
 void xboard::print_resignation()
 {
 
-// We've determined our situation to be hopeless.  If our opponent had offered a
-// draw before, accept it now.  Otherwise, resign.
+/// We've determined our situation to be hopeless.  If our opponent had offered
+/// a draw before, accept it now.  Otherwise, resign.
 
 	printf("%s\n", draw ? "offer draw" : "resign");
 	
@@ -379,7 +379,7 @@ void xboard::do_level() const
 void xboard::do_st()
 {
 
-// Set the maximum search time.
+/// Set the maximum search time.
 
 	sync = false;
 	clock_ptr->set_mode(WHITE, 1, str_to_num(&buffer[3]) * 100, 0);
@@ -392,7 +392,7 @@ void xboard::do_st()
 void xboard::do_sd() const
 {
 
-// Set the maximum search depth.
+/// Set the maximum search depth.
 
 	search_ptr->set_depth(str_to_num(&buffer[3]));
 }
@@ -423,8 +423,8 @@ void xboard::do_otim() const
 void xboard::do_usermove()
 {
 
-// Our opponent has moved.  If the move was legal, and it didn't just end the
-// game, and we're not in force mode: formulate a response.
+/// Our opponent has moved.  If the move was legal, and it didn't just end the
+/// game, and we're not in force mode: formulate a response.
 
 	move_t m;
 
@@ -470,8 +470,8 @@ void xboard::do_usermove()
 void xboard::do_question() const
 {
 
-// Our opponent has grown impatient.  Move now, even if there's still thinking
-// time left.
+/// Our opponent has grown impatient.  Move now, even if there's still thinking
+/// time left.
 
 	search_ptr->move_now();
 }
@@ -482,8 +482,8 @@ void xboard::do_question() const
 void xboard::do_ping()
 {
 
-// XBoard has sent a ping request (to make sure we're not on drugs).  Send a
-// pong reply.
+/// XBoard has sent a ping request (to make sure we're not on drugs).  Send a
+/// pong reply.
 
 	buffer[1] = 'o';
 	printf("%s\n", buffer);
@@ -495,7 +495,7 @@ void xboard::do_ping()
 void xboard::do_draw()
 {
 
-// Our opponent has offered a draw.  Just note this for now.
+/// Our opponent has offered a draw.  Just note this for now.
 
 	draw = true;
 }
@@ -521,7 +521,7 @@ void xboard::do_setboard(string argfen) const
 void xboard::do_hint() const
 {
 
-// Give our opponent a hint.
+/// Give our opponent a hint.
 
 	move_t m = search_ptr->get_hint();
 	if (IS_NULL_MOVE(m))
@@ -537,7 +537,7 @@ void xboard::do_hint() const
 void xboard::do_undo()
 {
 
-// Take back one ply.
+/// Take back one ply.
 
 	board_ptr->unmake();
 	clock_ptr->inc_remaining_moves(board_ptr->get_whose());
@@ -551,7 +551,7 @@ void xboard::do_undo()
 void xboard::do_remove()
 {
 
-// Take back two plies.
+/// Take back two plies.
 
 	board_ptr->unmake();
 	board_ptr->unmake();
@@ -566,7 +566,7 @@ void xboard::do_remove()
 void xboard::do_hard()
 {
 
-// Turn on pondering.
+/// Turn on pondering.
 
 	ponder = true;
 }
@@ -577,7 +577,7 @@ void xboard::do_hard()
 void xboard::do_easy()
 {
 
-// Turn off pondering.
+/// Turn off pondering.
 
 	ponder = false;
 }
@@ -588,7 +588,7 @@ void xboard::do_easy()
 void xboard::do_post() const
 {
 
-// Turn on thinking output.
+/// Turn on thinking output.
 
 	search_ptr->set_output(true);
 }
@@ -599,7 +599,7 @@ void xboard::do_post() const
 void xboard::do_nopost() const
 {
 
-// Turn off thinking output.
+/// Turn off thinking output.
 
 	search_ptr->set_output(false);
 }
@@ -610,7 +610,7 @@ void xboard::do_nopost() const
 void xboard::do_analyze()
 {
 
-// Enter analyze mode.
+/// Enter analyze mode.
 
 	analyze = true;
 	search_ptr->change(ANALYZING, *board_ptr);
@@ -622,7 +622,7 @@ void xboard::do_analyze()
 void xboard::do_exit()
 {
 
-// Exit analyze mode.
+/// Exit analyze mode.
 
 	analyze = false;
 }
@@ -914,7 +914,7 @@ int xboard::char_to_shape(char c) const
 bool xboard::test_move(move_t m)
 {
 
-// In the current position, is the specified move legal?
+/// In the current position, is the specified move legal?
 
 	list<move_t> l;
 
@@ -924,4 +924,3 @@ bool xboard::test_move(move_t m)
 			return true;
 	return false;
 }
-

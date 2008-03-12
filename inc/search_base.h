@@ -72,39 +72,39 @@ public:
 #endif
 
 protected:
-	static void _handle(void *arg);            // Proxy clock callback.
-	virtual void handle();                     // C++ clock callback.
-	static void *_start(void *arg);            // Proxy thread entry point.
-	virtual void start();                      // C++ thread entry point.
-	virtual void iterate(int s) = 0;           // Force sub-classes to override.
+	static void _handle(void *arg);            /// Proxy clock callback.
+	virtual void handle();                     /// C++ clock callback.
+	static void *_start(void *arg);            /// Proxy thread entry point.
+	virtual void start();                      /// C++ thread entry point.
+	virtual void iterate(int s) = 0;           /// Force sub-classes to override.
 	virtual void extract_pv();
 	virtual void extract_hint(int s);
 	static bool shuffle(move_t m1, move_t m2);
 	static bool descend(move_t m1, move_t m2);
 
-	list<move_t> pv;        // Principal variation.
-	move_t hint;            // Opponent's best move.
-	int max_depth;          // Maximum search depth.
-	int nodes;              // Number of nodes searched.
-	bool output;            // Whether to print thinking output.
-	int correct_guesses;    //
-	int total_guesses;      //
+	list<move_t> pv;        /// Principal variation.
+	move_t hint;            /// Opponent's best move.
+	int max_depth;          /// Maximum search depth.
+	int nodes;              /// Number of nodes searched.
+	bool output;            /// Whether to print thinking output.
+	int correct_guesses;    ///
+	int total_guesses;      ///
 
-	board_base *board_ptr;  // Board representation object.
-	table *table_ptr;       // Transposition table object.
-	history *history_ptr;   // History table object.
-	chess_clock *clock_ptr; // Chess clock object.
-	xboard *xboard_ptr;     // Chess Engine Communication Protocol object.
+	board_base *board_ptr;  /// Board representation object.
+	table *table_ptr;       /// Transposition table object.
+	history *history_ptr;   /// History table object.
+	chess_clock *clock_ptr; /// Chess clock object.
+	xboard *xboard_ptr;     /// Chess Engine Communication Protocol object.
 
-	mutex_t timeout_mutex;  // The lock that protects...
-	bool timeout_flag;      // ...the flag that determines when to stop
-	                        // thinking or pondering!  :-D
+	mutex_t timeout_mutex;  /// The lock that protects...
+	bool timeout_flag;      /// ...the flag that determines when to stop
+	                        /// thinking or pondering!  :-D
 
-	mutex_t search_mutex;   // The lock that protects...
-	cond_t search_cond;     // ...the condition that controls...
-	thread_t search_thread; // ...the search thread via...
-	int search_status;      // ...the search status!  :-D
-	int token_update;		// ...are there unprocessed requests?
+	mutex_t search_mutex;   /// The lock that protects...
+	cond_t search_cond;     /// ...the condition that controls...
+	thread_t search_thread; /// ...the search thread via...
+	int search_status;      /// ...the search status!  :-D
+	int token_update;       /// Whether there are there unprocessed requests.
 
 	// Prevent the class from being instantiated without the proper
 	// construction.

@@ -29,7 +29,7 @@ search_mtdf::search_mtdf(table *t, history *h, chess_clock *c, xboard *x) :
 	search_base(t, h, c, x)
 {
 
-// Constructor.
+/// Constructor.
 
 }
 
@@ -39,7 +39,7 @@ search_mtdf::search_mtdf(table *t, history *h, chess_clock *c, xboard *x) :
 search_mtdf::~search_mtdf()
 {
 
-// Destructor.
+/// Destructor.
 
 }
 
@@ -49,7 +49,7 @@ search_mtdf::~search_mtdf()
 search_mtdf& search_mtdf::operator=(const search_mtdf& that)
 {
 
-// Overloaded assignment operator.
+/// Overloaded assignment operator.
 
 	if (this != &that)
 		search_base::operator=(that);
@@ -62,9 +62,9 @@ search_mtdf& search_mtdf::operator=(const search_mtdf& that)
 void search_mtdf::iterate(int s)
 {
 
-// Perform iterative deepening.  This method handles analyzing (thinking
-// indefinitely), thinking (on our own time), and pondering (on our opponent's
-// time) since they're so similar.
+/// Perform iterative deepening.  This method handles analyzing (thinking
+/// indefinitely), thinking (on our own time), and pondering (on our opponent's
+/// time) since they're so similar.
 
 	move_t guess[2], m;
 	bool strong_pondering = false;
@@ -173,8 +173,8 @@ void search_mtdf::iterate(int s)
 move_t search_mtdf::mtdf(int depth, value_t guess)
 {
 
-// From the current position, search for the best move.  This method implements
-// the MTD(f) algorithm.
+/// From the current position, search for the best move.  This method implements
+/// the MTD(f) algorithm.
 
 	move_t m;
 	SET_NULL_MOVE(m);
@@ -197,27 +197,27 @@ move_t search_mtdf::mtdf(int depth, value_t guess)
 move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t beta, bool try_null_move)
 {
 
-// From the current position, search for the best move.  This method implements
-// the MiniMax algorithm.
+/// From the current position, search for the best move.  This method implements
+/// the MiniMax algorithm.
+///
+/// On top of MiniMax, this method implements NegaMax.  NegaMax produces the
+/// same results as MiniMax but is simpler to code.  Instead of juggling around
+/// two players, Max and Min, NegaMax treats both players as Max and negates the
+/// scores (and negates and swaps the lower and upper bounds - more on that in
+/// the next paragraph) on each recursive call.  In other words, NegaMax always
+/// views the color on move as Max and the color off move as Min.
+///
+/// On top of NegaMax, this method implements AlphaBeta.  AlphaBeta produces the
+/// same results as NegaMax but far more efficiently.
 //
-// On top of MiniMax, this method implements NegaMax.  NegaMax produces the same
-// results as MiniMax but is simpler to code.  Instead of juggling around two
-// players, Max and Min, NegaMax treats both players as Max and negates the
-// scores (and negates and swaps the lower and upper bounds - more on that in
-// the next paragraph) on each recursive call.  In other words, NegaMax always
-// views the color on move as Max and the color off move as Min.
-//
-// On top of NegaMax, this method implements AlphaBeta.  AlphaBeta produces the
-// same results as NegaMax but far more efficiently.
-//
-// On top of AlphaBeta, this method implements FailSoft.  FailSoft returns more
-// information than AlphaBeta.  If the exact score falls outside of the window,
-// AlphaBeta returns either alpha (to represent the exact score is lower than
-// the window) or beta (to represent the exact score is higher than the window).
-// On the other hand, FailSoft returns either an upper bound (<= alpha) or a
-// lower bound (>= beta) on the exact score.
-//
-// This method also implements null move pruning.
+/// On top of AlphaBeta, this method implements FailSoft.  FailSoft returns more
+/// information than AlphaBeta.  If the exact score falls outside of the window,
+/// AlphaBeta returns either alpha (to represent that the exact score is lower
+/// than the window) or beta (to represent that the exact score is higher than
+/// the window).  On the other hand, FailSoft returns either an upper bound (<=
+/// alpha) or a lower bound (>= beta) on the exact score.
+///
+/// This method also implements null move pruning.
 
 	// Local variables that pertain to the current position:
 	bool whose = board_ptr->get_whose();     // The color on move.
