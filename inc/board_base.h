@@ -210,16 +210,16 @@ typedef int16_t value_t;
 /// similar ugliness).
 typedef struct move
 {
-	unsigned x1      :  3; ///< From x coordinate.              3 bits
-	unsigned y1      :  3; ///< From y coordinate.           +  3 bits
-	unsigned x2      :  3; ///< To x coordinate.             +  3 bits
-	unsigned y2      :  3; ///< To y coordinate.             +  3 bits
-	unsigned promo   :  3; ///< Pawn promotion information.  +  3 bits
-	unsigned padding :  1; ///< The Evil Bit (TM).           +  1 bit
-	value_t  value;        ///< MiniMax score.               + 16 bits
-	                       ///                               = 32 bits
+	unsigned x1      : 3; ///< From x coordinate.              3 bits
+	unsigned y1      : 3; ///< From y coordinate.           +  3 bits
+	unsigned x2      : 3; ///< To x coordinate.             +  3 bits
+	unsigned y2      : 3; ///< To y coordinate.             +  3 bits
+	unsigned promo   : 3; ///< Pawn promotion information.  +  3 bits
+	unsigned padding : 1; ///< The Evil Bit (TM).           +  1 bit
+	value_t  value;       ///< MiniMax score.               + 16 bits
+	                      ///                               = 32 bits
 
-	/// Overloaded equality test operator.
+	// Overloaded equality test operator.
 	bool operator==(const struct move that) const
 	{
 		return this->x1 == that.x1 && this->y1 == that.y1 &&
@@ -227,7 +227,7 @@ typedef struct move
 		       this->promo == that.promo;
 	};
 
-	/// Overloaded inequality test operator.
+	// Overloaded inequality test operator.
 	bool operator!=(const struct move that) const
 	{
 		return this->x1 != that.x1 || this->y1 != that.y1 ||
@@ -235,7 +235,7 @@ typedef struct move
 		       this->promo != that.promo;
 	};
 
-	/// Overloaded assignment operator.
+	// Overloaded assignment operator.
 	struct move& operator=(const struct move& that)
 	{
 		x1 = that.x1;
