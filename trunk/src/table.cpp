@@ -280,8 +280,9 @@ bool pawn::probe(bitboard_t hash, value_t *value_ptr)
 {
 
 /// Given the pawn structure described in hash, check the pawn table to see if
-/// we've evaluated it before.  If so, save its previous evaluation to the
-/// memory pointed to by value_ptr and return success.  If not, return failure.
+/// we've evaluated it before.  If so, then save its previous evaluation to the
+/// memory pointed to by value_ptr and return success.  If not, then return
+/// failure.
 
 	uint64_t index = hash % slots;
 	bool found = data[index].hash == hash;

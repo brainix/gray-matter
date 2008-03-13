@@ -265,27 +265,8 @@ void search_base::start()
 	{
 		// Wait for either the status or the board to change.
 		mutex_lock(&search_mutex);
-
-		while(!token_update)
-		{
+		while (!token_update)
 			cond_wait(&search_cond, &search_mutex);
-		}
-
-		/*while (old_search_status == search_status &&
-		       old_board_hash == board_hash)
-		{
-			DEBUG_SEARCH_PRINTA(
-				"search_base::start waiting for signal, hash = %llX, status = %s.", 
-				board_hash, status_to_string(search_status).c_str());
-			cond_wait(&search_cond, &search_mutex);
-
-			old_search_status = search_status;
-			old_board_hash = board_hash;
-
-			board_ptr->lock();
-			board_hash = board_ptr->get_hash();
-			board_ptr->unlock();
-		}*/
 		token_update = 0;
 		mutex_unlock(&search_mutex);
 
@@ -338,25 +319,26 @@ void search_base::extract_pv()
 void search_base::extract_hint(int s)
 {
 
-/// Extract the hint (what we think our opponent should do) from the principal
-/// variation.  We call this method after extracting the principal variation
-/// either at various times during analyzing and thinking or just once before
-/// pondering.
+/// Extract the hint (what we think that our opponent should do) from the
+/// principal variation.  We call this method after extracting the principal
+/// variation either at various times during analyzing and thinking or just once
+/// before pondering.
 
 	if (s == ANALYZING && !pv.empty())
 		// We're analyzing.
 		hint = pv.front();
 	else if (s == THINKING && pv.size() >= 2)
 	{
-		// We're thinking.  That means the principal variation's 1st
-		// move is what we think we should do, and the 2nd move is what
-		// we think our opponent should do.
+		// We're thinking.  That means that the principal variation's
+		// 1st move is what we think that we should do, and its 2nd move
+		// is what we think that our opponent should do.
 		list<move_t>::iterator it = pv.begin();
 		hint = *++it;
 	}
 	else if (s == PONDERING && !pv.empty())
-		// We're about to ponder.  That means the principal variation's
-		// 1st move is what we think our opponent should do.
+		// We're about to ponder.  That means that the principal
+		// variation's 1st move is what we think that our opponent
+		// should do.
 		hint = pv.front();
 	else
 		// The principal variation isn't long enough.  We don't know
@@ -374,8 +356,8 @@ bool search_base::shuffle(move_t m1, move_t m2)
 /// move list.  This is a magnificent hack.
 ///
 /// Note: This hack wouldn't work for O(n²) list sort algorithms.  But if your
-/// STL's list sort algorithm is O(n²), you don't deserve for this hack to work
-/// anyway.
+/// STL's list sort algorithm is O(n²), then you don't deserve for this hack to
+/// work anyway.
 
 	return rand() & 1;
 }

@@ -164,8 +164,8 @@ bool book::tokenize_space(istream& stream, string& token)
 {
 
 /// If the stream's next token is whitespace (as defined by the PGN
-/// specification), forward the stream past it, save it (null terminated), and
-/// return true.  Otherwise, leave the stream untouched, save only the null
+/// specification), then forward the stream past it, save it (null terminated),
+/// and return true.  Otherwise, leave the stream untouched, save only the null
 /// character, and return false.
 
 	token.erase(0, token.length());
@@ -182,8 +182,8 @@ bool book::tokenize_string(istream& stream, string& token)
 {
 
 /// If the stream's next token is a string (as defined by the PGN
-/// specification), forward the stream past it, save it (null terminated), and
-/// return true.  Otherwise, leave the stream untouched, save only the null
+/// specification), then forward the stream past it, save it (null terminated),
+/// and return true.  Otherwise, leave the stream untouched, save only the null
 /// character, and return false.
 
 	token.erase(0, token.length());
@@ -211,8 +211,8 @@ bool book::tokenize_integer(istream& stream, string& token)
 {
 
 /// If the stream's next token is an integer (as defined by the PGN
-/// specification), forward the stream past it, save it (null terminated), and
-/// return true.  Otherwise, leave the stream untouched, save only the null
+/// specification), then forward the stream past it, save it (null terminated),
+/// and return true.  Otherwise, leave the stream untouched, save only the null
 /// character, and return false.
 
 	token.erase(0, token.length());
@@ -229,8 +229,8 @@ bool book::tokenize_punctuation(istream& stream, string& token)
 {
 
 /// If the stream's next token is punctuation (as defined by the PGN
-/// specification), forward the stream past it, save it (null terminated), and
-/// return true.  Otherwise, leave the stream untouched, save only the null
+/// specification), then forward the stream past it, save it (null terminated),
+/// and return true.  Otherwise, leave the stream untouched, save only the null
 /// character, and return false.
 
 	token.erase(0, token.length());
@@ -251,9 +251,9 @@ bool book::tokenize_glyph(istream& stream, string& token)
 {
 
 /// If the stream's next token is a Numeric Annotation Glyph (as defined by the
-/// PGN specification), forward the stream past it, save it (null terminated),
-/// and return true.  Otherwise, leave the stream untouched, save only the null
-/// character, and return false.
+/// PGN specification), then forward the stream past it, save it (null
+/// terminated), and return true.  Otherwise, leave the stream untouched, save
+/// only the null character, and return false.
 
 	token.erase(0, token.length());
 	if (stream.peek() == '$')
@@ -273,8 +273,8 @@ bool book::tokenize_symbol(istream& stream, string& token)
 {
 
 /// If the stream's next token is a symbol (as defined by the PGN
-/// specification), forward the stream past it, save it (null terminated), and
-/// return true.  Otherwise, leave the stream untouched, save only the null
+/// specification), then forward the stream past it, save it (null terminated),
+/// and return true.  Otherwise, leave the stream untouched, save only the null
 /// character, and return false.
 
 	token.erase(0, token.length());
@@ -295,8 +295,8 @@ bool book::shuffle(list<move_t> l1, list<move_t> l2)
 /// game list.  This is a magnificent hack.
 ///
 /// Note: This hack wouldn't work for O(n²) list sort algorithms.  But if your
-/// STL's list sort algorithm is O(n²), you don't deserve for this hack to work
-/// anyway.
+/// STL's list sort algorithm is O(n²), then you don't deserve for this hack to
+/// work anyway.
 
 	return rand() & 1;
 }
