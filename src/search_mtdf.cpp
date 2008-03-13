@@ -92,15 +92,15 @@ void search_mtdf::iterate(int s)
 		}
 	}
 
-	// Note the start time.  If we're to think, set the alarm.  (If we're to
-	// analyze or ponder, there's no need to set the alarm.  We analyze or
-	// ponder indefinitely until our opponent has moved.)
+	// Note the start time.  If we're to think, then set the alarm.  (If
+	// we're to analyze or ponder, then there's no need to set the alarm.
+	// We analyze or ponder indefinitely until our opponent has moved.)
 	clock_ptr->note_time();
 	if (s == THINKING)
 		clock_ptr->set_alarm(board_ptr->get_whose());
 
-	// If we're to ponder, pretend our opponent has made the move we think
-	// she'll make, then think about our best response.
+	// If we're to ponder, then pretend that our opponent has made the move
+	// that we think that she'll make, then think about our best response.
 	if (s == PONDERING && !IS_NULL_MOVE(hint))
 	{
 		strong_pondering = true;
@@ -147,22 +147,23 @@ void search_mtdf::iterate(int s)
 			break;
 	}
 
-	// If we've just finished thinking, cancel the alarm.
+	// If we've just finished thinking, then cancel the alarm.
 	if (s == THINKING)
 	{
 		clock_ptr->cancel_alarm();
 		extract_hint(THINKING);
 	}
 
-	// If we've just finished pondering, take back the move we thought our
-	// opponent would've made.
+	// If we've just finished pondering, then take back the move that we
+	// thought that our opponent would've made.
 	if (strong_pondering)
 		board_ptr->unmake();
 
 	// Release the board.
 	board_ptr->unlock();
 
-	// If we've just finished thinking, inform XBoard of our favorite move.
+	// If we've just finished thinking, then inform XBoard of our favorite
+	// move.
 	if (s == THINKING && search_status != QUITTING)
 		xboard_ptr->print_result(m);
 }
@@ -212,10 +213,10 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 //
 /// On top of AlphaBeta, this method implements FailSoft.  FailSoft returns more
 /// information than AlphaBeta.  If the exact score falls outside of the window,
-/// AlphaBeta returns either alpha (to represent that the exact score is lower
-/// than the window) or beta (to represent that the exact score is higher than
-/// the window).  On the other hand, FailSoft returns either an upper bound (<=
-/// alpha) or a lower bound (>= beta) on the exact score.
+/// then AlphaBeta returns either alpha (to represent that the exact score is
+/// lower than the window) or beta (to represent that the exact score is higher
+/// than the window).  On the other hand, FailSoft returns either an upper bound
+/// (<= alpha) or a lower bound (>= beta) on the exact score.
 ///
 /// This method also implements null move pruning.
 
@@ -233,9 +234,10 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 	// Increment the number of positions searched.
 	nodes++;
 
-	// If this position is terminal (the end of the game), there's no legal
-	// move - all we have to do is determine if the game is drawn or lost.
-	// (Subtle!  We couldn't have just won because our opponent moved last.)
+	// If this position is terminal (the end of the game), then there's no
+	// legal move - all we have to do is determine if the game is drawn or
+	// lost.  (Subtle!  We couldn't have just won because our opponent moved
+	// last.)
 	if (status != IN_PROGRESS)
 	{
 		SET_NULL_MOVE(m);
@@ -256,9 +258,9 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 		return m;
 	}
 
-	// If we've already sufficiently examined this position, return the best
-	// move from our previous search.  Otherwise, if we can, reduce the size
-	// of our AlphaBeta window.
+	// If we've already sufficiently examined this position, then return the
+	// best move from our previous search.  Otherwise, if we can, reduce the
+	// size of our AlphaBeta window.
 	if (table_ptr->probe(hash, depth, EXACT, &m))
 		return m;
 //	if (table_ptr->probe(hash, depth, UPPER, &m))
@@ -280,8 +282,8 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 //		alpha = GREATER(alpha, m.value);
 //	}
 
-	// If we've reached the maximum search depth, this node is a leaf - all
-	// we have to do is apply the static evaluator.
+	// If we've reached the maximum search depth, then this node is a leaf -
+	// all we have to do is apply the static evaluator.
 	if (depth <= 0)
 	{
 		SET_NULL_MOVE(m);
@@ -312,7 +314,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 	if (!board_ptr->generate(l, !shallowness))
 	{
 		// There's a move in the list that captures the opponent's king,
-		// which means we're in an illegal position.
+		// which means that we're in an illegal position.
 		SET_NULL_MOVE(m);
 		m.value = VALUE_ILLEGAL;
 		DEBUG_SEARCH_PRINT("Opponent's king can be captured - illegal position.");
@@ -354,8 +356,8 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 		// Nope, there was no legal move in the list.  There are three
 		// possibilities: the current position is illegal, a draw, or a
 		// checkmate.  How can we tell which?  If our opponent is in
-		// check, the position is illegal.  If we're not in check, we're
-		// drawn.  If we're in check, we're checkmated.
+		// check, then the position is illegal.  If we're not in check,
+		// then we're drawn.  If we're in check, then we're checkmated.
 		SET_NULL_MOVE(m);
 		if (board_ptr->check(true))
 			// Our opponent is in check; the position is illegal;

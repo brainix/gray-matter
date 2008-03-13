@@ -649,7 +649,7 @@ bool board_base::make(move_t m)
 	hashes.push_back(hash);
 	pawn_hashes.push_back(pawn_hash);
 
-	// If we're making a null move, skip a bunch of this nonsense.
+	// If we're making a null move, then skip a bunch of this nonsense.
 	if (IS_NULL_MOVE(m))
 		goto end;
 
@@ -696,8 +696,8 @@ bool board_base::make(move_t m)
 	}
 
 	// If we're moving a piece from one of our rooks' initial positions,
-	// make sure we're no longer marked able to castle on that rook's
-	// side.
+	// then make sure that we're no longer marked able to castle on that
+	// rook's side.
 	if ((m.x1 == 0 || m.x1 == 7) && (m.y1 == (ON_MOVE ? 7 : 0)) && state.castle[ON_MOVE][m.x1 == 7] == CAN_CASTLE)
 	{
 		state.castle[ON_MOVE][m.x1 == 7] = CANT_CASTLE;
@@ -705,8 +705,8 @@ bool board_base::make(move_t m)
 	}
 
 	// If we're moving a piece to one of our opponent's rooks' initial
-	// positions, make sure our opponent is no longer marked able to castle
-	// on that rook's side.
+	// positions, then make sure that our opponent is no longer marked able
+	// to castle on that rook's side.
 	if ((m.x2 == 0 || m.x2 == 7) && (m.y2 == (OFF_MOVE ? 7 : 0)) && state.castle[OFF_MOVE][m.x2 == 7] == CAN_CASTLE)
 	{
 		state.castle[OFF_MOVE][m.x2 == 7] = CANT_CASTLE;
@@ -716,8 +716,8 @@ bool board_base::make(move_t m)
 	// If we're moving the king:
 	if (BIT_GET(state.piece[ON_MOVE][KING], m.x2, m.y2))
 	{
-		// If we're castling, move the rook and mark us having castled
-		// on this side.
+		// If we're castling, then move the rook and mark us having
+		// castled on this side.
 		if (abs((int) m.x1 - (int) m.x2) == 2)
 		{
 			BIT_CLR(state.piece[ON_MOVE][ROOK], m.x2 == 6 ? 7 : 0, ON_MOVE ? 7 : 0);
@@ -733,7 +733,7 @@ bool board_base::make(move_t m)
 			hash ^= key_castle[ON_MOVE][m.x2 == 6][HAS_CASTLED];
 		}
 
-		// At this point, we've moved the king.  Make sure we're no
+		// At this point, we've moved the king.  Make sure that we're no
 		// longer marked able to castle on either side.
 		for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
 			if (state.castle[ON_MOVE][side] == CAN_CASTLE)
@@ -748,7 +748,7 @@ bool board_base::make(move_t m)
 	pawn_hash ^= state.en_passant == -1 ? key_no_en_passant : key_en_passant[state.en_passant];
 	if (BIT_GET(state.piece[ON_MOVE][PAWN], m.x2, m.y2))
 	{
-		// If we're promoting a pawn, replace it with the promotion
+		// If we're promoting a pawn, then replace it with the promotion
 		// piece.
 		if (m.promo)
 		{
@@ -759,7 +759,7 @@ bool board_base::make(move_t m)
 			pawn_hash ^= key_piece[ON_MOVE][PAWN][m.x2][m.y2];
 		}
 
-		// If we're performing an en passant, remove the captured
+		// If we're performing an en passant, then remove the captured
 		// pawn.
 		if ((int) m.x2 == state.en_passant && m.y2 == (ON_MOVE ? 2 : 5))
 		{
@@ -770,8 +770,8 @@ bool board_base::make(move_t m)
 			pawn_hash ^= key_piece[OFF_MOVE][PAWN][m.x2][m.y1];
 		}
 
-		// If we're advancing a pawn two squares, mark it vulnerable to
-		// en passant.
+		// If we're advancing a pawn two squares, then mark it
+		// vulnerable to en passant.
 		state.en_passant = abs((int) m.y1 - (int) m.y2) == 2 ? (int) m.x1 : -1;
 	}
 	else
@@ -831,7 +831,7 @@ move_t board_base::san_to_coord(string& san)
 
 /// Convert a move from Standard Algebraic Notation (SAN) to coordinate
 /// notation.  In the current position, if the SAN string doesn't represent a
-/// legal move, return the null move.
+/// legal move, then return the null move.
 
 	size_t index = 0;
 	int shape = -1, x1 = -1, y1 = -1, x2 = -1, y2 = -1, promo = -1;
@@ -841,8 +841,8 @@ move_t board_base::san_to_coord(string& san)
 	SET_NULL_MOVE(m);
 	m.value = 0;
 
-	// Check for special cases.  O-O-O means we're castling queen side and
-	// O-O means we're castling king side.
+	// Check for special cases.  O-O-O means that we're castling queen side
+	// and O-O means that we're castling king side.
 	if (san == "O-O-O" || san == "O-O")
 	{
 		int side = san == "O-O-O" ? QUEEN_SIDE : KING_SIDE;
@@ -857,9 +857,9 @@ move_t board_base::san_to_coord(string& san)
 	}
 
 	// If the SAN string begins with the letter 'K', 'Q', 'R', 'B', 'N', or
-	// 'P', we're moving a king, queen, rook, bishop, knight, or pawn
-	// respectively.  If it begins with none of these letters, we're to
-	// assume we're moving a pawn.
+	// 'P', then we're moving a king, queen, rook, bishop, knight, or pawn
+	// respectively.  If it begins with none of these letters, then we're to
+	// assume that we're moving a pawn.
 	switch (san[index])
 	{
 		case 'K' :          shape = KING;   break;
@@ -873,8 +873,8 @@ move_t board_base::san_to_coord(string& san)
 	if (++index >= san.length())
 		return m;
 
-	// If there's an 'x' here, it means the move is a capture.  Note this
-	// (to verify it's a capture later).
+	// If there's an 'x' here, then it means that the move is a capture.
+	// Note this (to verify that it's a capture later).
 	if (san[index] == 'x')
 	{
 		if (++index >= san.length())
@@ -882,8 +882,8 @@ move_t board_base::san_to_coord(string& san)
 		capture = true;
 	}
 
-	// If there's a letter between 'a' and 'h' here, assume it specifies the
-	// destination file.
+	// If there's a letter between 'a' and 'h' here, then assume that it
+	// specifies the destination file.
 	if (san[index] >= 'a' && san[index] <= 'h')
 	{
 		x2 = san[index] - 'a';
@@ -891,8 +891,8 @@ move_t board_base::san_to_coord(string& san)
 			return m;
 	}
 
-	// If there's an 'x' here, it means the move is a capture.  Note this
-	// (to verify it's a capture later).
+	// If there's an 'x' here, then it means that the move is a capture.
+	// Note this (to verify that it's a capture later).
 	if (san[index] == 'x')
 	{
 		if (++index >= san.length())
@@ -900,13 +900,13 @@ move_t board_base::san_to_coord(string& san)
 		capture = true;
 	}
 
-	// If there's a number between 1 and 8 here, assume it specifies the
-	// destination rank.
+	// If there's a number between 1 and 8 here, then assume that it
+	// specifies the destination rank.
 	if (san[index] >= '1' && san[index] <= '8')
 		y2 = san[index++] - '1';
 
-	// If there's an 'x' here, it means the move is a capture.  Note this
-	// (to verify it's a capture later).
+	// If there's an 'x' here, then it means that the move is a capture.
+	// Note this (to verify that it's a capture later).
 	if (index < san.length() && san[index] == 'x')
 	{
 		if (++index >= san.length())
@@ -914,11 +914,11 @@ move_t board_base::san_to_coord(string& san)
 		capture = true;
 	}
 
-	// If there's a letter between 'a' and 'h' here, it must be followed by
-	// a number between 1 and 8.  And it means our earlier assumption was
-	// wrong - the previous letter and/or number actually specified the
-	// source file and/or rank, and the current letter and number specify
-	// the destination file and rank.
+	// If there's a letter between 'a' and 'h' here, then it must be
+	// followed by a number between 1 and 8.  And it means that our earlier
+	// assumption was wrong - the previous letter and/or number actually
+	// specified the source file and/or rank, and the current letter and
+	// number specify the destination file and rank.
 	if (index < san.length() && san[index] >= 'a' && san[index] <= 'h')
 	{
 		x1 = x2;
@@ -929,11 +929,12 @@ move_t board_base::san_to_coord(string& san)
 		y2 = san[index++] - '1';
 	}
 
-	// If there's an = sign here, it must be followed by the letter 'Q',
-	// 'R', 'B', or 'N'.  The = sign means we're promoting a pawn and the
-	// following letter represents the piece we're promoting to: a queen,
-	// rook, bishop, or knight respectively.  If there's no = sign here, it
-	// means we're not promoting a pawn.
+	// If there's an = sign here, then it must be followed by the letter
+	// 'Q', 'R', 'B', or 'N'.  The = sign means that we're promoting a pawn
+	// and that the following letter represents the piece that we're
+	// promoting to: a queen, rook, bishop, or knight respectively.  If
+	// there's no = sign here, then it means that we're not promoting a
+	// pawn.
 	if (index < san.length() && san[index] == '=')
 	{
 		if (++index >= san.length())
@@ -952,12 +953,12 @@ move_t board_base::san_to_coord(string& san)
 
 	// At this point, we're supposed to have filled in all the info except
 	// possibly the source file and rank.  But if we haven't filled in the
-	// source file and rank, the rest of the info (the piece and the
+	// source file and rank, then the rest of the info (the piece and the
 	// destination file and rank) is supposed to be sufficient to uniquely
 	// identify the move and derive the source file and rank.
 	//
-	// If we haven't already filled in the source file and rank, derive them
-	// and fill them in now.
+	// If we haven't already filled in the source file and rank, then derive
+	// them and fill them in now.
 	if (x1 < 0 || y1 < 0)
 	{
 		list<move_t> l;
@@ -983,18 +984,18 @@ move_t board_base::san_to_coord(string& san)
 	}
 
 	// At this point, we're supposed to have filled in all the info.  If we
-	// haven't, the SAN string must've been badly formed.
+	// haven't, then the SAN string must've been badly formed.
 	if (x1 < 0 || y1 < 0 || x2 < 0 || y2 < 0 || promo < 0)
 		return m;
 
-	// Verify the piece we're moving is actually sitting on the source file
-	// and rank.
+	// Verify that the piece that we're moving is actually sitting on the
+	// source file and rank.
 	if (!BIT_GET(state.piece[ON_MOVE][shape], x1, y1))
 		return m;
 
-	// If the SAN string didn't indicate a capture, verify the move actually
-	// isn't a capture.  Conversely, if the SAN string did indicate a
-	// capture, verify the move actually is a capture.
+	// If the SAN string didn't indicate a capture, then verify that the
+	// move actually isn't a capture.  Conversely, if the SAN string did
+	// indicate a capture, then verify that the move actually is a capture.
 	if (capture != (bool) BIT_GET(rotation[ZERO][OFF_MOVE], x2, y2))
 		return m;
 
@@ -1006,7 +1007,7 @@ move_t board_base::san_to_coord(string& san)
 	m.promo = promo;
 
 	// The only thing that can go wrong now is for the move to leave us in
-	// check.  Make sure this isn't the case.
+	// check.  Make sure that this isn't the case.
 	make(m);
 	if (check(state.piece[OFF_MOVE][KING], ON_MOVE))
 		SET_NULL_MOVE(m); // Oops, the move leaves us in check.
@@ -1648,8 +1649,8 @@ void board_base::precomp_knight() const
 					continue;
 				if (x + j < 0 || x + j > 7 ||
 				    y + k < 0 || y + k > 7)
-					// Oops.  The knight can't jump off the
-					// board.
+					// Oops.  The knight can't jump off of
+					// the board.
 					continue;
 				BIT_SET(squares_knight[x][y], x + j, y + k);
 			}
@@ -1723,7 +1724,7 @@ int board_base::mate()
 	}
 
 	// The color on move doesn't have a legal move; the game is over.  If
-	// the king isn't attacked, the game is over due to stalemate.
+	// the king isn't attacked, then the game is over due to stalemate.
 	// Otherwise, the game is over due to checkmate.
 	if (!check(state.piece[ON_MOVE][KING], OFF_MOVE))
 		return STALEMATE;
@@ -1750,9 +1751,10 @@ bool board_base::check(bitboard_t b1, bool color) const
 			return true;
 
 		// Look for a horizontal or vertical queen or rook attack.  The
-		// logic here is interesting.  Pretend our king were a rook.
-		// Would it be able to capture a rook?  If so, we're in check.
-		// If not, we're not in check, at least not by a rook.
+		// logic here is interesting.  Pretend that our king were a
+		// rook.  Would it be able to capture a rook?  If so, then we're
+		// in check.  If not, then we're not in check, at least not by a
+		// rook.
 		for (int angle = ZERO; angle == ZERO || angle == R90; angle += R90 - ZERO)
 		{
 			int loc = ROW_LOC(x, y, angle);
@@ -1768,9 +1770,9 @@ bool board_base::check(bitboard_t b1, bool color) const
 		}
 
 		// Look for a diagonal queen or bishop attack.  The logic here
-		// is interesting.  Pretend our king were a bishop.  Would it be
-		// able to capture a bishop?  If so, we're in check.  If not,
-		// we're not in check, at least not by a bishop.
+		// is interesting.  Pretend that our king were a bishop.  Would
+		// it be able to capture a bishop?  If so, then we're in check.
+		// If not, then we're not in check, at least not by a bishop.
 		for (int angle = L45; angle == L45 || angle == R45; angle += R45 - L45)
 		{
 			int loc = DIAG_LOC(x, y, angle);
@@ -1787,9 +1789,9 @@ bool board_base::check(bitboard_t b1, bool color) const
 		}
 
 		// Look for a knight attack.  The logic here is interesting.
-		// Pretend our king were a knight.  Would it be able to capture
-		// a knight?  If so, we're in check.  If not, we're not in
-		// check, at least not by a knight.
+		// Pretend that our king were a knight.  Would it be able to
+		// capture a knight?  If so, then we're in check.  If not, then
+		// we're not in check, at least not by a knight.
 		if (squares_knight[x][y] & state.piece[color][KNIGHT])
 			return true;
 
@@ -1802,9 +1804,9 @@ bool board_base::check(bitboard_t b1, bool color) const
 		// the squares in the (at most) 1 row from which a pawn could
 		// attack.  This results in 0, 1, or 2 marked squares from which
 		// a pawn could attack.  Then, we simply check whether an
-		// opposing pawn sits on any of our marked squares.  If so,
-		// we're in check.  If not, we're not in check, at least not by
-		// a pawn.  Easy, breezy, beautiful.
+		// opposing pawn sits on any of our marked squares.  If so, then
+		// we're in check.  If not, then we're not in check, at least
+		// not by a pawn.  Easy, breezy, beautiful.
 		if (squares_pawn_attacks[color][x][y] & state.piece[color][PAWN])
 			return true;
 	}
@@ -1902,7 +1904,7 @@ void board_base::insert(int x, int y, bitboard_t b, int angle, list<move_t>& l, 
 	m.value = m.promo = 0;
 
 	// Does one of the possible moves capture the opponent's king?  If so,
-	// we are in an illegal position.
+	// then we're in an illegal position.
 	if (b & rotate(state.piece[OFF_MOVE][KING], MAP, angle))
 		generated_king_capture = true;
 
