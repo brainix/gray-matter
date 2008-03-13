@@ -230,6 +230,9 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 	list<move_t>::iterator it;               // The move list's iterator.
 	move_t m;                                // The best move and score.
 
+	// Increment the number of positions searched.
+	nodes++;
+
 	// If this position is terminal (the end of the game), there's no legal
 	// move - all we have to do is determine if the game is drawn or lost.
 	// (Subtle!  We couldn't have just won because our opponent moved last.)
@@ -288,9 +291,6 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 		DEBUG_SEARCH_PRINT("evaluate() says %d.", board_ptr->get_whose() ? -m.value : m.value);
 		return m;
 	}
-
-	// Increment the number of positions searched.
-	nodes++;
 
 	// Perform null move pruning.
 //	if (try_null_move && !board_ptr->zugzwang())
