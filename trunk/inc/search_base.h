@@ -51,6 +51,7 @@ class history;
 class chess_clock;
 class xboard;
 
+/// Move search base.
 class search_base
 {
 public:

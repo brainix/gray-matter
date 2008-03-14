@@ -51,6 +51,7 @@ class search_base;
 class chess_clock;
 class book;
 
+/// Chess Engine Communication Protocol.
 class xboard
 {
 public:

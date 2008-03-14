@@ -35,6 +35,7 @@ using namespace std;
 // Forward declarations:
 class pawn_table;
 
+/// Heuristic evaluation.
 class board_heuristic : public board_base
 {
 public:

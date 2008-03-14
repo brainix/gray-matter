@@ -36,6 +36,7 @@
 
 typedef void (*clock_callback_t)(void *data);
 
+/// Chess clock.
 class chess_clock
 {
 public:

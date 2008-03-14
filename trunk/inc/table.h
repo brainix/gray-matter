@@ -46,7 +46,7 @@
  |			      Transposition Table			      |
 \*----------------------------------------------------------------------------*/
 
-// This structure describes a transposition table slot.
+/// This structure describes a transposition table slot.
 typedef struct xpos_slot
 {
 	bitboard_t hash;               ///< Zobrist hash key.           64 bits
@@ -55,6 +55,7 @@ typedef struct xpos_slot
 	move_t move;                   ///< Best move and score.     +  32 bits
 } __attribute__((packed)) xpos_slot_t; ///<                          = 128 bits
 
+/// Table.
 class table
 {
 public:
@@ -76,6 +77,7 @@ private:
  |				 History Table				      |
 \*----------------------------------------------------------------------------*/
 
+/// History table.
 class history
 {
 public:
@@ -92,13 +94,14 @@ private:
  |				   Pawn Table				      |
 \*----------------------------------------------------------------------------*/
 
-// This structure describes a pawn table slot.
+/// This structure describes a pawn table slot.
 typedef struct pawn_slot
 {
 	bitboard_t hash;               ///< Zobrist hash key.    64 bits
 	value_t value;                 ///< Score.             + 16 bits
 } __attribute__((packed)) pawn_slot_t; ///<                    = 80 bits
 
+/// Pawn table.
 class pawn
 {
 public:

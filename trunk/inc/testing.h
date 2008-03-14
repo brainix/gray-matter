@@ -30,8 +30,7 @@
 #include "board_base.h"
 #include "board_heuristic.h"
 
-// Implementation of several correctness and performance tests
-
+/// Implementation of several correctness and performance tests
 class testing
 {
 public:
