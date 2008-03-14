@@ -61,6 +61,7 @@ using namespace std;
 class board_base;
 class table;
 
+/// Opening book.
 class book
 {
 public:

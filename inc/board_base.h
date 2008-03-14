@@ -168,15 +168,16 @@ typedef uint8_t bitrow_t;
  |				     State				      |
 \*----------------------------------------------------------------------------*/
 
-/// This structure describes the entire state of the board.  It contains the
-/// aforementioned 12 BitBoards along with castling statuses, en passant
-/// vulnerability, and the color on move.
-///
-/// Subtle!  In the en passant vulnerability field, we need only store the file
-/// of the pawn susceptible to en passant.  Its rank is implied by the color on
-/// move (which is also kept in the state).  If white is on move, then the pawn
-/// susceptible to en passant must be black and on rank 5.  If black is on move,
-/// then the pawn susceptible to en passant must be white and on rank 4.
+/// This structure describes the entire state of the board.  
+/** It contains the aforementioned 12 BitBoards along with castling statuses, 
+ *  en passant vulnerability, and the color on move.
+ *
+ *  Subtle!  In the en passant vulnerability field, we need only store the file
+ *  of the pawn susceptible to en passant.  Its rank is implied by the color on
+ *  move (which is also kept in the state).  If white is on move, then the pawn
+ *  susceptible to en passant must be black and on rank 5.  If black is on move,
+ *  then the pawn susceptible to en passant must be white and on rank 4.
+ */
 typedef struct state
 {
 	bitboard_t piece[COLORS][SHAPES]; ///< Aforementioned 12 BitBoards.
@@ -203,11 +204,12 @@ typedef struct state
 
 typedef int16_t value_t;
 
-/// This structure describes a move.  It contains the from and to coordinates,
-/// the pawn promotion information, and the MiniMax score.  We use a BitField to
-/// tightly pack this information into 32 bits because some of our methods
-/// return this structure (rather than a pointer to this structure or other
-/// similar ugliness).
+/// This structure describes a move. 
+/** It contains the from and to coordinates, the pawn promotion information, 
+ *  and the MiniMax score.  We use a BitField to tightly pack this information 
+ *  into 32 bits because some of our methods return this structure (rather 
+ *  than a pointer to this structure or other similar ugliness).
+ */
 typedef struct move
 {
 	unsigned x1      : 3; ///< From x coordinate.              3 bits

@@ -43,6 +43,7 @@ class history;
 class chess_clock;
 class xboard;
 
+/// NegaScout move search.
 class search_scout : public search_base
 {
 public:

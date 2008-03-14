@@ -43,6 +43,7 @@ class history;
 class chess_clock;
 class xboard;
 
+/// MTD(f) move search.
 class search_mtdf : public search_base
 {
 public:
