@@ -1,0 +1,13 @@
+/** @mainpage
+
+Go to the <a href="http://code.google.com/p/gray-matter/">project page</a>.
+
+@section intro_sec Introduction
+
+Gray Matter is a chess engine; it can play a game of chess. It isn't very strong but is a good learning and teaching tool. Its authors aim to write readable, understandable, and hackable code. It's written in C++ and employs good object-oriented practices. It uses some state-of-the-art techniques such as an <a href="http://www.cs.vu.nl/~aske/mtdf.html">MTD(f)</a> move search and <a href="http://www.cis.uab.edu/hyatt/bitmaps.html">rotated BitBoards</a>.
+
+Gray Matter doesn't have its own interface. However, it conforms to the <a href="http://www.tim-mann.org/xboard/engine-intf.html">Chess Engine Communication Protocol</a> and runs under <a href="http://www.tim-mann.org/xboard.html">XBoard</a>.
+
+Maintaining a provisional rating of 1200 while weighing in at a svelte 3000 lines of code, Gray Matter offers a nice bang to buck ratio. That's probably why its <a href="http://gray-matter.googlecode.com/svn/trunk/doc/quotes">adoring fans</a> (both of them!) affectionately refer to it as <a href="http://en.wikipedia.org/wiki/Little_train_that_could">The Little Engine that Could</a>.
+
+*/
