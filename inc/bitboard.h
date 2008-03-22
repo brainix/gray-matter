@@ -43,6 +43,14 @@ public:
 	uint64_t bit_set(int x, int y);
 	uint64_t bit_mov(int x1, int y1, int x2, int y2);
 
+	int row_num(int x, int y);
+	int row_loc(int x, int y);
+	int row_idx(int n);
+	uint64_t row_msk(int n);
+	uint8_t row_get(int n);
+	uint64_t row_clr(int n);
+	uint64_t row_set(int n, uint8_t r);
+
 protected:
 	int angle;
 	uint64_t data;
