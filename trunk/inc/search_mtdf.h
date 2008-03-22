@@ -49,7 +49,7 @@ class search_mtdf : public search_base
 public:
 	search_mtdf(table *t, history *h, chess_clock *c, xboard *x);
 	~search_mtdf();
-	search_mtdf& operator=(const search_mtdf& that);
+	search_mtdf &operator=(const search_mtdf &that);
 private:
 	void iterate(int s);
 	move_t mtdf(int depth, value_t guess = 0);

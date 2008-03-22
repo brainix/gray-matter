@@ -72,7 +72,7 @@ search_base::~search_base()
 /*----------------------------------------------------------------------------*\
  |				       =				      |
 \*----------------------------------------------------------------------------*/
-class search_base& search_base::operator=(const search_base& that)
+class search_base &search_base::operator=(const search_base &that)
 {
 
 /// Overloaded assignment operator.
@@ -160,7 +160,7 @@ void search_base::verify_prediction(move_t m)
 /*----------------------------------------------------------------------------*\
  |				    change()				      |
 \*----------------------------------------------------------------------------*/
-void search_base::change(int s, const board_base& now)
+void search_base::change(int s, const board_base &now)
 {
 
 /// Synchronize the board to the position we're to search from (if necessary)

@@ -57,14 +57,14 @@ class search_base
 public:
 	search_base(table *t, history *h, chess_clock *c, xboard *x);
 	virtual ~search_base();
-	virtual search_base& operator=(const search_base& that);
+	virtual search_base &operator=(const search_base &that);
 	virtual move_t get_hint() const;
 	virtual thread_t get_thread() const;
 	virtual void set_depth(int d);
 	virtual void set_output(bool o);
 	virtual void move_now();
 	virtual void verify_prediction(move_t m);
-	virtual void change(int s, const board_base& now);
+	virtual void change(int s, const board_base &now);
 	static string status_to_string(int status);
 
 #ifdef DEBUG_SEARCH

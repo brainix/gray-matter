@@ -41,7 +41,7 @@ class board_heuristic : public board_base
 public:
 	board_heuristic();
 	~board_heuristic();
-	board_heuristic& operator=(const board_heuristic& that);
+	board_heuristic &operator=(const board_heuristic &that);
 	value_t evaluate(int depth) const;
 private:
 	value_t evaluate_pawns() const;
