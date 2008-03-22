@@ -88,27 +88,27 @@ using namespace std;
  |				    BitBoard				      |
 \*----------------------------------------------------------------------------*/
 
-// A BitBoard is a brilliant data structure based on this observation: there are
-// 64 bits in a uint64_t integer, and there are 64 squares on a chess board.  Do
-// you see where I'm going with this?  A BitBoard is an unsigned 64-bit integer
-// in which every bit corresponds to a square.
-//
-// A single BitBoard can't represent the entire state of the board.  A single
-// bit can only hold a value of 0 or 1 - enough to describe the absence or
-// presence of a piece on a square, but not enough to describe the piece's
-// color or type.  Therefore, we need 12 BitBoards to represent the entire
-// state of the board:
-//
-//		· white pawns		· black pawns
-//		· white knights		· black knights
-//		· white bishops		· black bishops
-//		· white rooks		· black rooks
-//		· white queens		· black queens
-//		· white kings		· black kings
-//
-// Similarly, BitRow is an unsigned 8-bit integer which represents up to 8
-// adjacent squares: a row in a 0° bitboard, a column in a 90° bitboard, or a
-// diagonal in a 45° bitboard.
+/// A BitBoard is a brilliant data structure based on this observation: there
+/// are 64 bits in a uint64_t integer, and there are 64 squares on a chess
+/// board.  Do you see where I'm going with this?  A BitBoard is an unsigned 64-
+/// bit integer in which every bit corresponds to a square.
+///
+/// A single BitBoard can't represent the entire state of the board.  A single
+/// bit can only hold a value of 0 or 1 - enough to describe the absence or
+/// presence of a piece on a square, but not enough to describe the piece's
+/// color or type.  Therefore, we need 12 BitBoards to represent the entire
+/// state of the board:
+///
+///		· white pawns		· black pawns
+///		· white knights		· black knights
+///		· white bishops		· black bishops
+///		· white rooks		· black rooks
+///		· white queens		· black queens
+///		· white kings		· black kings
+///
+/// Similarly, BitRow is an unsigned 8-bit integer which represents up to 8
+/// adjacent squares: a row in a 0° bitboard, a column in a 90° bitboard, or a
+/// diagonal in a 45° bitboard.
 typedef uint64_t bitboard_t;
 typedef uint8_t bitrow_t;
 
@@ -169,15 +169,15 @@ typedef uint8_t bitrow_t;
 \*----------------------------------------------------------------------------*/
 
 /// This structure describes the entire state of the board.  
-/** It contains the aforementioned 12 BitBoards along with castling statuses, 
- *  en passant vulnerability, and the color on move.
- *
- *  Subtle!  In the en passant vulnerability field, we need only store the file
- *  of the pawn susceptible to en passant.  Its rank is implied by the color on
- *  move (which is also kept in the state).  If white is on move, then the pawn
- *  susceptible to en passant must be black and on rank 5.  If black is on move,
- *  then the pawn susceptible to en passant must be white and on rank 4.
- */
+
+/// It contains the aforementioned 12 BitBoards along with castling statuses, 
+/// en passant vulnerability, and the color on move.
+///
+/// Subtle!  In the en passant vulnerability field, we need only store the file
+/// of the pawn susceptible to en passant.  Its rank is implied by the color on
+/// move (which is also kept in the state).  If white is on move, then the pawn
+/// susceptible to en passant must be black and on rank 5.  If black is on move,
+/// then the pawn susceptible to en passant must be white and on rank 4.
 typedef struct state
 {
 	bitboard_t piece[COLORS][SHAPES]; ///< Aforementioned 12 BitBoards.
@@ -187,14 +187,16 @@ typedef struct state
 	int fifty;                        ///< 50 move rule counter.
 } state_t;
 
-// These macros represent the colors on and off move.
-#define ON_MOVE		(state.whose)
-#define OFF_MOVE	(!state.whose)
-
-// This macro assembles a BitBoard that contains all of a color's pieces.
+/// This macro assembles a BitBoard that contains all of a color's pieces.
 #define ALL(s, c)	((s).piece[c][PAWN]   | (s).piece[c][KNIGHT] | \
 			 (s).piece[c][BISHOP] | (s).piece[c][ROOK]   | \
 			 (s).piece[c][QUEEN]  | (s).piece[c][KING])
+
+/// This macro represents the color on move.
+#define ON_MOVE		(state.whose)
+
+/// This macro represents the color off move.
+#define OFF_MOVE	(!state.whose)
 
 
 
@@ -205,11 +207,11 @@ typedef struct state
 typedef int16_t value_t;
 
 /// This structure describes a move. 
-/** It contains the from and to coordinates, the pawn promotion information, 
- *  and the MiniMax score.  We use a BitField to tightly pack this information 
- *  into 32 bits because some of our methods return this structure (rather 
- *  than a pointer to this structure or other similar ugliness).
- */
+
+/// It contains the from and to coordinates, the pawn promotion information, 
+/// and the MiniMax score.  We use a BitField to tightly pack this information 
+/// into 32 bits because some of our methods return this structure (rather 
+/// than a pointer to this structure or other similar ugliness).
 typedef struct move
 {
 	unsigned x1      : 3; ///< From x coordinate.              3 bits
@@ -221,7 +223,7 @@ typedef struct move
 	value_t  value;       ///< MiniMax score.               + 16 bits
 	                      ///                               = 32 bits
 
-	// Overloaded equality test operator.
+	/// Overloaded equality test operator.
 	bool operator==(const struct move that) const
 	{
 		return this->x1 == that.x1 && this->y1 == that.y1 &&
@@ -229,7 +231,7 @@ typedef struct move
 		       this->promo == that.promo;
 	};
 
-	// Overloaded inequality test operator.
+	/// Overloaded inequality test operator.
 	bool operator!=(const struct move that) const
 	{
 		return this->x1 != that.x1 || this->y1 != that.y1 ||
@@ -237,7 +239,7 @@ typedef struct move
 		       this->promo != that.promo;
 	};
 
-	// Overloaded assignment operator.
+	/// Overloaded assignment operator.
 	struct move& operator=(const struct move& that)
 	{
 		x1 = that.x1;
@@ -259,7 +261,7 @@ typedef struct move
  |				     Board				      |
 \*----------------------------------------------------------------------------*/
 
-/// Board representation.
+/// This class represents the board.
 class board_base
 {
 public:
