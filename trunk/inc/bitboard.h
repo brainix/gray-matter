@@ -51,6 +51,10 @@ public:
 	uint64_t row_clr(int n);
 	uint64_t row_set(int n, uint8_t r);
 
+	int col_idx(n);
+	uint64_t col_msk(n);
+	uint64_t col_clr(n);
+
 protected:
 	int angle;
 	uint64_t data;
