@@ -34,7 +34,7 @@ bitboard::bitboard(int a, uint64_t d)
 /*----------------------------------------------------------------------------*\
  |				   bit_idx()				      |
 \*----------------------------------------------------------------------------*/
-int bitboard::bit_idx(int x, int y)
+int bitboard::bit_idx(int x, int y) const
 {
 	return y << 3 | x;
 }
@@ -42,7 +42,7 @@ int bitboard::bit_idx(int x, int y)
 /*----------------------------------------------------------------------------*\
  |				   bit_msk()				      |
 \*----------------------------------------------------------------------------*/
-uint64_t bitboard::bit_msk(int x, int y)
+uint64_t bitboard::bit_msk(int x, int y) const
 {
 	return 1ULL << bit_idx(x, y);
 }
@@ -50,7 +50,7 @@ uint64_t bitboard::bit_msk(int x, int y)
 /*----------------------------------------------------------------------------*\
  |				   bit_get()				      |
 \*----------------------------------------------------------------------------*/
-bool bitboard::bit_get(int x, int y)
+bool bitboard::bit_get(int x, int y) const
 {
 	return data >> bit_idx(x, y) & 1;
 }
@@ -82,7 +82,7 @@ uint64_t bitboard::bit_mov(int x1, int y1, int x2, int y2)
 /*----------------------------------------------------------------------------*\
  |				   row_num()				      |
 \*----------------------------------------------------------------------------*/
-int bitboard::row_num(int x, int y)
+int bitboard::row_num(int x, int y) const
 {
 	return angle == ZERO ? y : x;
 }
@@ -90,7 +90,7 @@ int bitboard::row_num(int x, int y)
 /*----------------------------------------------------------------------------*\
  |				   row_loc()				      |
 \*----------------------------------------------------------------------------*/
-int bitboard::row_loc(int x, int y)
+int bitboard::row_loc(int x, int y) const
 {
 	return angle == ZERO ? x : 7 - y;
 }
@@ -98,7 +98,7 @@ int bitboard::row_loc(int x, int y)
 /*----------------------------------------------------------------------------*\
  |				   row_idx()				      |
 \*----------------------------------------------------------------------------*/
-int bitboard::row_idx(int n)
+int bitboard::row_idx(int n) const
 {
 	return bit_idx(0, n);
 }
@@ -106,7 +106,7 @@ int bitboard::row_idx(int n)
 /*----------------------------------------------------------------------------*\
  |				   row_msk()				      |
 \*----------------------------------------------------------------------------*/
-uint64_t bitboard::row_msk(int n)
+uint64_t bitboard::row_msk(int n) const
 {
 	return 0xFFULL << row_idx(n);
 }
@@ -114,7 +114,7 @@ uint64_t bitboard::row_msk(int n)
 /*----------------------------------------------------------------------------*\
  |				   row_get()				      |
 \*----------------------------------------------------------------------------*/
-uint8_t bitboard::row_get(int n)
+uint8_t bitboard::row_get(int n) const
 {
 	return data >> row_idx(n) & 0xFF;
 }
@@ -138,7 +138,7 @@ uint64_t bitboard::row_set(int n, uint8_t r)
 /*----------------------------------------------------------------------------*\
  |				   col_idx()				      |
 \*----------------------------------------------------------------------------*/
-int bitboard::col_idx(n)
+int bitboard::col_idx(n) const
 {
 	return bit_idx(n, 0);
 }
@@ -146,7 +146,7 @@ int bitboard::col_idx(n)
 /*----------------------------------------------------------------------------*\
  |				   col_msk()				      |
 \*----------------------------------------------------------------------------*/
-uint64_t bitboard::col_msk(n)
+uint64_t bitboard::col_msk(n) const
 {
 	return 0x0101010101010101 << col_idx(n);
 }
@@ -162,7 +162,7 @@ uint64_t bitboard::col_clr(n)
 /*----------------------------------------------------------------------------*\
  |				   diag_num()				      |
 \*----------------------------------------------------------------------------*/
-int bitboard::diag_num(int x, int y)
+int bitboard::diag_num(int x, int y) const
 {
 	return angle == L45 ? x + y : 7 - x + y;
 }
@@ -170,7 +170,7 @@ int bitboard::diag_num(int x, int y)
 /*----------------------------------------------------------------------------*\
  |				   diag_loc()				      |
 \*----------------------------------------------------------------------------*/
-int bitboard::diag_loc(int x, int y)
+int bitboard::diag_loc(int x, int y) const
 {
 	return bit_idx(coord[MAP][angle][x][y][X], coord[MAP][angle][x][y][Y] - diag_idx_array[diag_num(x, y)]);
 }
@@ -178,7 +178,7 @@ int bitboard::diag_loc(int x, int y)
 /*----------------------------------------------------------------------------*\
  |				   diag_len()				      |
 \*----------------------------------------------------------------------------*/
-int bitboard::diag_len(int n)
+int bitboard::diag_len(int n) const
 {
 	return 8 - abs(7 - n);
 }
@@ -186,7 +186,7 @@ int bitboard::diag_len(int n)
 /*----------------------------------------------------------------------------*\
  |				   diag_idx()				      |
 \*----------------------------------------------------------------------------*/
-int bitboard::diag_idx(int n)
+int bitboard::diag_idx(int n) const
 {
 	return diag_idx_array[n];
 }
@@ -194,7 +194,7 @@ int bitboard::diag_idx(int n)
 /*----------------------------------------------------------------------------*\
  |				   diag_msk()				      |
 \*----------------------------------------------------------------------------*/
-uint64_t bitboard::diag_msk(int n)
+uint64_t bitboard::diag_msk(int n) const
 {
 	return (uint64_t) diag_msk_array[n] << diag_idx_array[n];
 }
@@ -202,7 +202,7 @@ uint64_t bitboard::diag_msk(int n)
 /*----------------------------------------------------------------------------*\
  |				   diag_get()				      |
 \*----------------------------------------------------------------------------*/
-uint8_t bitboard::diag_get(int n)
+uint8_t bitboard::diag_get(int n) const
 {
 	return data >> diag_idx_array[n] & diag_msk_array[n];
 }
