@@ -36,31 +36,31 @@ class bitboard
 public:
 	bitboard(int a, uint64_t d);
 
-	int bit_idx(int x, int y);
-	uint64_t bit_msk(int x, int y);
-	bool bit_get(int x, int y);
+	int bit_idx(int x, int y) const;
+	uint64_t bit_msk(int x, int y) const;
+	bool bit_get(int x, int y) const;
 	uint64_t bit_clr(int x, int y);
 	uint64_t bit_set(int x, int y);
 	uint64_t bit_mov(int x1, int y1, int x2, int y2);
 
-	int row_num(int x, int y);
-	int row_loc(int x, int y);
-	int row_idx(int n);
-	uint64_t row_msk(int n);
-	uint8_t row_get(int n);
+	int row_num(int x, int y) const;
+	int row_loc(int x, int y) const;
+	int row_idx(int n) const;
+	uint64_t row_msk(int n) const;
+	uint8_t row_get(int n) const;
 	uint64_t row_clr(int n);
 	uint64_t row_set(int n, uint8_t r);
 
-	int col_idx(n);
-	uint64_t col_msk(n);
+	int col_idx(n) const;
+	uint64_t col_msk(n) const;
 	uint64_t col_clr(n);
 
-	int diag_num(int x, int y);
-	int diag_loc(int x, int y);
-	int diag_len(int n);
-	int diag_idx(int n);
-	uint64_t diag_msk(int n);
-	uint8_t diag_get(int n);
+	int diag_num(int x, int y) const;
+	int diag_loc(int x, int y) const;
+	int diag_len(int n) const;
+	int diag_idx(int n) const;
+	uint64_t diag_msk(int n) const;
+	uint8_t diag_get(int n) const;
 	uint64_t diag_clr(int n);
 	uint64_t diag_set(int n, uint8_t d);
 
@@ -69,7 +69,7 @@ protected:
 	uint64_t data;
 
 	// This array maps coordinates between rotated BitBoards:
-	static int coord[MAPS][ANGLES][8][8][COORDS] =
+	static const int coord[MAPS][ANGLES][8][8][COORDS] =
 	{
 		// From 0° to 45° left:
 		{{{{0,0},{1,0},{3,0},{6,0},{2,1},{7,1},{5,2},{4,3}},
@@ -152,8 +152,8 @@ protected:
 		  {{0,0},{1,0},{2,0},{3,0},{4,0},{5,0},{6,0},{7,0}}}}
 	};
 
-	static int     diag_idx_array[15] = {   0,    1,    3,    6,   10,   15,   21,   28,   36,   43,   49,   54,   58,   61,   63};
-	static uint8_t diag_msk_array[15] = {0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x7F, 0xFF, 0x7F, 0x3F, 0x1F, 0x0F, 0x07, 0x03, 0x01};
+	static const int     diag_idx_array[15] = {   0,    1,    3,    6,   10,   15,   21,   28,   36,   43,   49,   54,   58,   61,   63};
+	static const uint8_t diag_msk_array[15] = {0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x7F, 0xFF, 0x7F, 0x3F, 0x1F, 0x0F, 0x07, 0x03, 0x01};
 };
 
 #endif
