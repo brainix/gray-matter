@@ -36,6 +36,20 @@ class bitboard
 public:
 	bitboard(int a, uint64_t d);
 
+	bool operator<(uint64_t d) const;
+	bool operator<=(uint64_t d) const;
+	bool operator==(uint64_t d) const;
+	bool operator>=(uint64_t d) const;
+	bool operator>(uint64_t d) const;
+	bool operator!=(uint64_t d) const;
+
+	bool operator<(const bitboard& that) const;
+	bool operator<=(const bitboard& that) const;
+	bool operator==(const bitboard& that) const;
+	bool operator>=(const bitboard& that) const;
+	bool operator>(const bitboard& that) const;
+	bool operator!=(const bitboard& that) const;
+
 	int bit_idx(int x, int y) const;
 	uint64_t bit_msk(int x, int y) const;
 	bool bit_get(int x, int y) const;
@@ -64,7 +78,7 @@ public:
 	uint64_t diag_clr(int n);
 	uint64_t diag_set(int n, uint8_t d);
 
-protected:
+private:
 	int angle;
 	uint64_t data;
 
