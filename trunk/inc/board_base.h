@@ -113,7 +113,7 @@ typedef uint64_t bitboard_t;
 typedef uint8_t bitrow_t;
 
 // These macros manipulate bits in BitBoards.
-#define BIT_IDX(x, y)			((y) * 8 + (x))
+#define BIT_IDX(x, y)			((y) << 3 | (x))
 #define BIT_MSK(x, y)			(1ULL << BIT_IDX(x, y))
 #define BIT_GET(b, x, y)		((b) >> BIT_IDX(x, y) & 1)
 #define BIT_CLR(b, x, y)		((b) &= ~BIT_MSK(x, y))
