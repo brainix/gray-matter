@@ -82,7 +82,7 @@ bool bitboard::operator!=(uint64_t d) const
 /*----------------------------------------------------------------------------*\
  |				       <				      |
 \*----------------------------------------------------------------------------*/
-bool bitboard::operator<(const bitboard& that) const
+bool bitboard::operator<(const bitboard &that) const
 {
 	return data < that.data;
 }
@@ -90,7 +90,7 @@ bool bitboard::operator<(const bitboard& that) const
 /*----------------------------------------------------------------------------*\
  |				       <=				      |
 \*----------------------------------------------------------------------------*/
-bool bitboard::operator<=(const bitboard& that) const
+bool bitboard::operator<=(const bitboard &that) const
 {
 	return data <= that.data;
 }
@@ -98,7 +98,7 @@ bool bitboard::operator<=(const bitboard& that) const
 /*----------------------------------------------------------------------------*\
  |				       ==				      |
 \*----------------------------------------------------------------------------*/
-bool bitboard::operator==(const bitboard& that) const
+bool bitboard::operator==(const bitboard &that) const
 {
 	return data == that.data;
 }
@@ -106,7 +106,7 @@ bool bitboard::operator==(const bitboard& that) const
 /*----------------------------------------------------------------------------*\
  |				       >=				      |
 \*----------------------------------------------------------------------------*/
-bool bitboard::operator>=(const bitboard& that) const
+bool bitboard::operator>=(const bitboard &that) const
 {
 	return data >= that.data;
 }
@@ -114,7 +114,7 @@ bool bitboard::operator>=(const bitboard& that) const
 /*----------------------------------------------------------------------------*\
  |				       >				      |
 \*----------------------------------------------------------------------------*/
-bool bitboard::operator>(const bitboard& that) const
+bool bitboard::operator>(const bitboard &that) const
 {
 	return data > that.data;
 }
@@ -122,7 +122,7 @@ bool bitboard::operator>(const bitboard& that) const
 /*----------------------------------------------------------------------------*\
  |				       !=				      |
 \*----------------------------------------------------------------------------*/
-bool bitboard::operator!=(const bitboard& that) const
+bool bitboard::operator!=(const bitboard &that) const
 {
 	return data != that.data;
 }
@@ -317,4 +317,12 @@ uint64_t bitboard::diag_clr(int n)
 uint64_t bitboard::diag_set(int n, uint8_t d)
 {
 	return data |= (uint64_t) d << diag_idx_array[n];
+}
+
+/*----------------------------------------------------------------------------*\
+ |				     fst()				      |
+\*----------------------------------------------------------------------------*/
+int bitboard::fst() const
+{
+	return find_64(data) - 1;
 }

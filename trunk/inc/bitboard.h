@@ -43,12 +43,12 @@ public:
 	bool operator>(uint64_t d) const;
 	bool operator!=(uint64_t d) const;
 
-	bool operator<(const bitboard& that) const;
-	bool operator<=(const bitboard& that) const;
-	bool operator==(const bitboard& that) const;
-	bool operator>=(const bitboard& that) const;
-	bool operator>(const bitboard& that) const;
-	bool operator!=(const bitboard& that) const;
+	bool operator<(const bitboard &that) const;
+	bool operator<=(const bitboard &that) const;
+	bool operator==(const bitboard &that) const;
+	bool operator>=(const bitboard &that) const;
+	bool operator>(const bitboard &that) const;
+	bool operator!=(const bitboard &that) const;
 
 	int bit_idx(int x, int y) const;
 	uint64_t bit_msk(int x, int y) const;
@@ -77,6 +77,8 @@ public:
 	uint8_t diag_get(int n) const;
 	uint64_t diag_clr(int n);
 	uint64_t diag_set(int n, uint8_t d);
+
+	int fst() const;
 
 private:
 	int angle;
