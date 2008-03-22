@@ -35,6 +35,14 @@ class bitboard
 {
 public:
 	bitboard(int a, uint64_t d);
+
+	int bit_idx(int x, int y);
+	uint64_t bit_msk(int x, int y);
+	bool bit_get(int x, int y);
+	uint64_t bit_clr(int x, int y);
+	uint64_t bit_set(int x, int y);
+	uint64_t bit_mov(int x1, int y1, int x2, int y2);
+
 protected:
 	int angle;
 	uint64_t data;
