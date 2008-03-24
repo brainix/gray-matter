@@ -108,8 +108,8 @@ using namespace std;
 typedef uint64_t bitboard_t;
 
 /// A BitRow is an unsigned 8-bit integer which represents up to 8 adjacent
-/// squares: a row in a 0° bitboard, a column in a 90° bitboard, or a diagonal
-/// in a 45° bitboard.
+/// squares: a row in a 0° BitBoard, a column in a 90° BitBoard, or a diagonal
+/// in a 45° BitBoard.
 typedef uint8_t bitrow_t;
 
 // These macros manipulate bits in BitBoards.
