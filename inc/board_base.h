@@ -96,7 +96,7 @@ using namespace std;
 /// A single BitBoard can't represent the entire state of the board.  A single
 /// bit can only hold a value of 0 or 1 - enough to describe the absence or
 /// presence of a piece on a square, but not enough to describe the piece's
-/// color or type.  Therefore, we need 12 BitBoards to represent the entire
+/// color or shape.  Therefore, we need 12 BitBoards to represent the entire
 /// state of the board:
 ///
 ///		· white pawns		· black pawns
@@ -105,11 +105,11 @@ using namespace std;
 ///		· white rooks		· black rooks
 ///		· white queens		· black queens
 ///		· white kings		· black kings
-///
-/// Similarly, BitRow is an unsigned 8-bit integer which represents up to 8
-/// adjacent squares: a row in a 0° bitboard, a column in a 90° bitboard, or a
-/// diagonal in a 45° bitboard.
 typedef uint64_t bitboard_t;
+
+/// A BitRow is an unsigned 8-bit integer which represents up to 8 adjacent
+/// squares: a row in a 0° bitboard, a column in a 90° bitboard, or a diagonal
+/// in a 45° bitboard.
 typedef uint8_t bitrow_t;
 
 // These macros manipulate bits in BitBoards.
@@ -150,41 +150,17 @@ typedef uint8_t bitrow_t;
 // This macro finds the first set bit in a BitBoard.
 #define FST(b)				(find_64(b) - 1)
 
-
-
-/*----------------------------------------------------------------------------*\
- |			      Convenient BitBoards			      |
-\*----------------------------------------------------------------------------*/
-
-/// 4 center squares.
-#define SQUARES_CENTER		0x0000001818000000ULL
-
-/// 16 center squares.
-#define SQUARES_EXPANDED_CENTER	0x00003C3C3C3C0000ULL
-
-/// 16 principal diagonal squares.
-#define SQUARES_PRINCIPAL_DIAG	0x8142241818244281ULL
-
-/// 32 white side squares.
-#define SQUARES_WHITE_SIDE	0x00000000FFFFFFFFULL
-
-/// 32 black side squares.
-#define SQUARES_BLACK_SIDE	0xFFFFFFFF00000000ULL
-
-/// 32 white squares.
-#define SQUARES_WHITE		0x55AA55AA55AA55AAULL
-
-/// 32 black squares.
-#define SQUARES_BLACK		0xAA55AA55AA55AA55ULL
-
-/// 32 queen side squares.
-#define SQUARES_QUEEN_SIDE	0x0F0F0F0F0F0F0F0FULL
-
-/// 32 king side squares.
-#define SQUARES_KING_SIDE	0xF0F0F0F0F0F0F0F0ULL
-
-/// 4 corner squares.
-#define SQUARES_CORNER		0x8100000000000081ULL
+// Convenient BitBoards:
+#define SQUARES_CENTER		0x0000001818000000ULL // 4 center squares.
+#define SQUARES_EXPANDED_CENTER	0x00003C3C3C3C0000ULL // 16 center squares.
+#define SQUARES_PRINCIPAL_DIAG	0x8142241818244281ULL // 16 principal diagonal squares.
+#define SQUARES_WHITE_SIDE	0x00000000FFFFFFFFULL // 32 white side squares.
+#define SQUARES_BLACK_SIDE	0xFFFFFFFF00000000ULL // 32 black side squares.
+#define SQUARES_WHITE		0x55AA55AA55AA55AAULL // 32 white squares.
+#define SQUARES_BLACK		0xAA55AA55AA55AA55ULL // 32 black squares.
+#define SQUARES_QUEEN_SIDE	0x0F0F0F0F0F0F0F0FULL // 32 queen side squares.
+#define SQUARES_KING_SIDE	0xF0F0F0F0F0F0F0F0ULL // 32 king side squares.
+#define SQUARES_CORNER		0x8100000000000081ULL // 4 corner squares.
 
 
 
@@ -205,7 +181,7 @@ typedef uint8_t bitrow_t;
 /// then the pawn susceptible to en passant must be white and on rank 4.
 typedef struct state
 {
-	bitboard_t piece[COLORS][SHAPES]; ///< Aforementioned 12 BitBoards.
+	bitboard_t piece[COLORS][SHAPES]; ///< 12 BitBoards.
 	int castle[COLORS][SIDES];        ///< Castling statuses.
 	int en_passant;                   ///< En passant vulnerability.
 	bool whose;                       ///< Color on move.
@@ -411,9 +387,9 @@ protected:
 	static bool precomputed_board_base = false;
 
 	// Pre-computed moves:
-	bitboard_t squares_king[8][8];
-	bitrow_t squares_row[8][256];
-	bitboard_t squares_knight[8][8];
+	static bitboard_t squares_king[8][8];
+	static bitrow_t squares_row[8][256];
+	static bitboard_t squares_knight[8][8];
 	static const bitboard_t squares_castle[COLORS][SIDES][REQS] =
 	{
 		// The squares which must be unoccupied on the queen side in
