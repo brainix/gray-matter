@@ -194,8 +194,9 @@ typedef uint8_t bitrow_t;
 
 /// This structure describes the entire state of the board.  
 
-/// It contains the aforementioned 12 BitBoards along with castling statuses, 
-/// en passant vulnerability, and the color on move.
+/// This structure contains the 12 BitBoards needed to represent the state of
+/// the board along with castling statuses, en passant vulnerability, the color
+/// on move, and the 50 move rule counter.
 ///
 /// Subtle!  In the en passant vulnerability field, we need only store the file
 /// of the pawn susceptible to en passant.  Its rank is implied by the color on
