@@ -33,7 +33,6 @@ using namespace std;
 #include <vector>
 
 // Default Gray Matter stuff:
-#include "const.h"
 #include "config.h"
 #include "library.h"
 

@@ -23,7 +23,6 @@
 #define TABLE_H
 
 // Default Gray Matter stuff:
-#include "const.h"
 #include "config.h"
 #include "library.h"
 

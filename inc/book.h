@@ -29,7 +29,6 @@ using namespace std;
 #include <string>
 
 // Default Gray Matter stuff:
-#include "const.h"
 #include "config.h"
 #include "library.h"
 
