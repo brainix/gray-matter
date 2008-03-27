@@ -521,7 +521,8 @@ bool board_base::make(move_t m)
 	if (IS_NULL_MOVE(m))
 		goto end;
 
-	// Move the piece and remove the captured piece.
+	// Move the piece.  And if the move is a capture, then remove the
+	// captured piece.
 	for (int shape = PAWN; shape <= KING; shape++)
 	{
 		// Move the piece.
@@ -547,7 +548,7 @@ bool board_base::make(move_t m)
 			}
 		}
 
-		// Remove the captured piece.
+		// If the move is a capture, then remove the captured piece.
 		if (BIT_GET(state.piece[OFF_MOVE][shape], m.x2, m.y2))
 		{
 			BIT_CLR(state.piece[OFF_MOVE][shape], m.x2, m.y2);
@@ -557,7 +558,7 @@ bool board_base::make(move_t m)
 			if (shape == PAWN)
 				pawn_hash ^= key_piece[OFF_MOVE][shape][m.x2][m.y2];
 
-			// We're capturing a piece.  Reset the 50 move rule
+			// The move is a capture.  Reset the 50 move rule
 			// counter.
 			state.fifty = -1;
 		}
