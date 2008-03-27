@@ -94,32 +94,3 @@
 #if MAX_DEPTH < 1
 #error "In inc/config.h, MAX_DEPTH must be >= 1."
 #endif
-
-// Piece colors:
-#define WHITE		0
-#define BLACK		1
-#define COLORS		2
-
-// Piece shapes:
-#define PAWN		0
-#define KNIGHT		1
-#define BISHOP		2
-#define ROOK		3
-#define QUEEN		4
-#define KING		5
-#define SHAPES		6
-
-// Castling sides:
-#define QUEEN_SIDE	0
-#define KING_SIDE	1
-#define SIDES		2
-
-// Memory units:
-#define  B		1           // Byte.
-#define KB		(1024 * B)  // Kilobyte.
-#define MB		(1024 * KB) // Megabyte.
-#define GB		(1024 * MB) // Gigabyte.
-#define TB		(1024 * GB) // Terabyte.
-
-// Infinity:
-#define INFINITY	32767 // Well, close enough.  ;-)
