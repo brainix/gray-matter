@@ -478,7 +478,7 @@ int board_base::get_status(bool mate_test)
 
 	// Are the kings attacking one other?
 	int n = FST(state.piece[WHITE][KING]);
-	if (board_base::squares_king[n & 0x7][n >> 3] & state.piece[BLACK][KING])
+	if (squares_king[n & 0x7][n >> 3] & state.piece[BLACK][KING])
 		return ILLEGAL;
 
 	if (mate_test)
@@ -1296,11 +1296,11 @@ void board_base::generate_king(list<move_t> &l, bool only_captures)
 /// Generate the king moves.
 
 	int n = FST(state.piece[ON_MOVE][KING]), x = n & 0x7, y = n >> 3;
-	bitboard_t takes = board_base::squares_king[x][y] & rotation[ZERO][OFF_MOVE];
+	bitboard_t takes = squares_king[x][y] & rotation[ZERO][OFF_MOVE];
 	insert(x, y, takes, ZERO, l, FRONT);
 	if (!only_captures)
 	{
-		bitboard_t moves = board_base::squares_king[x][y] & ~rotation[ZERO][COLORS];
+		bitboard_t moves = squares_king[x][y] & ~rotation[ZERO][COLORS];
 		insert(x, y, moves, ZERO, l, BACK);
 		for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
 		{
@@ -1575,7 +1575,7 @@ void board_base::precomp_king() const
 		int x = n & 0x7;
 		int y = n >> 3;
 
-		board_base::squares_king[x][y] = 0;
+		squares_king[x][y] = 0;
 		for (int k = -1; k <= 1; k++)
 			for (int j = -1; j <= 1; j++)
 			{
@@ -1587,7 +1587,7 @@ void board_base::precomp_king() const
 					// Oops.  The king can't step off the
 					// board.
 					continue;
-				BIT_SET(board_base::squares_king[x][y], x + j, y + k);
+				BIT_SET(squares_king[x][y], x + j, y + k);
 			}
 	}
 }
@@ -1744,7 +1744,7 @@ bool board_base::check(bitboard_t b1, bool color) const
 		y = n >> 3;
 
 		// Look for a king attack.
-		if (board_base::squares_king[x][y] & state.piece[color][KING])
+		if (squares_king[x][y] & state.piece[color][KING])
 			return true;
 
 		// Look for a horizontal or vertical queen or rook attack.  The
