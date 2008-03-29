@@ -108,9 +108,9 @@ const int board_base::coord[MAPS][ANGLES][8][8][COORDS] =
 };
 
 const int board_base::diag_index[15] = {   0,    1,    3,    6,   10,   15,   21,   28,   36,   43,   49,   54,   58,   61,   63};
-const board_base::bitrow_t diag_mask[15]  = {0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x7F, 0xFF, 0x7F, 0x3F, 0x1F, 0x0F, 0x07, 0x03, 0x01};
+const bitrow_t board_base::diag_mask[15]  = {0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x7F, 0xFF, 0x7F, 0x3F, 0x1F, 0x0F, 0x07, 0x03, 0x01};
 
-const board_base::bitboard_t squares_castle[COLORS][SIDES][REQS] =
+const bitboard_t board_base::squares_castle[COLORS][SIDES][REQS] =
 {
 	// The squares which must be unoccupied on the queen side in
 	// order for the white king to be able to castle:
@@ -1647,7 +1647,7 @@ void board_base::precomp_knight() const
 /*----------------------------------------------------------------------------*\
  |				 precomp_pawn()				      |
 \*----------------------------------------------------------------------------*/
-void board_base::precomp_pawn() const
+void board_base::precomp_pawn()
 {
 	// For every column, pre-compute its adjacent columns.
 	for (int x = 0; x <= 7; x++)
