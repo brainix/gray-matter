@@ -81,10 +81,10 @@ private:
 	static const value_t value_king_cant_castle;
 
 	//
-	bool precomputed_board_heuristic;
-	bitboard_t squares_pawn_duo[8][8];
-	bitboard_t squares_pawn_potential_attacks[COLORS][8][8];
-	bitboard_t squares_pawn_defenses[COLORS][8][8];
+	static bool precomputed_board_heuristic;
+	static bitboard_t squares_pawn_duo[8][8];
+	static bitboard_t squares_pawn_potential_attacks[COLORS][8][8];
+	static bitboard_t squares_pawn_defenses[COLORS][8][8];
 
 	// Since pawn structure remains relatively static, we maintain a hash
 	// table of previous pawn structure evaluations.  According to my tests,
