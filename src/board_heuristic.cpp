@@ -147,6 +147,11 @@ const value_t board_heuristic::value_queen_offside = -30;
 // The penalty for giving up castling:
 const value_t board_heuristic::value_king_cant_castle = -20;
 
+bool board_heuristic::precomputed_board_heuristic = false;
+bitboard_t board_heuristic::squares_pawn_duo[8][8];
+bitboard_t board_heuristic::squares_pawn_potential_attacks[COLORS][8][8];
+bitboard_t board_heuristic::squares_pawn_defenses[COLORS][8][8];
+pawn board_heuristic::pawn_table;
 
 /*----------------------------------------------------------------------------*\
  |			       board_heuristic()			      |
@@ -155,8 +160,6 @@ board_heuristic::board_heuristic() : board_base()
 {
 
 /// Constructor.
-    // FIXME : erm, this is weird, you wanted the data to be static?
-	precomputed_board_heuristic = false;
 
 	if (!precomputed_board_heuristic)
 	{
@@ -247,7 +250,7 @@ value_t board_heuristic::evaluate_pawns() const
 			bitboard_t pawns_on_col = pawns & COL_MSK(y);
 			int num_on_col = count_64(pawns_on_col);
 
-			if (!(pawns & squares_adj_cols[x]))
+			if (!(pawns & board_base::squares_adj_cols[x]))
 			{
 				// Count isolated pawns and penalize isolated
 				// doubled pawns.
@@ -316,7 +319,7 @@ value_t board_heuristic::evaluate_knights() const
 			if (!pawn_potential_attacks)
 			{
 				bitboard_t pawn_defenses =
-					squares_pawn_defenses[color][x][y] &
+					board_heuristic::squares_pawn_defenses[color][x][y] &
 					state.piece[color][PAWN];
 				if (pawn_defenses)
 				{
@@ -585,7 +588,7 @@ void board_heuristic::precomp_pawn()
 			// There can never be any pawn (of either color) on rank
 			// 1 or rank 7.
 			continue;
-		squares_pawn_duo[x][y] = squares_adj_cols[x] & ROW_MSK(y);
+		squares_pawn_duo[x][y] = board_base::squares_adj_cols[x] & ROW_MSK(y);
 	}
 
 	for (int color = WHITE; color <= BLACK; color++)
@@ -599,17 +602,17 @@ void board_heuristic::precomp_pawn()
 			squares_pawn_potential_attacks[color][x][y] = 0;
 			for (int k = y + sign; k >= 1 && k <= 6; k += sign)
 				squares_pawn_potential_attacks[color][x][y] |=
-					ROW_MSK(k) & squares_adj_cols[x];
+					ROW_MSK(k) & board_base::squares_adj_cols[x];
 
 			if (color == WHITE && (y == 0 || y == 1) ||
 			    color == BLACK && (y == 6 || y == 7))
 				// A white pawn can never defend a white piece
 				// in rank 1 or 2.  Similarly, a black pawn can
 				// never defend a black piece in rank 6 or 7.
-				squares_pawn_defenses[color][x][y] = 0;
+				board_heuristic::squares_pawn_defenses[color][x][y] = 0;
 			else
-				squares_pawn_defenses[color][x][y] =
-					ROW_MSK(y + sign) & squares_adj_cols[x];
+				board_heuristic::squares_pawn_defenses[color][x][y] =
+					ROW_MSK(y + sign) & board_base::squares_adj_cols[x];
 		}
 	}
 }

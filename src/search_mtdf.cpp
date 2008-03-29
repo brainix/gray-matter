@@ -244,7 +244,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 		switch (status)
 		{
 //			case IN_PROGRESS  : m.value = -quiesce(shallowness, alpha, beta); break;
-			case IN_PROGRESS  : m.value = -board_ptr->evaluate();             break;
+			case IN_PROGRESS  : m.value = -board_ptr->evaluate(shallowness);  break;
 			case STALEMATE    : m.value = +VALUE_CONTEMPT;                    break;
 			case INSUFFICIENT : m.value = +VALUE_CONTEMPT;                    break;
 			case THREE        : m.value = +VALUE_CONTEMPT;                    break;
@@ -252,7 +252,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 			case CHECKMATE    : m.value = -VALUE_KING;                        break;
 			case ILLEGAL      : m.value = -VALUE_ILLEGAL;                     break;
 //			default           : m.value = -quiesce(shallowness, alpha, beta); break;
-			default           : m.value = -board_ptr->evaluate();             break;
+			default           : m.value = -board_ptr->evaluate(shallowness);  break;
 		}
 		DEBUG_SEARCH_PRINT("terminal state %d.", status);
 		return m;
@@ -288,7 +288,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 	{
 		SET_NULL_MOVE(m);
 //		m.value = -quiesce(shallowness, alpha, beta);
-		m.value = -board_ptr->evaluate();
+		m.value = -board_ptr->evaluate(shallowness);
 		table_ptr->store(hash, 0, EXACT, m);
 		DEBUG_SEARCH_PRINT("evaluate() says %d.", board_ptr->get_whose() ? -m.value : m.value);
 		return m;

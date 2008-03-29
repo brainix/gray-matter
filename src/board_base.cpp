@@ -139,6 +139,16 @@ const bitboard_t board_base::squares_castle[COLORS][SIDES][REQS] =
 };
 
 bool board_base::precomputed_board_base = false;
+bitrow_t board_base::squares_row[8][256];
+bitboard_t board_base::squares_knight[8][8];
+bitboard_t board_base::squares_adj_cols[8];
+bitboard_t board_base::squares_pawn_attacks[COLORS][8][8];
+bitboard_t board_base::squares_king[8][8];
+bitboard_t board_base::key_piece[COLORS][SHAPES][8][8];
+bitboard_t board_base::key_castle[COLORS][SIDES][CASTLE_STATS];
+bitboard_t board_base::key_no_en_passant;
+bitboard_t board_base::key_en_passant[8];
+bitboard_t board_base::key_whose;
 
 /*----------------------------------------------------------------------------*\
  |				  board_base()				      |
@@ -468,7 +478,7 @@ int board_base::get_status(bool mate_test)
 
 	// Are the kings attacking one other?
 	int n = FST(state.piece[WHITE][KING]);
-	if (squares_king[n & 0x7][n >> 3] & state.piece[BLACK][KING])
+	if (board_base::squares_king[n & 0x7][n >> 3] & state.piece[BLACK][KING])
 		return ILLEGAL;
 
 	if (mate_test)
@@ -1286,11 +1296,11 @@ void board_base::generate_king(list<move_t> &l, bool only_captures)
 /// Generate the king moves.
 
 	int n = FST(state.piece[ON_MOVE][KING]), x = n & 0x7, y = n >> 3;
-	bitboard_t takes = squares_king[x][y] & rotation[ZERO][OFF_MOVE];
+	bitboard_t takes = board_base::squares_king[x][y] & rotation[ZERO][OFF_MOVE];
 	insert(x, y, takes, ZERO, l, FRONT);
 	if (!only_captures)
 	{
-		bitboard_t moves = squares_king[x][y] & ~rotation[ZERO][COLORS];
+		bitboard_t moves = board_base::squares_king[x][y] & ~rotation[ZERO][COLORS];
 		insert(x, y, moves, ZERO, l, BACK);
 		for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
 		{
@@ -1565,7 +1575,7 @@ void board_base::precomp_king() const
 		int x = n & 0x7;
 		int y = n >> 3;
 
-		squares_king[x][y] = 0;
+		board_base::squares_king[x][y] = 0;
 		for (int k = -1; k <= 1; k++)
 			for (int j = -1; j <= 1; j++)
 			{
@@ -1577,7 +1587,7 @@ void board_base::precomp_king() const
 					// Oops.  The king can't step off the
 					// board.
 					continue;
-				BIT_SET(squares_king[x][y], x + j, y + k);
+				BIT_SET(board_base::squares_king[x][y], x + j, y + k);
 			}
 	}
 }
@@ -1734,7 +1744,7 @@ bool board_base::check(bitboard_t b1, bool color) const
 		y = n >> 3;
 
 		// Look for a king attack.
-		if (squares_king[x][y] & state.piece[color][KING])
+		if (board_base::squares_king[x][y] & state.piece[color][KING])
 			return true;
 
 		// Look for a horizontal or vertical queen or rook attack.  The
