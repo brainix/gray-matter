@@ -150,7 +150,6 @@ const value_t board_heuristic::value_king_cant_castle = -20;
 bool board_heuristic::precomputed_board_heuristic = false;
 bitboard_t board_heuristic::squares_pawn_duo[8][8];
 bitboard_t board_heuristic::squares_pawn_potential_attacks[COLORS][8][8];
-bitboard_t board_heuristic::squares_pawn_defenses[COLORS][8][8];
 pawn board_heuristic::pawn_table;
 
 /*----------------------------------------------------------------------------*\
@@ -319,7 +318,7 @@ value_t board_heuristic::evaluate_knights() const
 			if (!pawn_potential_attacks)
 			{
 				bitboard_t pawn_defenses =
-					squares_pawn_defenses[color][x][y] &
+					squares_pawn_attacks[color][x][y] &
 					state.piece[color][PAWN];
 				if (pawn_defenses)
 				{
@@ -603,16 +602,6 @@ void board_heuristic::precomp_pawn()
 			for (int k = y + sign; k >= 1 && k <= 6; k += sign)
 				squares_pawn_potential_attacks[color][x][y] |=
 					ROW_MSK(k) & squares_adj_cols[x];
-
-			if (color == WHITE && (y == 0 || y == 1) ||
-			    color == BLACK && (y == 6 || y == 7))
-				// A white pawn can never defend a white piece
-				// in rank 1 or 2.  Similarly, a black pawn can
-				// never defend a black piece in rank 6 or 7.
-				squares_pawn_defenses[color][x][y] = 0;
-			else
-				squares_pawn_defenses[color][x][y] =
-					ROW_MSK(y + sign) & squares_adj_cols[x];
 		}
 	}
 }
