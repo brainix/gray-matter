@@ -29,7 +29,6 @@
 #include "xboard.h"
 #include "search_base.h"
 #include "search_mtdf.h"
-#include "search_scout.h"
 #include "book.h"
 #include "testing.h"
 
@@ -56,11 +55,10 @@ int main(int argc, char **argv)
 			case 'e':
 				// Specifying which move search engine to use.
 				search_engine = optarg;
-				if (search_engine != "MTD(f)" &&
-				    search_engine != "NegaScout")
+				if (search_engine != "MTD(f)")
 				{
 					cerr << "move search engine "
-					     << "must be MTD(f) or NegaScout"
+					     << "must be MTD(f)"
 					     << endl;
 					exit(EXIT_FAILURE);
 				}
@@ -139,8 +137,6 @@ int main(int argc, char **argv)
 	search_base *s = 0;
 	if (search_engine == "MTD(f)")
 		s = new search_mtdf(&t, &h, &c, &x);
-	else if (search_engine == "NegaScout")
-		s = new search_scout(&t, &h, &c, &x);
 
 	// Launch the event loop.
 	x.loop(s, &c, &o);
