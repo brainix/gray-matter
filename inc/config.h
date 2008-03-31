@@ -35,7 +35,7 @@
 /*----------------------------------------------------------------------------*\
 \*----------------------------------------------------------------------------*/
 
-// Default move search engine - must be "MTD(f)" or "NegaScout":
+// Default move search engine - must be "MTD(f)":
 #define SEARCH_ENGINE	"MTD(f)"
 
 // Default opening book file name:

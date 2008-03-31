@@ -57,7 +57,7 @@ class search_base
 public:
 	search_base(table *t, history *h, chess_clock *c, xboard *x);
 	virtual ~search_base();
-	virtual search_base &operator=(const search_base &that);
+	virtual search_base& operator=(const search_base& that);
 	virtual move_t get_hint() const;
 	virtual thread_t get_thread() const;
 	virtual void set_depth(int d);
