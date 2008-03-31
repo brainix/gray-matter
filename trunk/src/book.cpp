@@ -25,7 +25,7 @@
 /*----------------------------------------------------------------------------*\
  |				     book()				      |
 \*----------------------------------------------------------------------------*/
-book::book(table *t, string &file_name, int n)
+book::book(table *t, string& file_name, int n)
 {
 
 /// Constructor.
@@ -59,7 +59,7 @@ void book::read()
 /*----------------------------------------------------------------------------*\
  |			       populate_tokens()			      |
 \*----------------------------------------------------------------------------*/
-void book::populate_tokens(istream &stream, list<string> &tokens)
+void book::populate_tokens(istream& stream, list<string>& tokens)
 {
 
 /// Based on the PGN file, populate the token list.
@@ -74,7 +74,7 @@ void book::populate_tokens(istream &stream, list<string> &tokens)
 /*----------------------------------------------------------------------------*\
  |				populate_games()			      |
 \*----------------------------------------------------------------------------*/
-void book::populate_games(list<string> &tokens)
+void book::populate_games(list<string>& tokens)
 {
 
 /// Based on the token list, populate the game list.
@@ -132,7 +132,7 @@ void book::populate_table()
 /*----------------------------------------------------------------------------*\
  |				   tokenize()				      |
 \*----------------------------------------------------------------------------*/
-int book::tokenize(istream &stream, string &token)
+int book::tokenize(istream& stream, string& token)
 {
 
 /// Forward past the PGN opening book file stream's next token, save it (null
@@ -160,7 +160,7 @@ int book::tokenize(istream &stream, string &token)
 /*----------------------------------------------------------------------------*\
  |				tokenize_space()			      |
 \*----------------------------------------------------------------------------*/
-bool book::tokenize_space(istream &stream, string &token)
+bool book::tokenize_space(istream& stream, string& token)
 {
 
 /// If the stream's next token is whitespace (as defined by the PGN
@@ -178,7 +178,7 @@ bool book::tokenize_space(istream &stream, string &token)
 /*----------------------------------------------------------------------------*\
  |			       tokenize_string()			      |
 \*----------------------------------------------------------------------------*/
-bool book::tokenize_string(istream &stream, string &token)
+bool book::tokenize_string(istream& stream, string& token)
 {
 
 /// If the stream's next token is a string (as defined by the PGN
@@ -207,7 +207,7 @@ bool book::tokenize_string(istream &stream, string &token)
 /*----------------------------------------------------------------------------*\
  |			       tokenize_integer()			      |
 \*----------------------------------------------------------------------------*/
-bool book::tokenize_integer(istream &stream, string &token)
+bool book::tokenize_integer(istream& stream, string& token)
 {
 
 /// If the stream's next token is an integer (as defined by the PGN
@@ -225,7 +225,7 @@ bool book::tokenize_integer(istream &stream, string &token)
 /*----------------------------------------------------------------------------*\
  |			     tokenize_punctuation()			      |
 \*----------------------------------------------------------------------------*/
-bool book::tokenize_punctuation(istream &stream, string &token)
+bool book::tokenize_punctuation(istream& stream, string& token)
 {
 
 /// If the stream's next token is punctuation (as defined by the PGN
@@ -247,7 +247,7 @@ bool book::tokenize_punctuation(istream &stream, string &token)
 /*----------------------------------------------------------------------------*\
  |				tokenize_glyph()			      |
 \*----------------------------------------------------------------------------*/
-bool book::tokenize_glyph(istream &stream, string &token)
+bool book::tokenize_glyph(istream& stream, string& token)
 {
 
 /// If the stream's next token is a Numeric Annotation Glyph (as defined by the
@@ -269,7 +269,7 @@ bool book::tokenize_glyph(istream &stream, string &token)
 /*----------------------------------------------------------------------------*\
  |			       tokenize_symbol()			      |
 \*----------------------------------------------------------------------------*/
-bool book::tokenize_symbol(istream &stream, string &token)
+bool book::tokenize_symbol(istream& stream, string& token)
 {
 
 /// If the stream's next token is a symbol (as defined by the PGN

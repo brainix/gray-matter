@@ -65,7 +65,7 @@ class table;
 class book
 {
 public:
-	book(table *t, string &file_name, int n);
+	book(table *t, string& file_name, int n);
 	void read();
 private:
 	int num_moves;             ///<
@@ -76,18 +76,18 @@ private:
 
 	// Based on the PGN file, the following methods populate the token list,
 	// game list, and transposition table.
-	void populate_tokens(istream &stream, list<string> &tokens);
-	void populate_games(list<string> &tokens);
+	void populate_tokens(istream& stream, list<string>& tokens);
+	void populate_games(list<string>& tokens);
 	void populate_table();
 
 	//
-	int tokenize(istream &stream, string &token);
-	bool tokenize_space(istream &stream, string &token);
-	bool tokenize_string(istream &stream, string &token);
-	bool tokenize_integer(istream &stream, string &token);
-	bool tokenize_punctuation(istream &stream, string &token);
-	bool tokenize_glyph(istream &stream, string &token);
-	bool tokenize_symbol(istream &stream, string &token);
+	int tokenize(istream& stream, string& token);
+	bool tokenize_space(istream& stream, string& token);
+	bool tokenize_string(istream& stream, string& token);
+	bool tokenize_integer(istream& stream, string& token);
+	bool tokenize_punctuation(istream& stream, string& token);
+	bool tokenize_glyph(istream& stream, string& token);
+	bool tokenize_symbol(istream& stream, string& token);
 
 	// The following method is the most magnificent hack of my life.
 	static bool shuffle(list<move_t> l1, list<move_t> l2);

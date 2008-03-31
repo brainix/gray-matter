@@ -46,7 +46,7 @@ search_mtdf::~search_mtdf()
 /*----------------------------------------------------------------------------*\
  |				       =				      |
 \*----------------------------------------------------------------------------*/
-search_mtdf &search_mtdf::operator=(const search_mtdf &that)
+search_mtdf& search_mtdf::operator=(const search_mtdf& that)
 {
 
 /// Overloaded assignment operator.

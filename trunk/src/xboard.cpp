@@ -157,7 +157,7 @@ void xboard::loop(search_base *s, chess_clock *c, book *o)
 /*----------------------------------------------------------------------------*\
  |				 print_output()				      |
 \*----------------------------------------------------------------------------*/
-void xboard::print_output(int ply, int value, int time, int nodes, list<move_t> &pv) const
+void xboard::print_output(int ply, int value, int time, int nodes, list<move_t>& pv) const
 {
 
 /// Print thinking output.
