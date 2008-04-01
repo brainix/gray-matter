@@ -185,7 +185,7 @@ void xboard::print_result(move_t m)
 /// search engine's mode.
 
 	// Did we come up with a move?
-	if (IS_NULL_MOVE(m))
+	if (m.is_null())
 	{
 		// No.  :'(  Give up.
 		print_resignation();
@@ -227,7 +227,7 @@ void xboard::print_resignation()
 	{
 		// This code should not be reached ??!!
 		move_t m;
-		SET_NULL_MOVE(m);
+		m.set_null();
 		test_suite_next(m);
 	}
 }
@@ -524,7 +524,7 @@ void xboard::do_hint() const
 /// Give our opponent a hint.
 
 	move_t m = search_ptr->get_hint();
-	if (IS_NULL_MOVE(m))
+	if (m.is_null())
 		return;
 	printf("Hint: ");
 	print_move(m);

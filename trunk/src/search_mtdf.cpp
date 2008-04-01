@@ -101,7 +101,7 @@ void search_mtdf::iterate(int s)
 
 	// If we're to ponder, then pretend that our opponent has made the move
 	// that we think that she'll make, then think about our best response.
-	if (s == PONDERING && !IS_NULL_MOVE(hint))
+	if (s == PONDERING && !hint.is_null())
 	{
 		strong_pondering = true;
 		board_ptr->make(hint);
@@ -111,7 +111,7 @@ void search_mtdf::iterate(int s)
 	nodes = 0;
 	for (int depth = 0; depth <= 1; depth++)
 	{
-		SET_NULL_MOVE(guess[depth]);
+		guess[depth].set_null();
 		guess[depth].value = 0;
 	}
 
@@ -123,7 +123,7 @@ void search_mtdf::iterate(int s)
 		DEBUG_SEARCH_INIT(0, "");
 //		guess[depth & 1] = mtdf(depth, guess[depth & 1].value);
 		guess[depth & 1] = minimax(depth);
-		if (timeout_flag || IS_NULL_MOVE(guess[depth & 1]))
+		if (timeout_flag || guess[depth & 1].is_null())
 			// Oops.  Either the alarm has interrupted this
 			// iteration (and the results are incomplete and
 			// unreliable), or there's no legal move in this
@@ -178,7 +178,7 @@ move_t search_mtdf::mtdf(int depth, value_t guess)
 /// the MTD(f) algorithm.
 
 	move_t m;
-	SET_NULL_MOVE(m);
+	m.set_null();
 	m.value = guess;
 	value_t upper = +INFINITY, lower = -INFINITY, beta;
 
@@ -240,7 +240,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 	// last.)
 	if (status != IN_PROGRESS)
 	{
-		SET_NULL_MOVE(m);
+		m.set_null();
 		switch (status)
 		{
 //			case IN_PROGRESS  : m.value = -quiesce(shallowness, alpha, beta); break;
@@ -286,7 +286,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 	// all we have to do is apply the static evaluator.
 	if (depth <= 0)
 	{
-		SET_NULL_MOVE(m);
+		m.set_null();
 //		m.value = -quiesce(shallowness, alpha, beta);
 		m.value = -board_ptr->evaluate(shallowness);
 		table_ptr->store(hash, 0, EXACT, m);
@@ -297,7 +297,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 	// Perform null move pruning.
 //	if (try_null_move && !board_ptr->zugzwang())
 //	{
-//		SET_NULL_MOVE(null_move);
+//		null_move.set_null();
 //		DEBUG_SEARCH_ADD_MOVE(null_move);
 //		board_ptr->make(null_move);
 //		null_move = minimax(depth - R - 1, shallowness + R + 1, -beta, -beta + 1, false);
@@ -315,7 +315,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 	{
 		// There's a move in the list that captures the opponent's king,
 		// which means that we're in an illegal position.
-		SET_NULL_MOVE(m);
+		m.set_null();
 		m.value = VALUE_ILLEGAL;
 		DEBUG_SEARCH_PRINT("Opponent's king can be captured - illegal position.");
 		return m;
@@ -333,7 +333,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 	l.sort(descend);
 
 	// Score each move in the list.
-	SET_NULL_MOVE(m);
+	m.set_null();
 	m.value = -VALUE_ILLEGAL;
 	for (it = l.begin(); it != l.end(); it++)
 	{
@@ -358,7 +358,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 		// checkmate.  How can we tell which?  If our opponent is in
 		// check, then the position is illegal.  If we're not in check,
 		// then we're drawn.  If we're in check, then we're checkmated.
-		SET_NULL_MOVE(m);
+		m.set_null();
 		if (board_ptr->check(true))
 			// Our opponent is in check; the position is illegal;
 			// we've already won.

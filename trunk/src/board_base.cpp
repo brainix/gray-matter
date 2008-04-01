@@ -1,5 +1,6 @@
 /*----------------------------------------------------------------------------*\
- |	board_base.cpp - board representation implementation		      |
+ |	board_base.cpp - board representation and move generation	      |
+ |	                 implementation					      |
  |									      |
  |	Copyright © 2005-2008, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
@@ -155,7 +156,7 @@ bitboard_t board_base::key_piece[COLORS][SHAPES][8][8];
 bitboard_t board_base::key_castle[COLORS][SIDES][CASTLE_STATS];
 bitboard_t board_base::key_no_en_passant;
 bitboard_t board_base::key_en_passant[8];
-bitboard_t board_base::key_whose;
+bitboard_t board_base::key_on_move;
 
 /*----------------------------------------------------------------------------*\
  |				  board_base()				      |
@@ -304,8 +305,8 @@ bool board_base::set_board_fen(string &fen)
 	// Parse the active color.
 	switch (fen[index])
 	{
-		case 'w' : state.whose = WHITE; break;
-		case 'b' : state.whose = BLACK; break;
+		case 'w' : state.on_move = WHITE; break;
+		case 'b' : state.on_move = BLACK; break;
 		default  : return set_board_fen_error(fen, "Invalid active color.", x, y); break;
 	}
 	if (++index >= fen.length())
@@ -347,8 +348,8 @@ bool board_base::set_board_fen(string &fen)
 		state.en_passant = fen[index] - 'a';
 		if (++index >= fen.length())
 			return set_board_fen_error(fen, "FEN string too short (8).", x, y);
-		if (state.whose == WHITE && fen[index] != '5' ||
-		    state.whose == WHITE && fen[index] != '4')
+		if (state.on_move == WHITE && fen[index] != '5' ||
+		    state.on_move == WHITE && fen[index] != '4')
 			return set_board_fen_error(fen, "Invalid en passant target rank.", x, y);
 	}
 	if (++index >= fen.length())
@@ -412,7 +413,7 @@ bool board_base::set_board_fen_error(string &fen, string reason, int x, int y)
 			state.castle[color][side] = CANT_CASTLE;
 	}
 	state.en_passant = -1;
-	state.whose = WHITE;
+	state.on_move = WHITE;
 	state.fifty = 0;
 	init_rotation();
 	init_hash();
@@ -450,7 +451,7 @@ bool board_base::get_whose() const
 
 /// Return the color on move.
 
-	return ON_MOVE;
+	return state.on_move;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -653,7 +654,7 @@ bool board_base::make(move_t m)
 	pawn_hashes.push_back(pawn_hash);
 
 	// If we're making a null move, then skip a bunch of this nonsense.
-	if (IS_NULL_MOVE(m))
+	if (m.is_null())
 		goto end;
 
 	// Move the piece.  And if the move is a capture, then remove the
@@ -787,8 +788,8 @@ bool board_base::make(move_t m)
 
 end:
 	// Set the other color on move.
-	state.whose = !state.whose;
-	hash ^= key_whose;
+	state.on_move = !state.on_move;
+	hash ^= key_on_move;
 
 	// Increment the 50 move rule counter.
 	state.fifty++;
@@ -842,7 +843,7 @@ move_t board_base::san_to_coord(string &san)
 	bool capture = false;
 	move_t m;
 
-	SET_NULL_MOVE(m);
+	m.set_null();
 	m.value = 0;
 
 	// Check for special cases.  O-O-O means that we're castling queen side
@@ -1014,7 +1015,7 @@ move_t board_base::san_to_coord(string &san)
 	// check.  Make sure that this isn't the case.
 	make(m);
 	if (check(state.piece[OFF_MOVE][KING], ON_MOVE))
-		SET_NULL_MOVE(m); // Oops, the move leaves us in check.
+		m.set_null(); // Oops, the move leaves us in check.
 	unmake();
 	return m;
 }
@@ -1033,7 +1034,7 @@ void board_base::coord_to_san(move_t m, string &san)
 	int shape;
 	ostringstream sanstr;
 
-	if (IS_NULL_MOVE(m))
+	if (m.is_null())
 	{
 		san.replace(0, san.length(), "null");
 		return;
@@ -1206,7 +1207,7 @@ void board_base::init_state()
 	// Mark no pawn vulnerable to en passant, set white on move, and
 	// initialize the 50 move rule counter.
 	state.en_passant = -1;
-	state.whose = WHITE;
+	state.on_move = WHITE;
 	state.fifty = 0;
 }
 
@@ -1263,8 +1264,8 @@ void board_base::init_hash()
 	hash ^= state.en_passant == -1 ? key_no_en_passant : key_en_passant[state.en_passant];
 	pawn_hash ^= state.en_passant == -1 ? key_no_en_passant : key_en_passant[state.en_passant];
 
-	if (state.whose == WHITE)
-		hash ^= key_whose;
+	if (state.on_move == WHITE)
+		hash ^= key_on_move;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -1291,7 +1292,7 @@ void board_base::precomp_key() const
 	for (int x = 0; x <= 8; x++)
 		key_en_passant[x] = rand_64();
 
-	key_whose = rand_64();
+	key_on_move = rand_64();
 }
 
 /*----------------------------------------------------------------------------*\
