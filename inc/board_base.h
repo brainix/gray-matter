@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*\
- |	board_base.h - board representation interface			      |
+ |	board_base.h - board representation and move generation interface     |
  |									      |
  |	Copyright © 2005-2008, The Gray Matter Team, original authors.	      |
 \*----------------------------------------------------------------------------*/
@@ -32,6 +32,11 @@ using namespace std;
 // Default Gray Matter stuff:
 #include "config.h"
 #include "library.h"
+
+// Extra Gray Matter stuff:
+#include "bitboard.h"
+#include "state.h"
+#include "move.h"
 
 // Castling statuses:
 #define CAN_CASTLE	0
@@ -82,187 +87,13 @@ using namespace std;
 #define BACK		1
 #define POSITIONS	2
 
+/// This macro represents the color currently on move.
+#define ON_MOVE		(state.on_move)
 
+/// This macro represents the color currently off move.
+#define OFF_MOVE	(!state.on_move)
 
-/*----------------------------------------------------------------------------*\
- |				    BitBoard				      |
-\*----------------------------------------------------------------------------*/
-
-/// A BitBoard is a brilliant data structure based on this observation: there
-/// are 64 bits in a uint64_t integer, and there are 64 squares on a chess
-/// board.  Do you see where I'm going with this?  A BitBoard is an unsigned 64-
-/// bit integer in which every bit corresponds to a square.
-///
-/// A single BitBoard can't represent the entire state of the board.  A single
-/// bit can only hold a value of 0 or 1 - enough to describe the absence or
-/// presence of a piece on a square, but not enough to describe the piece's
-/// color or shape.  Therefore, we need 12 BitBoards to represent the entire
-/// state of the board:
-///
-///		· white pawns		· black pawns
-///		· white knights		· black knights
-///		· white bishops		· black bishops
-///		· white rooks		· black rooks
-///		· white queens		· black queens
-///		· white kings		· black kings
-typedef uint64_t bitboard_t;
-
-/// A BitRow is an unsigned 8-bit integer which represents up to 8 adjacent
-/// squares: a row in a 0° BitBoard, a column in a 90° BitBoard, or a diagonal
-/// in a 45° BitBoard.
-typedef uint8_t bitrow_t;
-
-// These macros manipulate bits in BitBoards.
-#define BIT_IDX(x, y)			((y) << 3 | (x))
-#define BIT_MSK(x, y)			(1ULL << BIT_IDX(x, y))
-#define BIT_GET(b, x, y)		((b) >> BIT_IDX(x, y) & 1)
-#define BIT_CLR(b, x, y)		((b) &= ~BIT_MSK(x, y))
-#define BIT_SET(b, x, y)		((b) |= BIT_MSK(x, y))
-#define BIT_MOV(b, x1, y1, x2, y2)	((b) ^= BIT_MSK(x1, y1) | BIT_MSK(x2, y2))
-
-// These macros manipulate rows in 0° rotated BitBoards and columns in 90°
-// rotated BitBoards.
-#define ROW_NUM(x, y, a)		((a) == ZERO ? (y) : (x))
-#define ROW_LOC(x, y, a)		((a) == ZERO ? (x) : 7 - (y))
-#define ROW_IDX(n)			(BIT_IDX(0, n))
-#define ROW_MSK(n)			(0xFFULL << ROW_IDX(n))
-#define ROW_GET(b, n)			((b) >> ROW_IDX(n) & 0xFF)
-#define ROW_CLR(b, n)			((b) &= ~ROW_MSK(n))
-#define ROW_SET(b, n, r)		((b) |= (bitboard_t) (r) << ROW_IDX(n))
-
-// These macros manipulate columns in 0° rotated BitBoards and rows in 90°
-// rotated BitBoards.
-#define COL_IDX(n)			(BIT_IDX(n, 0))
-#define COL_MSK(n)			(0x0101010101010101ULL << COL_IDX(n))
-#define COL_CLR(b, n)			((b) &= ~COL_MSK(n))
-
-// These macros manipulate adjacent bits in 45° rotated BitBoards, which
-// correspond to diagonals in 0° and 90° rotated BitBoards.
-#define DIAG_NUM(x, y, a)		((a) == L45 ? (x) + (y) : 7 - (x) + (y))
-#define DIAG_LOC(x, y, a)		(BIT_IDX(coord[MAP][a][x][y][X], coord[MAP][a][x][y][Y]) - diag_index[DIAG_NUM(x, y, a)])
-#define DIAG_LEN(n)			(8 - abs(7 - (n)))
-#define DIAG_IDX(n)			(diag_index[n])
-#define DIAG_MSK(n)			((bitboard_t) diag_mask[n] << diag_index[n])
-#define DIAG_GET(b, n)			((b) >> diag_index[n] & diag_mask[n])
-#define DIAG_CLR(b, n)			((b) &= ~DIAG_MSK(n))
-#define DIAG_SET(b, n, d)		((b) |= (bitboard_t) (d) << diag_index[n])
-
-// This macro finds the first set bit in a BitBoard.
-#define FST(b)				(find_64(b) - 1)
-
-// Convenient BitBoards:
-#define SQUARES_CENTER		0x0000001818000000ULL // 4 center squares.
-#define SQUARES_EXPANDED_CENTER	0x00003C3C3C3C0000ULL // 16 center squares.
-#define SQUARES_PRINCIPAL_DIAG	0x8142241818244281ULL // 16 principal diagonal squares.
-#define SQUARES_WHITE_SIDE	0x00000000FFFFFFFFULL // 32 white side squares.
-#define SQUARES_BLACK_SIDE	0xFFFFFFFF00000000ULL // 32 black side squares.
-#define SQUARES_WHITE		0x55AA55AA55AA55AAULL // 32 white squares.
-#define SQUARES_BLACK		0xAA55AA55AA55AA55ULL // 32 black squares.
-#define SQUARES_QUEEN_SIDE	0x0F0F0F0F0F0F0F0FULL // 32 queen side squares.
-#define SQUARES_KING_SIDE	0xF0F0F0F0F0F0F0F0ULL // 32 king side squares.
-#define SQUARES_CORNER		0x8100000000000081ULL // 4 corner squares.
-
-
-
-/*----------------------------------------------------------------------------*\
- |				     State				      |
-\*----------------------------------------------------------------------------*/
-
-/// This structure describes the entire state of the board.  
-
-/// This structure contains the 12 BitBoards needed to represent the state of
-/// the board along with castling statuses, en passant vulnerability, the color
-/// on move, and the 50 move rule counter.
-///
-/// Subtle!  In the en passant vulnerability field, we need only store the file
-/// of the pawn susceptible to en passant.  Its rank is implied by the color on
-/// move (which is also kept in the state).  If white is on move, then the pawn
-/// susceptible to en passant must be black and on rank 5.  If black is on move,
-/// then the pawn susceptible to en passant must be white and on rank 4.
-typedef struct state
-{
-	bitboard_t piece[COLORS][SHAPES]; ///< 12 BitBoards.
-	int castle[COLORS][SIDES];        ///< Castling statuses.
-	int en_passant;                   ///< En passant vulnerability.
-	bool whose;                       ///< Color on move.
-	int fifty;                        ///< 50 move rule counter.
-} state_t;
-
-/// This macro assembles a BitBoard that contains all of a color's pieces.
-#define ALL(s, c)	((s).piece[c][PAWN]   | (s).piece[c][KNIGHT] | \
-			 (s).piece[c][BISHOP] | (s).piece[c][ROOK]   | \
-			 (s).piece[c][QUEEN]  | (s).piece[c][KING])
-
-/// This macro represents the color on move.
-#define ON_MOVE		(state.whose)
-
-/// This macro represents the color off move.
-#define OFF_MOVE	(!state.whose)
-
-
-
-/*----------------------------------------------------------------------------*\
- |				      Move				      |
-\*----------------------------------------------------------------------------*/
-
-typedef int16_t value_t;
-
-/// This structure describes a move. 
-
-/// It contains the from and to coordinates, the pawn promotion information, 
-/// and the MiniMax score.  We use a BitField to tightly pack this information 
-/// into 32 bits because some of our methods return this structure (rather 
-/// than a pointer to this structure or other similar ugliness).
-typedef struct move
-{
-	unsigned x1      : 3; ///< From x coordinate.              3 bits
-	unsigned y1      : 3; ///< From y coordinate.           +  3 bits
-	unsigned x2      : 3; ///< To x coordinate.             +  3 bits
-	unsigned y2      : 3; ///< To y coordinate.             +  3 bits
-	unsigned promo   : 3; ///< Pawn promotion information.  +  3 bits
-	unsigned padding : 1; ///< The Evil Bit (TM).           +  1 bit
-	value_t  value;       ///< MiniMax score.               + 16 bits
-	                      //                                = 32 bits
-
-	/// Overloaded equality test operator.
-	bool operator==(const struct move that) const
-	{
-		return this->x1 == that.x1 && this->y1 == that.y1 &&
-		       this->x2 == that.x2 && this->y2 == that.y2 &&
-		       this->promo == that.promo;
-	};
-
-	/// Overloaded inequality test operator.
-	bool operator!=(const struct move that) const
-	{
-		return this->x1 != that.x1 || this->y1 != that.y1 ||
-		       this->x2 != that.x2 || this->y2 != that.y2 ||
-		       this->promo != that.promo;
-	};
-
-	/// Overloaded assignment operator.
-	struct move& operator=(const struct move& that)
-	{
-		x1 = that.x1;
-		y1 = that.y1;
-		x2 = that.x2;
-		y2 = that.y2;
-		promo = that.promo;
-		value = that.value;
-		return *this;
-	};
-} __attribute__((packed)) move_t;
-
-#define IS_NULL_MOVE(m)		(!(m).promo && !(m).y2 && !(m).x2 && !(m).y1 && !(m).x1)
-#define SET_NULL_MOVE(m)	((m).promo = (m).y2 = (m).x2 = (m).y1 = (m).x1 = 0)
-
-
-
-/*----------------------------------------------------------------------------*\
- |				     Board				      |
-\*----------------------------------------------------------------------------*/
-
-/// This class represents the board.
+/// This class represents the board and generates moves.
 class board_base
 {
 public:
@@ -318,7 +149,7 @@ protected:
 	static bitboard_t key_castle[COLORS][SIDES][CASTLE_STATS];
 	static bitboard_t key_no_en_passant;
 	static bitboard_t key_en_passant[8];
-	static bitboard_t key_whose;
+	static bitboard_t key_on_move;
 
 	list<state_t> states;                           ///< Previous states.
 	state_t state;                                  ///< Current state.
@@ -360,7 +191,5 @@ protected:
 	virtual bitboard_t rotate(bitboard_t b1, int map, int angle) const;
 	virtual void insert(int x, int y, bitboard_t b, int angle, list<move_t>& l, bool pos);
 };
-
-
 
 #endif

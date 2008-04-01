@@ -22,7 +22,10 @@
 #ifndef SINGLETON_H
 #define SINGLETON_H
 
-template<typename t> class singleton
+using namespace std;
+
+template<typename t>
+class singleton
 {
 public:
 	static t& instance()

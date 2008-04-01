@@ -301,7 +301,7 @@ void search_base::extract_pv()
 	pv.clear();
 
 	for (table_ptr->probe(board_ptr->get_hash(), 0, EXACT, &m); 
-	     !IS_NULL_MOVE(m) && board_ptr->get_status(true) == IN_PROGRESS; 
+	     !m.is_null() && board_ptr->get_status(true) == IN_PROGRESS;
 	     table_ptr->probe(board_ptr->get_hash(), 0, EXACT, &m))
 	{
 		pv.push_back(m);
@@ -343,7 +343,7 @@ void search_base::extract_hint(int s)
 	else
 		// The principal variation isn't long enough.  We don't know
 		// what our opponent should do.
-		SET_NULL_MOVE(hint);
+		hint.set_null();
 }
 
 /*----------------------------------------------------------------------------*\
