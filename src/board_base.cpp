@@ -449,7 +449,7 @@ void board_base::unlock()
 bool board_base::get_whose() const
 {
 
-/// Return the color on move.
+/// Return the color currently on move.
 
 	return state.on_move;
 }
@@ -518,10 +518,9 @@ int board_base::get_num_moves() const
 \*----------------------------------------------------------------------------*/
 bool board_base::check(bool off_move) const
 {
-	if (off_move)
-		return check(state.piece[OFF_MOVE][KING], ON_MOVE);
-	else
-		return check(state.piece[ON_MOVE][KING], OFF_MOVE);
+	bool defense = off_move ? OFF_MOVE : ON_MOVE;
+	bool offense = off_move ? ON_MOVE : OFF_MOVE;
+	return check(state.piece[defense][KING], offense);
 }
 
 /*----------------------------------------------------------------------------*\
