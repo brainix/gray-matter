@@ -22,8 +22,6 @@
 #ifndef BITBOARD_H
 #define BITBOARD_H
 
-using namespace std;
-
 // Default Gray Matter stuff:
 #include "config.h"
 #include "library.h"

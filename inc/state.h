@@ -22,8 +22,6 @@
 #ifndef STATE_H
 #define STATE_H
 
-using namespace std;
-
 // Default Gray Matter stuff:
 #include "config.h"
 #include "library.h"
