@@ -22,8 +22,6 @@
 #ifndef SINGLETON_H
 #define SINGLETON_H
 
-using namespace std;
-
 template<typename t>
 class singleton
 {

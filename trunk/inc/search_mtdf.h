@@ -22,8 +22,6 @@
 #ifndef SEARCH_MTDF_H
 #define SEARCH_MTDF_H
 
-using namespace std;
-
 // Default Gray Matter stuff:
 #include "config.h"
 #include "library.h"

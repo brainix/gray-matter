@@ -22,8 +22,6 @@
 #ifndef BOARD_BASE_H
 #define BOARD_BASE_H
 
-using namespace std;
-
 // C++ stuff:
 #include <list>
 #include <string>
