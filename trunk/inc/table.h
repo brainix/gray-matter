@@ -27,7 +27,8 @@
 #include "library.h"
 
 // Extra Gray Matter stuff:
-#include "board_base.h"
+#include "bitboard.h"
+#include "move.h"
 
 // Transposition table entry replacement policies:
 #define DEEP		0 // Replace if same depth or deeper.
