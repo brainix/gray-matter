@@ -77,11 +77,11 @@ typedef DWORD (*entry_t)(LPVOID arg); // Entry point.
 typedef HANDLE mutex_t;               // Mutex.
 typedef struct                        // Condition variable.
 {
-	CRITICAL_SECTION lock; // Lock to protect count, bcast.
-	int count;             // Number of waiting threads.
-	HANDLE sema;           // Queue of waiting threads.
-	HANDLE done;           // Whether all waiting threads have woken up.
-	BOOL bcast;            // TRUE if broadcasting, FALSE if signaling.
+	CRITICAL_SECTION lock; ///< Lock to protect count, bcast.
+	int count;             ///< Number of waiting threads.
+	HANDLE sema;           ///< Queue of waiting threads.
+	HANDLE done;           ///< Whether all waiting threads have woken up.
+	BOOL bcast;            ///< TRUE if broadcasting, FALSE if signaling.
 } cond_t;
 
 #endif

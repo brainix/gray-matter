@@ -43,6 +43,7 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+#include <list>
 #include <string>
 
 // Convenience macros:

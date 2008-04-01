@@ -22,6 +22,7 @@
 #ifndef CLOCK_H
 #define CLOCK_H
 
+// C++ stuff:
 #include <string>
 #include <sstream>
 
@@ -53,8 +54,6 @@ public:
 	int get_elapsed() const;
 	void swap_clocks();
 private:
-	static void sound_alarm(void *data);
-
 	int total_moves[COLORS];         ///<
 	int remaining_moves[COLORS];     ///<
 	int remaining_csecs[COLORS];     ///<
@@ -63,6 +62,8 @@ private:
 	clock_t noted_time;              ///<
 	clock_callback_t clock_callback; ///<
 	void *clock_callback_data;       ///<
+
+	static void sound_alarm(void *data);
 };
 
 #endif
