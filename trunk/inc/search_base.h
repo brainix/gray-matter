@@ -22,6 +22,8 @@
 #ifndef SEARCH_BASE_H
 #define SEARCH_BASE_H
 
+using namespace std;
+
 // C++ stuff:
 #include <list>
 
@@ -65,10 +67,10 @@ public:
 	virtual void move_now();
 	virtual void verify_prediction(move_t m);
 	virtual void change(int s, const board_base &now);
-	static std::string status_to_string(int status);
+	static string status_to_string(int status);
 
 #ifdef DEBUG_SEARCH
-	static std::string debug_pv, debug_mv, debug_pv_prefix;
+	static string debug_pv, debug_mv, debug_pv_prefix;
 	static int debug_maxdepth, debug_depth;
 #endif
 
@@ -83,7 +85,7 @@ protected:
 	static bool shuffle(move_t m1, move_t m2);
 	static bool descend(move_t m1, move_t m2);
 
-	std::list<move_t> pv;   ///< Principal variation.
+	list<move_t> pv;        ///< Principal variation.
 	move_t hint;            ///< Opponent's best move.
 	int max_depth;          ///< Maximum search depth.
 	int nodes;              ///< Number of nodes searched.

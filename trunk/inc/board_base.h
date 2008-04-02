@@ -22,6 +22,8 @@
 #ifndef BOARD_BASE_H
 #define BOARD_BASE_H
 
+using namespace std;
+
 // C++ stuff:
 #include <list>
 #include <string>
@@ -100,8 +102,8 @@ public:
 	virtual ~board_base();
 	virtual board_base& operator=(const board_base& that);
 	virtual void set_board();
-	virtual bool set_board_fen(std::string &fen);
-	virtual bool set_board_fen_error(std::string &fen, std::string reason, int x, int y);
+	virtual bool set_board_fen(string& fen);
+	virtual bool set_board_fen_error(string& fen, string reason, int x, int y);
 	virtual void lock();
 	virtual void unlock();
 
@@ -113,14 +115,14 @@ public:
 	virtual value_t evaluate(int depth) const = 0; // Force sub-classes to override.
 	virtual bool check(bool off_move = false) const;
 	virtual bool zugzwang() const;
-	virtual std::string to_string() const;
+	virtual string to_string() const;
 
 	// These methods generate, make, and take back moves.
-	virtual bool generate(std::list<move_t>& l, bool only_legal_moves = false, bool only_captures = false);
+	virtual bool generate(list<move_t>& l, bool only_legal_moves = false, bool only_captures = false);
 	virtual bool make(move_t m);
 	virtual bool unmake();
-	virtual move_t san_to_coord(std::string &san);
-	virtual void coord_to_san(move_t m, std::string &san);
+	virtual move_t san_to_coord(string& san);
+	virtual void coord_to_san(move_t m, string& san);
 	virtual uint64_t perft(int depth);
 
 protected:
@@ -149,13 +151,13 @@ protected:
 	static bitboard_t key_en_passant[8];
 	static bitboard_t key_on_move;
 
-	std::list<state_t> states;                      ///< Previous states.
+	list<state_t> states;                           ///< Previous states.
 	state_t state;                                  ///< Current state.
-	std::list<bitboard_t> rotations[ANGLES][COLORS + 1]; ///< Previous rotated BitBoards.
+	list<bitboard_t> rotations[ANGLES][COLORS + 1]; ///< Previous rotated BitBoards.
 	bitboard_t rotation[ANGLES][COLORS + 1];        ///< Current rotated BitBoards.
-	std::list<bitboard_t> hashes;                   ///< Previous Zobrist hash keys.
+	list<bitboard_t> hashes;                        ///< Previous Zobrist hash keys.
 	bitboard_t hash;                                ///< Current Zobrist hash key.
-	std::list<bitboard_t> pawn_hashes;              ///< Previous pawn hash keys.
+	list<bitboard_t> pawn_hashes;                   ///< Previous pawn hash keys.
 	bitboard_t pawn_hash;                           ///< Current pawn hash key.
 	mutex_t mutex;				        ///< Lock.
 	bool generated_king_capture;
@@ -167,12 +169,12 @@ protected:
 	virtual void precomp_key() const;
 
 	// These methods generate moves.
-	virtual void generate_king(std::list<move_t>& l, bool only_captures = false);
-	virtual void generate_queen(std::list<move_t>& l, bool only_captures = false);
-	virtual void generate_rook(std::list<move_t>& l, bool only_captures = false);
-	virtual void generate_bishop(std::list<move_t>& l, bool only_captures = false);
-	virtual void generate_knight(std::list<move_t>& l, bool only_captures = false);
-	virtual void generate_pawn(std::list<move_t>& l, bool only_captures = false);
+	virtual void generate_king(list<move_t>& l, bool only_captures = false);
+	virtual void generate_queen(list<move_t>& l, bool only_captures = false);
+	virtual void generate_rook(list<move_t>& l, bool only_captures = false);
+	virtual void generate_bishop(list<move_t>& l, bool only_captures = false);
+	virtual void generate_knight(list<move_t>& l, bool only_captures = false);
+	virtual void generate_pawn(list<move_t>& l, bool only_captures = false);
 	virtual void precomp_king() const;
 	virtual void precomp_row() const;
 	virtual void precomp_knight() const;
@@ -187,7 +189,7 @@ protected:
 
 	// These methods manipulate BitBoards.
 	virtual bitboard_t rotate(bitboard_t b1, int map, int angle) const;
-	virtual void insert(int x, int y, bitboard_t b, int angle, std::list<move_t>& l, bool pos);
+	virtual void insert(int x, int y, bitboard_t b, int angle, list<move_t>& l, bool pos);
 };
 
 #endif

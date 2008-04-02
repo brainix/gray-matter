@@ -23,8 +23,6 @@
 #include "gray.h"
 #include "board_base.h"
 
-using namespace std;
-
 const int board_base::coord[MAPS][ANGLES][8][8][COORDS] =
 {
 	// From 0° to 45° left:
@@ -243,7 +241,7 @@ void board_base::set_board()
 /*----------------------------------------------------------------------------*\
  |				set_board_fen()				      |
 \*----------------------------------------------------------------------------*/
-bool board_base::set_board_fen(string &fen)
+bool board_base::set_board_fen(string& fen)
 {
 
 /// Set the board according to the Forsyth-Edwards Notation (FEN) string.
@@ -397,7 +395,7 @@ bool board_base::set_board_fen(string &fen)
 /*----------------------------------------------------------------------------*\
  |			     set_board_fen_error()			      |
 \*----------------------------------------------------------------------------*/
-bool board_base::set_board_fen_error(string &fen, string reason, int x, int y)
+bool board_base::set_board_fen_error(string& fen, string reason, int x, int y)
 {
 
 /// There is an error in the specified FEN string.  Clear the board and return
@@ -832,7 +830,7 @@ bool board_base::unmake()
 /*----------------------------------------------------------------------------*\
  |				 san_to_coord()				      |
 \*----------------------------------------------------------------------------*/
-move_t board_base::san_to_coord(string &san)
+move_t board_base::san_to_coord(string& san)
 {
 
 /// Convert a move from Standard Algebraic Notation (SAN) to coordinate
@@ -1024,7 +1022,7 @@ move_t board_base::san_to_coord(string &san)
 /*----------------------------------------------------------------------------*\
  |				 coord_to_san()				      |
 \*----------------------------------------------------------------------------*/
-void board_base::coord_to_san(move_t m, string &san)
+void board_base::coord_to_san(move_t m, string& san)
 {
 
 /// Convert a move from coordinate notation to Standard Algebraic Notation

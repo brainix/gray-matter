@@ -22,6 +22,8 @@
 #ifndef SEARCH_MTDF_H
 #define SEARCH_MTDF_H
 
+using namespace std;
+
 // Default Gray Matter stuff:
 #include "config.h"
 #include "library.h"
@@ -45,7 +47,7 @@ class xboard;
 class search_mtdf : public search_base
 {
 public:
-	search_mtdf(table *t, history *h, chess_clock *c, xboard *x);
+	search_mtdf(table* t, history* h, chess_clock* c, xboard* x);
 	~search_mtdf();
 	search_mtdf& operator=(const search_mtdf& that);
 private:
