@@ -22,11 +22,10 @@
 #ifndef BOOK_H
 #define BOOK_H
 
-using namespace std;
-
 // C++ stuff:
 #include <fstream>
 #include <string>
+#include <list>
 
 // Default Gray Matter stuff:
 #include "config.h"
@@ -65,32 +64,32 @@ class table;
 class book
 {
 public:
-	book(table *t, string& file_name, int n);
+	book(table *t, std::string& file_name, int n);
 	void read();
 private:
 	int num_moves;             ///<
-	list<list<move_t> > games; ///< Game list.
+	std::list<std::list<move_t> > games; ///< Game list.
 
 	board_base *board_ptr;     ///< Board representation object.
 	table *table_ptr;          ///< Transposition table object.
 
 	// Based on the PGN file, the following methods populate the token list,
 	// game list, and transposition table.
-	void populate_tokens(istream& stream, list<string>& tokens);
-	void populate_games(list<string>& tokens);
+	void populate_tokens(std::istream& stream, std::list<std::string>& tokens);
+	void populate_games(std::list<std::string>& tokens);
 	void populate_table();
 
 	//
-	int tokenize(istream& stream, string& token);
-	bool tokenize_space(istream& stream, string& token);
-	bool tokenize_string(istream& stream, string& token);
-	bool tokenize_integer(istream& stream, string& token);
-	bool tokenize_punctuation(istream& stream, string& token);
-	bool tokenize_glyph(istream& stream, string& token);
-	bool tokenize_symbol(istream& stream, string& token);
+	int tokenize(std::istream& stream, std::string& token);
+	bool tokenize_space(std::istream& stream, std::string& token);
+	bool tokenize_string(std::istream& stream, std::string& token);
+	bool tokenize_integer(std::istream& stream, std::string& token);
+	bool tokenize_punctuation(std::istream& stream, std::string& token);
+	bool tokenize_glyph(std::istream& stream, std::string& token);
+	bool tokenize_symbol(std::istream& stream, std::string& token);
 
 	// The following method is the most magnificent hack of my life.
-	static bool shuffle(list<move_t> l1, list<move_t> l2);
+	static bool shuffle(std::list<move_t> l1, std::list<move_t> l2);
 };
 
 #endif

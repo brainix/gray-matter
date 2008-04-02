@@ -32,6 +32,8 @@
 #include "book.h"
 #include "testing.h"
 
+using namespace std;
+
 // Function prototypes:
 int main(int argc, char **argv);
 

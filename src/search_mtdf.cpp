@@ -22,6 +22,8 @@
 #include "gray.h"
 #include "search_mtdf.h"
 
+using namespace std;
+
 /*----------------------------------------------------------------------------*\
  |				 search_mtdf()				      |
 \*----------------------------------------------------------------------------*/
@@ -120,7 +122,7 @@ void search_mtdf::iterate(int s)
 	// or we've reached the maximum depth (in any case).
 	for (int depth = 1; depth <= max_depth; depth++)
 	{
-		DEBUG_SEARCH_INIT(0, "");
+		DEBUG_SEARCH_INIT(1, "");
 //		guess[depth & 1] = mtdf(depth, guess[depth & 1].value);
 		guess[depth & 1] = minimax(depth);
 		if (timeout_flag || guess[depth & 1].is_null())

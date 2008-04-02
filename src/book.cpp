@@ -22,6 +22,8 @@
 #include "gray.h"
 #include "book.h"
 
+using namespace std;
+
 /*----------------------------------------------------------------------------*\
  |				     book()				      |
 \*----------------------------------------------------------------------------*/
@@ -86,7 +88,7 @@ void book::populate_games(list<string>& tokens)
 	for (it = tokens.begin(); it != tokens.end(); it++)
 	{
 		move = board_ptr->san_to_coord(*it);
-		if (IS_NULL_MOVE(move))
+		if (move.is_null())
 		{
 			if (moves.empty())
 				continue;
