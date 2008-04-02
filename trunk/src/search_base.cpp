@@ -21,6 +21,8 @@
 
 #include "search_base.h"
 
+using namespace std;
+
 #ifdef DEBUG_SEARCH
 int search_base::debug_depth = 0;
 int search_base::debug_maxdepth = 0;

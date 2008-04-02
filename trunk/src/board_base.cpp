@@ -23,6 +23,8 @@
 #include "gray.h"
 #include "board_base.h"
 
+using namespace std;
+
 const int board_base::coord[MAPS][ANGLES][8][8][COORDS] =
 {
 	// From 0° to 45° left:

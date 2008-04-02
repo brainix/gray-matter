@@ -22,8 +22,6 @@
 #ifndef XBOARD_H
 #define XBOARD_H
 
-using namespace std;
-
 // C++ stuff:
 #include <list>
 #include <string>
@@ -59,7 +57,7 @@ public:
 	~xboard();
 	void vomit(char *message) const;
 	void loop(search_base *s, chess_clock *c, book *o);
-	void print_output(int ply, int value, int time, int nodes, list<move_t>& pv) const;
+	void print_output(int ply, int value, int time, int nodes, std::list<move_t>& pv) const;
 	void print_result(move_t m);
 	void print_resignation();
 private:
@@ -75,8 +73,8 @@ private:
 	chess_clock *clock_ptr;   ///< Chess clock object.
 	book *book_ptr;           ///< Opening book object.
 
-	vector <string> ts_fen;	  // Test Suite Data
-	vector <string> ts_sol, ts_desc;
+	std::vector <std::string> ts_fen;	  // Test Suite Data
+	std::vector <std::string> ts_sol, ts_desc;
 	bool ts_mode;
 	int ts_erroneous;		  // Test Suite statistics.
 	int ts_success, ts_failure;
@@ -100,7 +98,7 @@ private:
 	void do_question() const;
 	void do_ping();
 	void do_draw();
-	void do_setboard(string argfen="") const;
+	void do_setboard(std::string argfen="") const;
 	void do_hint() const;
 	void do_undo();
 	void do_remove();

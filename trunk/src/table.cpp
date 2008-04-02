@@ -77,7 +77,7 @@ void table::clear()
 			data[policy][index].hash = 0;
 			data[policy][index].depth = 0;
 			data[policy][index].type = USELESS;
-			SET_NULL_MOVE(data[policy][index].move);
+			data[policy][index].move.set_null();
 			data[policy][index].move.value = 0;
 		}
 }
@@ -105,7 +105,7 @@ bool table::probe(bitboard_t hash, int depth, int type, move_t *move_ptr)
 			total++;
 			return false;
 		}
-	SET_NULL_MOVE(*move_ptr);
+	move_ptr->set_null();
 	move_ptr->value = 0;
 	unsuccessful++;
 	total++;

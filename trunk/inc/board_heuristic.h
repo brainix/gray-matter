@@ -22,8 +22,6 @@
 #ifndef BOARD_HEURISTIC_H
 #define BOARD_HEURISTIC_H
 
-using namespace std;
-
 // Default Gray Matter stuff:
 #include "config.h"
 #include "library.h"
