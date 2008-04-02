@@ -22,12 +22,10 @@
 #include "gray.h"
 #include "search_mtdf.h"
 
-using namespace std;
-
 /*----------------------------------------------------------------------------*\
  |				 search_mtdf()				      |
 \*----------------------------------------------------------------------------*/
-search_mtdf::search_mtdf(table *t, history *h, chess_clock *c, xboard *x) :
+search_mtdf::search_mtdf(table* t, history* h, chess_clock* c, xboard* x) :
 	search_base(t, h, c, x)
 {
 
