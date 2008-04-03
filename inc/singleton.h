@@ -22,6 +22,32 @@
 #ifndef SINGLETON_H
 #define SINGLETON_H
 
+/// This template container class implements the Singleton design pattern using
+/// the Curiously Recurring Template Pattern.  This implementation is known as
+/// the Meyers Singleton.  While this implementation isn't thread-safe in
+/// general, some compilers (like GCC) supposedly generate thread-safe code in
+/// this case.
+///
+///	#include "singleton.h"
+///
+///	class the_one_ring : public singleton<the_one_ring>
+///	{
+///	public:
+///		std::string get_inscription() const
+///		{
+///			return inscription;
+///		}
+///	private:
+///		friend class singleton<the_one_ring>;
+///		std::string inscription;
+///	protected:
+///		the_one_ring() : inscription("One ring to rule them all...")
+///		{
+///		}
+///	};
+///
+/// For more information, see:
+///	http://en.wikipedia.org/wiki/Singleton_pattern#C.2B.2B
 template<typename t>
 class singleton
 {
