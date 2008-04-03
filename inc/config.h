@@ -115,11 +115,10 @@
 #define SIDES		2
 
 // Memory units:
-#define  B		1           // Byte.
-#define KB		(1024 * B)  // Kilobyte.
-#define MB		(1024 * KB) // Megabyte.
-#define GB		(1024 * MB) // Gigabyte.
-#define TB		(1024 * GB) // Terabyte.
+#define  B		((unsigned long) 1) // Byte.
+#define KB		(1024 * B)          // Kilobyte.
+#define MB		(1024 * KB)         // Megabyte.
+#define GB		(1024 * MB)         // Gigabyte.
 
 // Infinity:
 #define INFINITY	32767 // Well, close enough.  ;-)
