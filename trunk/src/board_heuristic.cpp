@@ -112,23 +112,23 @@ const value_t board_heuristic::value_king_position[8][8] =
 };
 
 // The values of various pawn structure features:
-const value_t board_heuristic::value_pawn_passed[8] = {0, 12,  20,  48,  72, 120, 150,   0};
-const value_t board_heuristic::value_pawn_doubled[9] = {0,  0,  -4,  -7, -10, -10, -10, -10, -10};
-const value_t board_heuristic::value_pawn_isolated[9] = {0, -8, -20, -40, -60, -70, -80, -80, -80};
+const value_t board_heuristic::value_pawn_passed[8]           = {0, 12,  20,  48,  72, 120, 150,   0};
+const value_t board_heuristic::value_pawn_doubled[9]          = {0,  0,  -4,  -7, -10, -10, -10, -10, -10};
+const value_t board_heuristic::value_pawn_isolated[9]         = {0, -8, -20, -40, -60, -70, -80, -80, -80};
 const value_t board_heuristic::value_pawn_doubled_isolated[9] = {0, -5, -10, -15, -15, -15, -15, -15, -15};
 const value_t board_heuristic::value_pawn_duo = 2;
 
 //
 const value_t board_heuristic::value_knight_outpost[8][8] =
 {
-	/* A */ {  0,   0,   0,   0,   0,   0,   0,   0},
-	/* B */ {  0,   0,   0,   5,   5,   0,   0,   0},
-	/* C */ {  0,   0,   0,  10,  10,  10,   0,   0},
-	/* D */ {  0,   0,   0,  20,  24,  24,   0,   0},
-	/* E */ {  0,   0,   0,  20,  24,  24,   0,   0},
-	/* F */ {  0,   0,   0,  10,  10,  10,   0,   0},
-	/* G */ {  0,   0,   0,   5,   5,   0,   0,   0},
-	/* H */ {  0,   0,   0,   0,   0,   0,   0,   0}
+	/* A */  {  0,   0,   0,   0,   0,   0,   0,   0},
+	/* B */  {  0,   0,   0,   5,   5,   0,   0,   0},
+	/* C */  {  0,   0,   0,  10,  10,  10,   0,   0},
+	/* D */  {  0,   0,   0,  20,  24,  24,   0,   0},
+	/* E */  {  0,   0,   0,  20,  24,  24,   0,   0},
+	/* F */  {  0,   0,   0,  10,  10,  10,   0,   0},
+	/* G */  {  0,   0,   0,   5,   5,   0,   0,   0},
+	/* H */  {  0,   0,   0,   0,   0,   0,   0,   0}
 		   //  1    2    3    4    5    6    7    8
 };
 
@@ -366,21 +366,21 @@ value_t board_heuristic::evaluate_bishops() const
 			// pawns on both sides of the board.
 			int friendly_piece_count = count_64(ALL(state, color));
 			bool endgame = friendly_piece_count < 7;
-			if (endgame)
-			{	
-				bool enemy_bishop_present = state.piece[!color][BISHOP];
-				if (!enemy_bishop_present)
-				{
-					bitboard_t all_pawns = state.piece[WHITE][PAWN] |
-					                       state.piece[BLACK][PAWN];
-					bitboard_t squares_both_sides =
-						COL_MSK(0) | COL_MSK(1) | COL_MSK(2) |
-						COL_MSK(5) | COL_MSK(6) | COL_MSK(7);
-					bool pawns_both_sides = all_pawns & squares_both_sides;
-					if (pawns_both_sides)
-						sum += sign * value_bishop_over_knight;
-				}
-			}
+			if (!endgame)
+				goto no_bishop_over_knight;
+			bool enemy_bishop_present = state.piece[!color][BISHOP];
+			if (enemy_bishop_present)
+				goto no_bishop_over_knight;
+			bitboard_t all_pawns = state.piece[WHITE][PAWN] |
+			                       state.piece[BLACK][PAWN];
+			bitboard_t squares_both_sides =
+				COL_MSK(0) | COL_MSK(1) | COL_MSK(2) |
+				COL_MSK(5) | COL_MSK(6) | COL_MSK(7);
+			bool pawns_both_sides = all_pawns & squares_both_sides;
+			if (!pawns_both_sides)
+				goto no_bishop_over_knight;
+			sum += sign * value_bishop_over_knight;
+no_bishop_over_knight:
 
 			// Penalize trapped or potentially trapped bishops.
 			if (color == WHITE)
@@ -437,25 +437,25 @@ value_t board_heuristic::evaluate_rooks() const
 			//
 			int seventh = color == WHITE ? 6 : 1;
 			bool is_rook_on_7th = y == seventh;
-			if (is_rook_on_7th)
-			{
-				bitboard_t enemy_pawns = state.piece[!color][PAWN];
-				bitboard_t seventh_row = ROW_MSK(seventh);
-				bool is_enemy_pawn_on_7th = enemy_pawns & seventh_row;
-				bitboard_t enemy_king = state.piece[!color][KING];
-				int eighth = color == WHITE ? 7 : 0;
-				bitboard_t eighth_row = ROW_MSK(eighth);
-				bool is_enemy_king_on_8th = enemy_king & eighth_row;
-				if (is_enemy_pawn_on_7th || is_enemy_king_on_8th)
-				{
-					sum += sign * value_rook_on_7th;
-					bitboard_t rooks = state.piece[color][ROOK];
-					bitboard_t rooks_on_7th = rooks & seventh_row;
-					int num_rooks_on_7th = count_64(rooks_on_7th);
-					if (num_rooks_on_7th >= 2)
-						sum += sign * value_rooks_on_7th;
-				}
-			}
+			if (!is_rook_on_7th)
+				goto no_rook_on_7th;
+			bitboard_t enemy_pawns = state.piece[!color][PAWN];
+			bitboard_t seventh_row = ROW_MSK(seventh);
+			bool is_enemy_pawn_on_7th = enemy_pawns & seventh_row;
+			bitboard_t enemy_king = state.piece[!color][KING];
+			int eighth = color == WHITE ? 7 : 0;
+			bitboard_t eighth_row = ROW_MSK(eighth);
+			bool is_enemy_king_on_8th = enemy_king & eighth_row;
+			if (!is_enemy_pawn_on_7th && !is_enemy_king_on_8th)
+				goto no_rook_on_7th;
+			sum += sign * value_rook_on_7th;
+			bitboard_t rooks = state.piece[color][ROOK];
+			bitboard_t rooks_on_7th = rooks & seventh_row;
+			int num_rooks_on_7th = count_64(rooks_on_7th);
+			if (num_rooks_on_7th < 2)
+				goto no_rook_on_7th;
+			sum += sign * value_rooks_on_7th;
+no_rook_on_7th:
 		}
 	}
 	return sum;
@@ -490,23 +490,23 @@ value_t board_heuristic::evaluate_queens() const
 			//
 			int seventh = color == WHITE ? 6 : 1;
 			bool is_queen_on_7th = y == seventh;
-			if (is_queen_on_7th)
-			{
-				bitboard_t enemy_pawns = state.piece[!color][PAWN];
-				bitboard_t seventh_row = ROW_MSK(seventh);
-				bool is_enemy_pawn_on_7th = enemy_pawns & seventh_row;
-				bitboard_t enemy_king = state.piece[!color][KING];
-				int eighth = color == WHITE ? 7 : 0;
-				bitboard_t eighth_row = ROW_MSK(eighth);
-				bool is_enemy_king_on_8th = enemy_king & eighth_row;
-				if (is_enemy_pawn_on_7th || is_enemy_king_on_8th)
-				{
-					bitboard_t rooks = state.piece[color][ROOK];
-					bool is_rook_on_7th = rooks & seventh_row;
-					if (is_rook_on_7th)
-						sum += sign * value_queen_rook_on_7th;
-				}
-			}
+			if (!is_queen_on_7th)
+				goto no_queen_on_7th;
+			bitboard_t enemy_pawns = state.piece[!color][PAWN];
+			bitboard_t seventh_row = ROW_MSK(seventh);
+			bool is_enemy_pawn_on_7th = enemy_pawns & seventh_row;
+			bitboard_t enemy_king = state.piece[!color][KING];
+			int eighth = color == WHITE ? 7 : 0;
+			bitboard_t eighth_row = ROW_MSK(eighth);
+			bool is_enemy_king_on_8th = enemy_king & eighth_row;
+			if (!is_enemy_pawn_on_7th && !is_enemy_king_on_8th)
+				goto no_queen_on_7th;
+			bitboard_t rooks = state.piece[color][ROOK];
+			bool is_rook_on_7th = rooks & seventh_row;
+			if (!is_rook_on_7th)
+				goto no_queen_on_7th;
+			sum += sign * value_queen_rook_on_7th;
+no_queen_on_7th:
 
 			//
 			if (count_64(state.piece[color][PAWN]) > 4)
@@ -601,7 +601,7 @@ void board_heuristic::precomp_pawn()
 			squares_pawn_potential_attacks[color][x][y] = 0;
 			for (int k = y + sign; k >= 1 && k <= 6; k += sign)
 				squares_pawn_potential_attacks[color][x][y] |=
-					ROW_MSK(k) & squares_adj_cols[x];
+					squares_adj_cols[x] & ROW_MSK(k);
 		}
 	}
 }

@@ -60,6 +60,7 @@ public:
 	void print_output(int ply, int value, int time, int nodes, std::list<move_t>& pv) const;
 	void print_result(move_t m);
 	void print_resignation();
+
 private:
 	char buffer[BUFFER_SIZE]; ///< Input buffer.
 	bool analyze;             ///< Whether we're analyzing.

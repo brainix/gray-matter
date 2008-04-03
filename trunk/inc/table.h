@@ -100,7 +100,7 @@ typedef struct pawn_slot
 {
 	bitboard_t hash;               ///< Zobrist hash key.    64 bits
 	value_t value;                 ///< Score.             + 16 bits
-} __attribute__((packed)) pawn_slot_t; ///<                    = 80 bits
+} __attribute__((packed)) pawn_slot_t; //                      = 80 bits
 
 /// Pawn table.
 class pawn
