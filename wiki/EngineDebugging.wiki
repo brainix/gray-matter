@@ -18,10 +18,23 @@ programmer could concentrate on these first.
 
 {{{
 <?xml version="1.0" encoding="UTF-8"?>
-<searchdump timestamp="" game="" depth="3">
-<engine name="Gray Matter" version="svn r1400" />
-<initial fen="" />
-<move>
+<searchdump timestamp="06 Apr 2008, 16:30" 
+            fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" 
+            depth="3">
+  <engine name="Gray Matter" 
+          version="svn r1400" />
+   
+  <node move="a3">
+   <node move="a6">
+    <leaf move="a4" eval=""/>
+   </node>
+   <node move="b6">
+    <leaf move="a4" eval=""/>
+   </node>
+  </node> 
+
+  <pos eval="">
+  </pos>
 
 </searchdump>
 }}}
