@@ -1,0 +1,38 @@
+############################################
+# Sample configuration file for Gray Matter
+#
+# On Window, ...
+# On Linux, copy this file to ~/.graymatter
+############################################
+
+# Specifying which move search engine to use.
+engine = "MTD(f)"
+
+# Specifying the size of the transposition table.
+# Must be >= 1 MB
+xpos_table_mb = 64
+
+# Specifying the file name of the opening book.
+book_name = "book.pgn"
+
+# Specifying the number of moves to read per
+# game in the opening book. Must be >= 1 ply.
+book_moves = 20
+
+# Specifying the move search overhead.
+# Must be >= 1 centisecond
+overhead = 1
+
+# To verify the correctness of search or evaluation
+# algorithms, GM provides the option to dump data to
+# an XML format.
+# Do you want GM to dump this data?
+xml_dump = false
+# Each time GM searches, a file will be generated in the below
+# directory. The filename will be: 
+# <white player>-<black player>-<ply>.xml
+xml_dir = /tmp
+# Supply the depth of the dump, the bigger this number
+# the bigger the dump file(s) will be. Must be >= 1 ply.
+xml_depth = 3
+
