@@ -1,0 +1,25 @@
+#summary Gray Matter can generate files in XML format to ease the debugging of
+search algorithms and / or evaluation functions.
+
+= Introduction =
+
+The perft() function can be used to test the move generator. If exactly the number
+of moves is generated as is done by other engines, from several different test
+positions, it is quite likely the implementation is correct.
+
+To have similar and general functionality for the search and evaluation algorithms,
+we decided to dump data into XML files.
+This makes it possible to manually inspect all positions that Gray Matter examined
+(some positions might be pruned).
+External tools can be developed to compare for different chess engines.
+These tools could, for example, find the greatest differences in evaluations, so the
+programmer could concentrate on these first.
+
+= Details =
+
+The XML format ...
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
