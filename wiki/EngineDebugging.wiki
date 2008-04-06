@@ -22,18 +22,25 @@ programmer could concentrate on these first.
             fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" 
             depth="3">
   <engine name="Gray Matter" 
-          version="svn r1400" />
-   
-  <node move="a3">
-   <node move="a6">
-    <leaf move="a4" eval=""/>
-   </node>
-   <node move="b6">
-    <leaf move="a4" eval=""/>
-   </node>
-  </node> 
+          version="svn r1400"/>
 
-  <pos eval="">
+  <pos eval="+0.40">
+    <node move="e4" eval="+0.40">
+      <node move="e5" eval="+0.40">
+        <leaf move="Pf3" eval="+0.40"/>
+        <leaf move="a3" eval="+0.01"/>
+      </node>
+      <node move="a6" eval="+0.45">
+        <leaf move="d4" eval="+0.45"/>
+        <leaf move="a3" eval="+0.10"/>
+      </node>
+    </node>
+    <node move="a4" eval="-0.10">
+      <node move="e5" eval="-0.10">
+        <leaf move="a5" eval="-0.30"/>
+        <leaf move="e4" eval="-0.10"/>
+      </node>
+    </node>
   </pos>
 
 </searchdump>
