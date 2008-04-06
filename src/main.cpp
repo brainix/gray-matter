@@ -21,6 +21,7 @@
 
 // Default Gray Matter stuff:
 #include "config.h"
+#include "configfile.h"
 #include "gray.h"
 
 // Extra Gray Matter stuff:
@@ -42,12 +43,9 @@ int main(int argc, char **argv);
 \*----------------------------------------------------------------------------*/
 int main(int argc, char **argv)
 {
-	// Default settings:
-	string search_engine = SEARCH_ENGINE;
-	int xpos_table_mb = XPOS_TABLE_MB;
-	string book_name = BOOK_NAME;
-	int book_moves = BOOK_MOVES;
-	int overhead = OVERHEAD;
+    // First parse the configuration file, if exists
+    ConfigFile config;
+	config.dump(cout);
 
 	// Parse the command-line arguments and possibly change the default
 	// settings.
@@ -56,50 +54,53 @@ int main(int argc, char **argv)
 		{
 			case 'e':
 				// Specifying which move search engine to use.
-				search_engine = optarg;
-				if (search_engine != "MTD(f)")
+				if (optarg != "MTD(f)")
 				{
 					cerr << "move search engine "
 					     << "must be MTD(f)"
 					     << endl;
 					exit(EXIT_FAILURE);
 				}
+				config.set("engine", optarg);
 				break;
 			case 'x':
 				// Specifying the size of the transposition
 				// table.
-				if ((xpos_table_mb = atoi(optarg)) < 1)
+				if (atoi(optarg) < 1)
 				{
 					cerr << "transposition table "
 					     << "must be >= 1 MB"
 					     << endl;
 					exit(EXIT_FAILURE);
 				}
+				config.set("xpos_table_mb", atoi(optarg));
 				break;
 			case 'n':
 				// Specifying the file name of the opening book.
-				book_name = optarg;
+				config.set("book_name", optarg);
 				break;
 			case 'm':
 				// Specifying the number of moves to read per
 				// game in the opening book.
-				if ((book_moves = atoi(optarg)) < 1)
+				if (atoi(optarg) < 1)
 				{
 					cerr << "number of book moves "
 					     << "must be >= 1 ply"
 					     << endl;
 					exit(EXIT_FAILURE);
 				}
+				config.set("book_moves", atoi(optarg));
 				break;
 			case 'o':
 				// Specifying the move search overhead.
-				if ((overhead = atoi(optarg)) < 1)
+				if (atoi(optarg) < 1)
 				{
 					cerr << "move search overhead "
 					     << "must be >= 1 centisecond"
 					     << endl;
 					exit(EXIT_FAILURE);
 				}
+				config.set("overhead", atoi(optarg));
 				break;
 			case 'p':
 			{
@@ -127,17 +128,23 @@ int main(int argc, char **argv)
 	srand(time(NULL));
 
 	// Instantiate the classes.
-	table t(xpos_table_mb);            // Transposition table object.
-	history h;                         // History table object.
-	chess_clock c(overhead);           // Chess clock object.
-	xboard x;                          // XBoard object.
-	book o(&t, book_name, book_moves); // Opening book object.
+	/// Transposition table object.
+	table t(config.getInt("xpos_table_mb"));
+	/// History table object.
+	history h;
+	/// Chess clock object.
+	chess_clock c(config.getInt("overhead"));
+	/// XBoard object.
+	xboard x;
+	/// Opening book object.
+	book o(&t, config.getString("book_name"), 
+	           config.getInt("book_moves"));
 
 	// Based on the -s command-line option, choose the move search engine
 	// and cast it as a generic version.  Thus far, we've only implemented
 	// one move search engine, MTD(f).
 	search_base *s = 0;
-	if (search_engine == "MTD(f)")
+	if (config.getString("engine") == "MTD(f)")
 		s = new search_mtdf(&t, &h, &c, &x);
 
 	// Launch the event loop.

@@ -72,6 +72,9 @@
  |		There are no tunable settings beyond this point!	      |
 \*----------------------------------------------------------------------------*/
 
+#define MAKE_STRING(a) #a
+#define STRINGIFY(a) MAKE_STRING(a)
+
 // The following preprocessor directives are used to ensure that the user has
 // chosen sane values for the preceeding settings.
 
