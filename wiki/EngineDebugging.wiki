@@ -16,6 +16,7 @@ programmer could concentrate on these first.
 
 = The XML format =
 
+{{{
 <?xml version="1.0" encoding="UTF-8"?>
 <searchdump timestamp="" game="" depth="3">
 <engine name="Gray Matter" version="svn r1400" />
@@ -23,3 +24,4 @@ programmer could concentrate on these first.
 <move>
 
 </searchdump>
+}}}
