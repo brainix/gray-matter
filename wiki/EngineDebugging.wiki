@@ -45,12 +45,12 @@ programmer could concentrate on these first.
 
   alternative:
 
-  <position eval="+0.40" nrmoves="11">
+  <position eval="+0.40" nrmoves="11" nrpruned="9">
     <node move="e4">
       <position eval="+0.40" nrmoves="11">
       </position>
     </node>
-    <node move="a4" eval="-0.10">
+    <node move="a4">
     </node>
   </position>
 
