@@ -64,7 +64,7 @@ class table;
 class book
 {
 public:
-	book(table *t, std::string& file_name, int n);
+	book(table *t, std::string file_name, int n);
 	void read();
 private:
 	int num_moves;             ///<

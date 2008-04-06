@@ -343,7 +343,8 @@ value_t board_heuristic::evaluate_bishops() const
 ///
 
 	value_t sign, sum = 0;
-	bitboard_t b;
+	bitboard_t b, squares_both_sides, all_pawns;
+    bool pawns_both_sides, enemy_bishop_present;
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
@@ -368,15 +369,15 @@ value_t board_heuristic::evaluate_bishops() const
 			bool endgame = friendly_piece_count < 7;
 			if (!endgame)
 				goto no_bishop_over_knight;
-			bool enemy_bishop_present = state.piece[!color][BISHOP];
+			enemy_bishop_present = state.piece[!color][BISHOP];
 			if (enemy_bishop_present)
 				goto no_bishop_over_knight;
-			bitboard_t all_pawns = state.piece[WHITE][PAWN] |
+			all_pawns = state.piece[WHITE][PAWN] |
 			                       state.piece[BLACK][PAWN];
-			bitboard_t squares_both_sides =
+			squares_both_sides =
 				COL_MSK(0) | COL_MSK(1) | COL_MSK(2) |
 				COL_MSK(5) | COL_MSK(6) | COL_MSK(7);
-			bool pawns_both_sides = all_pawns & squares_both_sides;
+			pawns_both_sides = all_pawns & squares_both_sides;
 			if (!pawns_both_sides)
 				goto no_bishop_over_knight;
 			sum += sign * value_bishop_over_knight;
@@ -417,7 +418,10 @@ value_t board_heuristic::evaluate_rooks() const
 ///
 
 	value_t sign, sum = 0;
-	bitboard_t b;
+	bitboard_t b, rooks_on_7th, rooks, enemy_pawns, seventh_row, enemy_king,
+		eighth_row;
+	int num_rooks_on_7th, eighth;
+    bool is_enemy_pawn_on_7th, is_enemy_king_on_8th;
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
@@ -439,23 +443,24 @@ value_t board_heuristic::evaluate_rooks() const
 			bool is_rook_on_7th = y == seventh;
 			if (!is_rook_on_7th)
 				goto no_rook_on_7th;
-			bitboard_t enemy_pawns = state.piece[!color][PAWN];
-			bitboard_t seventh_row = ROW_MSK(seventh);
-			bool is_enemy_pawn_on_7th = enemy_pawns & seventh_row;
-			bitboard_t enemy_king = state.piece[!color][KING];
-			int eighth = color == WHITE ? 7 : 0;
-			bitboard_t eighth_row = ROW_MSK(eighth);
-			bool is_enemy_king_on_8th = enemy_king & eighth_row;
+			enemy_pawns = state.piece[!color][PAWN];
+			seventh_row = ROW_MSK(seventh);
+			is_enemy_pawn_on_7th = enemy_pawns & seventh_row;
+			enemy_king = state.piece[!color][KING];
+			eighth = color == WHITE ? 7 : 0;
+			eighth_row = ROW_MSK(eighth);
+			is_enemy_king_on_8th = enemy_king & eighth_row;
 			if (!is_enemy_pawn_on_7th && !is_enemy_king_on_8th)
 				goto no_rook_on_7th;
 			sum += sign * value_rook_on_7th;
-			bitboard_t rooks = state.piece[color][ROOK];
-			bitboard_t rooks_on_7th = rooks & seventh_row;
-			int num_rooks_on_7th = count_64(rooks_on_7th);
+			rooks = state.piece[color][ROOK];
+			rooks_on_7th = rooks & seventh_row;
+			num_rooks_on_7th = count_64(rooks_on_7th);
 			if (num_rooks_on_7th < 2)
 				goto no_rook_on_7th;
 			sum += sign * value_rooks_on_7th;
-no_rook_on_7th:
+no_rook_on_7th: 
+			;
 		}
 	}
 	return sum;
@@ -470,7 +475,10 @@ value_t board_heuristic::evaluate_queens() const
 ///
 
 	value_t sign, sum = 0;
-	bitboard_t b;
+	bitboard_t b, rooks, enemy_pawns, seventh_row, enemy_king, eighth_row;
+	int seventh, eighth;
+	bool is_rook_on_7th, is_queen_on_7th, is_enemy_pawn_on_7th,
+		is_enemy_king_on_8th;
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
@@ -488,21 +496,21 @@ value_t board_heuristic::evaluate_queens() const
 			sum += sign * value_position[QUEEN][x][y];
 
 			//
-			int seventh = color == WHITE ? 6 : 1;
-			bool is_queen_on_7th = y == seventh;
+			seventh = color == WHITE ? 6 : 1;
+			is_queen_on_7th = y == seventh;
 			if (!is_queen_on_7th)
 				goto no_queen_on_7th;
-			bitboard_t enemy_pawns = state.piece[!color][PAWN];
-			bitboard_t seventh_row = ROW_MSK(seventh);
-			bool is_enemy_pawn_on_7th = enemy_pawns & seventh_row;
-			bitboard_t enemy_king = state.piece[!color][KING];
-			int eighth = color == WHITE ? 7 : 0;
-			bitboard_t eighth_row = ROW_MSK(eighth);
-			bool is_enemy_king_on_8th = enemy_king & eighth_row;
+			enemy_pawns = state.piece[!color][PAWN];
+			seventh_row = ROW_MSK(seventh);
+			is_enemy_pawn_on_7th = enemy_pawns & seventh_row;
+			enemy_king = state.piece[!color][KING];
+			eighth = color == WHITE ? 7 : 0;
+			eighth_row = ROW_MSK(eighth);
+			is_enemy_king_on_8th = enemy_king & eighth_row;
 			if (!is_enemy_pawn_on_7th && !is_enemy_king_on_8th)
 				goto no_queen_on_7th;
-			bitboard_t rooks = state.piece[color][ROOK];
-			bool is_rook_on_7th = rooks & seventh_row;
+			rooks = state.piece[color][ROOK];
+			is_rook_on_7th = rooks & seventh_row;
 			if (!is_rook_on_7th)
 				goto no_queen_on_7th;
 			sum += sign * value_queen_rook_on_7th;

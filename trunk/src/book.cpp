@@ -27,7 +27,7 @@ using namespace std;
 /*----------------------------------------------------------------------------*\
  |				     book()				      |
 \*----------------------------------------------------------------------------*/
-book::book(table *t, string& file_name, int n)
+book::book(table *t, string file_name, int n)
 {
 
 /// Constructor.
