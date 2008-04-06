@@ -16,7 +16,10 @@ programmer could concentrate on these first.
 
 = The XML format =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+<?xml version="1.0" encoding="UTF-8"?>
+<searchdump timestamp="" game="" depth="3">
+<engine name="Gray Matter" version="svn r1400" />
+<initial fen="" />
+<move>
+
+</searchdump>
