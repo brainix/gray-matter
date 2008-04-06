@@ -71,16 +71,20 @@ ConfigFile::ConfigFile() {
 	line = trim(line);
 	// skip emtpy lines
     if(!line.length()) continue;
+
 	// skip lines starting with # or ;
     if(line[0] == '#') continue;
     if(line[0] == ';') continue;
 
     int posEqual = line.find('=');
-    string key = trim(line.substr(0, posEqual));
-    string value = trim(line.substr(posEqual + 1));
-
-	// store configuration item (as a string)
-    items[key] = value;
+	if(posEqual != string::npos) {
+      string key = trim(line.substr(0, posEqual));
+      string value = trim(line.substr(posEqual + 1));
+	  // store configuration item (as a string)
+      items[key] = value;
+	} else {
+	  throw "Illegal item in configuration file";
+	}
   }
 }
 
