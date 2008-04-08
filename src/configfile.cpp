@@ -49,14 +49,16 @@ string trim(string const& source, char const* delims = " \t\r\n'\"") {
 ConfigFile::ConfigFile() {
 
 #if defined(LINUX)
-  ifstream file("/home/jonne/.graymatter");
+  ostringstream ostr;
+  ostr << getenv("HOME") << "/.graymatter";
+  ifstream file(ostr.str().c_str());
 #else
   ifstream file("graymatter.conf");
 #endif
 
   // Setting default values
   items["engine"] = SEARCH_ENGINE;
-  items["xpos_table_mb"] = XPOS_TABLE_MB;
+  items["xpos_table_mb"] = STRINGIFY(XPOS_TABLE_MB);
   items["book_name"] = BOOK_NAME;
   items["book_moves"] = STRINGIFY(BOOK_MOVES); // in plies
   items["overhead"] = STRINGIFY(OVERHEAD); // in centiseconds
@@ -76,7 +78,7 @@ ConfigFile::ConfigFile() {
     if(line[0] == '#') continue;
     if(line[0] == ';') continue;
 
-    int posEqual = line.find('=');
+    size_t posEqual = line.find('=');
 	if(posEqual != string::npos) {
       string key = trim(line.substr(0, posEqual));
       string value = trim(line.substr(posEqual + 1));
