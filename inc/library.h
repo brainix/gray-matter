@@ -117,4 +117,7 @@ int count_64(uint64_t n);
 int find_64(uint64_t n);
 int find_32(uint32_t n);
 
+// Filesystem utilities
+char* get_home_directory();
+
 #endif
