@@ -14,6 +14,8 @@ External tools can be developed to compare for different chess engines.
 These tools could, for example, find the greatest differences in evaluations, so the
 programmer could concentrate on these first.
 
+... We should just dump in Portable Game Notation format.
+
 = The XML format =
 
 {{{
