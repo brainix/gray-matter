@@ -48,13 +48,10 @@ string trim(string const& source, char const* delims = " \t\r\n'\"") {
  *  Before parsing, some default values are set. */
 ConfigFile::ConfigFile() {
 
-#if defined(LINUX)
   ostringstream ostr;
-  ostr << getenv("HOME") << "/.graymatter";
+  ostr << get_home_directory() << "/.graymatter";
+  cout << "testing ... '" << ostr.str() << "'" << endl;
   ifstream file(ostr.str().c_str());
-#else
-  ifstream file("graymatter.conf");
-#endif
 
   // Setting default values
   items["engine"] = SEARCH_ENGINE;

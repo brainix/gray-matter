@@ -489,3 +489,17 @@ int find_32(uint32_t n)
 	return table[n >> shift] + shift;
 #endif
 }
+
+/*----------------------------------------------------------------------------*\
+ |				   get_home_directory()				      |
+\*----------------------------------------------------------------------------*/
+/** Return the current user's home directory. */
+char* get_home_directory()
+{
+#if defined(LINUX)
+	return getenv("HOME");
+#else
+	// Dunno, just use current directory.
+	return "./";
+#endif
+}
