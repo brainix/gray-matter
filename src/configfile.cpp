@@ -50,7 +50,6 @@ ConfigFile::ConfigFile() {
 
   ostringstream ostr;
   ostr << get_home_directory() << "/.graymatter";
-  cout << "testing ... '" << ostr.str() << "'" << endl;
   ifstream file(ostr.str().c_str());
 
   // Setting default values
