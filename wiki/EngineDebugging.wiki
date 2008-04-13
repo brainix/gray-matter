@@ -23,7 +23,7 @@ programmer could concentrate on these first.
 [Black "Gray Matter svn r1400"]
 [Result "*"]
 [fen "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"]
-[depth "3"]
+[dump_depth "3"]
 [evaluation "+0.40"]
 
 1.e4 {v="+0.40"} e5 {v="+0.40"} 2.Nf3 {v="+0.40"} Nc6 {v="+0.40"} 3.d4 {v="+0.40"} 
