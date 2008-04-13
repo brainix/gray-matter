@@ -13,6 +13,7 @@ This makes it possible to manually inspect all positions that Gray Matter examin
 External tools can be used (or developed) to compare for different chess engines.
 These tools could, for example, find the greatest differences in evaluations, so the
 programmer could concentrate on these first.
+The evaluation of a position is written as a comment (between {}) after the last played move, and for the initial position -described by the fen string- in the evaluation tag in the header. After each move, the evaluation is specified as v="<eval>", such that we can easily add some other key/values if we want to later.
 
 = PGN format for a game tree with node evaluation =
 
