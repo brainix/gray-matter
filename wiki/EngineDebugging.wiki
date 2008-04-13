@@ -1,4 +1,4 @@
-#summary Gray Matter can generate files in XML format to ease the debugging of search algorithms and / or evaluation functions.
+#summary Gray Matter can generate files in PGN format to ease the debugging of search algorithms and / or evaluation functions.
 
 = Introduction =
 
@@ -14,9 +14,13 @@ External tools can be developed to compare for different chess engines.
 These tools could, for example, find the greatest differences in evaluations, so the
 programmer could concentrate on these first.
 
-... We should just dump in Portable Game Notation format.
+= PGN format for a game tree with node evaluation =
 
-= The XML format =
+{{{
+  example here ...
+}}}
+
+= Old unused idea to use XML format =
 
 {{{
 <?xml version="1.0" encoding="UTF-8"?>
