@@ -1,4 +1,4 @@
-#summary Gray Matter can generate files in PGN format to ease the debugging of search algorithms and / or evaluation functions.
+#summary Gray Matter can generate a search and evaluation dump in PGN format to ease the debugging of search algorithms and / or evaluation functions.
 
 = Introduction =
 
@@ -7,17 +7,32 @@ of moves is generated as is done by other engines, from several different test
 positions, it is quite likely the implementation is correct.
 
 To have similar and general functionality for the search and evaluation algorithms,
-we decided to dump data into XML files.
+we decided to dump data into PGN files using recursive annotated variations (RAV), which are just game variations between parentheses.
 This makes it possible to manually inspect all positions that Gray Matter examined
 (some positions might be pruned).
-External tools can be developed to compare for different chess engines.
+External tools can be used (or developed) to compare for different chess engines.
 These tools could, for example, find the greatest differences in evaluations, so the
 programmer could concentrate on these first.
 
 = PGN format for a game tree with node evaluation =
 
 {{{
-  example here ...
+[Event "Test"]
+[Date "<timestamp>"]
+[White "Jonne Zutt"]
+[Black "Gray Matter svn r1400"]
+[Result "*"]
+[fen "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"]
+[depth "3"]
+[evaluation "+0.40"]
+
+1.e4 {v="+0.40"} e5 {v="+0.40"} 2.Nf3 {v="+0.40"} Nc6 {v="+0.40"} 3.d4 {v="+0.40"} 
+( 3.Nc3 {v="+0.40"} Nf6 {v="+0.40"} 4.Bb5 {v="+0.40"} 
+( 4.d4 {v="+0.40"} exd4 {v="+0.40"} 5.Nxd4 {v="+0.40"} Nxd4 {v="+0.40"} 6.Qxd4 {v="+0.40"} )
+( 4.Bc4 {v="+0.40"} Bc5 {v="+0.40"} 5.d3 {v="+0.40"} d6 {v="+0.40"} )
+4...a6 {v="+0.40"} 5.Bxc6 {v="+0.40"} dxc6 {v="+0.40"} )
+3...exd4 {v="+0.40"} 4.Nxd4 {v="+0.40"} Nf6 {v="+0.40"} *
+
 }}}
 
 = Old unused idea to use XML format =
