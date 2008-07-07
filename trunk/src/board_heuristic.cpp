@@ -22,14 +22,18 @@
 #include "gray.h"
 #include "board_heuristic.h"
 
-// Static initializers
 /// The values of the pieces:
-const value_t board_heuristic::value_material[SHAPES] = {VALUE_PAWN, VALUE_KNIGHT, VALUE_BISHOP, VALUE_ROOK, VALUE_QUEEN, VALUE_KING};
+const value_t board_heuristic::value_material[SHAPES] = {VALUE_PAWN,
+							 VALUE_KNIGHT,
+							 VALUE_BISHOP,
+							 VALUE_ROOK,
+							 VALUE_QUEEN,
+							 VALUE_KING};
 
 /// The values of having different pieces on different squares:
 const value_t board_heuristic::value_position[SHAPES][8][8] =
 {
-		   // White pawns:
+	       // White pawns:
 	/* A */ {{  0,   0,   1,   3,   6,  10,  40,   0},
 	/* B */  {  0,   0,   1,   3,   6,  10,  40,   0},
 	/* C */  {  0,   0,   1,   3,   6,  10,  40,   0},
@@ -38,9 +42,9 @@ const value_t board_heuristic::value_position[SHAPES][8][8] =
 	/* F */  {  0,   0,   1,   3,   6,  10,  40,   0},
 	/* G */  {  0,   0,   1,   3,   6,  10,  40,   0},
 	/* H */  {  0,   0,   1,   3,   6,  10,  40,   0}},
-		   //   1    2    3    4    5    6    7    8
+	       //   1    2    3    4    5    6    7    8
 
-		   // Knights:
+	       // Knights:
 	/* A */ {{-60, -30, -30, -30, -30, -30, -30, -60},
 	/* B */  {-30, -24,  -6,  -6,  -6,  -6, -24, -30},
 	/* C */  {-30, -10,  -6,  -2,  -2,  -6, -10, -30},
@@ -49,9 +53,9 @@ const value_t board_heuristic::value_position[SHAPES][8][8] =
 	/* F */  {-30, -10,  -6,  -2,  -2,  -6, -10, -30},
 	/* G */  {-30, -24,  -6,  -6,  -6,  -6, -24, -30},
 	/* H */  {-60, -30, -30, -30, -30, -30, -30, -60}},
-		   //   1    2    3    4    5    6    7    8
+	       //   1    2    3    4    5    6    7    8
 
-		   // Bishops:
+	       // Bishops:
 	/* A */ {{-20, -20, -20, -20, -20, -20, -20, -20},
 	/* B */  {-20,   6,   6,   3,   3,   6,   6, -20},
 	/* C */  {-20,   6,   8,   6,   6,   8,   6, -20},
@@ -60,9 +64,9 @@ const value_t board_heuristic::value_position[SHAPES][8][8] =
 	/* F */  {-20,   6,   8,   6,   6,   8,   6, -20},
 	/* G */  {-20,   6,   6,   3,   3,   6,   6, -20},
 	/* H */  {-20, -20, -20, -20, -20, -20, -20, -20}},
-		   //   1    2    3    4    5    6    7    8
+	       //   1    2    3    4    5    6    7    8
 
-		   // Rooks:
+	       // Rooks:
 	/* A */ {{-10, -10, -10, -10, -10, -10, -10, -10},
 	/* B */  { -6,  -6,  -6,  -6,  -6,  -6,  -6,  -6},
 	/* C */  { -2,  -2,  -2,  -2,  -2,  -2,  -2,  -2},
@@ -71,9 +75,9 @@ const value_t board_heuristic::value_position[SHAPES][8][8] =
 	/* F */  { -2,  -2,  -2,  -2,  -2,  -2,  -2,  -2},
 	/* G */  { -6,  -6,  -6,  -6,  -6,  -6,  -6,  -6},
 	/* H */  {-10, -10, -10, -10, -10, -10, -10, -10}},
-		   //   1    2    3    4    5    6    7    8
+	       //   1    2    3    4    5    6    7    8
 
-		   // Queens:
+	       // Queens:
 	/* A */ {{-20, -20,   0,   0,   0,   0, -20, -20},
 	/* B */  {-20,   0,   8,   8,   8,   8,   0, -20},
 	/* C */  {  0,   8,   8,  12,  12,   8,   8,   0},
@@ -82,9 +86,9 @@ const value_t board_heuristic::value_position[SHAPES][8][8] =
 	/* F */  {  0,   8,   8,  12,  12,   8,   8,   0},
 	/* G */  {-20,   0,   8,   8,   8,   8,   0, -20},
 	/* H */  {-20, -20,   0,   0,   0,   0, -20, -20}},
-		   //   1    2    3    4    5    6    7    8
+	       //   1    2    3    4    5    6    7    8
 
-		   // White king:
+	       // White king:
 	/* A */ {{-40, -20, -20, -20, -20, -20, -20, -40},
 	/* B */  {-20,   0,  20,  20,  30,  30,  30, -20},
 	/* C */  {-20,   0,  20,  40,  60,  60,  40, -20},
@@ -93,7 +97,7 @@ const value_t board_heuristic::value_position[SHAPES][8][8] =
 	/* F */  {-20,   0,  20,  40,  60,  60,  40, -20},
 	/* G */  {-20,   0,  20,  20,  30,  30,  30, -20},
 	/* H */  {-40, -20, -20, -20, -20, -20, -20, -40}}
-		   //   1    2    3    4    5    6    7    8
+	       //   1    2    3    4    5    6    7    8
 };
 
 /// The values of having the white king on different squares during an endgame
@@ -108,7 +112,7 @@ const value_t board_heuristic::value_king_position[8][8] =
 	/* F */ {-20, -20, -20, -20, -20, -20, -20, -20},
 	/* G */ {-40, -40, -40, -40, -40, -40, -40, -40},
 	/* H */ {-60, -60, -60, -60, -60, -60, -60, -60}
-		   //  1    2    3    4    5    6    7    8
+	       //  1    2    3    4    5    6    7    8
 };
 
 // The values of various pawn structure features:
@@ -121,15 +125,15 @@ const value_t board_heuristic::value_pawn_duo = 2;
 //
 const value_t board_heuristic::value_knight_outpost[8][8] =
 {
-	/* A */  {  0,   0,   0,   0,   0,   0,   0,   0},
-	/* B */  {  0,   0,   0,   5,   5,   0,   0,   0},
-	/* C */  {  0,   0,   0,  10,  10,  10,   0,   0},
-	/* D */  {  0,   0,   0,  20,  24,  24,   0,   0},
-	/* E */  {  0,   0,   0,  20,  24,  24,   0,   0},
-	/* F */  {  0,   0,   0,  10,  10,  10,   0,   0},
-	/* G */  {  0,   0,   0,   5,   5,   0,   0,   0},
-	/* H */  {  0,   0,   0,   0,   0,   0,   0,   0}
-		   //  1    2    3    4    5    6    7    8
+	/* A */ {  0,   0,   0,   0,   0,   0,   0,   0},
+	/* B */ {  0,   0,   0,   5,   5,   0,   0,   0},
+	/* C */ {  0,   0,   0,  10,  10,  10,   0,   0},
+	/* D */ {  0,   0,   0,  20,  24,  24,   0,   0},
+	/* E */ {  0,   0,   0,  20,  24,  24,   0,   0},
+	/* F */ {  0,   0,   0,  10,  10,  10,   0,   0},
+	/* G */ {  0,   0,   0,   5,   5,   0,   0,   0},
+	/* H */ {  0,   0,   0,   0,   0,   0,   0,   0}
+	       //  1    2    3    4    5    6    7    8
 };
 
 //
@@ -344,7 +348,7 @@ value_t board_heuristic::evaluate_bishops() const
 
 	value_t sign, sum = 0;
 	bitboard_t b, squares_both_sides, all_pawns;
-    bool pawns_both_sides, enemy_bishop_present;
+	bool pawns_both_sides, enemy_bishop_present;
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
@@ -421,7 +425,7 @@ value_t board_heuristic::evaluate_rooks() const
 	bitboard_t b, rooks_on_7th, rooks, enemy_pawns, seventh_row, enemy_king,
 		eighth_row;
 	int num_rooks_on_7th, eighth;
-    bool is_enemy_pawn_on_7th, is_enemy_king_on_8th;
+	bool is_enemy_pawn_on_7th, is_enemy_king_on_8th;
 
 	for (int color = WHITE; color <= BLACK; color++)
 	{
