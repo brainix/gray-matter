@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------*\
- |	search_base.cpp - move search base implementation		      |
- |									      |
- |	Copyright © 2005-2008, The Gray Matter Team, original authors.	      |
+ |  search_base.cpp - move search base implementation                         |
+ |                                                                            |
+ |  Copyright © 2005-2008, The Gray Matter Team, original authors.            |
 \*----------------------------------------------------------------------------*/
 
 /*
@@ -32,7 +32,7 @@ string search_base::debug_pv_prefix = "";
 #endif
 
 /*----------------------------------------------------------------------------*\
- |				 search_base()				      |
+ |                               search_base()                                |
 \*----------------------------------------------------------------------------*/
 search_base::search_base(table *t, history *h, chess_clock *c, xboard *x)
 {
@@ -40,127 +40,127 @@ search_base::search_base(table *t, history *h, chess_clock *c, xboard *x)
 /// Constructor.  Important!  Seed the random number generator - issue
 /// <code>srand(time(NULL));</code> - before instantiating this class!
 
-	max_depth = MAX_DEPTH;
-	output = false;
-	correct_guesses = 0;
-	total_guesses = 0;
+    max_depth = MAX_DEPTH;
+    output = false;
+    correct_guesses = 0;
+    total_guesses = 0;
 
-	board_ptr = new board_heuristic();
-	table_ptr = t;
-	history_ptr = h;
-	clock_ptr = c;
-	xboard_ptr = x;
+    board_ptr = new board_heuristic();
+    table_ptr = t;
+    history_ptr = h;
+    clock_ptr = c;
+    xboard_ptr = x;
 
-	mutex_create(&timeout_mutex);
-	clock_ptr->set_callback((clock_callback_t) _handle, this);
-	mutex_create(&search_mutex);
-	cond_create(&search_cond, NULL);
-	thread_create(&search_thread, (entry_t) _start, this);
+    mutex_create(&timeout_mutex);
+    clock_ptr->set_callback((clock_callback_t) _handle, this);
+    mutex_create(&search_mutex);
+    cond_create(&search_cond, NULL);
+    thread_create(&search_thread, (entry_t) _start, this);
 }
 
 /*----------------------------------------------------------------------------*\
- |				 ~search_base()				      |
+ |                               ~search_base()                               |
 \*----------------------------------------------------------------------------*/
 search_base::~search_base()
 {
 
 /// Destructor.
 
-	cond_destroy(&search_cond);
-	mutex_destroy(&search_mutex);
-	mutex_destroy(&timeout_mutex);
+    cond_destroy(&search_cond);
+    mutex_destroy(&search_mutex);
+    mutex_destroy(&timeout_mutex);
 }
 
 /*----------------------------------------------------------------------------*\
- |				       =				      |
+ |                                     =                                      |
 \*----------------------------------------------------------------------------*/
 class search_base& search_base::operator=(const search_base& that)
 {
 
 /// Overloaded assignment operator.
 
-	if (this == &that)
-		return *this;
+    if (this == &that)
+        return *this;
 
-	hint = that.hint;
-	max_depth = that.max_depth;
-	nodes = that.nodes;
-	output = that.output;
+    hint = that.hint;
+    max_depth = that.max_depth;
+    nodes = that.nodes;
+    output = that.output;
 
-	*board_ptr = *that.board_ptr;
-	table_ptr = that.table_ptr;
-	history_ptr = that.history_ptr;
-	clock_ptr = that.clock_ptr;
-	xboard_ptr = that.xboard_ptr;
+    *board_ptr = *that.board_ptr;
+    table_ptr = that.table_ptr;
+    history_ptr = that.history_ptr;
+    clock_ptr = that.clock_ptr;
+    xboard_ptr = that.xboard_ptr;
 
-	timeout_mutex = that.timeout_mutex;
-	search_mutex = that.search_mutex;
-	search_thread = that.search_thread;
-	search_status = that.search_status;
-	return *this;
+    timeout_mutex = that.timeout_mutex;
+    search_mutex = that.search_mutex;
+    search_thread = that.search_thread;
+    search_status = that.search_status;
+    return *this;
 }
 
 /*----------------------------------------------------------------------------*\
- |				   get_hint()				      |
+ |                                 get_hint()                                 |
 \*----------------------------------------------------------------------------*/
 move_t search_base::get_hint() const
 {
-	return hint;
+    return hint;
 }
 
 /*----------------------------------------------------------------------------*\
- |				  get_thread()				      |
+ |                                get_thread()                                |
 \*----------------------------------------------------------------------------*/
 thread_t search_base::get_thread() const
 {
-	return search_thread;
+    return search_thread;
 }
 
 /*----------------------------------------------------------------------------*\
- |				  set_depth()				      |
+ |                                set_depth()                                 |
 \*----------------------------------------------------------------------------*/
 void search_base::set_depth(int d)
 {
 
 /// Set the maximum search depth.
 
-	max_depth = d;
+    max_depth = d;
 }
 
 /*----------------------------------------------------------------------------*\
- |				  set_output()				      |
+ |                                set_output()                                |
 \*----------------------------------------------------------------------------*/
 void search_base::set_output(bool o)
 {
 
 /// Set whether to print thinking output.
 
-	output = o;
+    output = o;
 }
 
 /*----------------------------------------------------------------------------*\
- |				   move_now()				      |
+ |                                 move_now()                                 |
 \*----------------------------------------------------------------------------*/
 void search_base::move_now()
 {
-	if (search_status != THINKING)
-		return;
-	mutex_lock(&timeout_mutex);
-	timeout_flag = true;
-	mutex_unlock(&timeout_mutex);
+    if (search_status != THINKING)
+        return;
+    mutex_lock(&timeout_mutex);
+    timeout_flag = true;
+    mutex_unlock(&timeout_mutex);
 }
 
 /*----------------------------------------------------------------------------*\
- |			      verify_prediction()			      |
+ |                            verify_prediction()                             |
 \*----------------------------------------------------------------------------*/
 void search_base::verify_prediction(move_t m)
 {
-	correct_guesses += hint == m;
-	total_guesses++;
+    correct_guesses += hint == m;
+    total_guesses++;
 }
 
 /*----------------------------------------------------------------------------*\
- |				    change()				      |
+ |                                  change()                                  |
 \*----------------------------------------------------------------------------*/
 void search_base::change(int s, const board_base& now)
 {
@@ -177,80 +177,80 @@ void search_base::change(int s, const board_base& now)
 /// mechanism and the board's locking mechanism to guarantee the events occur in
 /// the following sequence:
 ///
-///	time		search thread		I/O thread
-///	----		-------------		----------
-///	  0		grab board
-///	  1		start pondering
-///	  2					force pondering timeout
-///	  3					wait for board
-///	  4		stop pondering
-///	  5		release board
-///	  6		wait for command
-///	  7					grab board
-///	  8					set board position
-///	  9					release board
-///	 10					send thinking command
-///	 11		grab board
-///	 12		start thinking
+///	time        search thread       I/O thread
+///	----        -------------       ----------
+///	  0	        grab board
+///	  1	        start pondering
+///	  2	                            force pondering timeout
+///	  3                             wait for board
+///	  4	        stop pondering
+///	  5         release board
+///	  6         wait for command
+///	  7                             grab board
+///	  8                             set board position
+///	  9                             release board
+///	 10                             send thinking command
+///	 11         grab board
+///	 12         start thinking
 
-	// Force pondering timeout.
-	mutex_lock(&timeout_mutex);
-	timeout_flag = true;
-	mutex_unlock(&timeout_mutex);
+    // Force pondering timeout.
+    mutex_lock(&timeout_mutex);
+    timeout_flag = true;
+    mutex_unlock(&timeout_mutex);
 
-	// Wait for the board, grab the board, set the board position, and
-	// release the board.
-	if (s == ANALYZING || s == THINKING || s == PONDERING)
-	{
-		board_ptr->lock();
-		*board_ptr = now;
-		extract_pv();
-		extract_hint(s);
-		board_ptr->unlock();
-	}
+    // Wait for the board, grab the board, set the board position, and release
+    // the board.
+    if (s == ANALYZING || s == THINKING || s == PONDERING)
+    {
+        board_ptr->lock();
+        *board_ptr = now;
+        extract_pv();
+        extract_hint(s);
+        board_ptr->unlock();
+    }
 
-	// Send the command to think.
-	mutex_lock(&search_mutex);
-	DEBUG_SEARCH_PRINTA("search_base::change changes state from %s to %s.",
-		status_to_string(search_status).c_str(), status_to_string(s).c_str());
-	search_status = s;
-	token_update++;
-	cond_signal(&search_cond);
-	mutex_unlock(&search_mutex);
+    // Send the command to think.
+    mutex_lock(&search_mutex);
+    DEBUG_SEARCH_PRINTA("search_base::change changes state from %s to %s.",
+        status_to_string(search_status).c_str(), status_to_string(s).c_str());
+    search_status = s;
+    token_update++;
+    cond_signal(&search_cond);
+    mutex_unlock(&search_mutex);
 }
 
 /*----------------------------------------------------------------------------*\
- |				    _handle()				      |
+ |                                 _handle()                                  |
 \*----------------------------------------------------------------------------*/
 void search_base::_handle(void *arg)
 {
-	((search_base *) arg)->handle();
+    ((search_base *) arg)->handle();
 }
 
 /*----------------------------------------------------------------------------*\
- |				    handle()				      |
+ |                                  handle()                                  |
 \*----------------------------------------------------------------------------*/
 void search_base::handle()
 {
 
 /// The alarm has sounded.  Handle it.
 
-	mutex_lock(&timeout_mutex);
-	timeout_flag = true;
-	mutex_unlock(&timeout_mutex);
+    mutex_lock(&timeout_mutex);
+    timeout_flag = true;
+    mutex_unlock(&timeout_mutex);
 }
 
 /*----------------------------------------------------------------------------*\
- |				    _start()				      |
+ |                                  _start()                                  |
 \*----------------------------------------------------------------------------*/
 void *search_base::_start(void *arg)
 {
-	((search_base *) arg)->start();
-	return NULL;
+    ((search_base *) arg)->start();
+    return NULL;
 }
 
 /*----------------------------------------------------------------------------*\
- |				    start()				      |
+ |                                  start()                                   |
 \*----------------------------------------------------------------------------*/
 void search_base::start()
 {
@@ -259,64 +259,63 @@ void search_base::start()
 /// status or the board to change, then do the requested work.  Rinse, lather,
 /// and repeat, until XBoard commands us to quit.
 
-	int old_search_status = search_status = IDLING;
-	bitboard_t board_hash = board_ptr->get_hash(), 
-			   old_board_hash = board_hash;
+    int old_search_status = search_status = IDLING;
+    bitboard_t board_hash = board_ptr->get_hash();
+    bitboard_t old_board_hash = board_hash;
 
-	do
-	{
-		// Wait for either the status or the board to change.
-		mutex_lock(&search_mutex);
-		while (!token_update)
-			cond_wait(&search_cond, &search_mutex);
-		token_update = 0;
-		mutex_unlock(&search_mutex);
+    do
+    {
+        // Wait for either the status or the board to change.
+        mutex_lock(&search_mutex);
+        while (!token_update)
+            cond_wait(&search_cond, &search_mutex);
+        token_update = 0;
+        mutex_unlock(&search_mutex);
 
-		// Do the requested work - idle, analyze, think, ponder, or
-		// quit.
-		DEBUG_SEARCH_PRINTA("search_base::start doing requested work (hash = %llx, status = %s).",
-			board_hash, status_to_string(search_status).c_str());
+        // Do the requested work - idle, analyze, think, ponder, or quit.
+        DEBUG_SEARCH_PRINTA("search_base::start doing requested work (hash = %llx, status = %s).",
+            board_hash, status_to_string(search_status).c_str());
 
-		if (search_status == ANALYZING ||
-		    search_status == THINKING  ||
-		    search_status == PONDERING)
-		{
-			mutex_lock(&timeout_mutex);
-			timeout_flag = false;
-			mutex_unlock(&timeout_mutex);
-			iterate(search_status);
-		}
-	} while (search_status != QUITTING);
+        if (search_status == ANALYZING ||
+            search_status == THINKING  ||
+            search_status == PONDERING)
+        {
+            mutex_lock(&timeout_mutex);
+            timeout_flag = false;
+            mutex_unlock(&timeout_mutex);
+            iterate(search_status);
+        }
+    } while (search_status != QUITTING);
 
-	thread_destroy(NULL);
+    thread_destroy(NULL);
 }
 
 /*----------------------------------------------------------------------------*\
- |				  extract_pv()				      |
+ |                                extract_pv()                                |
 \*----------------------------------------------------------------------------*/
 void search_base::extract_pv()
 {
 
 /// Extract the principal variation from the transposition table.
 
-	move_t m;
-	pv.clear();
+    move_t m;
+    pv.clear();
 
-	for (table_ptr->probe(board_ptr->get_hash(), 0, EXACT, &m); 
-	     !m.is_null() && board_ptr->get_status(true) == IN_PROGRESS;
-	     table_ptr->probe(board_ptr->get_hash(), 0, EXACT, &m))
-	{
-		pv.push_back(m);
-		board_ptr->make(m);
-		if (pv.size() == (unsigned) max_depth)
-			break;
-	}
-	for (size_t j = 0; j < pv.size(); j++)
-		board_ptr->unmake();
+    for (table_ptr->probe(board_ptr->get_hash(), 0, EXACT, &m); 
+         !m.is_null() && board_ptr->get_status(true) == IN_PROGRESS;
+         table_ptr->probe(board_ptr->get_hash(), 0, EXACT, &m))
+    {
+        pv.push_back(m);
+        board_ptr->make(m);
+        if (pv.size() == (unsigned) max_depth)
+            break;
+    }
+    for (size_t j = 0; j < pv.size(); j++)
+        board_ptr->unmake();
 }
 
 /*----------------------------------------------------------------------------*\
- |				 extract_hint()				      |
+ |                               extract_hint()                               |
 \*----------------------------------------------------------------------------*/
 void search_base::extract_hint(int s)
 {
@@ -326,30 +325,29 @@ void search_base::extract_hint(int s)
 /// variation either at various times during analyzing and thinking or just once
 /// before pondering.
 
-	if (s == ANALYZING && !pv.empty())
-		// We're analyzing.
-		hint = pv.front();
-	else if (s == THINKING && pv.size() >= 2)
-	{
-		// We're thinking.  That means that the principal variation's
-		// 1st move is what we think that we should do, and its 2nd move
-		// is what we think that our opponent should do.
-		list<move_t>::iterator it = pv.begin();
-		hint = *++it;
-	}
-	else if (s == PONDERING && !pv.empty())
-		// We're about to ponder.  That means that the principal
-		// variation's 1st move is what we think that our opponent
-		// should do.
-		hint = pv.front();
-	else
-		// The principal variation isn't long enough.  We don't know
-		// what our opponent should do.
-		hint.set_null();
+    if (s == ANALYZING && !pv.empty())
+        // We're analyzing.
+        hint = pv.front();
+    else if (s == THINKING && pv.size() >= 2)
+    {
+        // We're thinking.  That means that the principal variation's 1st move
+        // is what we think that we should do, and its 2nd move is what we think
+        // that our opponent should do.
+        list<move_t>::iterator it = pv.begin();
+        hint = *++it;
+    }
+    else if (s == PONDERING && !pv.empty())
+        // We're about to ponder.  That means that the principal variation's 1st
+        // move is what we think that our opponent should do.
+        hint = pv.front();
+    else
+        // The principal variation isn't long enough.  We don't know what our
+        // opponent should do.
+        hint.set_null();
 }
 
 /*----------------------------------------------------------------------------*\
- |				   shuffle()				      |
+ |                                 shuffle()                                  |
 \*----------------------------------------------------------------------------*/
 bool search_base::shuffle(move_t m1, move_t m2)
 {
@@ -361,11 +359,11 @@ bool search_base::shuffle(move_t m1, move_t m2)
 /// STL's list sort algorithm is O(n²), then you don't deserve for this hack to
 /// work anyway.
 
-	return rand() & 1;
+    return rand() & 1;
 }
 
 /*----------------------------------------------------------------------------*\
- |				   descend()				      |
+ |                                 descend()                                  |
 \*----------------------------------------------------------------------------*/
 bool search_base::descend(move_t m1, move_t m2)
 {
@@ -373,26 +371,26 @@ bool search_base::descend(move_t m1, move_t m2)
 /// Pass this method as the comparison function to l.sort() to sort the move
 /// list from highest to lowest by score.
 
-	return m1.value > m2.value;
+    return m1.value > m2.value;
 }
 
 /*----------------------------------------------------------------------------*\
- |				   status_to_string()				      |
+ |                             status_to_string()                             |
 \*----------------------------------------------------------------------------*/
 string search_base::status_to_string(int status)
 {
 
 /// Convert status to a string.
 
-	string str;
-	switch(status) 
-	{
-		case IDLING    : str = "IDLING";         break;
-		case ANALYZING : str = "ANALYZING";      break;
-		case THINKING  : str = "THINKING";       break;
-		case PONDERING : str = "PONDERING";      break;
-		case QUITTING  : str = "QUITTING";       break;
-		default        : str = "ILLEGAL_STATUS"; break;
-	}
-	return str;
+    string str;
+    switch(status) 
+    {
+        case IDLING    : str = "IDLING";         break;
+        case ANALYZING : str = "ANALYZING";      break;
+        case THINKING  : str = "THINKING";       break;
+        case PONDERING : str = "PONDERING";      break;
+        case QUITTING  : str = "QUITTING";       break;
+        default        : str = "ILLEGAL_STATUS"; break;
+    }
+    return str;
 }
