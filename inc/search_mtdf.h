@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------*\
- |	search_mtdf.h - MTD(f) move search interface			      |
- |									      |
- |	Copyright © 2005-2008, The Gray Matter Team, original authors.	      |
+ |  search_mtdf.h - MTD(f) move search interface                              |
+ |                                                                            |
+ |  Copyright © 2005-2008, The Gray Matter Team, original authors.            |
 \*----------------------------------------------------------------------------*/
 
 /*
@@ -47,14 +47,14 @@ class xboard;
 class search_mtdf : public search_base
 {
 public:
-	search_mtdf(table* t, history* h, chess_clock* c, xboard* x);
-	~search_mtdf();
-	search_mtdf& operator=(const search_mtdf& that);
+    search_mtdf(table* t, history* h, chess_clock* c, xboard* x);
+    ~search_mtdf();
+    search_mtdf& operator=(const search_mtdf& that);
 private:
-	void iterate(int s);
-	move_t mtdf(int depth, value_t guess = 0);
-	move_t minimax(int depth, int shallowness = 0, value_t alpha = -INFINITY, value_t beta = +INFINITY, bool try_null_move = true);
-	value_t quiesce(int shallowness, value_t alpha, value_t beta);
+    void iterate(int s);
+    move_t mtdf(int depth, value_t guess = 0);
+    move_t minimax(int depth, int shallowness = 0, value_t alpha = -INFINITY, value_t beta = +INFINITY, bool try_null_move = true);
+    value_t quiesce(int shallowness, value_t alpha, value_t beta);
 };
 
 #endif
