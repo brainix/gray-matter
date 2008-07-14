@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------*\
- |	board_heuristic.h - heuristic evaluation interface		      |
- |									      |
- |	Copyright © 2005-2008, The Gray Matter Team, original authors.	      |
+ |  board_heuristic.h - heuristic evaluation interface                        |
+ |                                                                            |
+ |  Copyright © 2005-2008, The Gray Matter Team, original authors.            |
 \*----------------------------------------------------------------------------*/
 
 /*
@@ -37,65 +37,65 @@ class pawn_table;
 class board_heuristic : public board_base
 {
 public:
-	board_heuristic();
-	~board_heuristic();
-	board_heuristic& operator=(const board_heuristic& that);
-	value_t evaluate(int depth) const;
+    board_heuristic();
+    ~board_heuristic();
+    board_heuristic& operator=(const board_heuristic& that);
+    value_t evaluate(int depth) const;
 
 private:
-	// The values of the pieces:
-	static const value_t value_material[SHAPES];
+    // The values of the pieces:
+    static const value_t value_material[SHAPES];
 
-	// The values of having different pieces on different squares:
-	static const value_t value_position[SHAPES][8][8];
+    // The values of having different pieces on different squares:
+    static const value_t value_position[SHAPES][8][8];
 
-	// The values of having the white king on different squares during an endgame
-	// with pawns (of both colors) only on the queen side:
-	static const value_t value_king_position[8][8];
+    // The values of having the white king on different squares during an
+    // endgame with pawns (of both colors) only on the queen side:
+    static const value_t value_king_position[8][8];
 
-	// The values of various pawn structure features:
-	static const value_t value_pawn_passed[8];
-	static const value_t value_pawn_doubled[9];
-	static const value_t value_pawn_isolated[9];
-	static const value_t value_pawn_doubled_isolated[9];
-	static const value_t value_pawn_duo;
+    // The values of various pawn structure features:
+    static const value_t value_pawn_passed[8];
+    static const value_t value_pawn_doubled[9];
+    static const value_t value_pawn_isolated[9];
+    static const value_t value_pawn_doubled_isolated[9];
+    static const value_t value_pawn_duo;
 
-	//
-	static const value_t value_knight_outpost[8][8];
+    //
+    static const value_t value_knight_outpost[8][8];
 
-	//
-	static const value_t value_bishop_over_knight;
-	static const value_t value_bishop_trapped;
+    //
+    static const value_t value_bishop_over_knight;
+    static const value_t value_bishop_trapped;
 
-	//
-	static const value_t value_rook_on_7th;
-	static const value_t value_rooks_on_7th;
+    //
+    static const value_t value_rook_on_7th;
+    static const value_t value_rooks_on_7th;
 
-	//
-	static const value_t value_queen_rook_on_7th;
-	static const value_t value_queen_offside;
+    //
+    static const value_t value_queen_rook_on_7th;
+    static const value_t value_queen_offside;
 
-	// The penalty for giving up castling:
-	static const value_t value_king_cant_castle;
+    // The penalty for giving up castling:
+    static const value_t value_king_cant_castle;
 
-	//
-	static bool precomputed_board_heuristic;
-	static bitboard_t squares_pawn_duo[8][8];
-	static bitboard_t squares_pawn_potential_attacks[COLORS][8][8];
+    //
+    static bool precomputed_board_heuristic;
+    static bitboard_t squares_pawn_duo[8][8];
+    static bitboard_t squares_pawn_potential_attacks[COLORS][8][8];
 
-	// Since pawn structure remains relatively static, we maintain a hash
-	// table of previous pawn structure evaluations.  According to my tests,
-	// this hash table sustains a hit rate of around 97%.  This enables us
-	// to perform sophisticated pawn structure analysis almost for free.
-	static pawn pawn_table;
+    // Since pawn structure remains relatively static, we maintain a hash table
+    // of previous pawn structure evaluations.  According to my tests, this hash
+    // table sustains a hit rate of around 97%.  This enables us to perform
+    // sophisticated pawn structure analysis almost for free.
+    static pawn pawn_table;
 
-	value_t evaluate_pawns() const;
-	value_t evaluate_knights() const;
-	value_t evaluate_bishops() const;
-	value_t evaluate_rooks() const;
-	value_t evaluate_queens() const;
-	value_t evaluate_kings(int depth) const;
-	void precomp_pawn();
+    value_t evaluate_pawns() const;
+    value_t evaluate_knights() const;
+    value_t evaluate_bishops() const;
+    value_t evaluate_rooks() const;
+    value_t evaluate_queens() const;
+    value_t evaluate_kings(int depth) const;
+    void precomp_pawn();
 };
 
 #endif

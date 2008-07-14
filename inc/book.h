@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------*\
- |	book.h - opening book interface					      |
- |									      |
- |	Copyright © 2005-2008, The Gray Matter Team, original authors.	      |
+ |  book.h - opening book interface                                           |
+ |                                                                            |
+ |  Copyright © 2005-2008, The Gray Matter Team, original authors.            |
 \*----------------------------------------------------------------------------*/
 
 /*
@@ -37,24 +37,24 @@
 #include "table.h"
 
 // Token types:
-#define TOKEN_UNKNOWN		0 // Unknown.
-#define TOKEN_SPACE		1 // Whitespace.
-#define TOKEN_STRING		2 // String.
-#define TOKEN_INTEGER		3 // Integer.
-#define TOKEN_PUNCTUATION	4 // Punctuation.
-#define TOKEN_GLYPH		5 // Numeric Annotation Glyph (NAG).
-#define TOKEN_SYMBOL		6 // Symbol.
+#define TOKEN_UNKNOWN       0 // Unknown.
+#define TOKEN_SPACE         1 // Whitespace.
+#define TOKEN_STRING        2 // String.
+#define TOKEN_INTEGER       3 // Integer.
+#define TOKEN_PUNCTUATION   4 // Punctuation.
+#define TOKEN_GLYPH         5 // Numeric Annotation Glyph (NAG).
+#define TOKEN_SYMBOL        6 // Symbol.
 
 // Is the specified token punctuation (as defined by the PGN specification)?
-#define IS_PUNCT(c)	((c) == (int) '.' || (c) == (int) '*' || \
-			 (c) == (int) '[' || (c) == (int) ']' || \
-			 (c) == (int) '<' || (c) == (int) '>')
+#define IS_PUNCT(c) ((c) == (int) '.' || (c) == (int) '*' || \
+                     (c) == (int) '[' || (c) == (int) ']' || \
+                     (c) == (int) '<' || (c) == (int) '>')
 
 // Is the specified token a symbol (as defined by the PGN specification)?
-#define IS_SYMBOL(c)	(isalnum((c))     || (c) == (int) '_' || \
-			 (c) == (int) '+' || (c) == (int) "#" || \
-			 (c) == (int) '=' || (c) == (int) ':' || \
-			 (c) == (int) '-')
+#define IS_SYMBOL(c)    (isalnum((c))     || (c) == (int) '_' || \
+                         (c) == (int) '+' || (c) == (int) "#" || \
+                         (c) == (int) '=' || (c) == (int) ':' || \
+                         (c) == (int) '-')
 
 // Forward declarations:
 class board_base;
@@ -64,32 +64,33 @@ class table;
 class book
 {
 public:
-	book(table *t, std::string file_name, int n);
-	void read();
+    book(table *t, std::string file_name, int n);
+    void read();
+
 private:
-	int num_moves;             ///<
-	std::list<std::list<move_t> > games; ///< Game list.
+    int num_moves;                       ///<
+    std::list<std::list<move_t> > games; ///< Game list.
 
-	board_base *board_ptr;     ///< Board representation object.
-	table *table_ptr;          ///< Transposition table object.
+    board_base *board_ptr;               ///< Board representation object.
+    table *table_ptr;                    ///< Transposition table object.
 
-	// Based on the PGN file, the following methods populate the token list,
-	// game list, and transposition table.
-	void populate_tokens(std::istream& stream, std::list<std::string>& tokens);
-	void populate_games(std::list<std::string>& tokens);
-	void populate_table();
+    // Based on the PGN file, the following methods populate the token list,
+    // game list, and transposition table.
+    void populate_tokens(std::istream& stream, std::list<std::string>& tokens);
+    void populate_games(std::list<std::string>& tokens);
+    void populate_table();
 
-	//
-	int tokenize(std::istream& stream, std::string& token);
-	bool tokenize_space(std::istream& stream, std::string& token);
-	bool tokenize_string(std::istream& stream, std::string& token);
-	bool tokenize_integer(std::istream& stream, std::string& token);
-	bool tokenize_punctuation(std::istream& stream, std::string& token);
-	bool tokenize_glyph(std::istream& stream, std::string& token);
-	bool tokenize_symbol(std::istream& stream, std::string& token);
+    //
+    int tokenize(std::istream& stream, std::string& token);
+    bool tokenize_space(std::istream& stream, std::string& token);
+    bool tokenize_string(std::istream& stream, std::string& token);
+    bool tokenize_integer(std::istream& stream, std::string& token);
+    bool tokenize_punctuation(std::istream& stream, std::string& token);
+    bool tokenize_glyph(std::istream& stream, std::string& token);
+    bool tokenize_symbol(std::istream& stream, std::string& token);
 
-	// The following method is the most magnificent hack of my life.
-	static bool shuffle(std::list<move_t> l1, std::list<move_t> l2);
+    // The following method is the most magnificent hack of my life.
+    static bool shuffle(std::list<move_t> l1, std::list<move_t> l2);
 };
 
 #endif
