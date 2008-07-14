@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------*\
- |	clock.h - chess clock interface					      |
- |									      |
- |	Copyright © 2005-2008, The Gray Matter Team, original authors.	      |
+ |  clock.h - chess clock interface                                           |
+ |                                                                            |
+ |  Copyright © 2005-2008, The Gray Matter Team, original authors.            |
 \*----------------------------------------------------------------------------*/
 
 /*
@@ -31,9 +31,9 @@
 #include "library.h"
 
 // Time control styles:
-#define CONVENTIONAL	0
-#define INCREMENTAL	1
-#define SECS_PER_MOVE	2
+#define CONVENTIONAL    0
+#define INCREMENTAL     1
+#define SECS_PER_MOVE   2
 
 typedef void (*clock_callback_t)(void *data);
 
@@ -41,27 +41,27 @@ typedef void (*clock_callback_t)(void *data);
 class chess_clock
 {
 public:
-	chess_clock(int o);
-	void set_mode(int color, int new_moves, int new_csecs, int new_inc);
-	std::string to_string(int color);
-	void update_remaining_csecs(int color, int new_csecs);
-	void dec_remaining_moves(int color);
-	void inc_remaining_moves(int color);
-	void set_callback(clock_callback_t cb, void *data);
-	void set_alarm(int color) const;
-	void cancel_alarm() const;
-	void note_time();
-	int get_elapsed() const;
-	void swap_clocks();
+    chess_clock(int o);
+    void set_mode(int color, int new_moves, int new_csecs, int new_inc);
+    std::string to_string(int color);
+    void update_remaining_csecs(int color, int new_csecs);
+    void dec_remaining_moves(int color);
+    void inc_remaining_moves(int color);
+    void set_callback(clock_callback_t cb, void *data);
+    void set_alarm(int color) const;
+    void cancel_alarm() const;
+    void note_time();
+    int get_elapsed() const;
+    void swap_clocks();
 private:
-	int total_moves[COLORS];         ///<
-	int remaining_moves[COLORS];     ///<
-	int remaining_csecs[COLORS];     ///<
-	int inc[COLORS];                 ///<
-	int overhead;                    ///<
-	clock_t noted_time;              ///<
-	clock_callback_t clock_callback; ///<
-	void *clock_callback_data;       ///<
+    int total_moves[COLORS];         ///<
+    int remaining_moves[COLORS];     ///<
+    int remaining_csecs[COLORS];     ///<
+    int inc[COLORS];                 ///<
+    int overhead;                    ///<
+    clock_t noted_time;              ///<
+    clock_callback_t clock_callback; ///<
+    void *clock_callback_data;       ///<
 
 	static void sound_alarm(void *data);
 };
