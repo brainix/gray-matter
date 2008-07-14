@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------*\
- |	singleton.h - singleton interface and implementation		      |
- |									      |
- |	Copyright © 2005-2008, The Gray Matter Team, original authors.	      |
+ |  singleton.h - singleton interface and implementation                      |
+ |                                                                            |
+ |  Copyright © 2005-2008, The Gray Matter Team, original authors.            |
 \*----------------------------------------------------------------------------*/
 
 /*
@@ -28,23 +28,23 @@
 /// general, some compilers (like GCC) supposedly generate thread-safe code in
 /// this case.
 ///
-///	#include "singleton.h"
+/// #include "singleton.h"
 ///
-///	class the_one_ring : public singleton<the_one_ring>
-///	{
-///	public:
-///		std::string get_inscription() const
-///		{
-///			return inscription;
-///		}
-///	private:
-///		friend class singleton<the_one_ring>;
-///		std::string inscription;
-///	protected:
-///		the_one_ring() : inscription("One ring to rule them all...")
-///		{
-///		}
-///	};
+/// class the_one_ring : public singleton<the_one_ring>
+/// {
+/// public:
+///	    std::string get_inscription() const
+///	    {
+///         return inscription;
+///     }
+/// private:
+///     friend class singleton<the_one_ring>;
+///     std::string inscription;
+/// protected:
+///     the_one_ring() : inscription("One ring to rule them all...")
+///     {
+///     }
+/// };
 ///
 /// For more information, see:
 ///	http://en.wikipedia.org/wiki/Singleton_pattern#C.2B.2B
@@ -52,11 +52,11 @@ template<typename t>
 class singleton
 {
 public:
-	static t& instance()
-	{
-		static t single_instance;
-		return single_instance;
-	}
+    static t& instance()
+    {
+        static t single_instance;
+        return single_instance;
+    }
 };
 
 #endif

@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------*\
- |	move.h - move interface and implementation			      |
- |									      |
- |	Copyright © 2005-2008, The Gray Matter Team, original authors.	      |
+ |  move.h - move interface and implementation                                |
+ |                                                                            |
+ |  Copyright © 2005-2008, The Gray Matter Team, original authors.            |
 \*----------------------------------------------------------------------------*/
 
 /*
@@ -36,54 +36,54 @@ typedef int16_t value_t;
 /// than a pointer to this structure or other similar ugliness).
 typedef struct move
 {
-	unsigned x1      : 3; ///< From x coordinate.              3 bits
-	unsigned y1      : 3; ///< From y coordinate.           +  3 bits
-	unsigned x2      : 3; ///< To x coordinate.             +  3 bits
-	unsigned y2      : 3; ///< To y coordinate.             +  3 bits
-	unsigned promo   : 3; ///< Pawn promotion information.  +  3 bits
-	unsigned padding : 1; ///< The Evil Bit (TM).           +  1 bit
-	value_t  value;       ///< MiniMax score.               + 16 bits
-	                      //                                = 32 bits
+    unsigned x1      : 3; ///< From x coordinate.              3 bits
+    unsigned y1      : 3; ///< From y coordinate.           +  3 bits
+    unsigned x2      : 3; ///< To x coordinate.             +  3 bits
+    unsigned y2      : 3; ///< To y coordinate.             +  3 bits
+    unsigned promo   : 3; ///< Pawn promotion information.  +  3 bits
+    unsigned padding : 1; ///< The Evil Bit (TM).           +  1 bit
+    value_t  value;       ///< MiniMax score.               + 16 bits
+                          //                                = 32 bits
 
-	/// Overloaded equality test operator.
-	bool operator==(const struct move that) const
-	{
-		return this->x1 == that.x1 && this->y1 == that.y1 &&
-		       this->x2 == that.x2 && this->y2 == that.y2 &&
-		       this->promo == that.promo;
-	};
+    /// Overloaded equality test operator.
+    bool operator==(const struct move that) const
+    {
+        return this->x1 == that.x1 && this->y1 == that.y1 &&
+               this->x2 == that.x2 && this->y2 == that.y2 &&
+               this->promo == that.promo;
+    };
 
-	/// Overloaded inequality test operator.
-	bool operator!=(const struct move that) const
-	{
-		return this->x1 != that.x1 || this->y1 != that.y1 ||
-		       this->x2 != that.x2 || this->y2 != that.y2 ||
-		       this->promo != that.promo;
-	};
+    /// Overloaded inequality test operator.
+    bool operator!=(const struct move that) const
+    {
+        return this->x1 != that.x1 || this->y1 != that.y1 ||
+               this->x2 != that.x2 || this->y2 != that.y2 ||
+               this->promo != that.promo;
+    };
 
-	/// Overloaded assignment operator.
-	struct move& operator=(const struct move& that)
-	{
-		x1 = that.x1;
-		y1 = that.y1;
-		x2 = that.x2;
-		y2 = that.y2;
-		promo = that.promo;
-		value = that.value;
-		return *this;
-	};
+    /// Overloaded assignment operator.
+    struct move& operator=(const struct move& that)
+    {
+        x1 = that.x1;
+        y1 = that.y1;
+        x2 = that.x2;
+        y2 = that.y2;
+        promo = that.promo;
+        value = that.value;
+        return *this;
+    };
 
-	/// Is this move a null move?
-	bool is_null() const
-	{
-		return !x1 && !y1 && !x2 && !y2 && !promo;
-	};
+    /// Is this move a null move?
+    bool is_null() const
+    {
+        return !x1 && !y1 && !x2 && !y2 && !promo;
+    };
 
-	/// Set this move to a null move.
-	void set_null()
-	{
-		x1 = y1 = x2 = y2 = promo = 0;
-	};
+    /// Set this move to a null move.
+    void set_null()
+    {
+        x1 = y1 = x2 = y2 = promo = 0;
+    };
 } __attribute__((packed)) move_t;
 
 #endif

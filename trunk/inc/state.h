@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------*\
- |	state.h - state interface and implementation			      |
- |									      |
- |	Copyright © 2005-2008, The Gray Matter Team, original authors.	      |
+ |  state.h - state interface and implementation                              |
+ |                                                                            |
+ |  Copyright © 2005-2008, The Gray Matter Team, original authors.            |
 \*----------------------------------------------------------------------------*/
 
 /*
@@ -42,16 +42,16 @@
 /// then the pawn susceptible to en passant must be white and on rank 4.
 typedef struct state
 {
-	bitboard_t piece[COLORS][SHAPES]; ///< 12 BitBoards.
-	int castle[COLORS][SIDES];        ///< Castling statuses.
-	int en_passant;                   ///< En passant vulnerability.
-	bool on_move;                     ///< Color on move.
-	int fifty;                        ///< 50 move rule counter.
+    bitboard_t piece[COLORS][SHAPES]; ///< 12 BitBoards.
+    int castle[COLORS][SIDES];        ///< Castling statuses.
+    int en_passant;                   ///< En passant vulnerability.
+    bool on_move;                     ///< Color on move.
+    int fifty;                        ///< 50 move rule counter.
 } state_t;
 
 /// This macro assembles a BitBoard that contains all of a color's pieces.
-#define ALL(s, c)	((s).piece[c][PAWN]   | (s).piece[c][KNIGHT] | \
-			 (s).piece[c][BISHOP] | (s).piece[c][ROOK]   | \
-			 (s).piece[c][QUEEN]  | (s).piece[c][KING])
+#define ALL(s, c)   ((s).piece[c][PAWN]   | (s).piece[c][KNIGHT] | \
+                     (s).piece[c][BISHOP] | (s).piece[c][ROOK]   | \
+                     (s).piece[c][QUEEN]  | (s).piece[c][KING])
 
 #endif
