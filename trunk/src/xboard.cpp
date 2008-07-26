@@ -853,9 +853,15 @@ int xboard::game_over()
         case FIFTY:        printf("1/2-1/2 {Fifty move rule}\n");       break;
         case CHECKMATE:
             if (!board_ptr->get_whose() == WHITE)
-                printf("1-0 {White mates}\n"); break;
+            {
+                printf("1-0 {White mates}\n");
+                break;
+            }
             else
-                printf("0-1 {Black mates}\n"); break;
+            {
+                printf("0-1 {Black mates}\n");
+                break;
+            }
 	}
 	return status;
 }
