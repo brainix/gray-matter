@@ -873,7 +873,7 @@ move_t board_base::san_to_coord(string& san)
         return m;
 
     // If there's an 'x' here, then it means that the move is a capture.  Note
-    // this (to verify that it's a capture later).
+    // this (to later verify that it's indeed a capture).
     if (san[index] == 'x')
     {
         if (++index >= san.length())
@@ -891,7 +891,7 @@ move_t board_base::san_to_coord(string& san)
     }
 
     // If there's an 'x' here, then it means that the move is a capture.  Note
-    // this (to verify that it's a capture later).
+    // this (to later verify that it's indeed a capture).
     if (san[index] == 'x')
     {
         if (++index >= san.length())
@@ -905,7 +905,7 @@ move_t board_base::san_to_coord(string& san)
         y2 = san[index++] - '1';
 
     // If there's an 'x' here, then it means that the move is a capture.  Note
-    // this (to verify that it's a capture later).
+    // this (to later verify that it's indeed a capture).
     if (index < san.length() && san[index] == 'x')
     {
         if (++index >= san.length())
