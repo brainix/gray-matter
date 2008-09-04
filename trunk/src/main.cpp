@@ -54,7 +54,7 @@ int main(int argc, char **argv)
         {
             case 'e':
                 // Specifying which move search engine to use.
-                if (optarg != "MTD(f)")
+                if (strcmp(optarg, "MTD(f)"))
                 {
                     cerr << "move search engine must be MTD(f)" << endl;
                     exit(EXIT_FAILURE);
@@ -105,7 +105,9 @@ int main(int argc, char **argv)
             }
             default:
                 // Specifying that the user doesn't know how to read.
-                cerr << "unknown option: -" static_cast<char>(optopt) << endl;
+                cerr << "unknown option: -"
+                     << static_cast<char>(optopt)
+                     << endl;
                 exit(EXIT_FAILURE);
                 break;
         }
