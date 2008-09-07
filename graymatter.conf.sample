@@ -1,7 +1,7 @@
 ############################################
 # Sample configuration file for Gray Matter
 #
-# On Window, ...
+# On Windows, ...
 # On Linux, copy this file to ~/.graymatter
 ############################################
 
@@ -9,7 +9,7 @@
 engine = "MTD(f)"
 
 # Specifying the size of the transposition table.
-# Must be >= 1 MB
+# Must be >= 1 MB.
 xpos_table_mb = 64
 
 # Specifying the file name of the opening book.
@@ -20,7 +20,7 @@ book_name = "book.pgn"
 book_moves = 20
 
 # Specifying the move search overhead.
-# Must be >= 1 centisecond
+# Must be >= 1 centisecond.
 overhead = 1
 
 # To verify the correctness of search or evaluation
@@ -35,4 +35,3 @@ xml_dir = /tmp
 # Supply the depth of the dump, the bigger this number
 # the bigger the dump file(s) will be. Must be >= 1 ply.
 xml_depth = 3
-

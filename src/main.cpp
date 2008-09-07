@@ -39,11 +39,11 @@ using namespace std;
 int main(int argc, char **argv);
 
 /*----------------------------------------------------------------------------*\
- |				     main()				      |
+ |                                   main()                                   |
 \*----------------------------------------------------------------------------*/
 int main(int argc, char **argv)
 {
-    // First parse the configuration file, if exists
+    // First parse the configuration file, if it exists.
     ConfigFile config;
     config.dump(cout);
 
@@ -79,9 +79,7 @@ int main(int argc, char **argv)
                 // opening book.
                 if (atoi(optarg) < 1)
                 {
-                    cerr << "number of book moves "
-                         << "must be >= 1 ply"
-                         << endl;
+                    cerr << "number of book moves must be >= 1 ply" << endl;
                     exit(EXIT_FAILURE);
                 }
                 config.set("book_moves", atoi(optarg));
@@ -131,12 +129,11 @@ int main(int argc, char **argv)
     /// XBoard object.
     xboard x;
     /// Opening book object.
-    book o(&t, config.getString("book_name"), 
-               config.getInt("book_moves"));
+    book o(&t, config.getString("book_name"), config.getInt("book_moves"));
 
-    // Based on the -s command-line option, choose the move search engine and
-    // cast it as a generic version.  Thus far, we've only implemented one move
-    // search engine, MTD(f).
+    // Based on the -s command-line option, choose the move search engine
+    // and cast it as a generic version.  Thus far, we've only implemented
+    // one move search engine, MTD(f).
     search_base *s = 0;
     if (config.getString("engine") == "MTD(f)")
         s = new search_mtdf(&t, &h, &c, &x);
