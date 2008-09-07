@@ -259,8 +259,9 @@ void search_base::start()
 /// status or the board to change, then do the requested work.  Rinse, lather,
 /// and repeat, until XBoard commands us to quit.
 
-    int search_status = IDLING;
+    int old_search_status = search_status = IDLING;
     bitboard_t board_hash = board_ptr->get_hash();
+    bitboard_t old_board_hash = board_hash;
 
     do
     {
