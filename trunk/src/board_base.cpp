@@ -1883,7 +1883,8 @@ bitboard_t board_base::rotate(bitboard_t b1, int map, int angle) const
 /*----------------------------------------------------------------------------*\
  |                                  insert()                                  |
 \*----------------------------------------------------------------------------*/
-void board_base::insert(int x, int y, bitboard_t b, int angle, list<move_t>& l, bool pos)
+void board_base::insert(int x, int y, bitboard_t b, int angle, list<move_t>& l,
+                        bool pos)
 {
 
 /// Prepend or append a piece's possible moves to a list.
