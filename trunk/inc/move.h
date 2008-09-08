@@ -45,13 +45,19 @@ typedef struct move
     value_t  value;       ///< MiniMax score.               + 16 bits
                           //                                = 32 bits
 
+    /// Constructor.
+    move()
+    {
+        x1 = y1 = x2 = y2 = promo = padding = value = 0;
+    }
+
     /// Overloaded equality test operator.
     bool operator==(const struct move that) const
     {
         return this->x1 == that.x1 && this->y1 == that.y1 &&
                this->x2 == that.x2 && this->y2 == that.y2 &&
                this->promo == that.promo;
-    };
+    }
 
     /// Overloaded inequality test operator.
     bool operator!=(const struct move that) const
@@ -59,7 +65,7 @@ typedef struct move
         return this->x1 != that.x1 || this->y1 != that.y1 ||
                this->x2 != that.x2 || this->y2 != that.y2 ||
                this->promo != that.promo;
-    };
+    }
 
     /// Overloaded assignment operator.
     struct move& operator=(const struct move& that)
@@ -71,19 +77,19 @@ typedef struct move
         promo = that.promo;
         value = that.value;
         return *this;
-    };
+    }
 
     /// Is this move a null move?
     bool is_null() const
     {
         return !x1 && !y1 && !x2 && !y2 && !promo;
-    };
+    }
 
     /// Set this move to a null move.
     void set_null()
     {
         x1 = y1 = x2 = y2 = promo = 0;
-    };
+    }
 } __attribute__((packed)) move_t;
 
 #endif
