@@ -145,8 +145,8 @@ void xboard::loop(search_base *s, chess_clock *c, book *o)
             do_analyze();
         else if (!strncmp(buffer, "exit", 4))
             do_exit();
-        // These are not part of the interface protocol, but come in handy to
-        // us.
+        // These commands are not part of the Chess Engine Interface Protocol,
+        // but they come in handy to us.
         else if (!strncmp(buffer, "display", 7))
             do_display();
         else if (!strncmp(buffer, "test", 4))
@@ -239,7 +239,7 @@ void xboard::print_resignation()
 \*----------------------------------------------------------------------------*/
 void xboard::print_move(move_t m, bool san) const
 {
-    if(san)
+    if (san)
     {
         // Standard Algebraic Notation.
         string str;
@@ -426,7 +426,7 @@ void xboard::do_usermove()
 {
 
 /// Our opponent has moved.  If the move was legal, and it didn't just end the
-/// game, and we're not in force mode: formulate a response.
+/// game, and we're not in force mode, then formulate a response.
 
     move_t m;
 
@@ -862,8 +862,8 @@ int xboard::game_over()
                 printf("0-1 {Black mates}\n");
                 break;
             }
-	}
-	return status;
+    }
+    return status;
 }
 
 /*----------------------------------------------------------------------------*\
