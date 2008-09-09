@@ -610,11 +610,21 @@ string board_base::to_string() const
 /*----------------------------------------------------------------------------*\
  |                                 generate()                                 |
 \*----------------------------------------------------------------------------*/
-bool board_base::generate(list<move_t>& l, bool only_legal_moves, bool only_captures)
+bool board_base::generate(list<move_t>& l, bool only_legal_moves,
+                          bool only_captures)
 {
-	// Reset whether the opponent's king can be captured.
+
+/// For the current position, generate all of the moves.  Store all of the moves
+/// in the move list, l.  If only_legal_moves is specified, generate only the
+/// moves that don't leave the color on move in check.  If only_captures is
+/// specified, generate only the moves that capture one of the color off move's
+/// pieces.  Return whether we're in an illegal position.  (If the color on move
+/// can capture the color off move's king, we're in an illegal position.)
+
+    // Reset whether the opponent's king can be captured.
     generated_king_capture = false;
 
+    // Generate each piece type's moves.
     generate_king(l, only_captures);
     generate_queen(l, only_captures);
     generate_rook(l, only_captures);
@@ -622,6 +632,9 @@ bool board_base::generate(list<move_t>& l, bool only_legal_moves, bool only_capt
     generate_knight(l, only_captures);
     generate_pawn(l, only_captures);
 
+    // If we're to generate only legal moves, then march through the most list.
+    // If a move leaves the color on move in check, then remove that move from
+    // the move list.
     if (only_legal_moves)
         for (list<move_t>::iterator it = l.begin(); it != l.end();)
         {
@@ -804,6 +817,8 @@ bool board_base::unmake()
 /// Take back the last move.
 
     if (states.empty())
+        // Oops.  There was no last move.  The board must be in the initial
+        // position.
         return false;
 
     // Restore the previous state, rotated BitBoards, and hash keys.
@@ -1014,7 +1029,7 @@ move_t board_base::san_to_coord(string& san)
 }
 
 /*----------------------------------------------------------------------------*\
- |				 coord_to_san()				      |
+ |                               coord_to_san()                               |
 \*----------------------------------------------------------------------------*/
 void board_base::coord_to_san(move_t m, string& san)
 {

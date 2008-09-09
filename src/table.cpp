@@ -87,6 +87,9 @@ void table::clear()
 \*----------------------------------------------------------------------------*/
 bool table::probe(bitboard_t hash, int depth, int type, move_t *move_ptr)
 {
+
+///
+
     uint64_t index = hash % slots;
     for (int policy = DEEP; policy <= FRESH; policy++)
         if (data[policy][index].hash == hash)
@@ -117,6 +120,9 @@ bool table::probe(bitboard_t hash, int depth, int type, move_t *move_ptr)
 \*----------------------------------------------------------------------------*/
 void table::store(bitboard_t hash, int depth, int type, move_t move)
 {
+
+///
+
     uint64_t index = hash % slots;
     for (int policy = DEEP; policy <= FRESH; policy++)
         if (depth >= data[policy][index].depth || policy == FRESH)
@@ -207,6 +213,9 @@ void history::clear()
 \*----------------------------------------------------------------------------*/
 int history::probe(bool color, move_t m) const
 {
+
+///
+
     return data[color][m.x1][m.y1][m.x2][m.y2];
 }
 

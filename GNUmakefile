@@ -13,7 +13,7 @@ PLAT = LINUX
 # prescott, nocona, k6, k6-2, k6-3, athlon, athlon-tbird, athlon-4, athlon-xp,
 # athlon-mp, k8, opteron, athlon64, athlon-fx, winchip-c6, winchip2, c3, or
 # c3-2.
-ARCH = pentium3
+ARCH = native
 
 # Subversion macros.
 SVNDEF := -D'SVN_REV="$(shell svnversion -n .)"'
