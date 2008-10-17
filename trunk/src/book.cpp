@@ -170,7 +170,7 @@ bool book::tokenize_space(istream& stream, string& token)
 /// character, and return false.
 
     token.erase(0, token.length());
-    for (int c; isspace(c = stream.peek()); stream.ignore())
+    for (char c; isspace(c = stream.peek()); stream.ignore())
         token += c;
     token += '\0';
     return token.length() >= 2;
@@ -217,7 +217,7 @@ bool book::tokenize_integer(istream& stream, string& token)
 /// character, and return false.
 
     token.erase(0, token.length());
-    for (int c; isdigit(c = stream.peek()); stream.ignore())
+    for (char c; isdigit(c = stream.peek()); stream.ignore())
         token += c;
     token += '\0';
     return token.length() >= 2;
@@ -235,7 +235,7 @@ bool book::tokenize_punctuation(istream& stream, string& token)
 /// character, and return false.
 
     token.erase(0, token.length());
-    int c = stream.peek();
+    char c = stream.peek();
     if (IS_PUNCT(c))
     {
         token += c;
@@ -260,7 +260,7 @@ bool book::tokenize_glyph(istream& stream, string& token)
     if (stream.peek() == '$')
     {
         token += stream.get();
-        for (int c; isdigit(c = stream.peek()); stream.ignore())
+        for (char c; isdigit(c = stream.peek()); stream.ignore())
             token += c;
     }
     token += '\0';
@@ -280,7 +280,7 @@ bool book::tokenize_symbol(istream& stream, string& token)
 
     token.erase(0, token.length());
     if (isalnum(stream.peek()))
-        for (int c; IS_SYMBOL(c = stream.peek()); stream.ignore())
+        for (char c; IS_SYMBOL(c = stream.peek()); stream.ignore())
             token += c;
     token += '\0';
     return token.length() >= 2;
