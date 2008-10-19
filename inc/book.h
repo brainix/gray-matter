@@ -52,7 +52,7 @@
 
 // Is the specified token a symbol (as defined by the PGN specification)?
 #define IS_SYMBOL(c)    (isalnum((c))     || (c) == (int) '_' || \
-                         (c) == (int) '+' || (c) == (int) "#" || \
+                         (c) == (int) '+' || (c) == (int) '#' || \
                          (c) == (int) '=' || (c) == (int) ':' || \
                          (c) == (int) '-')
 
