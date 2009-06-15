@@ -34,6 +34,7 @@ typedef int16_t value_t;
 /// and the MiniMax score.  We use a BitField to tightly pack this information 
 /// into 32 bits because some of our methods return this structure (rather 
 /// than a pointer to this structure or other similar ugliness).
+#pragma packed(1)
 typedef struct move
 {
     unsigned x1      : 3; ///< From x coordinate.              3 bits
@@ -90,6 +91,8 @@ typedef struct move
     {
         x1 = y1 = x2 = y2 = promo = 0;
     }
-} __attribute__((packed)) move_t;
+} move_t;
+
+#pragma packed()
 
 #endif
