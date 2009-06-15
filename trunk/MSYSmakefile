@@ -1,0 +1,41 @@
+#==============================================================================#
+#	WINmakefile							       #
+#									       #
+#	Copyright © 2005-2008, The Gray Matter Team, original authors.	       #
+#==============================================================================#
+
+ARCH   = mingw32
+TARGET = i686-pc-mingw32
+
+CXX    = mingw32-g++
+#LANG   = -ansi
+LANG   = 
+#WARN   = -Wall -Werror
+WARN   = -Werror
+OPTI   = -O3 -fomit-frame-pointer
+PREP   = -DWINDOWS
+DIR    = -Iinc
+
+OBJS = bin/board_base.o      \
+       bin/board_heuristic.o \
+       bin/book.o            \
+       bin/clock.o           \
+       bin/configfile.o      \
+       bin/library.o         \
+       bin/main.o            \
+       bin/search_base.o     \
+       bin/search_mtdf.o     \
+       bin/table.o           \
+       bin/testing.o         \
+       bin/xboard.o
+
+all : gray.exe
+
+clean :
+	rm -f $(OBJS) gray.exe
+
+bin/%.o : src/%.cpp
+	$(CXX) -c -o $@ $< $(LANG) $(WARN) $(OPTI) $(PREP) $(DIR)
+
+gray.exe : $(OBJS)
+	$(CXX) -o $@ $(LANG) $(WARN) $(OPTI) $(PREP) $(DIR) $(OBJS)
