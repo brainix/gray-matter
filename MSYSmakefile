@@ -37,5 +37,5 @@ clean :
 bin/%.o : src/%.cpp inc/%.h
 	$(CXX) -c -o $@ $< $(LANG) $(WARN) $(OPTI) $(PREP) $(DIR)
 
-bin/gray.exe : $(OBJS)
+bin/gray.exe : $(OBJS) inc/gray.h
 	$(CXX) -o $@ $(LANG) $(WARN) $(OPTI) $(PREP) $(DIR) $(OBJS)
