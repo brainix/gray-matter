@@ -48,7 +48,7 @@ endif
 clean :
 	rm -f $(OBJS) $(DEPS) bin/gray
 
-bin/%.o : src/%.cpp
+bin/%.o : src/%.cpp inc/%.h
 	$(CXX) -c -o $@ $< $(LANG) $(WARN) $(OPTI) $(PREP) $(DIR) $(MACH) $(PFC)
 
 bin/gray : $(OBJS)
