@@ -48,7 +48,7 @@
 \*----------------------------------------------------------------------------*/
 
 /// Transposition table slot.
-#pragma packed(1)
+#pragma pack(1)
 typedef struct xpos_slot
 {
     bitboard_t hash;                   ///< Zobrist hash key.           64 bits
@@ -56,7 +56,7 @@ typedef struct xpos_slot
     uint16_t type;                     ///< Upper, exact, or lower.  +  16 bits
     move_t move;                       ///< Best move and score.     +  32 bits
 } xpos_slot_t;                         //                            = 128 bits
-#pragma packed()
+#pragma pack()
 
 /// Transposition table.
 class table
@@ -98,13 +98,13 @@ private:
 \*----------------------------------------------------------------------------*/
 
 /// Pawn table slot.
-#pragma packed(1)
+#pragma pack(1)
 typedef struct pawn_slot
 {
     bitboard_t hash;                   ///< Zobrist hash key.    64 bits
     value_t value;                     ///< Score.             + 16 bits
 } pawn_slot_t;                          //                      = 80 bits
-#pragma packed()
+#pragma pack()
 
 /// Pawn table.
 class pawn
