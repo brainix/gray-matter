@@ -71,6 +71,11 @@ typedef pthread_cond_t cond_t;       // Condition variable.
 #include <stdlib.h>
 #include <windows.h>
 
+//Windows needs a variable to hold the time per move
+//since it seems to get lost/corrupted in the current
+//threading model
+unsigned int timePerMove = 0;
+
 // Win32 data types:
 typedef HANDLE thread_t;              // Thread.
 typedef DWORD (*entry_t)(LPVOID arg); // Entry point.
