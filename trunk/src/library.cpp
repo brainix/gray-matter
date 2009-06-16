@@ -76,10 +76,13 @@ int thread_destroy(thread_t *thread)
     }
     else
     {
-        if (!TerminateThread(thread, 0))
-            return CRITICAL;
+      if (!TerminateThread(thread, 0))
+      {
         *thread = INVALID_HANDLE_VALUE;
-        return SUCCESSFUL;
+        return CRITICAL;
+      }
+      *thread = INVALID_HANDLE_VALUE;
+      return SUCCESSFUL;
     }
 #endif
     return CRITICAL; // This should never be reached.
@@ -301,10 +304,13 @@ DWORD timer_handler(LPVOID arg)
 // been created, and this function is its entry point.  Think of this function
 // as the timer thread's main().
 
-    unsigned long long msec = *((unsigned int *) arg); // Number of milli-
+    //unsigned long long msec = *((unsigned int *) arg); // Number of milli-
                                                        // seconds to wait before
                                                        // notifying the other
                                                        // thread.
+
+    double dTimeInterval = (double)timePerMove;
+
     HANDLE timer_id = INVALID_HANDLE_VALUE;
 
     // Create an alarm.
@@ -313,7 +319,9 @@ DWORD timer_handler(LPVOID arg)
 
     // Set the alarm.
     LARGE_INTEGER rel_time;
-    rel_time.QuadPart = -(msec * 100000000L); // We negate this value to denote
+    rel_time.QuadPart = -(((long long)(dTimeInterval))*10000000/1000);
+    //rel_time.QuadPart = -100000000L; // about one second
+    //rel_time.QuadPart = -(msec * 10000L); // We negate this value to denote
                                               // time in 100 nanosecond
                                               // increments.
     if (!SetWaitableTimer(timer_id, &rel_time, 0, NULL, NULL, FALSE))
@@ -371,8 +379,8 @@ struct itimerval itimerval;
     if (timer_thread != INVALID_HANDLE_VALUE)
         // Yes.  We can only set one alarm at a time.  :-(
         return CRITICAL;
-    unsigned int msec = csec * 10;
-    return thread_create(&timer_thread, (entry_t) timer_handler, &msec);
+    timePerMove = csec * 10;
+    return thread_create(&timer_thread, (entry_t) timer_handler, &timePerMove);
 #endif
 }
 
