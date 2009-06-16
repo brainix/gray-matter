@@ -21,6 +21,11 @@
 
 #include "library.h"
 
+//Windows needs a variable to hold the time per move
+//since it seems to get lost/corrupted in the current
+//threading model
+unsigned int timePerMove = 0;
+
 /*----------------------------------------------------------------------------*\
  |                              thread_create()                               |
 \*----------------------------------------------------------------------------*/
