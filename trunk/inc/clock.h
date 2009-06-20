@@ -22,6 +22,10 @@
 #ifndef CLOCK_H
 #define CLOCK_H
 
+#ifdef _MSDEV_WINDOWS
+#include <time.h>
+#endif
+
 // C++ stuff:
 #include <string>
 #include <sstream>

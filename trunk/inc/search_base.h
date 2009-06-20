@@ -22,7 +22,7 @@
 #ifndef SEARCH_BASE_H
 #define SEARCH_BASE_H
 
-using namespace std;
+//using namespace std;
 
 // C++ stuff:
 #include <list>
@@ -158,9 +158,11 @@ protected:
 	(0, search_base::debug_pv.find_last_of(" ")); } while(0)
 #else
 #define DEBUG_SEARCH_INIT(maxdepth, prefix)
+#ifndef _MSDEV_WINDOWS
 #define DEBUG_SEARCH_PRINT(format, args...)
 #define DEBUG_SEARCH_PRINTM(m, format, args...)
 #define DEBUG_SEARCH_PRINTA(format, args...)
+#endif
 #define DEBUG_SEARCH_ADD_MOVE(m)
 #define DEBUG_SEARCH_DEL_MOVE(m)
 #endif

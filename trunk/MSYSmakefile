@@ -13,7 +13,7 @@ LANG   =
 #WARN   = -Wall -Werror
 WARN   = -Werror
 OPTI   = -O3 -fomit-frame-pointer
-PREP   = -DWINDOWS
+PREP   = -D_MINGW_WINDOWS
 DIR    = -Iinc
 
 OBJS = bin/board_base.o      \
@@ -29,13 +29,13 @@ OBJS = bin/board_base.o      \
        bin/testing.o         \
        bin/xboard.o
 
-all : bin/gray.exe
+all : bin/grayMatterMINGW.exe
 
 clean :
-	rm -f $(OBJS) bin/gray.exe
+	rm -f $(OBJS) bin/grayMatterMINGW.exe
 
 bin/%.o : src/%.cpp inc/%.h
 	$(CXX) -c -o $@ $< $(LANG) $(WARN) $(OPTI) $(PREP) $(DIR)
 
-bin/gray.exe : $(OBJS) inc/gray.h
+bin/grayMatterMINGW.exe : $(OBJS) inc/gray.h
 	$(CXX) -o $@ $(LANG) $(WARN) $(OPTI) $(PREP) $(DIR) $(OBJS)

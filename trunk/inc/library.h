@@ -63,10 +63,15 @@ typedef void *(*entry_t)(void *arg); // Entry point.
 typedef pthread_mutex_t mutex_t;     // Mutex.
 typedef pthread_cond_t cond_t;       // Condition variable.
 
-#elif defined(WINDOWS)
+#elif defined(_MINGW_WINDOWS)
 
 // Win32 header files:
+#ifdef _MSDEV_WINDOWS
+#define _WIN32_WINNT 0x0501
+#include "MSDEVstdint.h"
+#else
 #include <stdint.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>

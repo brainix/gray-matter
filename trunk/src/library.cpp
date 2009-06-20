@@ -36,7 +36,7 @@ int thread_create(thread_t *thread, entry_t entry, void *arg)
 
 #if defined(LINUX) || defined(OS_X)
     return pthread_create(thread, NULL, entry, arg) ? CRITICAL : SUCCESSFUL;
-#elif defined(WINDOWS)
+#elif defined(_MINGW_WINDOWS)
     return (*thread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) entry, arg, 0, NULL)) == NULL ? CRITICAL : SUCCESSFUL;
 #endif
 }
@@ -51,7 +51,7 @@ int thread_wait(thread_t *thread)
 
 #if defined(LINUX) || defined(OS_X)
     return pthread_join(*thread, NULL) ? CRITICAL : SUCCESSFUL;
-#elif defined(WINDOWS)
+#elif defined(_MINGW_WINDOWS)
     return WaitForSingleObject(*thread, INFINITE) == WAIT_FAILED ? CRITICAL : SUCCESSFUL;
 #endif
 }
@@ -73,7 +73,7 @@ int thread_destroy(thread_t *thread)
     }
     else
         return pthread_kill(*thread, SIGTERM) ? CRITICAL : SUCCESSFUL;
-#elif defined(WINDOWS)
+#elif defined(_MINGW_WINDOWS)
     if (thread == NULL)
     {
         ExitThread(0);
@@ -100,7 +100,7 @@ int mutex_create(mutex_t *mutex)
 {
 #if defined(LINUX) || defined(OS_X)
     return pthread_mutex_init(mutex, NULL) ? CRITICAL : SUCCESSFUL;
-#elif defined(WINDOWS)
+#elif defined(_MINGW_WINDOWS)
     *mutex = CreateMutex(NULL, FALSE, NULL);
     return SUCCESSFUL;
 #endif
@@ -118,7 +118,7 @@ int mutex_try_lock(mutex_t *mutex)
         case EBUSY : return NON_CRITICAL;
         case 0     : return SUCCESSFUL;
     }
-#elif defined(WINDOWS)
+#elif defined(_MINGW_WINDOWS)
     return WaitForSingleObject(*mutex, 0) == WAIT_TIMEOUT ? NON_CRITICAL : SUCCESSFUL;
 #endif
 }
@@ -130,7 +130,7 @@ int mutex_lock(mutex_t *mutex)
 {
 #if defined(LINUX) || defined(OS_X)
     return pthread_mutex_lock(mutex) ? CRITICAL : SUCCESSFUL;
-#elif defined(WINDOWS)
+#elif defined(_MINGW_WINDOWS)
     return WaitForSingleObject(*mutex, INFINITE) == WAIT_FAILED ? CRITICAL : SUCCESSFUL;
 #endif
 }
@@ -142,7 +142,7 @@ int mutex_unlock(mutex_t *mutex)
 {
 #if defined(LINUX) || defined(OS_X)
     return pthread_mutex_unlock(mutex) ? CRITICAL : SUCCESSFUL;
-#elif defined(WINDOWS)
+#elif defined(_MINGW_WINDOWS)
     return !ReleaseMutex(*mutex) ? CRITICAL : SUCCESSFUL;
 #endif
 }
@@ -154,7 +154,7 @@ int mutex_destroy(mutex_t *mutex)
 {
 #if defined(LINUX) || defined(OS_X)
     return pthread_mutex_destroy(mutex) ? CRITICAL : SUCCESSFUL;
-#elif defined(WINDOWS)
+#elif defined(_MINGW_WINDOWS)
     return !CloseHandle(*mutex) ? CRITICAL : SUCCESSFUL;
 #endif
 }
@@ -166,7 +166,7 @@ int cond_create(cond_t *cond, void *attr)
 {
 #if defined(LINUX) || defined(OS_X)
     return pthread_cond_init(cond, (pthread_condattr_t *) attr) ? CRITICAL : SUCCESSFUL;
-#elif defined(WINDOWS)
+#elif defined(_MINGW_WINDOWS)
     InitializeCriticalSection(&cond->lock);
     cond->count = 0;
     if ((cond->sema = CreateSemaphore(NULL, 0, 0x7FFFFFFF, NULL)) == NULL)
@@ -185,7 +185,7 @@ int cond_wait(cond_t *cond, mutex_t *mutex)
 {
 #if defined(LINUX) || defined(OS_X)
     return pthread_cond_wait(cond, mutex) ? CRITICAL : SUCCESSFUL;
-#elif defined(WINDOWS)
+#elif defined(_MINGW_WINDOWS)
     EnterCriticalSection(&cond->lock);
     cond->count++;
     LeaveCriticalSection(&cond->lock);
@@ -212,7 +212,7 @@ int cond_signal(cond_t *cond)
 {
 #if defined(LINUX) || defined(OS_X)
     return pthread_cond_signal(cond) ? CRITICAL : SUCCESSFUL;
-#elif defined(WINDOWS)
+#elif defined(_MINGW_WINDOWS)
     EnterCriticalSection(&cond->lock);
     BOOL waiter = cond->count;
     LeaveCriticalSection(&cond->lock);
@@ -230,7 +230,7 @@ int cond_broadcast(cond_t *cond)
 {
 #if defined(LINUX) || defined(OS_X)
     return pthread_cond_broadcast(cond) ? CRITICAL : SUCCESSFUL;
-#elif defined(WINDOWS)
+#elif defined(_MINGW_WINDOWS)
     BOOL waiter = FALSE;
 
     EnterCriticalSection(&cond->lock);
@@ -260,7 +260,7 @@ int cond_destroy(cond_t *cond)
 {
 #if defined(LINUX) || defined(OS_X)
     return pthread_cond_destroy(cond) ? CRITICAL : SUCCESSFUL;
-#elif defined(WINDOWS)
+#elif defined(_MINGW_WINDOWS)
     if (!CloseHandle(cond->done))
         return CRITICAL;
     if (!CloseHandle(cond->sema))
@@ -273,7 +273,7 @@ int cond_destroy(cond_t *cond)
 // Global variables:
 void (*callback)(void*);
 void *callback_data;
-#if defined(WINDOWS)
+#if defined(_MINGW_WINDOWS)
 thread_t timer_thread = INVALID_HANDLE_VALUE;
 #endif
 
@@ -289,7 +289,7 @@ void timer_handler(int num)
 
     (*callback)(callback_data);
 }
-#elif defined(WINDOWS)
+#elif defined(_MINGW_WINDOWS)
 DWORD timer_handler(LPVOID arg)
 {
 
@@ -379,7 +379,7 @@ struct itimerval itimerval;
     itimerval.it_value.tv_sec = csec / 100;
     itimerval.it_value.tv_usec = csec % 100 * 10000;
     return setitimer(ITIMER_REAL, &itimerval, NULL) == -1 ? CRITICAL : SUCCESSFUL;
-#elif defined(WINDOWS)
+#elif defined(_MINGW_WINDOWS)
     // Is an alarm already pending?
     if (timer_thread != INVALID_HANDLE_VALUE)
         // Yes.  We can only set one alarm at a time.  :-(
@@ -404,7 +404,7 @@ int timer_cancel()
     itimerval.it_value.tv_sec = 0;
     itimerval.it_value.tv_usec = 0;
     return setitimer(ITIMER_REAL, &itimerval, NULL) == -1 ? CRITICAL : SUCCESSFUL;
-#elif defined(WINDOWS)
+#elif defined(_MINGW_WINDOWS)
     // Is an alarm pending?
     if (timer_thread == INVALID_HANDLE_VALUE)
         // No.  There's nothing to cancel.
@@ -425,7 +425,7 @@ uint64_t rand_64()
     return (uint64_t) rand() << 32 | rand();
 #elif defined(OS_X)
     return (uint64_t) arc4random() << 32 | arc4random();
-#elif defined(WINDOWS)
+#elif defined(_MINGW_WINDOWS)
     return (uint64_t) rand() << 32 | rand();
 #endif
 }
@@ -459,7 +459,7 @@ int find_64(uint64_t n)
 // value ranges from 0 (for no bit set), to 1 (for the least significant bit
 // set), to 64 (for only the most significant bit set).
 
-#if defined(OS_X) || defined(WINDOWS)
+#if defined(OS_X) || defined(_MINGW_WINDOWS)
     n &= -n;
     int shift = (uint64_t) n <= 0xFFFFFFFFULL ? 0 : 32;
 #endif
@@ -468,7 +468,7 @@ int find_64(uint64_t n)
     return ffsll(n);
 #elif defined(OS_X)
     return ffs(n >> shift) + shift;
-#elif defined(WINDOWS)
+#elif defined(_MINGW_WINDOWS)
     return find_32(n >> shift) + shift;
 #endif
 }
@@ -485,7 +485,7 @@ int find_32(uint32_t n)
 
 #if defined(LINUX) || defined(OS_X)
     return ffs(n);
-#elif defined(WINDOWS)
+#elif defined(_MINGW_WINDOWS)
     static const uint8_t table[] =
     {
         0,1,2,2,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,

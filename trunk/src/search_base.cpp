@@ -211,8 +211,10 @@ void search_base::change(int s, const board_base& now)
 
     // Send the command to think.
     mutex_lock(&search_mutex);
+#ifndef _MSDEV_WINDOWS
     DEBUG_SEARCH_PRINTA("search_base::change changes state from %s to %s.",
         status_to_string(search_status).c_str(), status_to_string(s).c_str());
+#endif
     search_status = s;
     token_update++;
     cond_signal(&search_cond);
@@ -272,8 +274,10 @@ void search_base::start()
         mutex_unlock(&search_mutex);
 
         // Do the requested work - idle, analyze, think, ponder, or quit.
+#ifndef _MSDEV_WINDOWS
         DEBUG_SEARCH_PRINTA("search_base::start doing requested work (hash = %llx, status = %s).",
             board_hash, status_to_string(search_status).c_str());
+#endif
 
         if (search_status == ANALYZING ||
             search_status == THINKING  ||
