@@ -7,4 +7,4 @@
 
 [http://gray-matter.googlecode.com/files/WinBoard.jpg]
 
-You can play against grayMatter or set it against GNUChess or other engines you may have installed.  Have fun!  :-)
+You can play against grayMatter or set it against GNUChess or other (preferably weaker) engines you may have installed.  Have fun!  :-)
