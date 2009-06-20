@@ -20,7 +20,7 @@
  */
 
 // Windows insists on feeling included by being included first.
-#if defined(WINDOWS)
+#if defined(_MINGW_WINDOWS)
 #include <windows.h>
 #endif
 
@@ -43,8 +43,8 @@
 #define BOOK_NAME       "book.pgn"
 
 // All of the default values in this section must be >= 1.
-#define XPOS_TABLE_MB   64 // Transposition table size (in MB).
-#define PAWN_TABLE_MB    1 // Pawn table size (in MB).
+#define XPOS_TABLE_MB  128 // Transposition table size (in MB).
+#define PAWN_TABLE_MB   16 // Pawn table size (in MB).
 #define BOOK_MOVES      40 // Num moves to read per game in book (in plies).
 #define OVERHEAD         1 // Move search overhead (in centiseconds).
 #define MAX_DEPTH       16 // Maximum search depth (in plies).
@@ -59,7 +59,7 @@
 // Values of material (in centipawns):
 #define VALUE_PAWN        100
 #define VALUE_KNIGHT      300
-#define VALUE_BISHOP      300
+#define VALUE_BISHOP      310
 #define VALUE_ROOK        500
 #define VALUE_QUEEN       900
 #define VALUE_KING      10000

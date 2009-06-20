@@ -246,7 +246,10 @@ value_t board_heuristic::evaluate_pawns() const
             sum += sign * value_material[PAWN];
 
             // Penalize bad position or reward good position.
-            sum += sign * value_position[PAWN][x][y];
+            if (color == WHITE)
+              sum += sign * value_position[PAWN][x][y];
+            else
+              sum += sign * value_position[PAWN][7-x][7-y];
 
             //
             bitboard_t pawns = state.piece[color][PAWN];
@@ -325,12 +328,12 @@ value_t board_heuristic::evaluate_knights() const
                     state.piece[color][PAWN];
                 if (pawn_defenses)
                 {
-                    int tmp_y = color == WHITE ? y : 7 - y;
-                    value_t value_outpost = value_knight_outpost[x][tmp_y];
-                    sum += sign * value_outpost;
+                  if (color == WHITE)
+                    sum += sign * value_knight_outpost[x][y];
+                  else
+                    sum += sign * value_knight_outpost[7-x][7-y];
                 }
             }
-
             // TODO: Reward blocking center pawns.
         }
     }
@@ -553,23 +556,30 @@ value_t board_heuristic::evaluate_kings(int depth) const
             state.castle[color][ KING_SIDE] == CANT_CASTLE)
             sum += sign * value_king_cant_castle;
 
+        
         // Penalize bad position or reward good position.
         bitboard_t pawns = state.piece[WHITE][PAWN] | state.piece[BLACK][PAWN];
         if (pawns & SQUARES_QUEEN_SIDE && pawns & SQUARES_KING_SIDE)
         {
             // There are pawns on both sides of the board.  The king should be
             // in the middle.
-            int j = x;
-            int k = !color ? y : 7 - y;
-            sum += sign * value_position[KING][j][k];
+            if (color == WHITE)
+              sum += sign * value_position[KING][x][y];
+            else
+              sum += sign * value_position[KING][7-x][7-y];
         }
         else if (pawns)
         {
             // There are pawns on only one side of the board.  The king should
             // be on that side.
-            int j = pawns & SQUARES_QUEEN_SIDE ? x : 7 - x;
-            int k = !color ? y : 7 - y;
-            sum += sign * value_king_position[j][k];
+            if (pawns & SQUARES_QUEEN_SIDE)
+            {
+              sum += sign * value_king_position[x][!color?y:7-y];
+            }
+            else
+            {
+              sum += sign * value_king_position[7-x][!color?y:7-y];
+            }
         }
     }
     return sum;

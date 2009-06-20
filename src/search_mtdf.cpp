@@ -251,7 +251,9 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 //          default           : m.value = -quiesce(shallowness, alpha, beta); break;
             default           : m.value = -board_ptr->evaluate(shallowness);  break;
         }
+#ifndef _MSDEV_WINDOWS
         DEBUG_SEARCH_PRINT("terminal state %d.", status);
+#endif
         return m;
     }
 
@@ -287,7 +289,9 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 //      m.value = -quiesce(shallowness, alpha, beta);
         m.value = -board_ptr->evaluate(shallowness);
         table_ptr->store(hash, 0, EXACT, m);
+#ifndef _MSDEV_WINDOWS
         DEBUG_SEARCH_PRINT("evaluate() says %d.", board_ptr->get_whose() ? -m.value : m.value);
+#endif
         return m;
     }
 
@@ -314,7 +318,9 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
         // means that we're in an illegal position.
         m.set_null();
         m.value = VALUE_ILLEGAL;
+#ifndef _MSDEV_WINDOWS
         DEBUG_SEARCH_PRINT("Opponent's king can be captured - illegal position.");
+#endif
         return m;
     }
 
@@ -332,7 +338,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
     // Score each move in the list.
     m.set_null();
     m.value = -VALUE_ILLEGAL;
-    for (it = l.begin(); it != l.end(); it++)
+    for (it = l.begin(); it != l.end(); ++it)
     {
         DEBUG_SEARCH_ADD_MOVE(*it);
         board_ptr->make(*it);
@@ -368,7 +374,9 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
             m.value = -(VALUE_KING - shallowness);
         if (!timeout_flag)
             table_ptr->store(hash, depth, EXACT, m);
+#ifndef _MSDEV_WINDOWS
         DEBUG_SEARCH_PRINT("%s.", m.value == VALUE_ILLEGAL ? "Illegal position" : m.value == VALUE_CONTEMPT ? "Stalemated" : "Checkmated");
+#endif
         return m;
     }
 
@@ -387,7 +395,9 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
             table_ptr->store(hash, depth, LOWER, m);
         history_ptr->store(whose, m, depth);
     }
+#ifndef _MSDEV_WINDOWS
     DEBUG_SEARCH_PRINTM(m, "max of %d children: %d.", l.size(), m.value);
+#endif
     return m;
 }
 

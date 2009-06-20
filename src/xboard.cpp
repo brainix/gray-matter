@@ -164,6 +164,7 @@ void xboard::print_output(int ply, int value, int time, int nodes, list<move_t>&
 
 /// Print thinking output.
 
+  
     printf("%d %d %d %d", ply, value, time, nodes);
     for (list<move_t>::iterator it = pv.begin(); it != pv.end(); it++)
     {
@@ -278,14 +279,20 @@ void xboard::do_protover() const
     printf("feature playother=1\n");
     printf("feature usermove=1\n");
     printf("feature sigint=0\n");
-#ifdef SVN_REV
-    printf("feature myname=\"Gray Matter rev %s\"\n", SVN_REV);
+
+#ifdef _MSDEV_WINDOWS
+    printf("feature myname=\"GM MSVC 1530\"\n");
 #else
+  #ifdef SVN_REV
+    printf("feature myname=\"Gray Matter rev %s\"\n", SVN_REV);
+  #else
     printf("feature myname=\"Gray Matter 0.0\"\n");
+  #endif
 #endif
     printf("feature variants=\"normal\"\n");
     printf("feature colors=0\n");
     printf("feature done=1\n");
+
 }
 
 /*----------------------------------------------------------------------------*\
@@ -652,7 +659,7 @@ void xboard::do_test() {
 	ifstream inputfile(testfile.c_str());
 
 	transform(TESTFILE.begin(), TESTFILE.end(),
-		TESTFILE.begin(), (int(*)(int))std::toupper);
+		TESTFILE.begin(), (int(*)(int))toupper);
 
 	// Parse the test suite
 	if(!inputfile) {
