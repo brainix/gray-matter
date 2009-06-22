@@ -375,13 +375,13 @@ value_t board_heuristic::evaluate_bishops() const
             bool endgame = friendly_piece_count < 7;
             if (!endgame)
                 goto no_bishop_over_knight;
-            enemy_bishop_present = state.piece[!color][BISHOP];
+            enemy_bishop_present = (state.piece[!color][BISHOP]?true:false);
             if (enemy_bishop_present)
                 goto no_bishop_over_knight;
             all_pawns = state.piece[WHITE][PAWN] | state.piece[BLACK][PAWN];
             squares_both_sides = COL_MSK(0) | COL_MSK(1) | COL_MSK(2) |
                                  COL_MSK(5) | COL_MSK(6) | COL_MSK(7);
-            pawns_both_sides = all_pawns & squares_both_sides;
+            pawns_both_sides = (all_pawns & squares_both_sides)?true:false;
             if (!pawns_both_sides)
                 goto no_bishop_over_knight;
             sum += sign * value_bishop_over_knight;
@@ -449,11 +449,11 @@ value_t board_heuristic::evaluate_rooks() const
                 goto no_rook_on_7th;
             enemy_pawns = state.piece[!color][PAWN];
             seventh_row = ROW_MSK(seventh);
-            is_enemy_pawn_on_7th = enemy_pawns & seventh_row;
+            is_enemy_pawn_on_7th = (enemy_pawns & seventh_row)?true:false;
             enemy_king = state.piece[!color][KING];
             eighth = color == WHITE ? 7 : 0;
             eighth_row = ROW_MSK(eighth);
-            is_enemy_king_on_8th = enemy_king & eighth_row;
+            is_enemy_king_on_8th = (enemy_king & eighth_row)?true:false;
             if (!is_enemy_pawn_on_7th && !is_enemy_king_on_8th)
                 goto no_rook_on_7th;
             sum += sign * value_rook_on_7th;
@@ -506,15 +506,15 @@ value_t board_heuristic::evaluate_queens() const
                 goto no_queen_on_7th;
             enemy_pawns = state.piece[!color][PAWN];
             seventh_row = ROW_MSK(seventh);
-            is_enemy_pawn_on_7th = enemy_pawns & seventh_row;
+            is_enemy_pawn_on_7th = (enemy_pawns & seventh_row)?true:false;
             enemy_king = state.piece[!color][KING];
             eighth = color == WHITE ? 7 : 0;
             eighth_row = ROW_MSK(eighth);
-            is_enemy_king_on_8th = enemy_king & eighth_row;
+            is_enemy_king_on_8th = (enemy_king & eighth_row)?true:false;
             if (!is_enemy_pawn_on_7th && !is_enemy_king_on_8th)
                 goto no_queen_on_7th;
             rooks = state.piece[color][ROOK];
-            is_rook_on_7th = rooks & seventh_row;
+            is_rook_on_7th = (rooks & seventh_row)?true:false;
             if (!is_rook_on_7th)
                 goto no_queen_on_7th;
             sum += sign * value_queen_rook_on_7th;

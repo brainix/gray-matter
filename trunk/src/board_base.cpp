@@ -510,7 +510,7 @@ int board_base::get_status(bool mate_test)
 \*----------------------------------------------------------------------------*/
 int board_base::get_num_moves() const
 {
-    return states.size();
+    return (int)states.size();
 }
 
 /*----------------------------------------------------------------------------*\
@@ -526,6 +526,7 @@ bool board_base::check(bool off_move) const
 /*----------------------------------------------------------------------------*\
  |                                 zugzwang()                                 |
 \*----------------------------------------------------------------------------*/
+/*
 bool board_base::zugzwang() const
 {
 
@@ -557,6 +558,7 @@ bool board_base::zugzwang() const
         return true;
     return false;
 }
+*/
 
 /*----------------------------------------------------------------------------*\
  |                                to_string()                                 |
@@ -1053,7 +1055,7 @@ void board_base::coord_to_san(move_t m, string& san)
 		if (BIT_GET(state.piece[ON_MOVE][shape], m.x1, m.y1))
 			break;
 
-	if (shape == KING && ABS(m.x2 - m.x1) == 2)
+	if (shape == KING && ABS((int)m.x2 - (int)m.x1) == 2)
 	{
 		// Must be a castling move
 		int side = m.x2 > m.x1 ? KING_SIDE : QUEEN_SIDE;
@@ -1311,7 +1313,9 @@ void board_base::generate_king(list<move_t>& l, bool only_captures)
 
 /// Generate the king moves.
 
-    int n = FST(state.piece[ON_MOVE][KING]), x = n & 0x7, y = n >> 3;
+    int n = FST(state.piece[ON_MOVE][KING]);
+    int x = n & 0x7;
+    int y = n >> 3;
     bitboard_t takes = squares_king[x][y] & rotation[ZERO][OFF_MOVE];
     insert(x, y, takes, ZERO, l, FRONT);
     if (!only_captures)
@@ -1356,7 +1360,7 @@ void board_base::generate_queen(list<move_t>& l, bool only_captures)
         {
             int loc = ROW_LOC(x, y, angle);
             int num = ROW_NUM(x, y, angle);
-            bitrow_t occ = ROW_GET(rotation[angle][COLORS], num);
+            bitrow_t occ = (bitrow_t)ROW_GET(rotation[angle][COLORS], num);
             bitrow_t r = squares_row[loc][occ];
             bitboard_t b = 0;
             ROW_SET(b, num, r);
@@ -1374,7 +1378,7 @@ void board_base::generate_queen(list<move_t>& l, bool only_captures)
         {
             int loc = DIAG_LOC(x, y, angle);
             int num = DIAG_NUM(x, y, angle);
-            bitrow_t occ = DIAG_GET(rotation[angle][COLORS], num);
+            bitrow_t occ = (bitrow_t)DIAG_GET(rotation[angle][COLORS], num);
             bitrow_t msk = diag_mask[num];
             bitrow_t d = squares_row[loc][occ] & msk;
             bitboard_t b = 0;
@@ -1408,7 +1412,7 @@ void board_base::generate_rook(list<move_t>& l, bool only_captures)
         {
             int loc = ROW_LOC(x, y, angle);
             int num = ROW_NUM(x, y, angle);
-            bitrow_t occ = ROW_GET(rotation[angle][COLORS], num);
+            bitrow_t occ = (bitrow_t)ROW_GET(rotation[angle][COLORS], num);
             bitrow_t r = squares_row[loc][occ];
             bitboard_t b = 0;
             ROW_SET(b, num, r);
@@ -1441,7 +1445,7 @@ void board_base::generate_bishop(list<move_t>& l, bool only_captures)
         {
             int loc = DIAG_LOC(x, y, angle);
             int num = DIAG_NUM(x, y, angle);
-            bitrow_t occ = DIAG_GET(rotation[angle][COLORS], num);
+            bitrow_t occ = (bitrow_t)DIAG_GET(rotation[angle][COLORS], num);
             bitrow_t msk = diag_mask[num];
             bitrow_t d = squares_row[loc][occ] & msk;
             bitboard_t b = 0;
@@ -1462,10 +1466,8 @@ void board_base::generate_bishop(list<move_t>& l, bool only_captures)
 \*----------------------------------------------------------------------------*/
 void board_base::generate_knight(list<move_t>& l, bool only_captures)
 {
-
-/// Generate the knight moves.
-
-    bitboard_t from = state.piece[ON_MOVE][KNIGHT];
+    /// Generate the knight moves.
+    bitboard_t from = state.piece[state.on_move][KNIGHT];
 
     for (int n, x, y; (n = FST(from)) != -1; BIT_CLR(from, x, y))
     {
@@ -1765,7 +1767,7 @@ bool board_base::check(bitboard_t b1, bool color) const
         {
             int loc = ROW_LOC(x, y, angle);
             int num = ROW_NUM(x, y, angle);
-            bitrow_t occ = ROW_GET(rotation[angle][COLORS], num);
+            bitrow_t occ = (bitrow_t)ROW_GET(rotation[angle][COLORS], num);
             bitrow_t r = squares_row[loc][occ];
             bitboard_t b2 = 0;
             ROW_SET(b2, num, r);
@@ -1783,7 +1785,7 @@ bool board_base::check(bitboard_t b1, bool color) const
         {
             int loc = DIAG_LOC(x, y, angle);
             int num = DIAG_NUM(x, y, angle);
-            bitrow_t occ = DIAG_GET(rotation[angle][COLORS], num);
+            bitrow_t occ = (bitrow_t)DIAG_GET(rotation[angle][COLORS], num);
             bitrow_t msk = diag_mask[num];
             bitrow_t d = squares_row[loc][occ] & msk;
             bitboard_t b2 = 0;

@@ -31,10 +31,9 @@ xboard::xboard()
 {
 
 /// Constructor.
-
     // Turn I/O buffering off.
-    setbuf(stdout, NULL);
-    setbuf(stdin, NULL);
+    setvbuf(stdout, NULL, _IONBF, 1024);
+    setvbuf(stdin, NULL, _IONBF, 1024);
 
     // Initialize the variables.
     analyze = false;
@@ -281,7 +280,7 @@ void xboard::do_protover() const
     printf("feature sigint=0\n");
 
 #ifdef _MSDEV_WINDOWS
-    printf("feature myname=\"GM MSVC 1530\"\n");
+    printf("feature myname=\"graySVN1534\"\n");
 #else
   #ifdef SVN_REV
     printf("feature myname=\"Gray Matter rev %s\"\n", SVN_REV);
