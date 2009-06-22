@@ -460,7 +460,7 @@ int find_64(uint64_t n)
 // set), to 64 (for only the most significant bit set).
 
 #if defined(OS_X) || defined(_MINGW_WINDOWS)
-    n &= -n;
+    n &= (-1)*n;
     int shift = (uint64_t) n <= 0xFFFFFFFFULL ? 0 : 32;
 #endif
 
@@ -469,7 +469,7 @@ int find_64(uint64_t n)
 #elif defined(OS_X)
     return ffs(n >> shift) + shift;
 #elif defined(_MINGW_WINDOWS)
-    return find_32(n >> shift) + shift;
+    return find_32((uint32_t)(n >> shift)) + shift;
 #endif
 }
 
@@ -497,7 +497,7 @@ int find_32(uint32_t n)
         8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,
         8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8
     };
-    n &= -n;
+    n &= (-1)*n;
     int shift = (uint32_t) n <= 0xFFFF ? ((uint32_t) n <= 0xFF ? 0 : 8) : ((uint32_t) n <= 0xFFFFFF ? 16 : 24);
     return table[n >> shift] + shift;
 #endif

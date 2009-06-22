@@ -36,7 +36,7 @@ table::table(int mb)
             throw;
         data = new xpos_slot_t*[POLICIES];
         for (int policy = DEEP; policy <= FRESH; policy++)
-            data[policy] = new xpos_slot_t[slots];
+            data[policy] = new xpos_slot_t[(size_t)slots];
     }
     catch (...)
     {
@@ -243,7 +243,7 @@ pawn::pawn(int mb)
     {
         if ((slots = mb * MB / sizeof(pawn_slot_t)) == 0)
             throw;
-        data = new pawn_slot_t[slots];
+        data = new pawn_slot_t[(size_t)slots];
     }
     catch (...)
     {

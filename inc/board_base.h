@@ -114,7 +114,7 @@ public:
     virtual int get_num_moves() const;
     virtual value_t evaluate(int depth) const = 0; // Force sub-classes to override.
     virtual bool check(bool off_move = false) const;
-    virtual bool zugzwang() const;
+    //virtual bool zugzwang() const;
     virtual string to_string() const;
 
     // These methods generate, make, and take back moves.

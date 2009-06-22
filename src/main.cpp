@@ -121,7 +121,7 @@ int main(int argc, char **argv)
     config.dump(cout);
 
     // Seed the random number generator.
-    srand(time(NULL));
+    srand((unsigned int)time(NULL));
 
     // Instantiate the classes.
     /// Transposition table object.
