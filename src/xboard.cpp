@@ -280,7 +280,7 @@ void xboard::do_protover() const
     printf("feature sigint=0\n");
 
 #ifdef _MSDEV_WINDOWS
-    printf("feature myname=\"graySVN1534\"\n");
+    printf("feature myname=\"graySVN1535\"\n");
 #else
   #ifdef SVN_REV
     printf("feature myname=\"Gray Matter rev %s\"\n", SVN_REV);
@@ -921,10 +921,10 @@ bool xboard::test_move(move_t m)
 
 /// In the current position, is the specified move legal?
 
-    list<move_t> l;
+    vector<move_t> l;
 
     board_ptr->generate(l, true);
-    for (list<move_t>::iterator it = l.begin(); it != l.end(); it++)
+    for (vector<move_t>::iterator it = l.begin(); it != l.end(); it++)
         if (*it == m)
             return true;
     return false;

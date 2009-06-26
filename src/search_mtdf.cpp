@@ -77,7 +77,7 @@ void search_mtdf::iterate(int s)
     // move?
     if (s == THINKING)
     {
-        list<move_t> l;
+        vector<move_t> l;
         board_ptr->generate(l, true);
         if (table_ptr->probe(board_ptr->get_hash(), MAX_DEPTH, BOOK, &m) || l.size() == 1)
         {
@@ -134,8 +134,8 @@ void search_mtdf::iterate(int s)
         {
             if (strong_pondering)
                 pv.push_front(hint);
-            xboard_ptr->print_output(depth, 
-                board_ptr->get_whose() ? -m.value : m.value, 
+            xboard_ptr->print_output(depth,
+                board_ptr->get_whose() ? -m.value : m.value,
                 clock_ptr->get_elapsed(), nodes, pv);
             if (strong_pondering)
                 pv.pop_front();
@@ -218,6 +218,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 ///
 /// This method also implements null move pruning.
 
+
     // Local variables that pertain to the current position:
     bool whose = board_ptr->get_whose();     // The color on move.
     bitboard_t hash = board_ptr->get_hash(); // This position's hash.
@@ -225,8 +226,8 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
     value_t saved_alpha = alpha;             // Saved lower bound on score.
     value_t saved_beta = beta;               // Saved upper bound on score.
 //  move_t null_move;                        // The all-important null move.
-    list<move_t> l;                          // The move list.
-    list<move_t>::iterator it;               // The move list's iterator.
+    vector<move_t> l;                          // The move list.
+    //list<move_t>::iterator it;               // The move list's iterator.
     move_t m;                                // The best move and score.
 
     // Increment the number of positions searched.
@@ -324,32 +325,34 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
         return m;
     }
 
+    // If according to the transposition table, a previous search from this
+    // position determined this move to be best, then in this search, this
+    // move could be good too - score this move highly to force it to the
+    // front of the list to score it first to hopefully cause an earlier
+    // cutoff.  Otherwise, score this move according to the history
+    // heuristic.
+    for (unsigned i=0;i<l.size();++i)
+    {
+      l[i].value = l[i] == m ? VALUE_KING : history_ptr->probe(whose, l[i]);
+    }
     // Re-order the move list.
-    for (it = l.begin(); it != l.end(); it++)
-        // If according to the transposition table, a previous search from this
-        // position determined this move to be best, then in this search, this
-        // move could be good too - score this move highly to force it to the
-        // front of the list to score it first to hopefully cause an earlier
-        // cutoff.  Otherwise, score this move according to the history
-        // heuristic.
-        it->value = *it == m ? VALUE_KING : history_ptr->probe(whose, *it);
-    l.sort(descend);
+    std::sort(l.begin(),l.end());
 
     // Score each move in the list.
     m.set_null();
     m.value = -VALUE_ILLEGAL;
-    for (it = l.begin(); it != l.end(); ++it)
+    for(unsigned i=0;i<l.size();++i)
     {
-        DEBUG_SEARCH_ADD_MOVE(*it);
-        board_ptr->make(*it);
-        it->value = -minimax(depth - 1, shallowness + 1, -beta, -alpha, true).value;
-        DEBUG_SEARCH_DEL_MOVE(*it);
+        DEBUG_SEARCH_ADD_MOVE(l[i]);
+        board_ptr->make(l[i]);
+        l[i].value = -minimax(depth - 1, shallowness + 1, -beta, -alpha, true).value;
+        DEBUG_SEARCH_DEL_MOVE(l[i]);
         board_ptr->unmake();
-        if (ABS(it->value) == VALUE_ILLEGAL)
+        if (ABS(l[i].value) == VALUE_ILLEGAL)
             continue;
-        if (it->value > m.value)
-            alpha = GREATER(alpha, (m = *it).value);
-        if (it->value >= beta || timeout_flag)
+        if (l[i].value > m.value)
+            alpha = GREATER(alpha, (m = l[i]).value);
+        if (l[i].value >= beta || timeout_flag)
             break;
     }
 
@@ -408,8 +411,8 @@ value_t search_mtdf::quiesce(int shallowness, value_t alpha, value_t beta)
 {
     // Local variables that pertain to the current position:
     value_t value_stand_pat;       //
-    list<move_t> l;                // The move list.
-    list<move_t>::iterator it;     // The move list's iterator.
+    vector<move_t> l;                // The move list.
+    //list<move_t>::iterator it;     // The move list's iterator.
 
     // Increment the number of positions searched.
     nodes++;
@@ -428,18 +431,17 @@ value_t search_mtdf::quiesce(int shallowness, value_t alpha, value_t beta)
     board_ptr->generate(l, false, true);
 
     // Score each move in the list.
-    for (it = l.begin(); it != l.end(); it++)
+    for (unsigned i=0;i<l.size();++i)
     {
-        board_ptr->make(*it);
-        it->value = -quiesce(shallowness + 1, -beta, -alpha);
+        board_ptr->make(l[i]);
+        l[i].value = -quiesce(shallowness + 1, -beta, -alpha);
         board_ptr->unmake();
-        if (it->value > alpha)
-            alpha = it->value;
-        if (it->value >= beta)
-            return it->value;
+        if (l[i].value > alpha)
+            alpha = l[i].value;
+        if (l[i].value >= beta)
+            return l[i].value;
         if (timeout_flag)
             return beta;
     }
-
     return alpha;
 }
