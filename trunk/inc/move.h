@@ -91,6 +91,11 @@ typedef struct move
     {
         x1 = y1 = x2 = y2 = promo = 0;
     }
+    //opposite operator to sort descending
+    bool operator<(move rhs)
+    {
+      return value > rhs.value;
+    }
 } move_t;
 
 #pragma pack()

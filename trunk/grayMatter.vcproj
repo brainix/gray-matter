@@ -198,6 +198,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				Optimization="2"
 				AdditionalIncludeDirectories="inc"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_MINGW_WINDOWS;_MSDEV_WINDOWS"
 				RuntimeLibrary="2"

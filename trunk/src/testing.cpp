@@ -134,13 +134,13 @@ void testing::test_perft_1()
 			    cout << "  Computed perft = " << pval << endl;
 			    cout << "Repeating perft() with more details:" << endl;
 
-			    list<move_t> l;
-			    list<move_t>::iterator it;
+			    vector<move_t> l;
+			    //vector<move_t>::iterator it;
 			    board_ptr->generate(l, true);
-			    for(it = l.begin(); it != l.end(); it++) 
+          for (unsigned i=0;i<l.size();++i)
           {
-			      board_ptr->coord_to_san(*it, move_str);
-			      board_ptr->make(*it);
+			      board_ptr->coord_to_san(l[i], move_str);
+			      board_ptr->make(l[i]);
 			      pval = board_ptr->perft(depth);
 			      cout << move_str << " : " << pval << ", ";
 			      board_ptr->unmake();
