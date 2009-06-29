@@ -91,13 +91,36 @@ typedef struct move
     {
         x1 = y1 = x2 = y2 = promo = 0;
     }
-    //opposite operator to sort descending
-    bool operator<(move rhs)
-    {
-      return value > rhs.value;
-    }
+
+    bool operator<(move& rhs){return value < rhs.value;}
+    bool operator>(move& rhs){return value > rhs.value;}
 } move_t;
 
 #pragma pack()
+
+struct moveArray
+{
+  move_t theArray[MAX_MOVES_PER_TURN];
+  unsigned numElements;
+
+  moveArray()
+  {
+    numElements = 0;
+  }
+
+  void addMove(move_t& m)
+  {
+    //WARNING!  This will cull all moves more than MAX_MOVES_PER_TURN
+    theArray[numElements] = m;
+    if (numElements < (MAX_MOVES_PER_TURN-1))
+      numElements++;
+  }
+
+  void reset()
+  {
+    numElements = 0;
+  }
+};
+
 
 #endif

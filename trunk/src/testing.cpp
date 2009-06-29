@@ -109,6 +109,8 @@ void testing::test_perft_1()
 
 	  for(size_t feni = 0; feni < fen.size(); feni++) 
     {
+      //l.reset();  //reset the move array
+
 		  if(depth < static_cast<signed>(perft_score[feni].size()))
 		    tests_left = true;
 
@@ -125,7 +127,7 @@ void testing::test_perft_1()
 		    board_str = board_ptr->to_string();
 		    pval = board_ptr->perft(depth+1);
 
-		    if(pval != perft_score[feni][depth]) 
+		    if(pval != perft_score[feni][depth])
         {
 			    cout << "Problem with fen = '" << fen[feni] << "'" << endl;
 			    cout << board_str;
@@ -134,13 +136,12 @@ void testing::test_perft_1()
 			    cout << "  Computed perft = " << pval << endl;
 			    cout << "Repeating perft() with more details:" << endl;
 
-			    vector<move_t> l;
-			    //vector<move_t>::iterator it;
+          moveArray l;
 			    board_ptr->generate(l, true);
-          for (unsigned i=0;i<l.size();++i)
+          for (unsigned i=0;i<l.numElements;++i)
           {
-			      board_ptr->coord_to_san(l[i], move_str);
-			      board_ptr->make(l[i]);
+			      board_ptr->coord_to_san(l.theArray[i], move_str);
+			      board_ptr->make(l.theArray[i]);
 			      pval = board_ptr->perft(depth);
 			      cout << move_str << " : " << pval << ", ";
 			      board_ptr->unmake();

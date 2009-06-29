@@ -113,13 +113,13 @@ public:
     virtual bitboard_t get_hash() const;
     virtual int get_status(bool mate_test);
     virtual int get_num_moves() const;
-    virtual value_t evaluate(int depth) const = 0; // Force sub-classes to override.
+    virtual value_t evaluate() const = 0; // Force sub-classes to override.
     virtual bool check(bool off_move = false) const;
     //virtual bool zugzwang() const;
     virtual string to_string() const;
 
     // These methods generate, make, and take back moves.
-    virtual bool generate(vector<move_t>& l, bool only_legal_moves = false, bool only_captures = false);
+    virtual bool generate(moveArray& l, bool only_legal_moves = false, bool only_captures = false);
     virtual bool make(move_t m);
     virtual bool unmake();
     virtual move_t san_to_coord(string& san);
@@ -170,12 +170,12 @@ protected:
     virtual void precomp_key() const;
 
     // These methods generate moves.
-    virtual void generate_king(vector<move_t>& l, bool only_captures = false);
-    virtual void generate_queen(vector<move_t>& l, bool only_captures = false);
-    virtual void generate_rook(vector<move_t>& l, bool only_captures = false);
-    virtual void generate_bishop(vector<move_t>& l, bool only_captures = false);
-    virtual void generate_knight(vector<move_t>& l, bool only_captures = false);
-    virtual void generate_pawn(vector<move_t>& l, bool only_captures = false);
+    virtual void generate_king(moveArray& l, bool only_captures = false);
+    virtual void generate_queen(moveArray& l, bool only_captures = false);
+    virtual void generate_rook(moveArray& l, bool only_captures = false);
+    virtual void generate_bishop(moveArray& l, bool only_captures = false);
+    virtual void generate_knight(moveArray& l, bool only_captures = false);
+    virtual void generate_pawn(moveArray& l, bool only_captures = false);
     virtual void precomp_king() const;
     virtual void precomp_row() const;
     virtual void precomp_knight() const;
@@ -190,7 +190,8 @@ protected:
 
     // These methods manipulate BitBoards.
     virtual bitboard_t rotate(bitboard_t b1, int map, int angle) const;
-    virtual void insert(int x, int y, bitboard_t b, int angle, vector<move_t>& l, bool pos);
+    virtual void insert(int x, int y, bitboard_t b, int angle, moveArray& l, 
+      bool pos);
 };
 
 #endif
