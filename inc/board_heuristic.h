@@ -40,7 +40,7 @@ public:
     board_heuristic();
     ~board_heuristic();
     board_heuristic& operator=(const board_heuristic& that);
-    value_t evaluate(int depth) const;
+    value_t evaluate() const;
 
 private:
     // The values of the pieces:
@@ -94,7 +94,7 @@ private:
     value_t evaluate_bishops() const;
     value_t evaluate_rooks() const;
     value_t evaluate_queens() const;
-    value_t evaluate_kings(int depth) const;
+    value_t evaluate_kings() const;
     void precomp_pawn();
 };
 

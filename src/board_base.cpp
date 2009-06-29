@@ -612,7 +612,7 @@ string board_base::to_string() const
 /*----------------------------------------------------------------------------*\
  |                                 generate()                                 |
 \*----------------------------------------------------------------------------*/
-bool board_base::generate(vector<move_t>& l, bool only_legal_moves,
+bool board_base::generate(moveArray& l, bool only_legal_moves,
                           bool only_captures)
 {
 
@@ -625,6 +625,7 @@ bool board_base::generate(vector<move_t>& l, bool only_legal_moves,
 
     // Reset whether the opponent's king can be captured.
     generated_king_capture = false;
+    l.reset();
 
     // Generate each piece type's moves.
     generate_king(l, only_captures);
@@ -638,13 +639,16 @@ bool board_base::generate(vector<move_t>& l, bool only_legal_moves,
     // If a move leaves the color on move in check, then remove that move from
     // the move list.
     if (only_legal_moves)
-      for (unsigned i=0;i<l.size();)
+      for (unsigned i=0;i<l.numElements;++i)
       {
-          make(l[i]);
+          make(l.theArray[i]);
           if (check(state.piece[OFF_MOVE][KING], ON_MOVE))
-            l.erase(l.begin() + i);
-          else
-            i++;
+          {
+            //replace this one with the one at the end of the line
+            l.theArray[i] = l.theArray[l.numElements-1];
+            l.numElements--;
+            i--;
+          }
           unmake();
       }
     return !generated_king_capture;
@@ -975,7 +979,7 @@ move_t board_base::san_to_coord(string& san)
     // them and fill them in now.
     if (x1 < 0 || y1 < 0)
     {
-        vector<move_t> l;
+        moveArray l;
         switch (shape)
         {
             case KING   : generate_king(l);   break;
@@ -986,15 +990,15 @@ move_t board_base::san_to_coord(string& san)
             case PAWN   : generate_pawn(l);   break;
         }
 
-        for(unsigned i=0;i<l.size();++i)
+        for(unsigned i=0;i<l.numElements;++i)
         {
-            if ((x1 < 0 || x1 == (int) l[i].x1) &&
-                (y1 < 0 || y1 == (int) l[i].y1) &&
-                           x2 == (int) l[i].x2  &&
-                           y2 == (int) l[i].y2)
+            if ((x1 < 0 || x1 == (int) l.theArray[i].x1) &&
+                (y1 < 0 || y1 == (int) l.theArray[i].y1) &&
+                           x2 == (int) l.theArray[i].x2  &&
+                           y2 == (int) l.theArray[i].y2)
             {
-                x1 = l[i].x1;
-                y1 = l[i].y1;
+                x1 = l.theArray[i].x1;
+                y1 = l.theArray[i].y1;
                 break;
             }
         }
@@ -1088,7 +1092,7 @@ void board_base::coord_to_san(move_t m, string& san)
 		// Check whether another piece of the same shape can reach the to square
 		// If possible first try to distinguish the two by adding from file
 		// If from files are the same, then use from rank
-		vector<move_t> l;
+		moveArray l;
 		bool add_rank = false, add_file = false;
 		switch (shape)
 		{
@@ -1099,10 +1103,10 @@ void board_base::coord_to_san(move_t m, string& san)
 			case PAWN   : generate_pawn(l);   break;
 		}
 
-    for (unsigned i=0;i<l.size();++i)
+    for (unsigned i=0;i<l.numElements;++i)
     {
 				// We found another 'shape' that can move to the 'to' square
-				if (l[i].x1 != m.x1)
+				if (l.theArray[i].x1 != m.x1)
 					// It suffices to add file of 'from' square
 					add_file = true;
 				else
@@ -1174,8 +1178,9 @@ uint64_t board_base::perft(int depth)
 /// the leaf nodes.  This may sound useless, but it makes for a good unit test
 /// and benchmark for the move generator.
 
-    vector<move_t> l;
+    //vector<move_t> l;
     //vector<move_t>::iterator it;
+    moveArray l;
     uint64_t nodes = 0;
 
     // Base case.
@@ -1184,9 +1189,9 @@ uint64_t board_base::perft(int depth)
 
     // Recursive case.
     generate(l, true);
-    for (unsigned i=0;i<l.size();++i)
+    for (unsigned i=0;i<l.numElements;++i)
     {
-        make(l[i]);
+        make(l.theArray[i]);
         nodes += perft(depth - 1);
         unmake();
     }
@@ -1323,7 +1328,7 @@ void board_base::precomp_key() const
 /*----------------------------------------------------------------------------*\
  |                              generate_king()                               |
 \*----------------------------------------------------------------------------*/
-void board_base::generate_king(vector<move_t>& l, bool only_captures)
+void board_base::generate_king(moveArray& l, bool only_captures)
 {
 
 /// Generate the king moves.
@@ -1350,7 +1355,7 @@ void board_base::generate_king(vector<move_t>& l, bool only_captures)
             m.x2 = (m.x1 = 4) + (side ? 2 : -2);
             m.y2 = m.y1 = ON_MOVE ? 7 : 0;
             m.value = m.promo = 0;
-            l.push_back(m);
+            l.addMove(m);
         }
     }
 }
@@ -1358,7 +1363,7 @@ void board_base::generate_king(vector<move_t>& l, bool only_captures)
 /*----------------------------------------------------------------------------*\
  |                              generate_queen()                              |
 \*----------------------------------------------------------------------------*/
-void board_base::generate_queen(vector<move_t>& l, bool only_captures)
+void board_base::generate_queen(moveArray& l, bool only_captures)
 {
 
 /// Generate the queen moves.
@@ -1412,7 +1417,7 @@ void board_base::generate_queen(vector<move_t>& l, bool only_captures)
 /*----------------------------------------------------------------------------*\
  |                              generate_rook()                               |
 \*----------------------------------------------------------------------------*/
-void board_base::generate_rook(vector<move_t>& l, bool only_captures)
+void board_base::generate_rook(moveArray& l, bool only_captures)
 {
 
 /// Generate the rook moves.
@@ -1445,7 +1450,7 @@ void board_base::generate_rook(vector<move_t>& l, bool only_captures)
 /*----------------------------------------------------------------------------*\
  |                             generate_bishop()                              |
 \*----------------------------------------------------------------------------*/
-void board_base::generate_bishop(vector<move_t>& l, bool only_captures)
+void board_base::generate_bishop(moveArray& l, bool only_captures)
 {
 
 /// Generate the bishop moves.
@@ -1479,7 +1484,7 @@ void board_base::generate_bishop(vector<move_t>& l, bool only_captures)
 /*----------------------------------------------------------------------------*\
  |                             generate_knight()                              |
 \*----------------------------------------------------------------------------*/
-void board_base::generate_knight(vector<move_t>& l, bool only_captures)
+void board_base::generate_knight(moveArray& l, bool only_captures)
 {
     /// Generate the knight moves.
     bitboard_t from = state.piece[state.on_move][KNIGHT];
@@ -1501,7 +1506,7 @@ void board_base::generate_knight(vector<move_t>& l, bool only_captures)
 /*----------------------------------------------------------------------------*\
  |                              generate_pawn()                               |
 \*----------------------------------------------------------------------------*/
-void board_base::generate_pawn(vector<move_t>& l, bool only_captures)
+void board_base::generate_pawn(moveArray& l, bool only_captures)
 {
 
 /// Generate the pawn moves.
@@ -1527,7 +1532,7 @@ void board_base::generate_pawn(vector<move_t>& l, bool only_captures)
           {
               m.x1 = m.x2 = n & 0x7;
               m.y1 = (m.y2 = n >> 3) + (ON_MOVE ? 2 : -2);
-              l.push_back(m);
+              l.addMove(m);
           }
         }
     }
@@ -1541,9 +1546,9 @@ void board_base::generate_pawn(vector<move_t>& l, bool only_captures)
         m.y2 = ON_MOVE ? 2 : 5;
         m.x2 = state.en_passant;
         if (state.en_passant != 0 && BIT_GET(state.piece[ON_MOVE][PAWN], m.x1 = state.en_passant - 1, m.y1 = ON_MOVE ? 3 : 4))
-          l.push_back(m);
+          l.addMove(m);
         if (state.en_passant != 7 && BIT_GET(state.piece[ON_MOVE][PAWN], m.x1 = state.en_passant + 1, m.y1 = ON_MOVE ? 3 : 4))
-            l.push_back(m);
+          l.addMove(m);
     }
 
     // A pawn can advance one square.
@@ -1558,11 +1563,11 @@ void board_base::generate_pawn(vector<move_t>& l, bool only_captures)
         if (m.y2 != (ON_MOVE ? 0 : 7))
         {
             if (!only_captures)
-                l.push_back(m);
+              l.addMove(m);
             continue;
         }
         for (m.promo = KNIGHT; m.promo <= QUEEN; m.promo++)
-            l.push_back(m);
+          l.addMove(m);
         m.promo = 0;
     }
 
@@ -1585,11 +1590,11 @@ void board_base::generate_pawn(vector<move_t>& l, bool only_captures)
 
             if (m.y2 != (ON_MOVE ? 0 : 7))
             {
-                l.push_back(m);
+              l.addMove(m);
                 continue;
             }
             for (m.promo = KNIGHT; m.promo <= QUEEN; m.promo++)
-                l.push_back(m);
+              l.addMove(m);
             m.promo = 0;
         }
     }
@@ -1734,16 +1739,17 @@ int board_base::mate()
 /// move doesn't have a legal move.  The only difference: during stalemate, her
 /// king isn't attacked; during checkmate, her king is attacked.
 
-    vector<move_t> l;
+    //vector<move_t> l;
+    moveArray l;
     //vector<move_t>::iterator it;
     bool escape = false;
 
     // Look for a legal move.
     generate(l);
 
-    for (unsigned i=0;i<l.size();++i)
+    for (unsigned i=0;i<l.numElements;++i)
     {
-        make(l[i]);
+        make(l.theArray[i]);
         if (!check(state.piece[OFF_MOVE][KING], ON_MOVE))
             escape = true;
         unmake();
@@ -1920,7 +1926,7 @@ bitboard_t board_base::rotate(bitboard_t b1, int map, int angle) const
 /*----------------------------------------------------------------------------*\
  |                                  insert()                                  |
 \*----------------------------------------------------------------------------*/
-void board_base::insert(int x, int y, bitboard_t b, int angle, vector<move_t>& l,
+void board_base::insert(int x, int y, bitboard_t b, int angle, moveArray& l,
                         bool pos)
 {
 
@@ -1943,9 +1949,6 @@ void board_base::insert(int x, int y, bitboard_t b, int angle, vector<move_t>& l
         m.x2 = coord[UNMAP][angle][x][y][X];
         m.y2 = coord[UNMAP][angle][x][y][Y];
 
-        if (pos == FRONT)
-            l.push_back(m);
-        else
-            l.push_back(m);
+        l.addMove(m);
     }
 }

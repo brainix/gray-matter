@@ -56,10 +56,15 @@ search_mtdf& search_mtdf::operator=(const search_mtdf& that)
     return *this;
 }
 
+void search_mtdf::useBook(bool yesno)
+{
+  inBook = yesno;
+}
+
 /*----------------------------------------------------------------------------*\
  |                                 iterate()                                  |
 \*----------------------------------------------------------------------------*/
-void search_mtdf::iterate(int s)
+void search_mtdf::iterate(int state)
 {
 
 /// Perform iterative deepening.  This method handles analyzing (thinking
@@ -75,33 +80,31 @@ void search_mtdf::iterate(int s)
     // If we're to think:  For the current position, does the opening book
     // recommend a move?  Or, in the current position, is there only one legal
     // move?
-    if (s == THINKING)
+    if ((inBook) && (state == THINKING))
     {
-        vector<move_t> l;
-        board_ptr->generate(l, true);
-        if (table_ptr->probe(board_ptr->get_hash(), MAX_DEPTH, BOOK, &m) || l.size() == 1)
+        if (table_ptr->probe(board_ptr->get_hash(), MAX_DEPTH, BOOK, &m))
         {
             // Yes.  Make the move.
-            if (l.size() == 1)
-                m = l.front();
             extract_pv();
             extract_hint(THINKING);
             board_ptr->unlock();
             xboard_ptr->print_result(m);
             return;
         }
+        else
+          useBook(false);  //we're out of book
     }
 
     // Note the start time.  If we're to think, then set the alarm.  (If we're
     // to analyze or ponder, then there's no need to set the alarm.  We analyze
     // or ponder indefinitely until our opponent has moved.)
     clock_ptr->note_time();
-    if (s == THINKING)
+    if (state == THINKING)
         clock_ptr->set_alarm(board_ptr->get_whose());
 
     // If we're to ponder, then pretend that our opponent has made the move that
     // we think that she'll make, then think about our best response.
-    if (s == PONDERING && !hint.is_null())
+    if (state == PONDERING && !hint.is_null())
     {
         strong_pondering = true;
         board_ptr->make(hint);
@@ -121,7 +124,7 @@ void search_mtdf::iterate(int s)
     for (int depth = 1; depth <= max_depth; depth++)
     {
         DEBUG_SEARCH_INIT(1, "");
-//      guess[depth & 1] = mtdf(depth, guess[depth & 1].value);
+        //guess[depth & 1] = mtdf(depth, guess[depth & 1].value);
         guess[depth & 1] = minimax(depth);
         if (timeout_flag || guess[depth & 1].is_null())
             // Oops.  Either the alarm has interrupted this iteration (and the
@@ -129,13 +132,14 @@ void search_mtdf::iterate(int s)
             // in this position (and the game must've ended).
             break;
         m = guess[depth & 1];
+
         extract_pv();
         if (output)
         {
             if (strong_pondering)
                 pv.push_front(hint);
             xboard_ptr->print_output(depth,
-                board_ptr->get_whose() ? -m.value : m.value,
+                m.value,  //always score from "our" perspective
                 clock_ptr->get_elapsed(), nodes, pv);
             if (strong_pondering)
                 pv.pop_front();
@@ -147,7 +151,7 @@ void search_mtdf::iterate(int s)
     }
 
     // If we've just finished thinking, then cancel the alarm.
-    if (s == THINKING)
+    if (state == THINKING)
     {
         clock_ptr->cancel_alarm();
         extract_hint(THINKING);
@@ -162,7 +166,7 @@ void search_mtdf::iterate(int s)
     board_ptr->unlock();
 
     // If we've just finished thinking, then inform XBoard of our favorite move.
-    if (s == THINKING && search_status != QUITTING)
+    if (state == THINKING && search_status != QUITTING)
         xboard_ptr->print_result(m);
 }
 
@@ -225,8 +229,8 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
     int status = board_ptr->get_status(0);   // Whether the game is over.
     value_t saved_alpha = alpha;             // Saved lower bound on score.
     value_t saved_beta = beta;               // Saved upper bound on score.
-//  move_t null_move;                        // The all-important null move.
-    vector<move_t> l;                          // The move list.
+    //move_t null_move;                        // The all-important null move.
+    //vector<move_t> l;                          // The move list.
     //list<move_t>::iterator it;               // The move list's iterator.
     move_t m;                                // The best move and score.
 
@@ -242,7 +246,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
         switch (status)
         {
 //          case IN_PROGRESS  : m.value = -quiesce(shallowness, alpha, beta); break;
-            case IN_PROGRESS  : m.value = -board_ptr->evaluate(shallowness);  break;
+            case IN_PROGRESS  : m.value = -board_ptr->evaluate();  break;
             case STALEMATE    : m.value = +VALUE_CONTEMPT;                    break;
             case INSUFFICIENT : m.value = +VALUE_CONTEMPT;                    break;
             case THREE        : m.value = +VALUE_CONTEMPT;                    break;
@@ -250,7 +254,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
             case CHECKMATE    : m.value = -VALUE_KING;                        break;
             case ILLEGAL      : m.value = -VALUE_ILLEGAL;                     break;
 //          default           : m.value = -quiesce(shallowness, alpha, beta); break;
-            default           : m.value = -board_ptr->evaluate(shallowness);  break;
+            default           : m.value = -board_ptr->evaluate();  break;
         }
 #ifndef _MSDEV_WINDOWS
         DEBUG_SEARCH_PRINT("terminal state %d.", status);
@@ -263,6 +267,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
     // size of our AlphaBeta window.
     if (table_ptr->probe(hash, depth, EXACT, &m))
         return m;
+    
 //  if (table_ptr->probe(hash, depth, UPPER, &m))
 //  {
 //      if (m.value <= alpha)
@@ -272,23 +277,24 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 //      // robustness.
 //      beta = LESSER(beta, m.value);
 //  }
-//  if (table_ptr->probe(hash, depth, LOWER, &m))
+// if (table_ptr->probe(hash, depth, LOWER, &m))
 //  {
 //      if (m.value >= beta)
 //          return m;
 //      // When doing MTD(f) zero-window searches, our window should never be
 //      // resized here.  I've only accounted for this in the interest of
 //      // robustness.
-//      alpha = GREATER(alpha, m.value);
-//  }
+//     alpha = GREATER(alpha, m.value);
+//}
 
-    // If we've reached the maximum search depth, then this node is a leaf - all
+
+  // If we've reached the maximum search depth, then this node is a leaf - all
     // we have to do is apply the static evaluator.
     if (depth <= 0)
     {
         m.set_null();
 //      m.value = -quiesce(shallowness, alpha, beta);
-        m.value = -board_ptr->evaluate(shallowness);
+        m.value = -board_ptr->evaluate();
         table_ptr->store(hash, 0, EXACT, m);
 #ifndef _MSDEV_WINDOWS
         DEBUG_SEARCH_PRINT("evaluate() says %d.", board_ptr->get_whose() ? -m.value : m.value);
@@ -313,7 +319,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 //  }
 
     // Generate the move list.
-    if (!board_ptr->generate(l, !shallowness))
+    if (!board_ptr->generate(moveArrays[depth], !shallowness))
     {
         // There's a move in the list that captures the opponent's king, which
         // means that we're in an illegal position.
@@ -331,28 +337,50 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
     // front of the list to score it first to hopefully cause an earlier
     // cutoff.  Otherwise, score this move according to the history
     // heuristic.
-    for (unsigned i=0;i<l.size();++i)
+    for (unsigned i=0;i<moveArrays[depth].numElements;++i)
     {
-      l[i].value = l[i] == m ? VALUE_KING : history_ptr->probe(whose, l[i]);
+      moveArrays[depth].theArray[i].value = 
+        moveArrays[depth].theArray[i] == m ? VALUE_KING : 
+        history_ptr->probe(whose, moveArrays[depth].theArray[i]);
     }
-    // Re-order the move list.
-    std::sort(l.begin(),l.end());
+
+    // sort the move list.
+    move_t tmpMove;
+    for(unsigned i=0;i<moveArrays[depth].numElements;++i)
+    {
+      unsigned bestIndex = i;
+      for (unsigned j=i;j<moveArrays[depth].numElements;++j)
+      {
+        if (moveArrays[depth].theArray[j].value > moveArrays[depth].theArray[bestIndex].value)
+        {
+          bestIndex = j;
+        }
+      }
+
+      //now we have i'th best move, put it in its place if it's not there
+      if (bestIndex != i)
+      {
+        tmpMove = moveArrays[depth].theArray[i];
+        moveArrays[depth].theArray[i] = moveArrays[depth].theArray[bestIndex];
+        moveArrays[depth].theArray[bestIndex] = tmpMove;
+      }
+    }
 
     // Score each move in the list.
     m.set_null();
     m.value = -VALUE_ILLEGAL;
-    for(unsigned i=0;i<l.size();++i)
+    for(unsigned i=0;i<moveArrays[depth].numElements;++i)
     {
-        DEBUG_SEARCH_ADD_MOVE(l[i]);
-        board_ptr->make(l[i]);
-        l[i].value = -minimax(depth - 1, shallowness + 1, -beta, -alpha, true).value;
-        DEBUG_SEARCH_DEL_MOVE(l[i]);
+        DEBUG_SEARCH_ADD_MOVE(moveArrays[depth].theArray[i]);
+        board_ptr->make(moveArrays[depth].theArray[i]);
+        moveArrays[depth].theArray[i].value = -minimax(depth - 1, shallowness + 1, -beta, -alpha, true).value;
+        DEBUG_SEARCH_DEL_MOVE(moveArrays[depth].theArray[i]);
         board_ptr->unmake();
-        if (ABS(l[i].value) == VALUE_ILLEGAL)
+        if (ABS(moveArrays[depth].theArray[i].value) == VALUE_ILLEGAL)
             continue;
-        if (l[i].value > m.value)
-            alpha = GREATER(alpha, (m = l[i]).value);
-        if (l[i].value >= beta || timeout_flag)
+        if (moveArrays[depth].theArray[i].value > m.value)
+            alpha = GREATER(alpha, (m = moveArrays[depth].theArray[i]).value);
+        if (moveArrays[depth].theArray[i].value >= beta || timeout_flag)
             break;
     }
 
@@ -420,26 +448,25 @@ value_t search_mtdf::quiesce(int shallowness, value_t alpha, value_t beta)
     if (shallowness >= MAX_DEPTH)
         return beta;
 
-    //
-    value_stand_pat = board_ptr->evaluate(shallowness);
+    value_stand_pat = board_ptr->evaluate();
     if (value_stand_pat > alpha)
         alpha = value_stand_pat;
     if (value_stand_pat >= beta)
         return value_stand_pat;
 
     // Generate the move list.
-    board_ptr->generate(l, false, true);
+    board_ptr->generate(moveArrays[shallowness], false, true);
 
     // Score each move in the list.
-    for (unsigned i=0;i<l.size();++i)
+    for (unsigned i=0;i<moveArrays[shallowness].numElements;++i)
     {
         board_ptr->make(l[i]);
-        l[i].value = -quiesce(shallowness + 1, -beta, -alpha);
+        moveArrays[shallowness].theArray[i].value = -quiesce(shallowness + 1, -beta, -alpha);
         board_ptr->unmake();
-        if (l[i].value > alpha)
-            alpha = l[i].value;
-        if (l[i].value >= beta)
-            return l[i].value;
+        if (moveArrays[shallowness].theArray[i].value > alpha)
+            alpha = moveArrays[shallowness].theArray[i].value;
+        if (moveArrays[shallowness].theArray[i].value >= beta)
+            return moveArrays[shallowness].theArray[i].value;
         if (timeout_flag)
             return beta;
     }
