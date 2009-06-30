@@ -1952,3 +1952,38 @@ void board_base::insert(int x, int y, bitboard_t b, int angle, moveArray& l,
         l.addMove(m);
     }
 }
+
+/*----------------------------------------------------------------------------*\
+ |                                 zugzwang()                                 |
+\*----------------------------------------------------------------------------*/
+bool board_base::zugzwang() const
+{
+
+/// Is the current position zugzwang?
+///
+/// In most positions, there's at least one move the color on move could make to
+/// improve her lot.  In these normal positions, null-move pruning works.
+/// However, in certain positions, her best move would be to pass (particularly
+/// in endgame).  These positions are called "zugzwang" (German for "compelled
+/// to move").  In these zugzwang positions, null-move pruning doesn't work.
+///
+/// The search class calls this method on a particular position to decide
+/// whether or not to try null-move pruning.
+
+    for (int color = WHITE; color <= BLACK; color++)
+    {
+        if (!state.piece[color][KNIGHT] &&
+            !state.piece[color][BISHOP] &&
+            !state.piece[color][ROOK]   &&
+            !state.piece[color][QUEEN])
+            // One color only has pawns and a king.
+            return true;
+        if (!state.piece[color][KING])
+            // One color doesn't even have a king.
+            return true;
+    }
+    if (check(state.piece[ON_MOVE][KING], OFF_MOVE))
+        // The color on move is in check.
+        return true;
+    return false;
+}

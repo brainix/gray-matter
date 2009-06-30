@@ -54,9 +54,9 @@ private:
     //the move arrays
     moveArray moveArrays[MAX_DEPTH];
     void iterate(int s);
-    move_t mtdf(int depth, value_t guess = 0);
+    //move_t mtdf(int depth, value_t guess = 0);
     move_t minimax(int depth, int shallowness = 0, value_t alpha = -INFINITY, value_t beta = +INFINITY, bool try_null_move = true);
-    value_t quiesce(int shallowness, value_t alpha, value_t beta);
+    //value_t quiesce(int shallowness, value_t alpha, value_t beta);
     void useBook(bool yesno); //turn book on or off
 };
 

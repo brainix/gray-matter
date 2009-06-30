@@ -173,6 +173,7 @@ void search_mtdf::iterate(int state)
 /*----------------------------------------------------------------------------*\
  |                                   mtdf()                                   |
 \*----------------------------------------------------------------------------*/
+/*
 move_t search_mtdf::mtdf(int depth, value_t guess)
 {
 
@@ -193,6 +194,7 @@ move_t search_mtdf::mtdf(int depth, value_t guess)
     }
     return m;
 }
+*/
 
 /*----------------------------------------------------------------------------*\
  |                                 minimax()                                  |
@@ -435,6 +437,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 /*----------------------------------------------------------------------------*\
  |                                 quiesce()                                  |
 \*----------------------------------------------------------------------------*/
+/*
 value_t search_mtdf::quiesce(int shallowness, value_t alpha, value_t beta)
 {
     // Local variables that pertain to the current position:
@@ -472,3 +475,4 @@ value_t search_mtdf::quiesce(int shallowness, value_t alpha, value_t beta)
     }
     return alpha;
 }
+*/
