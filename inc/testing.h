@@ -34,14 +34,16 @@
 class testing
 {
 public:
+
 	testing(char *test);
 	void start();
 
 protected:
-	void test_perft_1();
+	void test_perft(int depth);
 
 private:
 	std::string test_name;
+  int testDepth;
 };
 
 #endif
