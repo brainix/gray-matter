@@ -39,7 +39,7 @@
 #include "xboard.h"
 
 // Search statuses:
-#define IDLING          0 // Masturbating.
+#define IDLING          0 // Idling (doing nothing)
 #define ANALYZING       1 // Analyzing (thinking indefinitely).
 #define THINKING        2 // Thinking (on our own time).
 #define PONDERING       3 // Pondering (on our opponent's time).
