@@ -87,7 +87,8 @@ void xboard::loop(search_base *s, chess_clock *c, book *o)
     do
     {
         memset(buffer, '\0', BUFFER_SIZE);
-        fgets(buffer, BUFFER_SIZE, stdin);
+        char* tmp = fgets(buffer, BUFFER_SIZE, stdin);
+        tmp = 0; //fix compiler warning
         if (!strncmp(buffer, "xboard", 6))
             do_xboard();
         else if (!strncmp(buffer, "protover", 8))
