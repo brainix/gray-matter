@@ -525,8 +525,8 @@ no_queen_on_7th:
             {
                 int enemy_king_n = FST(state.piece[!color][KING]);
                 int enemy_king_x = enemy_king_n & 0x7;
-                if (x <= 1 && enemy_king_x >= 5 ||
-                    x >= 6 && enemy_king_x <= 2)
+                if (((x <= 1) && (enemy_king_x >= 5)) ||
+                    ((x >= 6) && (enemy_king_x <= 2)))
                     sum += sign * value_queen_offside;
             }
         }

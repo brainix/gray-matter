@@ -429,7 +429,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
         history_ptr->store(whose, m, depth);
     }
 #ifndef _MSDEV_WINDOWS
-    DEBUG_SEARCH_PRINTM(m, "max of %d children: %d.", l.size(), m.value);
+    DEBUG_SEARCH_PRINTM(m, "max of %d children: %d.", moveArrays[depth].numElements, m.value);
 #endif
     return m;
 }

@@ -276,7 +276,7 @@ void search_base::start()
         // Do the requested work - idle, analyze, think, ponder, or quit.
 #ifndef _MSDEV_WINDOWS
         DEBUG_SEARCH_PRINTA("search_base::start doing requested work (hash = %llx, status = %s).",
-            board_hash, status_to_string(search_status).c_str());
+            (long long unsigned)board_hash, status_to_string(search_status).c_str());
 #endif
 
         if (search_status == ANALYZING ||

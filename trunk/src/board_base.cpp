@@ -348,8 +348,8 @@ bool board_base::set_board_fen(string& fen)
         state.en_passant = fen[index] - 'a';
         if (++index >= fen.length())
             return set_board_fen_error(fen, "FEN string too short (8).", x, y);
-        if (state.on_move == WHITE && fen[index] != '5' ||
-            state.on_move == WHITE && fen[index] != '4')
+        if (((state.on_move == WHITE) && (fen[index] != '5')) ||
+            ((state.on_move == WHITE) && (fen[index] != '4')))
             return set_board_fen_error(fen, "Invalid en passant target rank.", x, y);
     }
     if (++index >= fen.length())
@@ -1319,7 +1319,7 @@ void board_base::precomp_key() const
     }
 
     key_no_en_passant = rand_64();
-    for (int x = 0; x <= 8; x++)
+    for (int x = 0; x < 8; ++x)
         key_en_passant[x] = rand_64();
 
     key_on_move = rand_64();
@@ -1713,8 +1713,8 @@ void board_base::precomp_pawn()
             int x = n & 0x7;
             int y = n >> 3;
 
-            if (color == WHITE && (y == 0 || y == 1) ||
-                color == BLACK && (y == 6 || y == 7))
+            if (((color == WHITE) && (y == 0 || y == 1)) ||
+                ((color == BLACK) && (y == 6 || y == 7)))
                 // A white pawn can never attack a square in rank 1 or 2.
                 // Similarly, a black pawn can never attack a square in rank 6
                 // or 7.
@@ -1871,8 +1871,10 @@ bool board_base::insufficient() const
         b_array[color][WHITE] = count_64(state.piece[color][BISHOP] & SQUARES_WHITE);
         b_array[color][BLACK] = count_64(state.piece[color][BISHOP] & SQUARES_BLACK);
     }
-    return n_count + b_count <= 1 ||
-        n_count == 0 && b_count == 2 && b_array[WHITE][WHITE] == b_array[BLACK][WHITE] && b_array[WHITE][BLACK] == b_array[BLACK][BLACK];
+    return (n_count + b_count <= 1) ||
+        ((n_count == 0) && (b_count == 2) && 
+        (b_array[WHITE][WHITE] == b_array[BLACK][WHITE]) && 
+        (b_array[WHITE][BLACK] == b_array[BLACK][BLACK]));
 }
 
 /*----------------------------------------------------------------------------*\
