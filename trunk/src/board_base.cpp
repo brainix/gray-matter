@@ -659,6 +659,7 @@ bool board_base::generate(moveArray& l, bool only_legal_moves,
 \*----------------------------------------------------------------------------*/
 bool board_base::make(move_t m)
 {
+  bool retValue = false;
 
 /// Make a move.
 
@@ -712,6 +713,7 @@ bool board_base::make(move_t m)
 
             // The move is a capture.  Reset the 50 move rule counter.
             state.fifty = -1;
+            retValue = true;
         }
     }
 
@@ -810,7 +812,7 @@ end:
     for (int angle = L45; angle <= R90; angle++)
         rotation[angle][COLORS] = rotation[angle][WHITE] | rotation[angle][BLACK];
 
-    return true;
+    return retValue;
 }
 
 /*----------------------------------------------------------------------------*\

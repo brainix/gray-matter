@@ -64,7 +64,7 @@ void search_mtdf::useBook(bool yesno)
 /*----------------------------------------------------------------------------*\
  |                                 iterate()                                  |
 \*----------------------------------------------------------------------------*/
-void search_mtdf::iterate(int state)
+bool search_mtdf::iterate(int state)
 {
 
 /// Perform iterative deepening.  This method handles analyzing (thinking
@@ -78,8 +78,7 @@ void search_mtdf::iterate(int state)
     board_ptr->lock();
 
     // If we're to think:  For the current position, does the opening book
-    // recommend a move?  Or, in the current position, is there only one legal
-    // move?
+    // recommend a move? 
     if ((inBook) && (state == THINKING))
     {
         if (table_ptr->probe(board_ptr->get_hash(), MAX_DEPTH, BOOK, &m))
@@ -89,11 +88,26 @@ void search_mtdf::iterate(int state)
             extract_hint(THINKING);
             board_ptr->unlock();
             xboard_ptr->print_result(m);
-            return;
+            return false;
         }
         else
           useBook(false);  //we're out of book
     }
+
+    /*
+    //if there is only one legal move, make it
+    moveArray l;
+    board_ptr->generate(l, true);  //legal moves only
+    if (l.numElements == 1)
+    {
+      extract_pv();
+      extract_hint(THINKING);
+      m = l.theArray[0];
+      board_ptr->unlock();
+      xboard_ptr->print_result(m);
+      return false;
+    }
+    */
 
     // Note the start time.  If we're to think, then set the alarm.  (If we're
     // to analyze or ponder, then there's no need to set the alarm.  We analyze
@@ -121,7 +135,7 @@ void search_mtdf::iterate(int state)
     // Perform iterative deepening until the alarm has sounded (if we're
     // thinking), our opponent has moved (if we're analyzing or pondering), or
     // we've reached the maximum depth (in any case).
-    for (int depth = 1; depth <= max_depth; depth++)
+    for (int depth = SPECIAL_SEARCH_DEPTH+1; depth <= max_depth; depth++)
     {
         DEBUG_SEARCH_INIT(1, "");
         //guess[depth & 1] = mtdf(depth, guess[depth & 1].value);
@@ -168,6 +182,8 @@ void search_mtdf::iterate(int state)
     // If we've just finished thinking, then inform XBoard of our favorite move.
     if (state == THINKING && search_status != QUITTING)
         xboard_ptr->print_result(m);
+
+    return true;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -199,7 +215,7 @@ move_t search_mtdf::mtdf(int depth, value_t guess)
 /*----------------------------------------------------------------------------*\
  |                                 minimax()                                  |
 \*----------------------------------------------------------------------------*/
-move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t beta, bool try_null_move)
+move_t search_mtdf::minimax(int depth, value_t alpha, value_t beta, bool specialCase)
 {
 
 /// From the current position, search for the best move.  This method implements
@@ -236,6 +252,9 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
     //list<move_t>::iterator it;               // The move list's iterator.
     move_t m;                                // The best move and score.
 
+    //set the special flag for deeper searches (captures, etc.)
+    bool specialFlag = (specialCase && (depth <= 3))?true:false;
+
     // Increment the number of positions searched.
     nodes++;
 
@@ -247,7 +266,6 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
         m.set_null();
         switch (status)
         {
-//          case IN_PROGRESS  : m.value = -quiesce(shallowness, alpha, beta); break;
             case IN_PROGRESS  : m.value = -board_ptr->evaluate();  break;
             case STALEMATE    : m.value = +VALUE_CONTEMPT;                    break;
             case INSUFFICIENT : m.value = +VALUE_CONTEMPT;                    break;
@@ -255,8 +273,6 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
             case FIFTY        : m.value = +VALUE_CONTEMPT;                    break;
             case CHECKMATE    : m.value = -VALUE_KING;                        break;
             case ILLEGAL      : m.value = -VALUE_ILLEGAL;                     break;
-//          default           : m.value = -quiesce(shallowness, alpha, beta); break;
-            default           : m.value = -board_ptr->evaluate();  break;
         }
 #ifndef _MSDEV_WINDOWS
         DEBUG_SEARCH_PRINT("terminal state %d.", status);
@@ -290,14 +306,28 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 //}
 
 
-  // If we've reached the maximum search depth, then this node is a leaf - all
+    // If we've reached the maximum search depth, then this node is a leaf - all
     // we have to do is apply the static evaluator.
-    if (depth <= 0)
+    //numbers less than SPECIAL_SEARCH_DEPTH indicate special conditions, don't store the hash
+    //because we're not doing sufficient analysis
+    if ((depth <= SPECIAL_SEARCH_DEPTH) && (!specialFlag))  //uninteresting leaf node
     {
         m.set_null();
-//      m.value = -quiesce(shallowness, alpha, beta);
         m.value = -board_ptr->evaluate();
-        table_ptr->store(hash, 0, EXACT, m);
+        if (depth == SPECIAL_SEARCH_DEPTH)
+          table_ptr->store(hash, depth, EXACT, m);
+#ifndef _MSDEV_WINDOWS
+        DEBUG_SEARCH_PRINT("evaluate() says %d.", board_ptr->get_whose() ? -m.value : m.value);
+#endif
+        return m;
+    }
+
+    if (depth <= 0) //leaf node in any case
+    {
+        m.set_null();
+        m.value = -board_ptr->evaluate();
+        if (depth == 0)
+          table_ptr->store(hash, depth, EXACT, m);
 #ifndef _MSDEV_WINDOWS
         DEBUG_SEARCH_PRINT("evaluate() says %d.", board_ptr->get_whose() ? -m.value : m.value);
 #endif
@@ -321,7 +351,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
 //  }
 
     // Generate the move list.
-    if (!board_ptr->generate(moveArrays[depth], !shallowness))
+    if (!board_ptr->generate(moveArrays[depth], false))  //include illegal moves
     {
         // There's a move in the list that captures the opponent's king, which
         // means that we're in an illegal position.
@@ -374,8 +404,9 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
     for(unsigned i=0;i<moveArrays[depth].numElements;++i)
     {
         DEBUG_SEARCH_ADD_MOVE(moveArrays[depth].theArray[i]);
-        board_ptr->make(moveArrays[depth].theArray[i]);
-        moveArrays[depth].theArray[i].value = -minimax(depth - 1, shallowness + 1, -beta, -alpha, true).value;
+        bool capture = board_ptr->make(moveArrays[depth].theArray[i]);
+        bool check = board_ptr->check(false);
+        moveArrays[depth].theArray[i].value = -minimax(depth - 1, -beta, -alpha, (capture||check)).value;
         DEBUG_SEARCH_DEL_MOVE(moveArrays[depth].theArray[i]);
         board_ptr->unmake();
         if (ABS(moveArrays[depth].theArray[i].value) == VALUE_ILLEGAL)
@@ -386,7 +417,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
             break;
     }
 
-    // Was there a legal move in the list?
+    // if we didn't find any legal moves
     if (m.value == -VALUE_ILLEGAL)
     {
         // Nope, there was no legal move in the list.  There are three
@@ -404,7 +435,7 @@ move_t search_mtdf::minimax(int depth, int shallowness, value_t alpha, value_t b
             m.value = VALUE_CONTEMPT;
         else
             // We're in check; the position is a checkmate; we've lost.
-            m.value = -(VALUE_KING - shallowness);
+            m.value = -(VALUE_KING);
         if (!timeout_flag)
             table_ptr->store(hash, depth, EXACT, m);
 #ifndef _MSDEV_WINDOWS
