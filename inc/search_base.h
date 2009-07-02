@@ -79,7 +79,7 @@ protected:
     virtual void handle();                     ///< C++ clock callback.
     static void *_start(void *arg);            ///< Proxy thread entry point.
     virtual void start();                      ///< C++ thread entry point.
-    virtual void iterate(int s) = 0;           ///< Force sub-classes to override.
+    virtual bool iterate(int s) = 0;           ///< Force sub-classes to override.
     virtual void extract_pv();                 ///<
     virtual void extract_hint(int s);          ///<
     static bool shuffle(move_t m1, move_t m2); ///<

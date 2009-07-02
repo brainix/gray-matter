@@ -47,9 +47,10 @@
 #define PAWN_TABLE_MB       16  // Pawn table size (in MB).
 #define BOOK_MOVES          20  // Num moves to read per game in book (in plies).
 #define OVERHEAD             1  // Move search overhead (in centiseconds).
-#define MAX_DEPTH           16  // Maximum search depth (in plies).
+#define MAX_DEPTH           32  // Maximum search depth (in plies).
 #define MAX_MOVES_PER_TURN 200  // only X moves per turn analyzed
-#define R                    1    // Null move pruning depth reduction factor (in plies).
+#define SPECIAL_SEARCH_DEPTH 3  // search X plys deeper for captures, etc. (odd number)
+#define R                    1  // Null move pruning depth reduction factor (in plies).
 
 
 
