@@ -49,6 +49,7 @@
 #define OVERHEAD             1  // Move search overhead (in centiseconds).
 #define MAX_DEPTH           32  // Maximum search depth (in plies).
 #define MAX_MOVES_PER_TURN 200  // only X moves per turn analyzed
+#define MAX_MOVES_PER_GAME 500  // only X moves per game
 #define SPECIAL_SEARCH_DEPTH 3  // search X plys deeper for captures, etc. (odd number)
 #define R                    1  // Null move pruning depth reduction factor (in plies).
 
