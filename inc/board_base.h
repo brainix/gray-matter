@@ -152,7 +152,8 @@ protected:
     static bitboard_t key_en_passant[8];
     static bitboard_t key_on_move;
 
-    list<state_t> states;                           ///< Previous states.
+    //list<state_t> states;                           ///< Previous states.
+    stateArray_t states;
     state_t state;                                  ///< Current state.
     list<bitboard_t> rotations[ANGLES][COLORS + 1]; ///< Previous rotated BitBoards.
     bitboard_t rotation[ANGLES][COLORS + 1];        ///< Current rotated BitBoards.

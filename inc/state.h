@@ -49,6 +49,21 @@ typedef struct state
     int fifty;                        ///< 50 move rule counter.
 } state_t;
 
+typedef struct stateArray
+{
+	state_t states[MAX_MOVES_PER_GAME];
+	unsigned numElements;
+	stateArray(){numElements = 0;}
+	unsigned size() const {return numElements;}
+	void addState(const state_t& state)
+	{
+		states[numElements] = state;
+		numElements++;
+	}
+	void clear(){numElements = 0;}
+	void removeLast(){numElements--;}
+} stateArray_t;
+
 /// This macro assembles a BitBoard that contains all of a color's pieces.
 #define ALL(s, c)   ((s).piece[c][PAWN]   | (s).piece[c][KNIGHT] | \
                      (s).piece[c][BISHOP] | (s).piece[c][ROOK]   | \

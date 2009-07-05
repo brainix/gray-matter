@@ -664,7 +664,8 @@ bool board_base::make(move_t m)
 /// Make a move.
 
     // Save the current state, rotated BitBoards, and hash keys.
-    states.push_back(state);
+    //states.push_back(state);
+    states.addState(state);
     for (int angle = L45; angle <= R90; angle++)
         for (int color = WHITE; color <= COLORS; color++)
             rotations[angle][color].push_back(rotation[angle][color]);
@@ -823,14 +824,17 @@ bool board_base::unmake()
 
 /// Take back the last move.
 
-    if (states.empty())
+    //if (states.empty())
+    if (states.size() == 0)
         // Oops.  There was no last move.  The board must be in the initial
         // position.
         return false;
 
     // Restore the previous state, rotated BitBoards, and hash keys.
-    state = states.back();
-    states.pop_back();
+    //state = states.back();
+    state = states.states[states.numElements-1];
+    //states.pop_back();
+    states.removeLast();
     for (int angle = R90; angle >= L45; angle--)
         for (int color = COLORS; color >= WHITE; color--)
         {
