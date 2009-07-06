@@ -108,6 +108,10 @@ struct moveArray
     theArray = new move_t[MAX_MOVES_PER_TURN];
     numElements = 0;
   }
+  ~moveArray()
+  {
+    delete theArray;
+  }
   moveArray(size_t size)
   {
     theArray = new move_t[size];

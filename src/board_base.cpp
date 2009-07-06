@@ -656,7 +656,7 @@ bool board_base::make(move_t m)
     states.addState(state);
     for (int angle = L45; angle <= R90; angle++)
         for (int color = WHITE; color <= COLORS; color++)
-            rotations[angle][color].push_back(rotation[angle][color]);
+            rotations[angle][color].addHash(rotation[angle][color]);
     hashes.addHash(hash);
     pawn_hashes.addHash(pawn_hash);
 
@@ -826,8 +826,9 @@ bool board_base::unmake()
     for (int angle = R90; angle >= L45; angle--)
         for (int color = COLORS; color >= WHITE; color--)
         {
-            rotation[angle][color] = rotations[angle][color].back();
-            rotations[angle][color].pop_back();
+            rotation[angle][color] = 
+              rotations[angle][color].hashes[rotations[angle][color].numElements-1];
+            rotations[angle][color].removeLast();
         }
     hashes.removeLast();
     hash = hashes.hashes[hashes.numElements];
