@@ -156,7 +156,7 @@ protected:
     //list<state_t> states;                           ///< Previous states.
     stateArray_t states;
     state_t state;                                  ///< Current state.
-    list<bitboard_t> rotations[ANGLES][COLORS + 1]; ///< Previous rotated BitBoards.
+    bitBoardArray rotations[ANGLES][COLORS + 1];    ///< Previous rotated BitBoards.
     bitboard_t rotation[ANGLES][COLORS + 1];        ///< Current rotated BitBoards.
     bitBoardArray hashes;                           ///< Previous Zobrist hash keys.
     bitboard_t hash;                                ///< Current Zobrist hash key.
