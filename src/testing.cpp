@@ -144,7 +144,7 @@ void testing::test_perft(int depth)
 		      cout << "  Computed perft = " << pval << endl;
 		      cout << "Repeating perft() with more details:" << endl;
 
-          moveArray l;
+          moveArray l(MAX_MOVES_PER_TURN);
 		      board_ptr->generate(l, true);
           for (unsigned i=0;i<l.numElements;++i)
           {

@@ -45,6 +45,28 @@
 ///		· white kings		· black kings
 typedef uint64_t bitboard_t;
 
+struct bitBoardArray
+{
+  bitboard_t hashes[MAX_MOVES_PER_GAME];
+  unsigned numElements;
+	bitBoardArray(){numElements = 0;}
+	unsigned size() const {return numElements;}
+	void addHash(const bitboard_t& hash)
+	{
+		hashes[numElements] = hash;
+		numElements++;
+	}
+	void clear(){numElements = 0;}
+	void removeLast(){numElements--;}
+  struct bitBoardArray& operator=(const bitBoardArray& rhs)
+  {
+    for(unsigned i=0;i<rhs.numElements;++i)
+      hashes[i] = rhs.hashes[i];
+    numElements = rhs.numElements;
+    return *this;
+  }
+}; // bitBoardArray_t;
+
 /// A BitRow is an unsigned 8-bit integer which represents up to 8 adjacent
 /// squares: a row in a 0° BitBoard, a column in a 90° BitBoard, or a diagonal
 /// in a 45° BitBoard.

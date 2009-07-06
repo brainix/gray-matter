@@ -26,8 +26,9 @@
  |                               search_mtdf()                                |
 \*----------------------------------------------------------------------------*/
 search_mtdf::search_mtdf(table* t, history* h, chess_clock* c, xboard* x) :
-    search_base(t, h, c, x)
+search_base(t, h, c, x)
 {
+  moveArrays = new moveArray[MAX_DEPTH];
 
 /// Constructor.
 
@@ -38,6 +39,7 @@ search_mtdf::search_mtdf(table* t, history* h, chess_clock* c, xboard* x) :
 \*----------------------------------------------------------------------------*/
 search_mtdf::~search_mtdf()
 {
+  delete moveArrays;
 
 /// Destructor.
 
@@ -140,7 +142,12 @@ bool search_mtdf::iterate(int state)
         DEBUG_SEARCH_INIT(1, "");
         //guess[depth & 1] = mtdf(depth, guess[depth & 1].value);
         guess[depth & 1] = minimax(depth);
-        if (timeout_flag || guess[depth & 1].is_null())
+
+        //if (guess[depth&1].value == VALUE_CONTEMPT)
+        //{
+        //  m = guess[depth&1];
+        //}
+        if (timeout_flag) // || guess[depth & 1].is_null())
             // Oops.  Either the alarm has interrupted this iteration (and the
             // results are incomplete and unreliable), or there's no legal move
             // in this position (and the game must've ended).
@@ -151,14 +158,14 @@ bool search_mtdf::iterate(int state)
         if (output)
         {
             if (strong_pondering)
-                pv.push_front(hint);
+                pv.addMove(hint);
             xboard_ptr->print_output(depth,
                 m.value,  //always score from "our" perspective
                 clock_ptr->get_elapsed(), nodes, pv);
             if (strong_pondering)
-                pv.pop_front();
+              pv.removeLast();
         }
-        if (ABS(m.value) >= VALUE_KING - MAX_DEPTH)
+        if (ABS(m.value) >= VALUE_KING)
             // Oops.  The game will be over at this depth.  There's no point in
             // searching deeper.  Eyes on the prize.
             break;
@@ -215,7 +222,8 @@ move_t search_mtdf::mtdf(int depth, value_t guess)
 /*----------------------------------------------------------------------------*\
  |                                 minimax()                                  |
 \*----------------------------------------------------------------------------*/
-move_t search_mtdf::minimax(int depth, value_t alpha, value_t beta, bool specialCase)
+move_t search_mtdf::minimax(int depth, value_t alpha, value_t beta, 
+                            bool specialCase, bool try_null_move)
 {
 
 /// From the current position, search for the best move.  This method implements
@@ -247,7 +255,7 @@ move_t search_mtdf::minimax(int depth, value_t alpha, value_t beta, bool special
     int status = board_ptr->get_status(0);   // Whether the game is over.
     value_t saved_alpha = alpha;             // Saved lower bound on score.
     value_t saved_beta = beta;               // Saved upper bound on score.
-    //move_t null_move;                        // The all-important null move.
+    move_t null_move;                        // The all-important null move.
     //vector<move_t> l;                          // The move list.
     //list<move_t>::iterator it;               // The move list's iterator.
     move_t m;                                // The best move and score.
@@ -266,14 +274,16 @@ move_t search_mtdf::minimax(int depth, value_t alpha, value_t beta, bool special
         m.set_null();
         switch (status)
         {
-            case IN_PROGRESS  : m.value = -board_ptr->evaluate();  break;
-            case STALEMATE    : m.value = +VALUE_CONTEMPT;                    break;
-            case INSUFFICIENT : m.value = +VALUE_CONTEMPT;                    break;
-            case THREE        : m.value = +VALUE_CONTEMPT;                    break;
-            case FIFTY        : m.value = +VALUE_CONTEMPT;                    break;
-            case CHECKMATE    : m.value = -VALUE_KING;                        break;
-            case ILLEGAL      : m.value = -VALUE_ILLEGAL;                     break;
+            case STALEMATE    : m.value = +VALUE_CONTEMPT;     break;
+            case INSUFFICIENT : m.value = +VALUE_CONTEMPT;     break;
+            case THREE        : m.value = +VALUE_CONTEMPT;     break;
+            case FIFTY        : m.value = +VALUE_CONTEMPT;     break;
+            case CHECKMATE    : m.value = -VALUE_KING;         break;
+            case ILLEGAL      : m.value = -VALUE_ILLEGAL;      break;
         }
+                      
+        table_ptr->store(hash, depth, EXACT, m);  //mark this spot in hash table
+
 #ifndef _MSDEV_WINDOWS
         DEBUG_SEARCH_PRINT("terminal state %d.", status);
 #endif
@@ -334,21 +344,23 @@ move_t search_mtdf::minimax(int depth, value_t alpha, value_t beta, bool special
         return m;
     }
 
+    /*
     // Perform null move pruning.
-//  if (try_null_move && !board_ptr->zugzwang())
-//  {
-//      null_move.set_null();
-//      DEBUG_SEARCH_ADD_MOVE(null_move);
-//      board_ptr->make(null_move);
-//      null_move = minimax(depth - R - 1, shallowness + R + 1, -beta, -beta + 1, false);
-//      DEBUG_SEARCH_DEL_MOVE(null_move);
-//      board_ptr->unmake();
-//      if (-null_move.value >= beta)
-//      {
-//          null_move.value = beta;
-//          return null_move;
-//      }
-//  }
+    if (try_null_move && !board_ptr->zugzwang())
+      {
+      null_move.set_null();
+      DEBUG_SEARCH_ADD_MOVE(null_move);
+      board_ptr->make(null_move);
+      null_move = minimax(depth - R, -beta, -alpha, false, false);
+      DEBUG_SEARCH_DEL_MOVE(null_move);
+      board_ptr->unmake();
+      if (-null_move.value >= beta)
+      {
+          null_move.value = beta;
+          return null_move;
+      }
+    }
+    */
 
     // Generate the move list.
     if (!board_ptr->generate(moveArrays[depth], false))  //include illegal moves
@@ -412,8 +424,13 @@ move_t search_mtdf::minimax(int depth, value_t alpha, value_t beta, bool special
         if (ABS(moveArrays[depth].theArray[i].value) == VALUE_ILLEGAL)
             continue;
         if (moveArrays[depth].theArray[i].value > m.value)
-            alpha = GREATER(alpha, (m = moveArrays[depth].theArray[i]).value);
-        if (moveArrays[depth].theArray[i].value >= beta || timeout_flag)
+        {
+          m = moveArrays[depth].theArray[i];
+          if (m.value > alpha) alpha = m.value;
+            //alpha = GREATER(alpha, (m = moveArrays[depth].theArray[i]).value);
+        }
+        if ((beta <= alpha) || (timeout_flag))
+        //if (moveArrays[depth].theArray[i].value >= beta || timeout_flag)
             break;
     }
 

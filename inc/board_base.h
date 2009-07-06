@@ -113,6 +113,7 @@ public:
     virtual bitboard_t get_hash() const;
     virtual int get_status(bool mate_test);
     virtual int get_num_moves() const;
+    virtual unsigned get_num_pieces(const bool color) const;
     virtual value_t evaluate() const = 0; // Force sub-classes to override.
     virtual bool check(bool off_move = false) const;
     virtual bool zugzwang() const;
@@ -157,9 +158,9 @@ protected:
     state_t state;                                  ///< Current state.
     list<bitboard_t> rotations[ANGLES][COLORS + 1]; ///< Previous rotated BitBoards.
     bitboard_t rotation[ANGLES][COLORS + 1];        ///< Current rotated BitBoards.
-    list<bitboard_t> hashes;                        ///< Previous Zobrist hash keys.
+    bitBoardArray hashes;                           ///< Previous Zobrist hash keys.
     bitboard_t hash;                                ///< Current Zobrist hash key.
-    list<bitboard_t> pawn_hashes;                   ///< Previous pawn hash keys.
+    bitBoardArray pawn_hashes;                      ///< Previous pawn hash keys.
     bitboard_t pawn_hash;                           ///< Current pawn hash key.
     mutex_t mutex;                                  ///< Lock.
     bool generated_king_capture;

@@ -100,13 +100,21 @@ typedef struct move
 
 struct moveArray
 {
-  move_t theArray[MAX_MOVES_PER_TURN];
+  move_t* theArray; //[MAX_MOVES_PER_TURN];
   unsigned numElements;
 
   moveArray()
   {
+    theArray = new move_t[MAX_MOVES_PER_TURN];
     numElements = 0;
   }
+  moveArray(size_t size)
+  {
+    theArray = new move_t[size];
+    numElements = 0;
+  }
+
+  size_t size() {return numElements;}
 
   void addMove(move_t& m)
   {
@@ -115,6 +123,9 @@ struct moveArray
     if (numElements < (MAX_MOVES_PER_TURN-1))
       numElements++;
   }
+
+  void removeLast(){numElements--;}
+  void clear(){numElements = 0;}
 
   void reset()
   {

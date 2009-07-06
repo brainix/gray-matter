@@ -308,7 +308,7 @@ void search_base::extract_pv()
          !m.is_null() && board_ptr->get_status(true) == IN_PROGRESS;
          table_ptr->probe(board_ptr->get_hash(), 0, EXACT, &m))
     {
-        pv.push_back(m);
+        pv.addMove(m);
         board_ptr->make(m);
         if (pv.size() == (unsigned) max_depth)
             break;
@@ -328,21 +328,21 @@ void search_base::extract_hint(int s)
 /// variation either at various times during analyzing and thinking or just once
 /// before pondering.
 
-    if (s == ANALYZING && !pv.empty())
+    if (s == ANALYZING && !(pv.size() == 0))
         // We're analyzing.
-        hint = pv.front();
+        hint = pv.theArray[0]; // .front();
     else if (s == THINKING && pv.size() >= 2)
     {
         // We're thinking.  That means that the principal variation's 1st move
         // is what we think that we should do, and its 2nd move is what we think
         // that our opponent should do.
-        list<move_t>::iterator it = pv.begin();
-        hint = *++it;
+        //list<move_t>::iterator it = pv.begin();
+        hint = pv.theArray[1]; //*++it;
     }
-    else if (s == PONDERING && !pv.empty())
+    else if (s == PONDERING && !(pv.size() == 0))
         // We're about to ponder.  That means that the principal variation's 1st
         // move is what we think that our opponent should do.
-        hint = pv.front();
+        hint = pv.theArray[0]; //pv.front();
     else
         // The principal variation isn't long enough.  We don't know what our
         // opponent should do.

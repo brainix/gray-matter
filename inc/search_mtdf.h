@@ -52,11 +52,13 @@ public:
     search_mtdf& operator=(const search_mtdf& that);
 private:
     //the move arrays
-    moveArray moveArrays[MAX_DEPTH];
+    moveArray* moveArrays;
     bool iterate(int s);  //false if we used a book move
     //move_t mtdf(int depth, value_t guess = 0);
     move_t minimax(int depth, value_t alpha = -INFINITY, 
-                   value_t beta = +INFINITY, bool specialCase = true);
+                   value_t beta = +INFINITY, 
+                   bool specialCase = true,
+                   bool try_null_move = true);
     //value_t quiesce(int shallowness, value_t alpha, value_t beta);
     void useBook(bool yesno); //turn book on or off
 };
