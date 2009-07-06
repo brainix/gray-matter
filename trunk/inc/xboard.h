@@ -57,7 +57,8 @@ public:
     ~xboard();
     void vomit(char *message) const;
     void loop(search_base *s, chess_clock *c, book *o);
-    void print_output(int ply, int value, int time, int nodes, std::list<move_t>& pv) const;
+    void print_output(int ply, int value, int time, int nodes, 
+                      moveArray& pv) const;
     void print_result(move_t m);
     void print_resignation();
 

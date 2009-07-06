@@ -85,7 +85,7 @@ protected:
     static bool shuffle(move_t m1, move_t m2); ///<
     static bool descend(move_t m1, move_t m2); ///<
 
-    list<move_t> pv;        ///< Principal variation.
+    moveArray pv;         ///< Principal variation.
     move_t hint;            ///< Opponent's best move.
     int max_depth;          ///< Maximum search depth.
     int nodes;              ///< Number of nodes searched.

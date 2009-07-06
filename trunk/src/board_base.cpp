@@ -514,6 +514,31 @@ int board_base::get_num_moves() const
 }
 
 /*----------------------------------------------------------------------------*\
+ |                              get_num_pieces()                               |
+\*----------------------------------------------------------------------------*/
+unsigned board_base::get_num_pieces(const bool color) const
+{
+  unsigned count = 0;
+
+  //all the pieces in one bit board
+  bitboard_t bb = state.piece[color][ROOK] | 
+                  state.piece[color][KNIGHT] |
+                  state.piece[color][BISHOP] |
+                  state.piece[color][QUEEN] |
+                  state.piece[color][PAWN];
+
+  for (int n, x, y; (n = FST(bb)) != -1; BIT_CLR(bb, x, y))
+  {
+    x = n & 0x7;
+    y = n >> 3;
+    count++;
+  }
+
+  return count;
+}
+
+
+/*----------------------------------------------------------------------------*\
  |                                  check()                                   |
 \*----------------------------------------------------------------------------*/
 bool board_base::check(bool off_move) const
@@ -522,43 +547,6 @@ bool board_base::check(bool off_move) const
     bool offense = off_move ? ON_MOVE : OFF_MOVE;
     return check(state.piece[defense][KING], offense);
 }
-
-/*----------------------------------------------------------------------------*\
- |                                 zugzwang()                                 |
-\*----------------------------------------------------------------------------*/
-/*
-bool board_base::zugzwang() const
-{
-
-/// Is the current position zugzwang?
-///
-/// In most positions, there's at least one move the color on move could make to
-/// improve her lot.  In these normal positions, null-move pruning works.
-/// However, in certain positions, her best move would be to pass (particularly
-/// in endgame).  These positions are called "zugzwang" (German for "compelled
-/// to move").  In these zugzwang positions, null-move pruning doesn't work.
-///
-/// The search class calls this method on a particular position to decide
-/// whether or not to try null-move pruning.
-
-    for (int color = WHITE; color <= BLACK; color++)
-    {
-        if (!state.piece[color][KNIGHT] &&
-            !state.piece[color][BISHOP] &&
-            !state.piece[color][ROOK]   &&
-            !state.piece[color][QUEEN])
-            // One color only has pawns and a king.
-            return true;
-        if (!state.piece[color][KING])
-            // One color doesn't even have a king.
-            return true;
-    }
-    if (check(state.piece[ON_MOVE][KING], OFF_MOVE))
-        // The color on move is in check.
-        return true;
-    return false;
-}
-*/
 
 /*----------------------------------------------------------------------------*\
  |                                to_string()                                 |
@@ -669,8 +657,8 @@ bool board_base::make(move_t m)
     for (int angle = L45; angle <= R90; angle++)
         for (int color = WHITE; color <= COLORS; color++)
             rotations[angle][color].push_back(rotation[angle][color]);
-    hashes.push_back(hash);
-    pawn_hashes.push_back(pawn_hash);
+    hashes.addHash(hash);
+    pawn_hashes.addHash(pawn_hash);
 
     // If we're making a null move, then skip a bunch of this nonsense.
     if (m.is_null())
@@ -841,10 +829,12 @@ bool board_base::unmake()
             rotation[angle][color] = rotations[angle][color].back();
             rotations[angle][color].pop_back();
         }
-    hash = hashes.back();
-    hashes.pop_back();
-    pawn_hash = pawn_hashes.back();
-    pawn_hashes.pop_back();
+    hashes.removeLast();
+    hash = hashes.hashes[hashes.numElements];
+
+    pawn_hashes.removeLast();
+    pawn_hash = pawn_hashes.hashes[pawn_hashes.numElements];
+
     return true;
 }
 
@@ -1888,16 +1878,16 @@ bool board_base::insufficient() const
 \*----------------------------------------------------------------------------*/
 bool board_base::three() const
 {
+  /// Is the game drawn by threefold repetition?
 
-/// Is the game drawn by threefold repetition?
+  list<bitboard_t>::const_reverse_iterator it;
+  int sum = 1;
 
-    list<bitboard_t>::const_reverse_iterator it;
-    int sum = 1;
-
-    for (it = hashes.rbegin(); it != hashes.rend(); it++)
-        if (*it == hash)
-            if (++sum == 3)
-                return true;
+    for (unsigned i=0;i<hashes.numElements;++i)
+      if (hashes.hashes[i] == hash)
+        sum++;
+    if (sum >= 3)
+          return true;
     return false;
 }
 
@@ -1966,7 +1956,6 @@ void board_base::insert(int x, int y, bitboard_t b, int angle, moveArray& l,
 \*----------------------------------------------------------------------------*/
 bool board_base::zugzwang() const
 {
-
 /// Is the current position zugzwang?
 ///
 /// In most positions, there's at least one move the color on move could make to
@@ -1978,20 +1967,26 @@ bool board_base::zugzwang() const
 /// The search class calls this method on a particular position to decide
 /// whether or not to try null-move pruning.
 
+    //not many pieces on the board
+    if ((get_num_pieces(WHITE) + get_num_pieces(BLACK)) < NMP_PIECE_LIMIT)
+      return true;
+
     for (int color = WHITE; color <= BLACK; color++)
     {
-        if (!state.piece[color][KNIGHT] &&
-            !state.piece[color][BISHOP] &&
-            !state.piece[color][ROOK]   &&
-            !state.piece[color][QUEEN])
-            // One color only has pawns and a king.
-            return true;
-        if (!state.piece[color][KING])
-            // One color doesn't even have a king.
-            return true;
+      //if a color has only pawns and a king
+      if (!state.piece[color][KNIGHT] &&
+          !state.piece[color][BISHOP] &&
+          !state.piece[color][ROOK]   &&
+          !state.piece[color][QUEEN])
+          return true;
+
+      //if a color doesn't have a king
+      if (!state.piece[color][KING])
+          return true;
     }
+
+    // The color on move is in check.
     if (check(state.piece[ON_MOVE][KING], OFF_MOVE))
-        // The color on move is in check.
         return true;
     return false;
 }

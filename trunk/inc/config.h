@@ -52,6 +52,7 @@
 #define MAX_MOVES_PER_GAME 500  // only X moves per game
 #define SPECIAL_SEARCH_DEPTH 3  // search X plys deeper for captures, etc. (odd number)
 #define R                    1  // Null move pruning depth reduction factor (in plies).
+#define NMP_PIECE_LIMIT     15  // fewer than X = don't do null move pruning
 
 
 

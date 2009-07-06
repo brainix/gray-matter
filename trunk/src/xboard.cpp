@@ -159,20 +159,22 @@ void xboard::loop(search_base *s, chess_clock *c, book *o)
 /*----------------------------------------------------------------------------*\
  |                               print_output()                               |
 \*----------------------------------------------------------------------------*/
-void xboard::print_output(int ply, int value, int time, int nodes, list<move_t>& pv) const
+void xboard::print_output(int ply, int value, int time, int nodes, moveArray& pv) const
 {
 
 /// Print thinking output.
 
   
     printf("%d %d %d %d", ply, value, time, nodes);
-    for (list<move_t>::iterator it = pv.begin(); it != pv.end(); it++)
+    //for (list<move_t>::iterator it = pv.begin(); it != pv.end(); it++)
+    for (unsigned i=0;i<pv.size(); ++i)
     {
         printf(" ");
-        print_move(*it, true);
-        board_ptr->make(*it);
+        print_move(pv.theArray[i], true);
+        board_ptr->make(pv.theArray[i]);
     }
-    for (list<move_t>::iterator it = pv.begin(); it != pv.end(); it++)
+    //for (list<move_t>::iterator it = pv.begin(); it != pv.end(); it++)
+    for (unsigned i=0;i<pv.size(); ++i)
         board_ptr->unmake();
     printf("\n");
 }
@@ -281,7 +283,7 @@ void xboard::do_protover() const
     printf("feature sigint=0\n");
 
 #ifdef _MSDEV_WINDOWS
-    printf("feature myname=\"graySVN1541\"\n");
+    printf("feature myname=\"graySVN1542\"\n");
 #else
   #ifdef SVN_REV
     printf("feature myname=\"Gray1 Matter rev %s\"\n", SVN_REV);
@@ -922,7 +924,7 @@ bool xboard::test_move(move_t m)
 
 /// In the current position, is the specified move legal?
 
-    moveArray l;
+    moveArray l(MAX_MOVES_PER_TURN);
 
     board_ptr->generate(l, true);
     for (unsigned i=0;i<l.numElements;++i)
