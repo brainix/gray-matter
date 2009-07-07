@@ -22,32 +22,12 @@
 #ifndef XBOARD_H
 #define XBOARD_H
 
-// C++ stuff:
-#include <list>
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <algorithm>
 #include <vector>
 
-// Default Gray Matter stuff:
-#include "config.h"
-#include "library.h"
-
-// Extra Gray Matter stuff:
-#include "board_base.h"
-#include "board_heuristic.h"
 #include "search_base.h"
-#include "clock.h"
 #include "book.h"
 
 #define BUFFER_SIZE	160
-
-// Forward declarations:
-class board_base;
-class search_base;
-class chess_clock;
-class book;
 
 /// Chess Engine Communication Protocol.
 class xboard
@@ -58,8 +38,8 @@ public:
     void vomit(char *message) const;
     void loop(search_base *s, chess_clock *c, book *o);
     void print_output(int ply, int value, int time, int nodes, 
-                      moveArray& pv) const;
-    void print_result(move_t m);
+                      MoveArray& pv) const;
+    void print_result(Move m);
     void print_resignation();
 
 private:
@@ -81,7 +61,7 @@ private:
     int ts_erroneous;		                   // Test Suite statistics.
     int ts_success, ts_failure;                //
 
-    void print_move(move_t m, bool san = false) const;
+    void print_move(Move m, bool san = false) const;
     void do_xboard() const;
     void do_protover() const;
     void do_accepted() const;
@@ -118,8 +98,8 @@ private:
     int str_to_num(const char *p) const;
     int str_to_secs(const char *p) const;
     int char_to_shape(char c) const;
-    bool test_move(move_t m);
-    void test_suite_next(move_t m);
+    bool test_move(Move m);
+    void test_suite_next(Move m);
 };
 
 #endif

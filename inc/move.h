@@ -24,19 +24,19 @@
 
 // Default Gray Matter stuff:
 #include "config.h"
-#include "library.h"
+#include "library.h"  //int16_t
 
 typedef int16_t value_t;
 
-/// This structure describes a move. 
-
-/// It contains the from and to coordinates, the pawn promotion information, 
+/// This class contains the from and to coordinates, the pawn promotion information, 
 /// and the MiniMax score.  We use a BitField to tightly pack this information 
 /// into 32 bits because some of our methods return this structure (rather 
 /// than a pointer to this structure or other similar ugliness).
 #pragma pack(1)
-typedef struct move
+
+class Move
 {
+public:
     unsigned x1      : 3; ///< From x coordinate.              3 bits
     unsigned y1      : 3; ///< From y coordinate.           +  3 bits
     unsigned x2      : 3; ///< To x coordinate.             +  3 bits
@@ -45,31 +45,23 @@ typedef struct move
     unsigned padding : 1; ///< The Evil Bit (TM).           +  1 bit
     value_t  value;       ///< MiniMax score.               + 16 bits
                           //                                = 32 bits
-
-    /// Constructor.
-    move()
+    inline Move::Move()
     {
         x1 = y1 = x2 = y2 = promo = padding = value = 0;
     }
-
-    /// Overloaded equality test operator.
-    bool operator==(const struct move that) const
+    inline bool operator==(const Move& that) const
     {
-        return this->x1 == that.x1 && this->y1 == that.y1 &&
-               this->x2 == that.x2 && this->y2 == that.y2 &&
-               this->promo == that.promo;
+      return this->x1 == that.x1 && this->y1 == that.y1 &&
+             this->x2 == that.x2 && this->y2 == that.y2 &&
+             this->promo == that.promo;
     }
-
-    /// Overloaded inequality test operator.
-    bool operator!=(const struct move that) const
+    inline bool operator!=(const Move& that) const
     {
-        return this->x1 != that.x1 || this->y1 != that.y1 ||
-               this->x2 != that.x2 || this->y2 != that.y2 ||
-               this->promo != that.promo;
+      return this->x1 != that.x1 || this->y1 != that.y1 ||
+             this->x2 != that.x2 || this->y2 != that.y2 ||
+             this->promo != that.promo;
     }
-
-    /// Overloaded assignment operator.
-    struct move& operator=(const struct move& that)
+    inline Move& operator=(const Move& that)
     {
         x1 = that.x1;
         y1 = that.y1;
@@ -79,63 +71,79 @@ typedef struct move
         value = that.value;
         return *this;
     }
-
-    /// Is this move a null move?
-    bool is_null() const
+    inline bool is_null() const
     {
-        return !x1 && !y1 && !x2 && !y2 && !promo;
+      return !x1 && !y1 && !x2 && !y2 && !promo;
+    }
+    inline void set_null()
+    {
+      x1 = y1 = x2 = y2 = promo = 0;
+    }
+    inline bool operator<(const Move& rhs) const
+    {
+      return (value < rhs.value);
     }
 
-    /// Set this move to a null move.
-    void set_null()
+    inline bool operator>(const Move& rhs) const
     {
-        x1 = y1 = x2 = y2 = promo = 0;
+      return (value > rhs.value);
     }
-
-    bool operator<(move& rhs){return value < rhs.value;}
-    bool operator>(move& rhs){return value > rhs.value;}
-} move_t;
+};
 
 #pragma pack()
 
-struct moveArray
+class MoveArray
 {
-  move_t* theArray; //[MAX_MOVES_PER_TURN];
-  unsigned numElements;
+public:
+  Move* theArray;
+  size_t mArraySize;
+  size_t mNumElements;
 
-  moveArray()
+  inline MoveArray()
   {
-    theArray = new move_t[MAX_MOVES_PER_TURN];
-    numElements = 0;
+    mArraySize = MAX_MOVES_PER_TURN;
+    theArray = new Move[mArraySize];
+    mNumElements = 0;
   }
-  ~moveArray()
+
+  inline ~MoveArray()
   {
     delete theArray;
   }
-  moveArray(size_t size)
+
+  inline MoveArray(size_t size)
   {
-    theArray = new move_t[size];
-    numElements = 0;
+    mArraySize = size;
+    theArray = new Move[mArraySize];
+    mNumElements = 0;
   }
 
-  size_t size() {return numElements;}
-
-  void addMove(move_t& m)
+  inline size_t size()
   {
-    //WARNING!  This will cull all moves more than MAX_MOVES_PER_TURN
-    theArray[numElements] = m;
-    if (numElements < (MAX_MOVES_PER_TURN-1))
-      numElements++;
+    return mNumElements;
+  }
+  inline void MoveArray::addMove(Move& m)
+  {
+    //WARNING!  This will cull all moves more than the array size
+    theArray[mNumElements] = m;
+    if (mNumElements < (mArraySize-1))
+      mNumElements++;
   }
 
-  void removeLast(){numElements--;}
-  void clear(){numElements = 0;}
-
-  void reset()
+  inline void removeLast()
   {
-    numElements = 0;
+    mNumElements--;
+  }
+
+  inline void clear()
+  {
+    mNumElements = 0;
+  }
+
+  inline void reset()
+  {
+    mNumElements = 0;
   }
 };
-
 
 #endif

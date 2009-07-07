@@ -22,12 +22,7 @@
 #ifndef STATE_H
 #define STATE_H
 
-// Default Gray Matter stuff:
 #include "config.h"
-#include "library.h"
-
-// Extra Gray Matter stuff:
-#include "bitboard.h"
 
 /// This structure describes the entire state of the board.  
 
@@ -40,6 +35,7 @@
 /// move (which is also kept in the state).  If white is on move, then the pawn
 /// susceptible to en passant must be black and on rank 5.  If black is on move,
 /// then the pawn susceptible to en passant must be white and on rank 4.
+
 typedef struct state
 {
     bitboard_t piece[COLORS][SHAPES]; ///< 12 BitBoards.
@@ -49,20 +45,21 @@ typedef struct state
     int fifty;                        ///< 50 move rule counter.
 } state_t;
 
-typedef struct stateArray
+class stateArray
 {
+public:
 	state_t states[MAX_MOVES_PER_GAME];
-	unsigned numElements;
-	stateArray(){numElements = 0;}
-	unsigned size() const {return numElements;}
-	void addState(const state_t& state)
+	unsigned mNumElements;
+	inline stateArray(){mNumElements = 0;}
+	inline unsigned size() const {return mNumElements;}
+	inline void addState(const state_t& state)
 	{
-		states[numElements] = state;
-		numElements++;
+		states[mNumElements] = state;
+		mNumElements++;
 	}
-	void clear(){numElements = 0;}
-	void removeLast(){numElements--;}
-} stateArray_t;
+	inline void clear(){mNumElements = 0;}
+	inline void removeLast(){mNumElements--;}
+};
 
 /// This macro assembles a BitBoard that contains all of a color's pieces.
 #define ALL(s, c)   ((s).piece[c][PAWN]   | (s).piece[c][KNIGHT] | \

@@ -19,7 +19,12 @@
  | this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "main.h"
+#include <iostream>
+
+#include "configfile.h"
+#include "testing.h"
+#include "xboard.h"
+#include "search_mtdf.h"
 
 using namespace std;
 

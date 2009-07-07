@@ -27,14 +27,7 @@
 #include <string>
 #include <list>
 
-// Default Gray Matter stuff:
-#include "config.h"
-#include "library.h"
-
-// Extra Gray Matter stuff:
-#include "board_base.h"
-#include "board_heuristic.h"
-#include "table.h"
+#include "move.h"
 
 // Token types:
 #define TOKEN_UNKNOWN       0 // Unknown.
@@ -69,7 +62,7 @@ public:
 
 private:
     int num_moves;                       ///<
-    std::list<std::list<move_t> > games; ///< Game list.
+    std::list<std::list<Move> > games; ///< Game list.
 
     board_base *board_ptr;               ///< Board representation object.
     table *table_ptr;                    ///< Transposition table object.
@@ -90,7 +83,7 @@ private:
     bool tokenize_symbol(std::istream& stream, std::string& token);
 
     // The following method is the most magnificent hack of my life.
-    static bool shuffle(std::list<move_t> l1, std::list<move_t> l2);
+    static bool shuffle(std::list<Move> l1, std::list<Move> l2);
 };
 
 #endif

@@ -154,7 +154,7 @@ const value_t board_heuristic::value_king_cant_castle = -20;
 bool board_heuristic::precomputed_board_heuristic = false;
 bitboard_t board_heuristic::squares_pawn_duo[8][8];
 bitboard_t board_heuristic::squares_pawn_potential_attacks[COLORS][8][8];
-pawn board_heuristic::pawn_table;
+PawnTable board_heuristic::pawn_table;
 
 /*----------------------------------------------------------------------------*\
  |                             board_heuristic()                              |

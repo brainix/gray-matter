@@ -22,13 +22,7 @@
 #ifndef TESTING_H
 #define TESTING_H
 
-#include <iostream>
-#include <vector>
 #include <string>
-#include <iterator>
-
-#include "board_base.h"
-#include "board_heuristic.h"
 
 /// Implementation of several correctness and performance tests
 class testing

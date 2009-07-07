@@ -20,6 +20,8 @@
  | this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <sstream>
+
 #include "gray.h"
 #include "board_base.h"
 
@@ -567,7 +569,7 @@ string board_base::to_string() const
         {
             for (shape = PAWN; shape <= KING; shape++)
             {
-                if (BIT_GET(state.piece[WHITE][shape], x, y))
+              if (BIT_GET(state.piece[WHITE][shape], x, y))
                 {
                     color = WHITE;
                     break;
@@ -600,7 +602,7 @@ string board_base::to_string() const
 /*----------------------------------------------------------------------------*\
  |                                 generate()                                 |
 \*----------------------------------------------------------------------------*/
-bool board_base::generate(moveArray& l, bool only_legal_moves,
+bool board_base::generate(MoveArray& l, bool only_legal_moves,
                           bool only_captures)
 {
 
@@ -627,14 +629,14 @@ bool board_base::generate(moveArray& l, bool only_legal_moves,
     // If a move leaves the color on move in check, then remove that move from
     // the move list.
     if (only_legal_moves)
-      for (unsigned i=0;i<l.numElements;++i)
+      for (unsigned i=0;i<l.mNumElements;++i)
       {
           make(l.theArray[i]);
           if (check(state.piece[OFF_MOVE][KING], ON_MOVE))
           {
             //replace this one with the one at the end of the line
-            l.theArray[i] = l.theArray[l.numElements-1];
-            l.numElements--;
+            l.theArray[i] = l.theArray[l.mNumElements-1];
+            l.mNumElements--;
             i--;
           }
           unmake();
@@ -645,7 +647,7 @@ bool board_base::generate(moveArray& l, bool only_legal_moves,
 /*----------------------------------------------------------------------------*\
  |                                   make()                                   |
 \*----------------------------------------------------------------------------*/
-bool board_base::make(move_t m)
+bool board_base::make(Move m)
 {
   bool retValue = false;
 
@@ -820,21 +822,21 @@ bool board_base::unmake()
 
     // Restore the previous state, rotated BitBoards, and hash keys.
     //state = states.back();
-    state = states.states[states.numElements-1];
+    state = states.states[states.mNumElements-1];
     //states.pop_back();
     states.removeLast();
     for (int angle = R90; angle >= L45; angle--)
         for (int color = COLORS; color >= WHITE; color--)
         {
             rotation[angle][color] = 
-              rotations[angle][color].hashes[rotations[angle][color].numElements-1];
+              rotations[angle][color].hashes[rotations[angle][color].mNumElements-1];
             rotations[angle][color].removeLast();
         }
     hashes.removeLast();
-    hash = hashes.hashes[hashes.numElements];
+    hash = hashes.hashes[hashes.mNumElements];
 
     pawn_hashes.removeLast();
-    pawn_hash = pawn_hashes.hashes[pawn_hashes.numElements];
+    pawn_hash = pawn_hashes.hashes[pawn_hashes.mNumElements];
 
     return true;
 }
@@ -842,7 +844,7 @@ bool board_base::unmake()
 /*----------------------------------------------------------------------------*\
  |                               san_to_coord()                               |
 \*----------------------------------------------------------------------------*/
-move_t board_base::san_to_coord(string& san)
+Move board_base::san_to_coord(string& san)
 {
 
 /// Convert a move from Standard Algebraic Notation (SAN) to coordinate
@@ -852,7 +854,7 @@ move_t board_base::san_to_coord(string& san)
     size_t index = 0;
     int shape = -1, x1 = -1, y1 = -1, x2 = -1, y2 = -1, promo = -1;
     bool capture = false;
-    move_t m;
+    Move m;
 
     m.set_null();
     m.value = 0;
@@ -976,7 +978,7 @@ move_t board_base::san_to_coord(string& san)
     // them and fill them in now.
     if (x1 < 0 || y1 < 0)
     {
-        moveArray l;
+        MoveArray l;
         switch (shape)
         {
             case KING   : generate_king(l);   break;
@@ -987,7 +989,7 @@ move_t board_base::san_to_coord(string& san)
             case PAWN   : generate_pawn(l);   break;
         }
 
-        for(unsigned i=0;i<l.numElements;++i)
+        for(unsigned i=0;i<l.mNumElements;++i)
         {
             if ((x1 < 0 || x1 == (int) l.theArray[i].x1) &&
                 (y1 < 0 || y1 == (int) l.theArray[i].y1) &&
@@ -1036,7 +1038,7 @@ move_t board_base::san_to_coord(string& san)
 /*----------------------------------------------------------------------------*\
  |                               coord_to_san()                               |
 \*----------------------------------------------------------------------------*/
-void board_base::coord_to_san(move_t m, string& san)
+void board_base::coord_to_san(Move m, string& san)
 {
 
 /// Convert a move from coordinate notation to Standard Algebraic Notation
@@ -1089,7 +1091,7 @@ void board_base::coord_to_san(move_t m, string& san)
 		// Check whether another piece of the same shape can reach the to square
 		// If possible first try to distinguish the two by adding from file
 		// If from files are the same, then use from rank
-		moveArray l;
+		MoveArray l;
 		bool add_rank = false, add_file = false;
 		switch (shape)
 		{
@@ -1100,7 +1102,7 @@ void board_base::coord_to_san(move_t m, string& san)
 			case PAWN   : generate_pawn(l);   break;
 		}
 
-    for (unsigned i=0;i<l.numElements;++i)
+    for (unsigned i=0;i<l.mNumElements;++i)
     {
 				// We found another 'shape' that can move to the 'to' square
 				if (l.theArray[i].x1 != m.x1)
@@ -1111,7 +1113,7 @@ void board_base::coord_to_san(move_t m, string& san)
 					add_rank = true;
     }
     /*
-		for (vector<move_t>::iterator it = l.begin(); it != l.end(); it++)
+		for (vector<Move>::iterator it = l.begin(); it != l.end(); it++)
 			if ((it->x1 != m.x1 || it->y1 != m.y1) && it->x2 == m.x2 && it->y2 == m.y2)
 			{
 				// We found another 'shape' that can move to the 'to' square
@@ -1175,9 +1177,9 @@ uint64_t board_base::perft(int depth)
 /// the leaf nodes.  This may sound useless, but it makes for a good unit test
 /// and benchmark for the move generator.
 
-    //vector<move_t> l;
-    //vector<move_t>::iterator it;
-    moveArray l;
+    //vector<Move> l;
+    //vector<Move>::iterator it;
+    MoveArray l;
     uint64_t nodes = 0;
 
     // Base case.
@@ -1186,7 +1188,7 @@ uint64_t board_base::perft(int depth)
 
     // Recursive case.
     generate(l, true);
-    for (unsigned i=0;i<l.numElements;++i)
+    for (unsigned i=0;i<l.mNumElements;++i)
     {
         make(l.theArray[i]);
         nodes += perft(depth - 1);
@@ -1325,7 +1327,7 @@ void board_base::precomp_key() const
 /*----------------------------------------------------------------------------*\
  |                              generate_king()                               |
 \*----------------------------------------------------------------------------*/
-void board_base::generate_king(moveArray& l, bool only_captures)
+void board_base::generate_king(MoveArray& l, bool only_captures)
 {
 
 /// Generate the king moves.
@@ -1348,7 +1350,7 @@ void board_base::generate_king(moveArray& l, bool only_captures)
                 continue; // There's a piece in the way.
             if (check(squares_castle[ON_MOVE][side][UNATTACKED], OFF_MOVE))
                 continue; // One of the squares is being attacked.
-            move_t m;
+            Move m;
             m.x2 = (m.x1 = 4) + (side ? 2 : -2);
             m.y2 = m.y1 = ON_MOVE ? 7 : 0;
             m.value = m.promo = 0;
@@ -1360,7 +1362,7 @@ void board_base::generate_king(moveArray& l, bool only_captures)
 /*----------------------------------------------------------------------------*\
  |                              generate_queen()                              |
 \*----------------------------------------------------------------------------*/
-void board_base::generate_queen(moveArray& l, bool only_captures)
+void board_base::generate_queen(MoveArray& l, bool only_captures)
 {
 
 /// Generate the queen moves.
@@ -1377,7 +1379,7 @@ void board_base::generate_queen(moveArray& l, bool only_captures)
         {
             int loc = ROW_LOC(x, y, angle);
             int num = ROW_NUM(x, y, angle);
-            bitrow_t occ = (bitrow_t)ROW_GET(rotation[angle][COLORS], num);
+            bitrow_t occ = ROW_GET(rotation[angle][COLORS], num);
             bitrow_t r = squares_row[loc][occ];
             bitboard_t b = 0;
             ROW_SET(b, num, r);
@@ -1395,11 +1397,10 @@ void board_base::generate_queen(moveArray& l, bool only_captures)
         {
             int loc = DIAG_LOC(x, y, angle);
             int num = DIAG_NUM(x, y, angle);
-            bitrow_t occ = (bitrow_t)DIAG_GET(rotation[angle][COLORS], num);
+            bitrow_t occ = DIAG_GET(rotation[angle][COLORS], num);
             bitrow_t msk = diag_mask[num];
             bitrow_t d = squares_row[loc][occ] & msk;
-            bitboard_t b = 0;
-            DIAG_SET(b, num, d);
+            bitboard_t b = DIAG_SET(num, d);
             bitboard_t takes = b & rotation[angle][OFF_MOVE];
             insert(x, y, takes, angle, l, FRONT);
             if (!only_captures)
@@ -1414,7 +1415,7 @@ void board_base::generate_queen(moveArray& l, bool only_captures)
 /*----------------------------------------------------------------------------*\
  |                              generate_rook()                               |
 \*----------------------------------------------------------------------------*/
-void board_base::generate_rook(moveArray& l, bool only_captures)
+void board_base::generate_rook(MoveArray& l, bool only_captures)
 {
 
 /// Generate the rook moves.
@@ -1429,7 +1430,7 @@ void board_base::generate_rook(moveArray& l, bool only_captures)
         {
             int loc = ROW_LOC(x, y, angle);
             int num = ROW_NUM(x, y, angle);
-            bitrow_t occ = (bitrow_t)ROW_GET(rotation[angle][COLORS], num);
+            bitrow_t occ = ROW_GET(rotation[angle][COLORS], num);
             bitrow_t r = squares_row[loc][occ];
             bitboard_t b = 0;
             ROW_SET(b, num, r);
@@ -1447,7 +1448,7 @@ void board_base::generate_rook(moveArray& l, bool only_captures)
 /*----------------------------------------------------------------------------*\
  |                             generate_bishop()                              |
 \*----------------------------------------------------------------------------*/
-void board_base::generate_bishop(moveArray& l, bool only_captures)
+void board_base::generate_bishop(MoveArray& l, bool only_captures)
 {
 
 /// Generate the bishop moves.
@@ -1462,11 +1463,10 @@ void board_base::generate_bishop(moveArray& l, bool only_captures)
         {
             int loc = DIAG_LOC(x, y, angle);
             int num = DIAG_NUM(x, y, angle);
-            bitrow_t occ = (bitrow_t)DIAG_GET(rotation[angle][COLORS], num);
+            bitrow_t occ = DIAG_GET(rotation[angle][COLORS], num);
             bitrow_t msk = diag_mask[num];
             bitrow_t d = squares_row[loc][occ] & msk;
-            bitboard_t b = 0;
-            DIAG_SET(b, num, d);
+            bitboard_t b = DIAG_SET(num, d);
             bitboard_t takes = b & rotation[angle][OFF_MOVE];
             insert(x, y, takes, angle, l, FRONT);
             if (!only_captures)
@@ -1481,7 +1481,7 @@ void board_base::generate_bishop(moveArray& l, bool only_captures)
 /*----------------------------------------------------------------------------*\
  |                             generate_knight()                              |
 \*----------------------------------------------------------------------------*/
-void board_base::generate_knight(moveArray& l, bool only_captures)
+void board_base::generate_knight(MoveArray& l, bool only_captures)
 {
     /// Generate the knight moves.
     bitboard_t from = state.piece[state.on_move][KNIGHT];
@@ -1503,13 +1503,13 @@ void board_base::generate_knight(moveArray& l, bool only_captures)
 /*----------------------------------------------------------------------------*\
  |                              generate_pawn()                               |
 \*----------------------------------------------------------------------------*/
-void board_base::generate_pawn(moveArray& l, bool only_captures)
+void board_base::generate_pawn(MoveArray& l, bool only_captures)
 {
 
 /// Generate the pawn moves.
 
     bitboard_t b;
-    move_t m;
+    Move m;
     m.value = m.promo = 0;
 
     // For its first move, a pawn can advance two squares.
@@ -1646,7 +1646,7 @@ void board_base::precomp_row() const
             for (int dir = -1; dir <= 1; dir += 2)
                 for (int j = x + dir; j >= 0 && j <= 7; j += dir)
                 {
-                    BIT_SET(squares_row[x][occ], j, 0);
+                    BIT_SET((bitboard_t&)squares_row[x][occ], j, 0);
                     if (BIT_GET(occ, j, 0))
                         // Oops.  The sliding piece can't slide through an enemy
                         // piece.
@@ -1736,15 +1736,15 @@ int board_base::mate()
 /// move doesn't have a legal move.  The only difference: during stalemate, her
 /// king isn't attacked; during checkmate, her king is attacked.
 
-    //vector<move_t> l;
-    moveArray l;
-    //vector<move_t>::iterator it;
+    //vector<Move> l;
+    MoveArray l;
+    //vector<Move>::iterator it;
     bool escape = false;
 
     // Look for a legal move.
     generate(l);
 
-    for (unsigned i=0;i<l.numElements;++i)
+    for (unsigned i=0;i<l.mNumElements;++i)
     {
         make(l.theArray[i]);
         if (!check(state.piece[OFF_MOVE][KING], ON_MOVE))
@@ -1790,7 +1790,7 @@ bool board_base::check(bitboard_t b1, bool color) const
         {
             int loc = ROW_LOC(x, y, angle);
             int num = ROW_NUM(x, y, angle);
-            bitrow_t occ = (bitrow_t)ROW_GET(rotation[angle][COLORS], num);
+            bitrow_t occ = ROW_GET(rotation[angle][COLORS], num);
             bitrow_t r = squares_row[loc][occ];
             bitboard_t b2 = 0;
             ROW_SET(b2, num, r);
@@ -1808,11 +1808,10 @@ bool board_base::check(bitboard_t b1, bool color) const
         {
             int loc = DIAG_LOC(x, y, angle);
             int num = DIAG_NUM(x, y, angle);
-            bitrow_t occ = (bitrow_t)DIAG_GET(rotation[angle][COLORS], num);
+            bitrow_t occ = DIAG_GET(rotation[angle][COLORS], num);
             bitrow_t msk = diag_mask[num];
             bitrow_t d = squares_row[loc][occ] & msk;
-            bitboard_t b2 = 0;
-            DIAG_SET(b2, num, d);
+            bitboard_t b2 = DIAG_SET(num, d);
             b2 &= rotation[angle][color];
             b2 = rotate(b2, UNMAP, angle);
             if (b2 & (state.piece[color][QUEEN] | state.piece[color][BISHOP]))
@@ -1880,11 +1879,9 @@ bool board_base::insufficient() const
 bool board_base::three() const
 {
   /// Is the game drawn by threefold repetition?
-
-  list<bitboard_t>::const_reverse_iterator it;
   int sum = 1;
 
-    for (unsigned i=0;i<hashes.numElements;++i)
+    for (unsigned i=0;i<hashes.mNumElements;++i)
       if (hashes.hashes[i] == hash)
         sum++;
     if (sum >= 3)
@@ -1925,13 +1922,13 @@ bitboard_t board_base::rotate(bitboard_t b1, int map, int angle) const
 /*----------------------------------------------------------------------------*\
  |                                  insert()                                  |
 \*----------------------------------------------------------------------------*/
-void board_base::insert(int x, int y, bitboard_t b, int angle, moveArray& l,
+void board_base::insert(int x, int y, bitboard_t b, int angle, MoveArray& l,
                         bool pos)
 {
 
 /// Prepend or append a piece's possible moves to a list.
 
-    move_t m;
+    Move m;
     m.x1 = x;
     m.y1 = y;
     m.value = m.promo = 0;

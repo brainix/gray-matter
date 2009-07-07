@@ -22,16 +22,8 @@
 #ifndef BOARD_HEURISTIC_H
 #define BOARD_HEURISTIC_H
 
-// Default Gray Matter stuff:
-#include "config.h"
-#include "library.h"
-
-// Extra Gray Matter stuff:
 #include "board_base.h"
 #include "table.h"
-
-// Forward declarations:
-class pawn_table;
 
 /// Heuristic evaluation.
 class board_heuristic : public board_base
@@ -87,7 +79,7 @@ private:
     // of previous pawn structure evaluations.  According to my tests, this hash
     // table sustains a hit rate of around 97%.  This enables us to perform
     // sophisticated pawn structure analysis almost for free.
-    static pawn pawn_table;
+    static PawnTable pawn_table;
 
     value_t evaluate_pawns() const;
     value_t evaluate_knights() const;

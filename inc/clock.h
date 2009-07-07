@@ -28,11 +28,10 @@
 
 // C++ stuff:
 #include <string>
-#include <sstream>
 
 // Default Gray Matter stuff:
 #include "config.h"
-#include "library.h"
+//#include "library.h"
 
 // Time control styles:
 #define CONVENTIONAL    0

@@ -22,14 +22,13 @@
 #ifndef CONFIGFILE_H
 #define CONFIGFILE_H
 
-#include <iostream>
-#include <sstream>
-#include <fstream>
+//#include <iostream>
+//#include <fstream>
 #include <string>
 #include <map>
 
-#include "config.h"
-#include "library.h"
+//#include "config.h"
+//#include "library.h"
 
 using namespace std;
 

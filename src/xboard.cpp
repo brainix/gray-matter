@@ -19,10 +19,13 @@
  | this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "gray.h"
-#include "xboard.h"
+#include <algorithm>
+#include <iostream>
+#include <sstream>
 
-using namespace std;
+#include "xboard.h"
+#include "board_heuristic.h"
+#include "clock.h"
 
 /*----------------------------------------------------------------------------*\
  |                                  xboard()                                  |
@@ -159,21 +162,21 @@ void xboard::loop(search_base *s, chess_clock *c, book *o)
 /*----------------------------------------------------------------------------*\
  |                               print_output()                               |
 \*----------------------------------------------------------------------------*/
-void xboard::print_output(int ply, int value, int time, int nodes, moveArray& pv) const
+void xboard::print_output(int ply, int value, int time, int nodes, MoveArray& pv) const
 {
 
 /// Print thinking output.
 
   
     printf("%d %d %d %d", ply, value, time, nodes);
-    //for (list<move_t>::iterator it = pv.begin(); it != pv.end(); it++)
+    //for (list<Move>::iterator it = pv.begin(); it != pv.end(); it++)
     for (unsigned i=0;i<pv.size(); ++i)
     {
         printf(" ");
         print_move(pv.theArray[i], true);
         board_ptr->make(pv.theArray[i]);
     }
-    //for (list<move_t>::iterator it = pv.begin(); it != pv.end(); it++)
+    //for (list<Move>::iterator it = pv.begin(); it != pv.end(); it++)
     for (unsigned i=0;i<pv.size(); ++i)
         board_ptr->unmake();
     printf("\n");
@@ -182,7 +185,7 @@ void xboard::print_output(int ply, int value, int time, int nodes, moveArray& pv
 /*----------------------------------------------------------------------------*\
  |                               print_result()                               |
 \*----------------------------------------------------------------------------*/
-void xboard::print_result(move_t m)
+void xboard::print_result(Move m)
 {
 
 /// We've just finished thinking.  If we came up with a move, update the board
@@ -231,7 +234,7 @@ void xboard::print_resignation()
     if (ts_mode)
     {
         // This code should not be reached ??!!
-        move_t m;
+        Move m;
         m.set_null();
         test_suite_next(m);
     }
@@ -240,7 +243,7 @@ void xboard::print_resignation()
 /*----------------------------------------------------------------------------*\
  |                                print_move()                                |
 \*----------------------------------------------------------------------------*/
-void xboard::print_move(move_t m, bool san) const
+void xboard::print_move(Move m, bool san) const
 {
     if (san)
     {
@@ -283,7 +286,7 @@ void xboard::do_protover() const
     printf("feature sigint=0\n");
 
 #ifdef _MSDEV_WINDOWS
-    printf("feature myname=\"graySVN1542\"\n");
+    printf("feature myname=\"graySVN1544\"\n");
 #else
   #ifdef SVN_REV
     printf("feature myname=\"Gray1 Matter rev %s\"\n", SVN_REV);
@@ -437,7 +440,7 @@ void xboard::do_usermove()
 /// Our opponent has moved.  If the move was legal, and it didn't just end the
 /// game, and we're not in force mode, then formulate a response.
 
-    move_t m;
+    Move m;
 
     // Was the move legal?
     m.x1 = buffer[ 9] - 'a'; m.y1 = buffer[10] - '1';
@@ -534,7 +537,7 @@ void xboard::do_hint() const
 
 /// Give our opponent a hint.
 
-    move_t m = search_ptr->get_hint();
+    Move m = search_ptr->get_hint();
     if (m.is_null())
         return;
     printf("Hint: ");
@@ -643,7 +646,7 @@ void xboard::do_exit()
 \*----------------------------------------------------------------------------*/
 void xboard::do_display() const
 {
-    cout << board_ptr->to_string();
+  std::cout << board_ptr->to_string();
 }
 
 /*----------------------------------------------------------------------------*\
@@ -784,7 +787,7 @@ void xboard::do_test() {
 	}
 }
 
-void xboard::test_suite_next(move_t m) {
+void xboard::test_suite_next(Move m) {
 
 	// Check whether we did the right thing
 	if (ts_sol.size()) {
@@ -919,15 +922,15 @@ int xboard::char_to_shape(char c) const
 /*----------------------------------------------------------------------------*\
  |                                test_move()                                 |
 \*----------------------------------------------------------------------------*/
-bool xboard::test_move(move_t m)
+bool xboard::test_move(Move m)
 {
 
 /// In the current position, is the specified move legal?
 
-    moveArray l(MAX_MOVES_PER_TURN);
+    MoveArray l(MAX_MOVES_PER_TURN);
 
     board_ptr->generate(l, true);
-    for (unsigned i=0;i<l.numElements;++i)
+    for (unsigned i=0;i<l.mNumElements;++i)
         if (l.theArray[i] == m)
             return true;
     return false;

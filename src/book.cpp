@@ -21,6 +21,7 @@
 
 #include "gray.h"
 #include "book.h"
+#include "board_heuristic.h"
 
 using namespace std;
 
@@ -29,9 +30,6 @@ using namespace std;
 \*----------------------------------------------------------------------------*/
 book::book(table *t, string file_name, int n)
 {
-
-/// Constructor.
-
     ifstream stream;     // The PGN opening book file stream.
     list<string> tokens; // The token list.
 
@@ -82,8 +80,8 @@ void book::populate_games(list<string>& tokens)
 /// Based on the token list, populate the game list.
 
     list<string>::iterator it;
-    move_t move;
-    list<move_t> moves;
+    Move move;
+    list<Move> moves;
 
     for (it = tokens.begin(); it != tokens.end(); it++)
     {
@@ -111,9 +109,9 @@ void book::populate_table()
 
 /// Based on the game list, populate the transposition table.
 
-    list<list<move_t> >::iterator game;
-    list<move_t> moves;
-    list<move_t>::iterator move;
+    list<list<Move> >::iterator game;
+    list<Move> moves;
+    list<Move>::iterator move;
 
     games.sort(shuffle);
     for (game = games.begin(); game != games.end(); game++)
@@ -289,7 +287,7 @@ bool book::tokenize_symbol(istream& stream, string& token)
 /*----------------------------------------------------------------------------*\
  |                                 shuffle()                                  |
 \*----------------------------------------------------------------------------*/
-bool book::shuffle(list<move_t> l1, list<move_t> l2)
+bool book::shuffle(list<Move> l1, list<Move> l2)
 {
 
 /// Pass this method as the comparison function to l.sort() to randomize the

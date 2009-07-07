@@ -19,7 +19,12 @@
  | this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <sstream>
+#include <fstream>
+
 #include "configfile.h"
+#include "library.h"
+#include "config.h"
 
 /// Trim a string on both sides,
 /// @returns The trimmed string.

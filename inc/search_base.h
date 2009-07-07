@@ -22,21 +22,10 @@
 #ifndef SEARCH_BASE_H
 #define SEARCH_BASE_H
 
-//using namespace std;
-
 // C++ stuff:
-#include <list>
+#include <string>
 
-// Default Gray Matter stuff:
-#include "config.h"
-#include "library.h"
-
-// Extra Gray Matter stuff:
-#include "board_base.h"
-#include "board_heuristic.h"
-#include "table.h"
-#include "clock.h"
-#include "xboard.h"
+#include "move.h"
 
 // Search statuses:
 #define IDLING          0 // Idling (doing nothing)
@@ -60,14 +49,14 @@ public:
     search_base(table *t, history *h, chess_clock *c, xboard *x);
     virtual ~search_base();
     virtual search_base& operator=(const search_base& that);
-    virtual move_t get_hint() const;
+    virtual Move get_hint() const;
     virtual thread_t get_thread() const;
     virtual void set_depth(int d);
     virtual void set_output(bool o);
     virtual void move_now();
-    virtual void verify_prediction(move_t m);
+    virtual void verify_prediction(Move m);
     virtual void change(int s, const board_base &now);
-    static string status_to_string(int status);
+    static std::string status_to_string(int status);
 
 #ifdef DEBUG_SEARCH
     static string debug_pv, debug_mv, debug_pv_prefix;
@@ -82,11 +71,11 @@ protected:
     virtual bool iterate(int s) = 0;           ///< Force sub-classes to override.
     virtual void extract_pv();                 ///<
     virtual void extract_hint(int s);          ///<
-    static bool shuffle(move_t m1, move_t m2); ///<
-    static bool descend(move_t m1, move_t m2); ///<
+    static bool shuffle(Move m1, Move m2); ///<
+    static bool descend(Move m1, Move m2); ///<
 
-    moveArray pv;         ///< Principal variation.
-    move_t hint;            ///< Opponent's best move.
+    MoveArray pv;         ///< Principal variation.
+    Move hint;            ///< Opponent's best move.
     int max_depth;          ///< Maximum search depth.
     int nodes;              ///< Number of nodes searched.
     bool output;            ///< Whether to print thinking output.
