@@ -45,7 +45,7 @@ public:
     unsigned padding : 1; ///< The Evil Bit (TM).           +  1 bit
     value_t  value;       ///< MiniMax score.               + 16 bits
                           //                                = 32 bits
-    inline Move::Move()
+    inline Move()
     {
         x1 = y1 = x2 = y2 = promo = padding = value = 0;
     }
@@ -122,7 +122,7 @@ public:
   {
     return mNumElements;
   }
-  inline void MoveArray::addMove(Move& m)
+  inline void addMove(Move& m)
   {
     //WARNING!  This will cull all moves more than the array size
     theArray[mNumElements] = m;

@@ -92,11 +92,12 @@ void testing::test_perft(int depth)
 	vector<uint64_t> perft4(fen4, fen4 + sizeof(fen4) / sizeof(uint64_t));
 	perft_score.push_back(perft4);
 
+/*
 	fen.push_back("rnbqkb1r/ppppp1pp/7n/4Pp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6 0 3");
 	uint64_t fen5[] = {0,0,0,0,11139762};
 	vector<uint64_t> perft5(fen5, fen5 + sizeof(fen5) / sizeof(uint64_t));
 	perft_score.push_back(perft5);
-
+*/
 	fen.push_back("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1");
 	uint64_t fen6[] = {0,0,0,0,0,11030083,178633661};
 	vector<uint64_t> perft6(fen6, fen6 + sizeof(fen6) / sizeof(uint64_t));
