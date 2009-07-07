@@ -286,7 +286,7 @@ void xboard::do_protover() const
     printf("feature sigint=0\n");
 
 #ifdef _MSDEV_WINDOWS
-    printf("feature myname=\"graySVN1544\"\n");
+    printf("feature myname=\"graySVN1547\"\n");
 #else
   #ifdef SVN_REV
     printf("feature myname=\"Gray1 Matter rev %s\"\n", SVN_REV);
