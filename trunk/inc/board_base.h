@@ -22,82 +22,71 @@
 #ifndef BOARD_BASE_H
 #define BOARD_BASE_H
 
+#include <iostream>
+
 using namespace std;
 
-// C++ stuff:
-#include <list>
-#include <vector>
-#include <string>
-#include <sstream>
-
-// Default Gray Matter stuff:
-#include "config.h"
-#include "library.h"
-
-// Extra Gray Matter stuff:
 #include "bitboard.h"
 #include "state.h"
 #include "move.h"
 
-// Castling statuses:
-#define CAN_CASTLE      0
-#define CANT_CASTLE     1
-#define HAS_CASTLED     2
-#define CASTLE_STATS    3
-
-// Castling requirements:
-#define UNOCCUPIED      0 // Squares which mustn't be occupied.
-#define UNATTACKED      1 // Squares which mustn't be attacked.
-#define REQS            2
-
-// Game statuses:
-#define IN_PROGRESS     0 // Still in progress.
-#define STALEMATE       1 // Drawn by stalemate.
-#define INSUFFICIENT    2 // Drawn by insufficient material.
-#define THREE           3 // Drawn by threefold repetition.
-#define FIFTY           4 // Drawn by fifty move rule.
-#define CHECKMATE       5 // Checkmated.
-#define ILLEGAL         6 // Post-checkmated (king captured).
-#define GAME_STATS      7
-
-// Game phases:
-#define OPENING         0
-#define MIDGAME         1
-#define ENDGAME         2
-#define PHASES          3
-
-// Rotated BitBoard maps:
-#define MAP             0
-#define UNMAP           1
-#define MAPS            2
-
-// Rotated BitBoard angles:
-#define L45             0
-#define ZERO            1
-#define R45             2
-#define R90             3
-#define ANGLES          4
-
-// Board coordinates:
-#define X               0 // x-coordinate (file).
-#define Y               1 // y-coordinate (rank).
-#define COORDS          2
-
-// List positions:
-#define FRONT           0
-#define BACK            1
-#define POSITIONS       2
-
-/// This macro represents the color currently on move.
-#define ON_MOVE         (state.on_move)
-
-/// This macro represents the color currently off move.
-#define OFF_MOVE        (!state.on_move)
+/// A BitRow is an unsigned 8-bit integer which represents up to 8 adjacent
+/// squares: a row in a 0° BitBoard, a column in a 90° BitBoard, or a diagonal
+/// in a 45° BitBoard.
+typedef uint8_t bitrow_t;
 
 /// This class represents the board and generates moves.
 class board_base
 {
 public:
+  inline static int         BIT_IDX(int x, int y) {return ((y) << 3 | (x));}
+  inline static bitboard_t  BIT_MSK(int x, int y) {return (1ULL << BIT_IDX(x, y));}
+  inline static bool        BIT_GET(bitboard_t b, int x, int y) {return ((b) >> BIT_IDX(x, y) & 1);}
+  inline static void        BIT_CLR(bitboard_t& b, unsigned x, unsigned y) {(b) &= ~BIT_MSK(x, y);}
+  inline static void        BIT_SET(bitboard_t& b, int x, int y) {(b) |= BIT_MSK(x, y);}
+  inline static bitboard_t  BIT_MOV(bitboard_t& b, int x1, int y1, int x2, int y2) {return ((b) ^= BIT_MSK(x1, y1) | BIT_MSK(x2, y2));}
+
+  inline static int         ROW_NUM(int x,int y,int a){return ((a) == ZERO ? (y) : (x));}
+  inline static int         ROW_LOC(int x,int y,int a){return ((a) == ZERO ? (x) : 7 - (y));}
+  inline static int         ROW_IDX(int n){return (BIT_IDX(0, n));}
+  inline static bitboard_t  ROW_MSK(int n){return (0xFFULL << ROW_IDX(n));}
+  inline static bitrow_t    ROW_GET(bitboard_t b, int n){return ((bitrow_t)((b) >> ROW_IDX(n) & 0xFF));}
+  inline static bitboard_t  ROW_CLR(bitboard_t& b, int n){return ((b) &= ~ROW_MSK(n));}
+  inline static bitboard_t  ROW_SET(bitboard_t& b, int n, bitrow_t r){return ((b) |= (bitboard_t) (r) << ROW_IDX(n));}
+
+  // These macros manipulate columns in 0° rotated BitBoards and rows in 90°
+  // rotated BitBoards.
+  inline static int         COL_IDX(int n){return (BIT_IDX(n, 0));}
+  inline static bitboard_t  COL_MSK(int n){return (0x0101010101010101ULL << COL_IDX(n));}
+  inline static bitboard_t  COL_CLR(bitboard_t& b, int n){return ((b) &= ~COL_MSK(n));}
+
+  // These macros manipulate adjacent bits in 45° rotated BitBoards, which
+  // correspond to diagonals in 0° and 90° rotated BitBoards.
+  inline static int         DIAG_NUM(int x, int y, int a){return ((a) == L45 ? (x) + (y) : 7 - (x) + (y));}
+  inline static int         DIAG_LOC(int x, int y, int a){return (BIT_IDX(coord[MAP][a][x][y][X], coord[MAP][a][x][y][Y]) - diag_index[DIAG_NUM(x, y, a)]);}
+  inline static int         DIAG_LEN(int n){return (8 - abs(7 - (n)));}
+  inline static int         DIAG_IDX(int n){return (diag_index[n]);}
+  inline static bitboard_t  DIAG_MSK(int n){return ((bitboard_t) diag_mask[n] << diag_index[n]);}
+  inline static bitboard_t  DIAG_CLR(bitboard_t& b, int n) {return ((b) &= ~DIAG_MSK(n));}
+  inline static bitrow_t    DIAG_GET(bitboard_t b, int n) {return ((bitrow_t)((b) >> diag_index[n] & diag_mask[n]));}
+  inline static bitboard_t  DIAG_SET(int n, bitrow_t d){return ((bitboard_t) (d) << diag_index[n]);}
+
+  // This macro finds the first set bit in a BitBoard.
+  inline static int FST(bitboard_t b){return (find_64(b) - 1);}
+
+  // Convenient BitBoards:
+  static const bitboard_t SQUARES_CENTER           = 0x0000001818000000ULL; // 4 center squares.
+  static const bitboard_t SQUARES_EXPANDED_CENTER  = 0x00003C3C3C3C0000ULL; // 16 center squares.
+  static const bitboard_t SQUARES_PRINCIPAL_DIAG   = 0x8142241818244281ULL; // 16 principal diagonal squares.
+  static const bitboard_t SQUARES_WHITE_SIDE       = 0x00000000FFFFFFFFULL; // 32 white side squares.
+  static const bitboard_t SQUARES_BLACK_SIDE       = 0xFFFFFFFF00000000ULL; // 32 black side squares.
+  static const bitboard_t SQUARES_WHITE            = 0x55AA55AA55AA55AAULL; // 32 white squares.
+  static const bitboard_t SQUARES_BLACK            = 0xAA55AA55AA55AA55ULL; // 32 black squares.
+  static const bitboard_t SQUARES_QUEEN_SIDE       = 0x0F0F0F0F0F0F0F0FULL; // 32 queen side squares.
+  static const bitboard_t SQUARES_KING_SIDE        = 0xF0F0F0F0F0F0F0F0ULL; // 32 king side squares.
+  static const bitboard_t SQUARES_CORNER           = 0x8100000000000081ULL; // 4 corner squares.
+
+
     // These methods set information.
     board_base();
     virtual ~board_base();
@@ -120,11 +109,11 @@ public:
     virtual string to_string() const;
 
     // These methods generate, make, and take back moves.
-    virtual bool generate(moveArray& l, bool only_legal_moves = false, bool only_captures = false);
-    virtual bool make(move_t m);
+    virtual bool generate(MoveArray& l, bool only_legal_moves = false, bool only_captures = false);
+    virtual bool make(Move m);
     virtual bool unmake();
-    virtual move_t san_to_coord(string& san);
-    virtual void coord_to_san(move_t m, string& san);
+    virtual Move san_to_coord(string& san);
+    virtual void coord_to_san(Move m, string& san);
     virtual uint64_t perft(int depth);
 
 protected:
@@ -153,8 +142,7 @@ protected:
     static bitboard_t key_en_passant[8];
     static bitboard_t key_on_move;
 
-    //list<state_t> states;                           ///< Previous states.
-    stateArray_t states;
+    stateArray states;                            ///< Previous states.
     state_t state;                                  ///< Current state.
     bitBoardArray rotations[ANGLES][COLORS + 1];    ///< Previous rotated BitBoards.
     bitboard_t rotation[ANGLES][COLORS + 1];        ///< Current rotated BitBoards.
@@ -172,12 +160,12 @@ protected:
     virtual void precomp_key() const;
 
     // These methods generate moves.
-    virtual void generate_king(moveArray& l, bool only_captures = false);
-    virtual void generate_queen(moveArray& l, bool only_captures = false);
-    virtual void generate_rook(moveArray& l, bool only_captures = false);
-    virtual void generate_bishop(moveArray& l, bool only_captures = false);
-    virtual void generate_knight(moveArray& l, bool only_captures = false);
-    virtual void generate_pawn(moveArray& l, bool only_captures = false);
+    virtual void generate_king(MoveArray& l, bool only_captures = false);
+    virtual void generate_queen(MoveArray& l, bool only_captures = false);
+    virtual void generate_rook(MoveArray& l, bool only_captures = false);
+    virtual void generate_bishop(MoveArray& l, bool only_captures = false);
+    virtual void generate_knight(MoveArray& l, bool only_captures = false);
+    virtual void generate_pawn(MoveArray& l, bool only_captures = false);
     virtual void precomp_king() const;
     virtual void precomp_row() const;
     virtual void precomp_knight() const;
@@ -192,7 +180,7 @@ protected:
 
     // These methods manipulate BitBoards.
     virtual bitboard_t rotate(bitboard_t b1, int map, int angle) const;
-    virtual void insert(int x, int y, bitboard_t b, int angle, moveArray& l, 
+    virtual void insert(int x, int y, bitboard_t b, int angle, MoveArray& l, 
       bool pos);
 };
 

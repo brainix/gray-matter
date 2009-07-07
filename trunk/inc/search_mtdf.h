@@ -22,26 +22,11 @@
 #ifndef SEARCH_MTDF_H
 #define SEARCH_MTDF_H
 
-using namespace std;
-
-// Default Gray Matter stuff:
-#include "config.h"
-#include "library.h"
-
 // Extra Gray Matter stuff:
 #include "search_base.h"
-#include "board_base.h"
 #include "table.h"
 #include "clock.h"
 #include "xboard.h"
-
-// Forward declarations:
-class search_base;
-class board_base;
-class table;
-class history;
-class chess_clock;
-class xboard;
 
 /// MTD(f) move search.
 class search_mtdf : public search_base
@@ -52,10 +37,10 @@ public:
     search_mtdf& operator=(const search_mtdf& that);
 private:
     //the move arrays
-    moveArray* moveArrays;
+    MoveArray* MoveArrays;
     bool iterate(int s);  //false if we used a book move
-    //move_t mtdf(int depth, value_t guess = 0);
-    move_t minimax(int depth, value_t alpha = -INFINITY, 
+    //Move mtdf(int depth, value_t guess = 0);
+    Move minimax(int depth, value_t alpha = -INFINITY, 
                    value_t beta = +INFINITY, 
                    bool specialCase = true,
                    bool try_null_move = true);

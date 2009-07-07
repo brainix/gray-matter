@@ -20,6 +20,7 @@
  */
 
 #include "gray.h"
+#include "board_base.h"
 #include "search_mtdf.h"
 
 /*----------------------------------------------------------------------------*\
@@ -28,7 +29,7 @@
 search_mtdf::search_mtdf(table* t, history* h, chess_clock* c, xboard* x) :
 search_base(t, h, c, x)
 {
-  moveArrays = new moveArray[MAX_DEPTH];
+  MoveArrays = new MoveArray[MAX_DEPTH];
 
 /// Constructor.
 
@@ -39,7 +40,7 @@ search_base(t, h, c, x)
 \*----------------------------------------------------------------------------*/
 search_mtdf::~search_mtdf()
 {
-  delete moveArrays;
+  delete MoveArrays;
 
 /// Destructor.
 
@@ -73,7 +74,7 @@ bool search_mtdf::iterate(int state)
 /// indefinitely), thinking (on our own time), and pondering (on our opponent's
 /// time) since they're so similar.
 
-    move_t guess[2], m;
+    Move guess[2], m;
     bool strong_pondering = false;
 
     // Wait for the board, then grab the board.
@@ -98,9 +99,9 @@ bool search_mtdf::iterate(int state)
 
     /*
     //if there is only one legal move, make it
-    moveArray l;
+    MoveArray l;
     board_ptr->generate(l, true);  //legal moves only
-    if (l.numElements == 1)
+    if (l.mNumElements == 1)
     {
       extract_pv();
       extract_hint(THINKING);
@@ -197,13 +198,13 @@ bool search_mtdf::iterate(int state)
  |                                   mtdf()                                   |
 \*----------------------------------------------------------------------------*/
 /*
-move_t search_mtdf::mtdf(int depth, value_t guess)
+Move search_mtdf::mtdf(int depth, value_t guess)
 {
 
 /// From the current position, search for the best move.  This method implements
 /// the MTD(f) algorithm.
 
-    move_t m;
+    Move m;
     m.set_null();
     m.value = guess;
     value_t upper = +INFINITY, lower = -INFINITY, beta;
@@ -222,7 +223,7 @@ move_t search_mtdf::mtdf(int depth, value_t guess)
 /*----------------------------------------------------------------------------*\
  |                                 minimax()                                  |
 \*----------------------------------------------------------------------------*/
-move_t search_mtdf::minimax(int depth, value_t alpha, value_t beta, 
+Move search_mtdf::minimax(int depth, value_t alpha, value_t beta, 
                             bool specialCase, bool try_null_move)
 {
 
@@ -255,10 +256,10 @@ move_t search_mtdf::minimax(int depth, value_t alpha, value_t beta,
     int status = board_ptr->get_status(0);   // Whether the game is over.
     value_t saved_alpha = alpha;             // Saved lower bound on score.
     value_t saved_beta = beta;               // Saved upper bound on score.
-    move_t null_move;                        // The all-important null move.
-    //vector<move_t> l;                          // The move list.
-    //list<move_t>::iterator it;               // The move list's iterator.
-    move_t m;                                // The best move and score.
+    Move null_move;                        // The all-important null move.
+    //vector<Move> l;                          // The move list.
+    //list<Move>::iterator it;               // The move list's iterator.
+    Move m;                                // The best move and score.
 
     //set the special flag for deeper searches (captures, etc.)
     bool specialFlag = (specialCase && (depth <= 3))?true:false;
@@ -363,7 +364,7 @@ move_t search_mtdf::minimax(int depth, value_t alpha, value_t beta,
     */
 
     // Generate the move list.
-    if (!board_ptr->generate(moveArrays[depth], false))  //include illegal moves
+    if (!board_ptr->generate(MoveArrays[depth], false))  //include illegal moves
     {
         // There's a move in the list that captures the opponent's king, which
         // means that we're in an illegal position.
@@ -381,21 +382,21 @@ move_t search_mtdf::minimax(int depth, value_t alpha, value_t beta,
     // front of the list to score it first to hopefully cause an earlier
     // cutoff.  Otherwise, score this move according to the history
     // heuristic.
-    for (unsigned i=0;i<moveArrays[depth].numElements;++i)
+    for (unsigned i=0;i<MoveArrays[depth].mNumElements;++i)
     {
-      moveArrays[depth].theArray[i].value = 
-        moveArrays[depth].theArray[i] == m ? VALUE_KING : 
-        history_ptr->probe(whose, moveArrays[depth].theArray[i]);
+      MoveArrays[depth].theArray[i].value = 
+        MoveArrays[depth].theArray[i] == m ? VALUE_KING : 
+        history_ptr->probe(whose, MoveArrays[depth].theArray[i]);
     }
 
     // sort the move list.
-    move_t tmpMove;
-    for(unsigned i=0;i<moveArrays[depth].numElements;++i)
+    Move tmpMove;
+    for(unsigned i=0;i<MoveArrays[depth].mNumElements;++i)
     {
       unsigned bestIndex = i;
-      for (unsigned j=i;j<moveArrays[depth].numElements;++j)
+      for (unsigned j=i;j<MoveArrays[depth].mNumElements;++j)
       {
-        if (moveArrays[depth].theArray[j].value > moveArrays[depth].theArray[bestIndex].value)
+        if (MoveArrays[depth].theArray[j].value > MoveArrays[depth].theArray[bestIndex].value)
         {
           bestIndex = j;
         }
@@ -404,33 +405,33 @@ move_t search_mtdf::minimax(int depth, value_t alpha, value_t beta,
       //now we have i'th best move, put it in its place if it's not there
       if (bestIndex != i)
       {
-        tmpMove = moveArrays[depth].theArray[i];
-        moveArrays[depth].theArray[i] = moveArrays[depth].theArray[bestIndex];
-        moveArrays[depth].theArray[bestIndex] = tmpMove;
+        tmpMove = MoveArrays[depth].theArray[i];
+        MoveArrays[depth].theArray[i] = MoveArrays[depth].theArray[bestIndex];
+        MoveArrays[depth].theArray[bestIndex] = tmpMove;
       }
     }
 
     // Score each move in the list.
     m.set_null();
     m.value = -VALUE_ILLEGAL;
-    for(unsigned i=0;i<moveArrays[depth].numElements;++i)
+    for(unsigned i=0;i<MoveArrays[depth].mNumElements;++i)
     {
-        DEBUG_SEARCH_ADD_MOVE(moveArrays[depth].theArray[i]);
-        bool capture = board_ptr->make(moveArrays[depth].theArray[i]);
+        DEBUG_SEARCH_ADD_MOVE(MoveArrays[depth].theArray[i]);
+        bool capture = board_ptr->make(MoveArrays[depth].theArray[i]);
         bool check = board_ptr->check(false);
-        moveArrays[depth].theArray[i].value = -minimax(depth - 1, -beta, -alpha, (capture||check)).value;
-        DEBUG_SEARCH_DEL_MOVE(moveArrays[depth].theArray[i]);
+        MoveArrays[depth].theArray[i].value = -minimax(depth - 1, -beta, -alpha, (capture||check)).value;
+        DEBUG_SEARCH_DEL_MOVE(MoveArrays[depth].theArray[i]);
         board_ptr->unmake();
-        if (ABS(moveArrays[depth].theArray[i].value) == VALUE_ILLEGAL)
+        if (ABS(MoveArrays[depth].theArray[i].value) == VALUE_ILLEGAL)
             continue;
-        if (moveArrays[depth].theArray[i].value > m.value)
+        if (MoveArrays[depth].theArray[i].value > m.value)
         {
-          m = moveArrays[depth].theArray[i];
+          m = MoveArrays[depth].theArray[i];
           if (m.value > alpha) alpha = m.value;
-            //alpha = GREATER(alpha, (m = moveArrays[depth].theArray[i]).value);
+            //alpha = GREATER(alpha, (m = MoveArrays[depth].theArray[i]).value);
         }
         if ((beta <= alpha) || (timeout_flag))
-        //if (moveArrays[depth].theArray[i].value >= beta || timeout_flag)
+        //if (MoveArrays[depth].theArray[i].value >= beta || timeout_flag)
             break;
     }
 
@@ -477,7 +478,7 @@ move_t search_mtdf::minimax(int depth, value_t alpha, value_t beta,
         history_ptr->store(whose, m, depth);
     }
 #ifndef _MSDEV_WINDOWS
-    DEBUG_SEARCH_PRINTM(m, "max of %d children: %d.", moveArrays[depth].numElements, m.value);
+    DEBUG_SEARCH_PRINTM(m, "max of %d children: %d.", MoveArrays[depth].mNumElements, m.value);
 #endif
     return m;
 }
@@ -490,8 +491,8 @@ value_t search_mtdf::quiesce(int shallowness, value_t alpha, value_t beta)
 {
     // Local variables that pertain to the current position:
     value_t value_stand_pat;       //
-    vector<move_t> l;                // The move list.
-    //list<move_t>::iterator it;     // The move list's iterator.
+    vector<Move> l;                // The move list.
+    //list<Move>::iterator it;     // The move list's iterator.
 
     // Increment the number of positions searched.
     nodes++;
@@ -506,18 +507,18 @@ value_t search_mtdf::quiesce(int shallowness, value_t alpha, value_t beta)
         return value_stand_pat;
 
     // Generate the move list.
-    board_ptr->generate(moveArrays[shallowness], false, true);
+    board_ptr->generate(MoveArrays[shallowness], false, true);
 
     // Score each move in the list.
-    for (unsigned i=0;i<moveArrays[shallowness].numElements;++i)
+    for (unsigned i=0;i<MoveArrays[shallowness].mNumElements;++i)
     {
         board_ptr->make(l[i]);
-        moveArrays[shallowness].theArray[i].value = -quiesce(shallowness + 1, -beta, -alpha);
+        MoveArrays[shallowness].theArray[i].value = -quiesce(shallowness + 1, -beta, -alpha);
         board_ptr->unmake();
-        if (moveArrays[shallowness].theArray[i].value > alpha)
-            alpha = moveArrays[shallowness].theArray[i].value;
-        if (moveArrays[shallowness].theArray[i].value >= beta)
-            return moveArrays[shallowness].theArray[i].value;
+        if (MoveArrays[shallowness].theArray[i].value > alpha)
+            alpha = MoveArrays[shallowness].theArray[i].value;
+        if (MoveArrays[shallowness].theArray[i].value >= beta)
+            return MoveArrays[shallowness].theArray[i].value;
         if (timeout_flag)
             return beta;
     }

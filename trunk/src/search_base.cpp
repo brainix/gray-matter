@@ -20,6 +20,8 @@
  */
 
 #include "search_base.h"
+#include "board_heuristic.h"
+#include "clock.h"
 
 using namespace std;
 
@@ -103,7 +105,7 @@ class search_base& search_base::operator=(const search_base& that)
 /*----------------------------------------------------------------------------*\
  |                                 get_hint()                                 |
 \*----------------------------------------------------------------------------*/
-move_t search_base::get_hint() const
+Move search_base::get_hint() const
 {
     return hint;
 }
@@ -153,7 +155,7 @@ void search_base::move_now()
 /*----------------------------------------------------------------------------*\
  |                            verify_prediction()                             |
 \*----------------------------------------------------------------------------*/
-void search_base::verify_prediction(move_t m)
+void search_base::verify_prediction(Move m)
 {
     correct_guesses += hint == m;
     total_guesses++;
@@ -301,7 +303,7 @@ void search_base::extract_pv()
 
 /// Extract the principal variation from the transposition table.
 
-    move_t m;
+    Move m;
     pv.clear();
 
     for (table_ptr->probe(board_ptr->get_hash(), 0, EXACT, &m); 
@@ -336,7 +338,7 @@ void search_base::extract_hint(int s)
         // We're thinking.  That means that the principal variation's 1st move
         // is what we think that we should do, and its 2nd move is what we think
         // that our opponent should do.
-        //list<move_t>::iterator it = pv.begin();
+        //list<Move>::iterator it = pv.begin();
         hint = pv.theArray[1]; //*++it;
     }
     else if (s == PONDERING && !(pv.size() == 0))
@@ -352,7 +354,7 @@ void search_base::extract_hint(int s)
 /*----------------------------------------------------------------------------*\
  |                                 shuffle()                                  |
 \*----------------------------------------------------------------------------*/
-bool search_base::shuffle(move_t m1, move_t m2)
+bool search_base::shuffle(Move m1, Move m2)
 {
 
 /// Pass this method as the comparison function to l.sort() to randomize the
@@ -368,7 +370,7 @@ bool search_base::shuffle(move_t m1, move_t m2)
 /*----------------------------------------------------------------------------*\
  |                                 descend()                                  |
 \*----------------------------------------------------------------------------*/
-bool search_base::descend(move_t m1, move_t m2)
+bool search_base::descend(Move m1, Move m2)
 {
 
 /// Pass this method as the comparison function to l.sort() to sort the move

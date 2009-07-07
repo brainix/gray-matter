@@ -426,10 +426,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\inc\inttypes.h"
-				>
-			</File>
-			<File
 				RelativePath=".\inc\library.h"
 				>
 			</File>
@@ -455,10 +451,6 @@
 			</File>
 			<File
 				RelativePath=".\inc\state.h"
-				>
-			</File>
-			<File
-				RelativePath=".\inc\stdint.h"
 				>
 			</File>
 			<File

@@ -131,3 +131,58 @@
 
 // Infinity:
 #define INFINITY    32767 // Well, close enough.  ;-)
+
+// Castling statuses:
+#define CAN_CASTLE      0
+#define CANT_CASTLE     1
+#define HAS_CASTLED     2
+#define CASTLE_STATS    3
+
+// Castling requirements:
+#define UNOCCUPIED      0 // Squares which mustn't be occupied.
+#define UNATTACKED      1 // Squares which mustn't be attacked.
+#define REQS            2
+
+// Game statuses:
+#define IN_PROGRESS     0 // Still in progress.
+#define STALEMATE       1 // Drawn by stalemate.
+#define INSUFFICIENT    2 // Drawn by insufficient material.
+#define THREE           3 // Drawn by threefold repetition.
+#define FIFTY           4 // Drawn by fifty move rule.
+#define CHECKMATE       5 // Checkmated.
+#define ILLEGAL         6 // Post-checkmated (king captured).
+#define GAME_STATS      7
+
+// Game phases:
+#define OPENING         0
+#define MIDGAME         1
+#define ENDGAME         2
+#define PHASES          3
+
+// Rotated BitBoard maps:
+#define MAP             0
+#define UNMAP           1
+#define MAPS            2
+
+// Rotated BitBoard angles:
+#define L45             0
+#define ZERO            1
+#define R45             2
+#define R90             3
+#define ANGLES          4
+
+// Board coordinates:
+#define X               0 // x-coordinate (file).
+#define Y               1 // y-coordinate (rank).
+#define COORDS          2
+
+// List positions:
+#define FRONT           0
+#define BACK            1
+#define POSITIONS       2
+
+/// This macro represents the color currently on move.
+#define ON_MOVE         (state.on_move)
+
+/// This macro represents the color currently off move.
+#define OFF_MOVE        (!state.on_move)

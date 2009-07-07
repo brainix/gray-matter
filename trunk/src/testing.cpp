@@ -19,8 +19,13 @@
  | this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "testing.h"
 #include <time.h>
+#include <iostream>
+#include <vector>
+
+#include "testing.h"
+#include "board_base.h"
+#include "board_heuristic.h"
 
 using namespace std;
 
@@ -144,9 +149,9 @@ void testing::test_perft(int depth)
 		      cout << "  Computed perft = " << pval << endl;
 		      cout << "Repeating perft() with more details:" << endl;
 
-          moveArray l(MAX_MOVES_PER_TURN);
+          MoveArray l(MAX_MOVES_PER_TURN);
 		      board_ptr->generate(l, true);
-          for (unsigned i=0;i<l.numElements;++i)
+          for (unsigned i=0;i<l.mNumElements;++i)
           {
 		        board_ptr->coord_to_san(l.theArray[i], move_str);
 		        board_ptr->make(l.theArray[i]);

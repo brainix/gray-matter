@@ -24,34 +24,14 @@
 
 #define _REENTRANT
 
-// C stuff:
-#include <ctype.h>
 #ifdef _MSDEV_WINDOWS
 #include "MSDEVinttypes.h"
-//#pragma warning(disable:4146)
 #else
 #include <inttypes.h>
 #endif
-#include <limits.h>
-#include <signal.h>
-#include <stddef.h>
 #ifndef _MSDEV_WINDOWS
 #include <stdint.h>
 #endif
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-//#include <strings.h>
-//#include <sys/time.h>
-#include <time.h>
-//#include <unistd.h>
-
-// C++ stuff:
-#include <algorithm>
-#include <fstream>
-#include <iostream>
-#include <list>
-#include <string>
 
 // Convenience macros:
 #define LESSER(j, k)                ((j) < (k) ? (j) : (k))                       // The lesser of two numbers.

@@ -19,8 +19,11 @@
  | this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <sstream>
+
 #include "gray.h"
 #include "clock.h"
+#include "library.h"
 
 /*----------------------------------------------------------------------------*\
  |                               chess_clock()                                |

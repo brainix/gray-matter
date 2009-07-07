@@ -54,7 +54,7 @@ typedef struct xpos_slot
     bitboard_t hash;                   ///< Zobrist hash key.           64 bits
     uint16_t depth;                    ///< Depth of our search.     +  16 bits
     uint16_t type;                     ///< Upper, exact, or lower.  +  16 bits
-    move_t move;                       ///< Best move and score.     +  32 bits
+    Move move;                       ///< Best move and score.     +  32 bits
 } xpos_slot_t;                         //                            = 128 bits
 #pragma pack()
 
@@ -64,9 +64,57 @@ class table
 public:
     table(int mb = XPOS_TABLE_MB);
     ~table();
-    void clear();
-    bool probe(bitboard_t hash, int depth, int type, move_t *move_ptr);
-    void store(bitboard_t hash, int depth, int type, move_t move);
+    inline void clear()
+    {
+      for (int policy = DEEP; policy <= FRESH; policy++)
+        for (uint64_t index = 0; index < slots; index++)
+        {
+            data[policy][index].hash = 0;
+            data[policy][index].depth = 0;
+            data[policy][index].type = USELESS;
+            data[policy][index].move.set_null();
+            data[policy][index].move.value = 0;
+        }
+    }
+
+    inline bool probe(bitboard_t hash, int depth, int type, Move *move_ptr)
+    {
+      uint64_t index = hash % slots;
+      for (int policy = DEEP; policy <= FRESH; policy++)
+          if (data[policy][index].hash == hash)
+          {
+              *move_ptr = data[policy][index].move;
+              if (data[policy][index].depth >= depth &&
+                  (data[policy][index].type == BOOK  ||
+                   data[policy][index].type == EXACT ||
+                   data[policy][index].type == type))
+              {
+                  successful++;
+                  total++;
+                  return true;
+              }
+              semi_successful++;
+              total++;
+              return false;
+          }
+      move_ptr->set_null();
+      move_ptr->value = 0;
+      unsuccessful++;
+      total++;
+      return false;
+    }
+    inline void store(bitboard_t hash, int depth, int type, Move move)
+    {
+      uint64_t index = hash % slots;
+      for (int policy = DEEP; policy <= FRESH; policy++)
+        if (depth >= data[policy][index].depth || policy == FRESH)
+        {
+            data[policy][index].hash = hash;
+            data[policy][index].depth = depth;
+            data[policy][index].type = type;
+            data[policy][index].move = move;
+        }
+    }
 private:
     uint64_t slots;      ///< The number of slots.
     xpos_slot_t **data;  ///< The slots themselves.
@@ -87,8 +135,8 @@ public:
     history();
     ~history();
     void clear();
-    int probe(bool color, move_t m) const;
-    void store(bool color, move_t m, int depth);
+    int probe(bool color, Move m) const;
+    void store(bool color, Move m, int depth);
 private:
     int *****data;
 };
@@ -107,14 +155,36 @@ typedef struct pawn_slot
 #pragma pack()
 
 /// Pawn table.
-class pawn
+class PawnTable
 {
 public:
-    pawn(int mb = PAWN_TABLE_MB);
-    ~pawn();
+    PawnTable(int mb = PAWN_TABLE_MB);
+    ~PawnTable();
     void clear();
-    bool probe(bitboard_t hash, value_t *value_ptr);
-    void store(bitboard_t hash, value_t value);
+    inline bool probe(bitboard_t hash, value_t *value_ptr)
+    {
+       /// Given the pawn structure described in hash, check the pawn table to see if
+       /// we've evaluated it before.  If so, then save its previous evaluation to the
+       /// memory pointed to by value_ptr and return success.  If not, then return
+       /// failure.
+
+       uint64_t index = hash % slots;
+       bool found = data[index].hash == hash;
+       *value_ptr = found ? data[index].value : 0;
+       successful += found ? 1 : 0;
+       unsuccessful += found ? 0 : 1;
+       total++;
+       return found;
+    }
+    inline void store(bitboard_t hash, value_t value)
+    {
+      /// We've just evaluated the pawn structure described in hash.  Save its
+      /// evaluation in the pawn table for future probes.
+
+      uint64_t index = hash % slots;
+      data[index].hash = hash;
+      data[index].value = value;
+    }
 private:
     uint64_t slots;    ///< The number of slots.
     pawn_slot_t *data; ///< The slots themselves.

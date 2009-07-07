@@ -72,8 +72,6 @@ typedef pthread_cond_t cond_t;       // Condition variable.
 #else
 #include <stdint.h>
 #endif
-#include <stdio.h>
-#include <stdlib.h>
 #include <windows.h>
 
 // Win32 data types:
