@@ -22,6 +22,7 @@
 #include <time.h>
 #include <iostream>
 #include <vector>
+#include <iterator>
 
 #include "testing.h"
 #include "board_base.h"
