@@ -90,7 +90,11 @@ void book::populate_games(list<string>& tokens)
         {
             if (moves.empty())
                 continue;
-            games.push_back(moves);
+            //randomly put game on front or back
+            if (rand() % 1)
+              games.push_back(moves);
+            else
+              games.push_front(moves);
             moves.clear();
             board_ptr->set_board();
             continue;
@@ -113,7 +117,6 @@ void book::populate_table()
     list<Move> moves;
     list<Move>::iterator move;
 
-    games.sort(shuffle);
     for (game = games.begin(); game != games.end(); game++)
     {
         moves = *game;
@@ -282,20 +285,4 @@ bool book::tokenize_symbol(istream& stream, string& token)
             token += c;
     token += '\0';
     return token.length() >= 2;
-}
-
-/*----------------------------------------------------------------------------*\
- |                                 shuffle()                                  |
-\*----------------------------------------------------------------------------*/
-bool book::shuffle(list<Move> l1, list<Move> l2)
-{
-
-/// Pass this method as the comparison function to l.sort() to randomize the
-/// game list.  This is a magnificent hack.
-///
-/// Note: This hack wouldn't work for O(n²) list sort algorithms.  But if your
-/// STL's list sort algorithm is O(n²), then you don't deserve for this hack to
-/// work anyway.
-
-    return rand() & 1;
 }

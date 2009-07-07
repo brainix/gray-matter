@@ -352,34 +352,6 @@ void search_base::extract_hint(int s)
 }
 
 /*----------------------------------------------------------------------------*\
- |                                 shuffle()                                  |
-\*----------------------------------------------------------------------------*/
-bool search_base::shuffle(Move m1, Move m2)
-{
-
-/// Pass this method as the comparison function to l.sort() to randomize the
-/// move list.  This is a magnificent hack.
-///
-/// Note: This hack wouldn't work for O(n²) list sort algorithms.  But if your
-/// STL's list sort algorithm is O(n²), then you don't deserve for this hack to
-/// work anyway.
-
-    return rand() & 1;
-}
-
-/*----------------------------------------------------------------------------*\
- |                                 descend()                                  |
-\*----------------------------------------------------------------------------*/
-bool search_base::descend(Move m1, Move m2)
-{
-
-/// Pass this method as the comparison function to l.sort() to sort the move
-/// list from highest to lowest by score.
-
-    return m1.value > m2.value;
-}
-
-/*----------------------------------------------------------------------------*\
  |                             status_to_string()                             |
 \*----------------------------------------------------------------------------*/
 string search_base::status_to_string(int status)

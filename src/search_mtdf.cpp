@@ -262,7 +262,7 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
     Move m;                                // The best move and score.
 
     //set the special flag for deeper searches (captures, etc.)
-    bool specialFlag = (specialCase && (depth <= 3))?true:false;
+    bool specialFlag = (specialCase && (depth <= SPECIAL_SEARCH_DEPTH))?true:false;
 
     // Increment the number of positions searched.
     nodes++;
@@ -431,7 +431,6 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
             //alpha = GREATER(alpha, (m = MoveArrays[depth].theArray[i]).value);
         }
         if ((beta <= alpha) || (timeout_flag))
-        //if (MoveArrays[depth].theArray[i].value >= beta || timeout_flag)
             break;
     }
 

@@ -81,9 +81,6 @@ private:
     bool tokenize_punctuation(std::istream& stream, std::string& token);
     bool tokenize_glyph(std::istream& stream, std::string& token);
     bool tokenize_symbol(std::istream& stream, std::string& token);
-
-    // The following method is the most magnificent hack of my life.
-    static bool shuffle(std::list<Move> l1, std::list<Move> l2);
 };
 
 #endif

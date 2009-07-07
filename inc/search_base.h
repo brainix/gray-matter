@@ -71,8 +71,6 @@ protected:
     virtual bool iterate(int s) = 0;           ///< Force sub-classes to override.
     virtual void extract_pv();                 ///<
     virtual void extract_hint(int s);          ///<
-    static bool shuffle(Move m1, Move m2); ///<
-    static bool descend(Move m1, Move m2); ///<
 
     MoveArray pv;         ///< Principal variation.
     Move hint;            ///< Opponent's best move.
