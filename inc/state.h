@@ -58,7 +58,10 @@ public:
 		mNumElements++;
 	}
 	inline void clear(){mNumElements = 0;}
-	inline void removeLast(){mNumElements--;}
+	inline state_t removeLast()
+  {
+    return states[--mNumElements];
+  }
 };
 
 /// This macro assembles a BitBoard that contains all of a color's pieces.
