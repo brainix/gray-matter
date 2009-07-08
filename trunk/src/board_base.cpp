@@ -811,8 +811,7 @@ end:
 \*----------------------------------------------------------------------------*/
 bool board_base::unmake()
 {
-
-/// Take back the last move.
+  /// Take back the last move.
 
     //if (states.empty())
     if (states.size() == 0)
@@ -821,10 +820,7 @@ bool board_base::unmake()
         return false;
 
     // Restore the previous state, rotated BitBoards, and hash keys.
-    //state = states.back();
-    state = states.states[states.mNumElements-1];
-    //states.pop_back();
-    states.removeLast();
+    state = states.removeLast();
     for (int angle = R90; angle >= L45; angle--)
         for (int color = COLORS; color >= WHITE; color--)
         {
@@ -832,12 +828,8 @@ bool board_base::unmake()
               rotations[angle][color].hashes[rotations[angle][color].mNumElements-1];
             rotations[angle][color].removeLast();
         }
-    hashes.removeLast();
-    hash = hashes.hashes[hashes.mNumElements];
-
-    pawn_hashes.removeLast();
-    pawn_hash = pawn_hashes.hashes[pawn_hashes.mNumElements];
-
+    hash = hashes.removeLast();
+    pawn_hash = pawn_hashes.removeLast();
     return true;
 }
 

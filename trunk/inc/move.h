@@ -130,9 +130,9 @@ public:
       mNumElements++;
   }
 
-  inline void removeLast()
+  inline Move removeLast()
   {
-    mNumElements--;
+    return theArray[--mNumElements];
   }
 
   inline void clear()

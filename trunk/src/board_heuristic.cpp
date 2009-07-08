@@ -229,8 +229,8 @@ value_t board_heuristic::evaluate_pawns() const
 
     // If we've already evaluated this pawn structure, return our previous
     // evaluation.
-    if (pawn_table.probe(pawn_hash, &sum))
-        goto end;
+    //if (pawn_table.probe(pawn_hash, &sum))
+      //  goto end;
 
     for (int color = WHITE; color <= BLACK; color++)
     {
@@ -285,8 +285,8 @@ value_t board_heuristic::evaluate_pawns() const
         sum += sign * value_pawn_isolated[num_isolated];
     }
 
-    pawn_table.store(pawn_hash, sum);
-end:
+    //pawn_table.store(pawn_hash, sum);
+    //end:
     sign = !OFF_MOVE ? 1 : -1;
     return sign * sum;
 }
@@ -296,9 +296,6 @@ end:
 \*----------------------------------------------------------------------------*/
 value_t board_heuristic::evaluate_knights() const
 {
-
-///
-
     value_t sign, sum = 0;
     bitboard_t b;
 

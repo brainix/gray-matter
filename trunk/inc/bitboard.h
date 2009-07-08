@@ -67,9 +67,9 @@ public:
   {
     mNumElements = 0;
   }
-	inline void removeLast()
+	inline bitboard_t removeLast()
   {
-    mNumElements--;
+    return hashes[--mNumElements];
   }
   inline bitBoardArray& operator=(const bitBoardArray& rhs)
   {
