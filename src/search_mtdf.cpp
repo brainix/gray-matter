@@ -138,7 +138,7 @@ bool search_mtdf::iterate(int state)
     // Perform iterative deepening until the alarm has sounded (if we're
     // thinking), our opponent has moved (if we're analyzing or pondering), or
     // we've reached the maximum depth (in any case).
-    for (int depth = SPECIAL_SEARCH_DEPTH+1; depth <= max_depth; depth++)
+    for (int depth = SPECIAL_SEARCH_DEPTH+1; depth < (max_depth); depth++)
     {
         DEBUG_SEARCH_INIT(1, "");
         //guess[depth & 1] = mtdf(depth, guess[depth & 1].value);
@@ -156,12 +156,17 @@ bool search_mtdf::iterate(int state)
         m = guess[depth & 1];
 
         extract_pv();
+        if (pv.size() == 0) 
+          pv.addMove(m);
+
         if (output)
         {
+          value_t value = m.value;
+          if (state == PONDERING)
+            value *= -1; //switch sign if we are the opponent
             if (strong_pondering)
                 pv.addMove(hint);
-            xboard_ptr->print_output(depth,
-                m.value,  //always score from "our" perspective
+            xboard_ptr->print_output(depth,value   ,           
                 clock_ptr->get_elapsed(), nodes, pv);
             if (strong_pondering)
               pv.removeLast();
@@ -249,16 +254,13 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
 ///
 /// This method also implements null move pruning.
 
-
     // Local variables that pertain to the current position:
     bool whose = board_ptr->get_whose();     // The color on move.
     bitboard_t hash = board_ptr->get_hash(); // This position's hash.
     int status = board_ptr->get_status(0);   // Whether the game is over.
     value_t saved_alpha = alpha;             // Saved lower bound on score.
     value_t saved_beta = beta;               // Saved upper bound on score.
-    Move null_move;                        // The all-important null move.
-    //vector<Move> l;                          // The move list.
-    //list<Move>::iterator it;               // The move list's iterator.
+    //Move null_move;                        // The all-important null move.
     Move m;                                // The best move and score.
 
     //set the special flag for deeper searches (captures, etc.)
@@ -294,8 +296,8 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
     // If we've already sufficiently examined this position, then return the
     // best move from our previous search.  Otherwise, if we can, reduce the
     // size of our AlphaBeta window.
-    if (table_ptr->probe(hash, depth, EXACT, &m))
-        return m;
+    //if (table_ptr->probe(hash, depth, EXACT, &m))
+      //  return m;
     
 //  if (table_ptr->probe(hash, depth, UPPER, &m))
 //  {
@@ -382,11 +384,16 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
     // front of the list to score it first to hopefully cause an earlier
     // cutoff.  Otherwise, score this move according to the history
     // heuristic.
+
+    //get all stored values for positions if known
     for (unsigned i=0;i<MoveArrays[depth].mNumElements;++i)
     {
-      MoveArrays[depth].theArray[i].value = 
-        MoveArrays[depth].theArray[i] == m ? VALUE_KING : 
-        history_ptr->probe(whose, MoveArrays[depth].theArray[i]);
+      if (table_ptr->probe(hash,depth,EXACT,&m))
+      {
+        MoveArrays[depth].theArray[i].value = m.value;
+      }
+      else
+        MoveArrays[depth].theArray[i].value = 0; //unknown position
     }
 
     // sort the move list.
@@ -428,7 +435,6 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
         {
           m = MoveArrays[depth].theArray[i];
           if (m.value > alpha) alpha = m.value;
-            //alpha = GREATER(alpha, (m = MoveArrays[depth].theArray[i]).value);
         }
         if ((beta <= alpha) || (timeout_flag))
             break;
@@ -465,17 +471,18 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
     if (!timeout_flag)
     {
         // Nope, the results are complete and reliable.  Save them for progeny.
-        if (m.value > saved_alpha && m.value < saved_beta)
+        //if (m.value > saved_alpha && m.value < saved_beta)
             // When doing MTD(f) zero-window searches, our move search should
             // never return an exact score.  I've only accounted for this in the
             // interest of robustness.
-            table_ptr->store(hash, depth, EXACT, m);
-        else if (m.value <= saved_alpha)
-            table_ptr->store(hash, depth, UPPER, m);
-        else // m.value >= saved_beta
-            table_ptr->store(hash, depth, LOWER, m);
-        history_ptr->store(whose, m, depth);
+        //    table_ptr->store(hash, depth, EXACT, m);
+        //else if (m.value <= saved_alpha)
+        //    table_ptr->store(hash, depth, UPPER, m);
+        //else // m.value >= saved_beta
+       table_ptr->store(hash, depth, EXACT, m);
+       //history_ptr->store(whose, m, depth);
     }
+ 
 #ifndef _MSDEV_WINDOWS
     DEBUG_SEARCH_PRINTM(m, "max of %d children: %d.", MoveArrays[depth].mNumElements, m.value);
 #endif
