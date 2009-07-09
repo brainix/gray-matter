@@ -45,7 +45,7 @@
 // All of the default values in this section must be >= 1.
 #define XPOS_TABLE_MB      128  // Transposition table size (in MB).
 #define PAWN_TABLE_MB       16  // Pawn table size (in MB).
-#define BOOK_MOVES          20  // Num moves to read per game in book (in plies).
+#define BOOK_MOVES          10  // Num moves to read per game in book (in plies).
 #define OVERHEAD             1  // Move search overhead (in centiseconds).
 #define MAX_DEPTH           32  // Maximum search depth (in plies).
 #define MAX_MOVES_PER_TURN 200  // only X moves per turn analyzed

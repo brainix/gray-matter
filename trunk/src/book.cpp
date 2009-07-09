@@ -124,7 +124,7 @@ void book::populate_table()
         {
             if (board_ptr->get_num_moves() >= num_moves)
                 break;
-            table_ptr->store(board_ptr->get_hash(), MAX_DEPTH, BOOK, *move);
+            //table_ptr->store(board_ptr->get_hash(), MAX_DEPTH, BOOK, *move);
             board_ptr->make(*move);
         }
         board_ptr->set_board();
