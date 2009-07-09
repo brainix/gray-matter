@@ -36,7 +36,6 @@ public:
     ~search_mtdf();
     search_mtdf& operator=(const search_mtdf& that);
 private:
-    //the move arrays
     MoveArray* MoveArrays;
     bool iterate(int s);  //false if we used a book move
     //Move mtdf(int depth, value_t guess = 0);
