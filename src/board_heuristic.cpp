@@ -229,64 +229,64 @@ value_t board_heuristic::evaluate_pawns() const
 
     // If we've already evaluated this pawn structure, return our previous
     // evaluation.
-    //if (pawn_table.probe(pawn_hash, &sum))
-      //  goto end;
-
-    for (int color = WHITE; color <= BLACK; color++)
+    if (!pawn_table.probe(pawn_hash, &sum))
     {
-        sign = !color ? 1 : -1;
-        bitboard_t b = state.piece[color][PAWN];
-        int num_isolated = 0;
-        for (int n, x, y; (n = FST(b)) != -1; BIT_CLR(b, x, y))
-        {
-            x = n & 0x7;
-            y = n >> 3;
 
-            // Reward material.
-            sum += sign * value_material[PAWN];
+      for (int color = WHITE; color <= BLACK; color++)
+      {
+          sign = !color ? 1 : -1;
+          bitboard_t b = state.piece[color][PAWN];
+          int num_isolated = 0;
+          for (int n, x, y; (n = FST(b)) != -1; BIT_CLR(b, x, y))
+          {
+              x = n & 0x7;
+              y = n >> 3;
 
-            // Penalize bad position or reward good position.
-            if (color == WHITE)
-              sum += sign * value_position[PAWN][x][y];
-            else
-              sum += sign * value_position[PAWN][7-x][7-y];
+              // Reward material.
+              sum += sign * value_material[PAWN];
 
-            //
-            bitboard_t pawns = state.piece[color][PAWN];
-            bitboard_t pawns_on_col = pawns & COL_MSK(y);
-            int num_on_col = count_64(pawns_on_col);
+              // Penalize bad position or reward good position.
+              if (color == WHITE)
+                sum += sign * value_position[PAWN][x][y];
+              else
+                sum += sign * value_position[PAWN][7-x][7-y];
 
-            if (!(pawns & squares_adj_cols[x]))
-            {
-                // Count isolated pawns and penalize isolated doubled pawns.
-                num_isolated++;
-                sum += sign * value_pawn_doubled_isolated[num_on_col];
-            }
-            else
-            {
-                // TODO: Penalize weak pawns.
+              //
+              bitboard_t pawns = state.piece[color][PAWN];
+              bitboard_t pawns_on_col = pawns & COL_MSK(y);
+              int num_on_col = count_64(pawns_on_col);
 
-                // Penalize doubled pawns.
-                sum += sign * value_pawn_doubled[num_on_col];
+              if (!(pawns & squares_adj_cols[x]))
+              {
+                  // Count isolated pawns and penalize isolated doubled pawns.
+                  num_isolated++;
+                  sum += sign * value_pawn_doubled_isolated[num_on_col];
+              }
+              else
+              {
+                  // TODO: Penalize weak pawns.
 
-                // Reward pawn duos.
-                if (pawns & squares_pawn_duo[x][y])
-                    sum += sign * value_pawn_duo;
-            }
+                  // Penalize doubled pawns.
+                  sum += sign * value_pawn_doubled[num_on_col];
 
-            // Reward passed pawns.
-            if (!(state.piece[!color][PAWN] & squares_pawn_potential_attacks[!color][x][y]))
-                sum += sign * value_pawn_passed[!color ? y : 7 - y];
+                  // Reward pawn duos.
+                  if (pawns & squares_pawn_duo[x][y])
+                      sum += sign * value_pawn_duo;
+              }
 
-            // TODO: Reward hidden passed pawns.
-        }
+              // Reward passed pawns.
+              if (!(state.piece[!color][PAWN] & squares_pawn_potential_attacks[!color][x][y]))
+                  sum += sign * value_pawn_passed[!color ? y : 7 - y];
 
-        // Penalize isolated pawns.
-        sum += sign * value_pawn_isolated[num_isolated];
+              // TODO: Reward hidden passed pawns.
+          }
+
+          // Penalize isolated pawns.
+          sum += sign * value_pawn_isolated[num_isolated];
+      }
+      pawn_table.store(pawn_hash, sum);
     }
 
-    //pawn_table.store(pawn_hash, sum);
-    //end:
     sign = !OFF_MOVE ? 1 : -1;
     return sign * sum;
 }

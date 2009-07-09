@@ -97,7 +97,6 @@ bool search_mtdf::iterate(int state)
           useBook(false);  //we're out of book
     }
 
-    /*
     //if there is only one legal move, make it
     MoveArray l;
     board_ptr->generate(l, true);  //legal moves only
@@ -110,7 +109,7 @@ bool search_mtdf::iterate(int state)
       xboard_ptr->print_result(m);
       return false;
     }
-    */
+
 
     // Note the start time.  If we're to think, then set the alarm.  (If we're
     // to analyze or ponder, then there's no need to set the alarm.  We analyze
@@ -151,13 +150,15 @@ bool search_mtdf::iterate(int state)
             break;
         m = guess[depth & 1];
 
-        extract_pv();
+        //extract_pv();
+        pv.addMove(m);
         if (output)
         {
             if (strong_pondering)
                 pv.addMove(hint);
+            //please try to always score from "our" perspective
             xboard_ptr->print_output(depth,
-                m.value,  //always score from "our" perspective
+                board_ptr->get_whose()? -m.value: m.value,
                 clock_ptr->get_elapsed(), nodes, pv);
             if (strong_pondering)
               pv.removeLast();
@@ -248,7 +249,7 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
     // Local variables that pertain to the current position:
     bool whose = board_ptr->get_whose();     // The color on move.
     bitboard_t hash = board_ptr->get_hash(); // This position's hash.
-    int status = board_ptr->get_status(0);   // Whether the game is over.
+    int status = board_ptr->get_status(false);   // Whether the game is over.
     value_t saved_alpha = alpha;             // Saved lower bound on score.
     value_t saved_beta = beta;               // Saved upper bound on score.
     Move null_move;                        // The all-important null move.

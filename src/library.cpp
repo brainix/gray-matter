@@ -324,7 +324,7 @@ DWORD timer_handler(LPVOID arg)
 
     // Set the alarm.
     LARGE_INTEGER rel_time;
-    rel_time.QuadPart = -(((long long)(dTimeInterval))*10000000/1000);
+    rel_time.QuadPart = -(((long long)(dTimeInterval))*10000);
     //rel_time.QuadPart = -100000000L; // about one second
     //rel_time.QuadPart = -(msec * 10000L); // We negate this value to denote
                                               // time in 100 nanosecond

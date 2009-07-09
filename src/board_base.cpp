@@ -663,135 +663,134 @@ bool board_base::make(Move m)
     pawn_hashes.addHash(pawn_hash);
 
     // If we're making a null move, then skip a bunch of this nonsense.
-    if (m.is_null())
-        goto end;
-
-    // Move the piece.  And if the move is a capture, then remove the captured
-    // piece.
-    for (int shape = PAWN; shape <= KING; shape++)
+    if (!m.is_null())
     {
-        // Move the piece.
-        if (BIT_GET(state.piece[ON_MOVE][shape], m.x1, m.y1))
-        {
-            BIT_CLR(state.piece[ON_MOVE][shape], m.x1, m.y1);
-            BIT_SET(state.piece[ON_MOVE][shape], m.x2, m.y2);
-            for (int angle = L45; angle <= R90; angle++)
-            {
-                BIT_CLR(rotation[angle][ON_MOVE], coord[MAP][angle][m.x1][m.y1][X], coord[MAP][angle][m.x1][m.y1][Y]);
-                BIT_SET(rotation[angle][ON_MOVE], coord[MAP][angle][m.x2][m.y2][X], coord[MAP][angle][m.x2][m.y2][Y]);
-            }
-            hash ^= key_piece[ON_MOVE][shape][m.x1][m.y1];
-            hash ^= key_piece[ON_MOVE][shape][m.x2][m.y2];
-            if (shape == PAWN)
-            {
-                pawn_hash ^= key_piece[ON_MOVE][shape][m.x1][m.y1];
-                pawn_hash ^= key_piece[ON_MOVE][shape][m.x2][m.y2];
+      // Move the piece.  And if the move is a capture, then remove the captured
+      // piece.
+      for (int shape = PAWN; shape <= KING; shape++)
+      {
+          // Move the piece.
+          if (BIT_GET(state.piece[ON_MOVE][shape], m.x1, m.y1))
+          {
+              BIT_CLR(state.piece[ON_MOVE][shape], m.x1, m.y1);
+              BIT_SET(state.piece[ON_MOVE][shape], m.x2, m.y2);
+              for (int angle = L45; angle <= R90; angle++)
+              {
+                  BIT_CLR(rotation[angle][ON_MOVE], coord[MAP][angle][m.x1][m.y1][X], coord[MAP][angle][m.x1][m.y1][Y]);
+                  BIT_SET(rotation[angle][ON_MOVE], coord[MAP][angle][m.x2][m.y2][X], coord[MAP][angle][m.x2][m.y2][Y]);
+              }
+              hash ^= key_piece[ON_MOVE][shape][m.x1][m.y1];
+              hash ^= key_piece[ON_MOVE][shape][m.x2][m.y2];
+              if (shape == PAWN)
+              {
+                  pawn_hash ^= key_piece[ON_MOVE][shape][m.x1][m.y1];
+                  pawn_hash ^= key_piece[ON_MOVE][shape][m.x2][m.y2];
 
-                // We're moving a pawn.  Reset the 50 move rule counter.
-                state.fifty = -1;
-            }
-        }
+                  // We're moving a pawn.  Reset the 50 move rule counter.
+                  state.fifty = -1;
+              }
+          }
 
-        // If the move is a capture, then remove the captured piece.
-        if (BIT_GET(state.piece[OFF_MOVE][shape], m.x2, m.y2))
-        {
-            BIT_CLR(state.piece[OFF_MOVE][shape], m.x2, m.y2);
-            for (int angle = L45; angle <= R90; angle++)
-                BIT_CLR(rotation[angle][OFF_MOVE], coord[MAP][angle][m.x2][m.y2][X], coord[MAP][angle][m.x2][m.y2][Y]);
-            hash ^= key_piece[OFF_MOVE][shape][m.x2][m.y2];
-            if (shape == PAWN)
-                pawn_hash ^= key_piece[OFF_MOVE][shape][m.x2][m.y2];
+          // If the move is a capture, then remove the captured piece.
+          if (BIT_GET(state.piece[OFF_MOVE][shape], m.x2, m.y2))
+          {
+              BIT_CLR(state.piece[OFF_MOVE][shape], m.x2, m.y2);
+              for (int angle = L45; angle <= R90; angle++)
+                  BIT_CLR(rotation[angle][OFF_MOVE], coord[MAP][angle][m.x2][m.y2][X], coord[MAP][angle][m.x2][m.y2][Y]);
+              hash ^= key_piece[OFF_MOVE][shape][m.x2][m.y2];
+              if (shape == PAWN)
+                  pawn_hash ^= key_piece[OFF_MOVE][shape][m.x2][m.y2];
 
-            // The move is a capture.  Reset the 50 move rule counter.
-            state.fifty = -1;
-            retValue = true;
-        }
+              // The move is a capture.  Reset the 50 move rule counter.
+              state.fifty = -1;
+              retValue = true;
+          }
+      }
+
+      // If we're moving a piece from one of our rooks' initial positions, then
+      // make sure that we're no longer marked able to castle on that rook's side.
+      if ((m.x1 == 0 || m.x1 == 7) && (m.y1 == (ON_MOVE ? 7 : 0)) && state.castle[ON_MOVE][m.x1 == 7] == CAN_CASTLE)
+      {
+          state.castle[ON_MOVE][m.x1 == 7] = CANT_CASTLE;
+          hash ^= key_castle[ON_MOVE][m.x1 == 7][CANT_CASTLE];
+      }
+
+      // If we're moving a piece to one of our opponent's rooks' initial
+      // positions, then make sure that our opponent is no longer marked able to
+      // castle on that rook's side.
+      if ((m.x2 == 0 || m.x2 == 7) && (m.y2 == (OFF_MOVE ? 7 : 0)) && state.castle[OFF_MOVE][m.x2 == 7] == CAN_CASTLE)
+      {
+          state.castle[OFF_MOVE][m.x2 == 7] = CANT_CASTLE;
+          hash ^= key_castle[OFF_MOVE][m.x1 == 7][CANT_CASTLE];
+      }
+
+      // If we're moving the king:
+      if (BIT_GET(state.piece[ON_MOVE][KING], m.x2, m.y2))
+      {
+          // If we're castling, then move the rook and mark us having
+          // castled on this side.
+          if (abs((int) m.x1 - (int) m.x2) == 2)
+          {
+              BIT_CLR(state.piece[ON_MOVE][ROOK], m.x2 == 6 ? 7 : 0, ON_MOVE ? 7 : 0);
+              BIT_SET(state.piece[ON_MOVE][ROOK], m.x2 == 6 ? 5 : 3, ON_MOVE ? 7 : 0);
+              for (int angle = L45; angle <= R90; angle++)
+              {
+                  BIT_CLR(rotation[angle][ON_MOVE], coord[MAP][angle][m.x2 == 6 ? 7 : 0][ON_MOVE ? 7 : 0][X], coord[MAP][angle][m.x2 == 6 ? 7 : 0][ON_MOVE ? 7 : 0][Y]);
+                  BIT_SET(rotation[angle][ON_MOVE], coord[MAP][angle][m.x2 == 6 ? 5 : 3][ON_MOVE ? 7 : 0][X], coord[MAP][angle][m.x2 == 6 ? 5 : 3][ON_MOVE ? 7 : 0][Y]);
+              }
+              hash ^= key_piece[ON_MOVE][ROOK][m.x2 == 6 ? 7 : 0][ON_MOVE ? 7 : 0];
+              hash ^= key_piece[ON_MOVE][ROOK][m.x2 == 6 ? 5 : 3][ON_MOVE ? 7 : 0];
+              state.castle[ON_MOVE][m.x2 == 6] = HAS_CASTLED;
+              hash ^= key_castle[ON_MOVE][m.x2 == 6][HAS_CASTLED];
+          }
+
+          // At this point, we've moved the king.  Make sure that we're no longer
+          // marked able to castle on either side.
+          for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
+              if (state.castle[ON_MOVE][side] == CAN_CASTLE)
+              {
+                  state.castle[ON_MOVE][side] = CANT_CASTLE;
+                  hash ^= key_castle[ON_MOVE][side][CANT_CASTLE];
+              }
+      }
+
+      // If we're moving a pawn:
+      hash ^= state.en_passant == -1 ? key_no_en_passant : key_en_passant[state.en_passant];
+      pawn_hash ^= state.en_passant == -1 ? key_no_en_passant : key_en_passant[state.en_passant];
+      if (BIT_GET(state.piece[ON_MOVE][PAWN], m.x2, m.y2))
+      {
+          // If we're promoting a pawn, then replace it with the promotion piece.
+          if (m.promo)
+          {
+              BIT_CLR(state.piece[ON_MOVE][PAWN], m.x2, m.y2);
+              BIT_SET(state.piece[ON_MOVE][m.promo], m.x2, m.y2);
+              hash ^= key_piece[ON_MOVE][PAWN][m.x2][m.y2];
+              hash ^= key_piece[ON_MOVE][m.promo][m.x2][m.y2];
+              pawn_hash ^= key_piece[ON_MOVE][PAWN][m.x2][m.y2];
+          }
+
+          // If we're performing an en passant, then remove the captured pawn.
+          if ((int) m.x2 == state.en_passant && m.y2 == (ON_MOVE ? 2 : 5))
+          {
+              BIT_CLR(state.piece[OFF_MOVE][PAWN], m.x2, m.y1);
+              for (int angle = L45; angle <= R90; angle++)
+                  BIT_CLR(rotation[angle][OFF_MOVE], coord[MAP][angle][m.x2][m.y1][X], coord[MAP][angle][m.x2][m.y1][Y]);
+              hash ^= key_piece[OFF_MOVE][PAWN][m.x2][m.y1];
+              pawn_hash ^= key_piece[OFF_MOVE][PAWN][m.x2][m.y1];
+		  }
+
+          // If we're advancing a pawn two squares, then mark it vulnerable to en
+          // passant.
+          state.en_passant = abs((int) m.y1 - (int) m.y2) == 2 ? (int) m.x1 : -1;
+      }
+      else
+          // Oops.  We're not moving a pawn.  Mark no pawn vulnerable to en
+          // passant.
+          state.en_passant = -1;
+      hash ^= state.en_passant == -1 ? key_no_en_passant : key_en_passant[state.en_passant];
+      pawn_hash ^= state.en_passant == -1 ? key_no_en_passant : key_en_passant[state.en_passant];
     }
 
-    // If we're moving a piece from one of our rooks' initial positions, then
-    // make sure that we're no longer marked able to castle on that rook's side.
-    if ((m.x1 == 0 || m.x1 == 7) && (m.y1 == (ON_MOVE ? 7 : 0)) && state.castle[ON_MOVE][m.x1 == 7] == CAN_CASTLE)
-    {
-        state.castle[ON_MOVE][m.x1 == 7] = CANT_CASTLE;
-        hash ^= key_castle[ON_MOVE][m.x1 == 7][CANT_CASTLE];
-    }
-
-    // If we're moving a piece to one of our opponent's rooks' initial
-    // positions, then make sure that our opponent is no longer marked able to
-    // castle on that rook's side.
-    if ((m.x2 == 0 || m.x2 == 7) && (m.y2 == (OFF_MOVE ? 7 : 0)) && state.castle[OFF_MOVE][m.x2 == 7] == CAN_CASTLE)
-    {
-        state.castle[OFF_MOVE][m.x2 == 7] = CANT_CASTLE;
-        hash ^= key_castle[OFF_MOVE][m.x1 == 7][CANT_CASTLE];
-    }
-
-    // If we're moving the king:
-    if (BIT_GET(state.piece[ON_MOVE][KING], m.x2, m.y2))
-    {
-        // If we're castling, then move the rook and mark us having
-        // castled on this side.
-        if (abs((int) m.x1 - (int) m.x2) == 2)
-        {
-            BIT_CLR(state.piece[ON_MOVE][ROOK], m.x2 == 6 ? 7 : 0, ON_MOVE ? 7 : 0);
-            BIT_SET(state.piece[ON_MOVE][ROOK], m.x2 == 6 ? 5 : 3, ON_MOVE ? 7 : 0);
-            for (int angle = L45; angle <= R90; angle++)
-            {
-                BIT_CLR(rotation[angle][ON_MOVE], coord[MAP][angle][m.x2 == 6 ? 7 : 0][ON_MOVE ? 7 : 0][X], coord[MAP][angle][m.x2 == 6 ? 7 : 0][ON_MOVE ? 7 : 0][Y]);
-                BIT_SET(rotation[angle][ON_MOVE], coord[MAP][angle][m.x2 == 6 ? 5 : 3][ON_MOVE ? 7 : 0][X], coord[MAP][angle][m.x2 == 6 ? 5 : 3][ON_MOVE ? 7 : 0][Y]);
-            }
-            hash ^= key_piece[ON_MOVE][ROOK][m.x2 == 6 ? 7 : 0][ON_MOVE ? 7 : 0];
-            hash ^= key_piece[ON_MOVE][ROOK][m.x2 == 6 ? 5 : 3][ON_MOVE ? 7 : 0];
-            state.castle[ON_MOVE][m.x2 == 6] = HAS_CASTLED;
-            hash ^= key_castle[ON_MOVE][m.x2 == 6][HAS_CASTLED];
-        }
-
-        // At this point, we've moved the king.  Make sure that we're no longer
-        // marked able to castle on either side.
-        for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
-            if (state.castle[ON_MOVE][side] == CAN_CASTLE)
-            {
-                state.castle[ON_MOVE][side] = CANT_CASTLE;
-                hash ^= key_castle[ON_MOVE][side][CANT_CASTLE];
-            }
-    }
-
-    // If we're moving a pawn:
-    hash ^= state.en_passant == -1 ? key_no_en_passant : key_en_passant[state.en_passant];
-    pawn_hash ^= state.en_passant == -1 ? key_no_en_passant : key_en_passant[state.en_passant];
-    if (BIT_GET(state.piece[ON_MOVE][PAWN], m.x2, m.y2))
-    {
-        // If we're promoting a pawn, then replace it with the promotion piece.
-        if (m.promo)
-        {
-            BIT_CLR(state.piece[ON_MOVE][PAWN], m.x2, m.y2);
-            BIT_SET(state.piece[ON_MOVE][m.promo], m.x2, m.y2);
-            hash ^= key_piece[ON_MOVE][PAWN][m.x2][m.y2];
-            hash ^= key_piece[ON_MOVE][m.promo][m.x2][m.y2];
-            pawn_hash ^= key_piece[ON_MOVE][PAWN][m.x2][m.y2];
-        }
-
-        // If we're performing an en passant, then remove the captured pawn.
-        if ((int) m.x2 == state.en_passant && m.y2 == (ON_MOVE ? 2 : 5))
-        {
-            BIT_CLR(state.piece[OFF_MOVE][PAWN], m.x2, m.y1);
-            for (int angle = L45; angle <= R90; angle++)
-                BIT_CLR(rotation[angle][OFF_MOVE], coord[MAP][angle][m.x2][m.y1][X], coord[MAP][angle][m.x2][m.y1][Y]);
-            hash ^= key_piece[OFF_MOVE][PAWN][m.x2][m.y1];
-            pawn_hash ^= key_piece[OFF_MOVE][PAWN][m.x2][m.y1];
-		}
-
-        // If we're advancing a pawn two squares, then mark it vulnerable to en
-        // passant.
-        state.en_passant = abs((int) m.y1 - (int) m.y2) == 2 ? (int) m.x1 : -1;
-    }
-    else
-        // Oops.  We're not moving a pawn.  Mark no pawn vulnerable to en
-        // passant.
-        state.en_passant = -1;
-    hash ^= state.en_passant == -1 ? key_no_en_passant : key_en_passant[state.en_passant];
-    pawn_hash ^= state.en_passant == -1 ? key_no_en_passant : key_en_passant[state.en_passant];
-
-end:
     // Set the other color on move.
     state.on_move = !state.on_move;
     hash ^= key_on_move;
@@ -1728,9 +1727,7 @@ int board_base::mate()
 /// move doesn't have a legal move.  The only difference: during stalemate, her
 /// king isn't attacked; during checkmate, her king is attacked.
 
-    //vector<Move> l;
     MoveArray l;
-    //vector<Move>::iterator it;
     bool escape = false;
 
     // Look for a legal move.

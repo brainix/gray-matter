@@ -169,14 +169,12 @@ void xboard::print_output(int ply, int value, int time, int nodes, MoveArray& pv
 
   
     printf("%d %d %d %d", ply, value, time, nodes);
-    //for (list<Move>::iterator it = pv.begin(); it != pv.end(); it++)
     for (unsigned i=0;i<pv.size(); ++i)
     {
         printf(" ");
         print_move(pv.theArray[i], true);
         board_ptr->make(pv.theArray[i]);
     }
-    //for (list<Move>::iterator it = pv.begin(); it != pv.end(); it++)
     for (unsigned i=0;i<pv.size(); ++i)
         board_ptr->unmake();
     printf("\n");
@@ -286,7 +284,7 @@ void xboard::do_protover() const
     printf("feature sigint=0\n");
 
 #ifdef _MSDEV_WINDOWS
-    printf("feature myname=\"graySVN1547\"\n");
+    printf("feature myname=\"graySVN1549\"\n");
 #else
   #ifdef SVN_REV
     printf("feature myname=\"Gray1 Matter rev %s\"\n", SVN_REV);
