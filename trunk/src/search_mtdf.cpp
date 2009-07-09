@@ -97,6 +97,7 @@ bool search_mtdf::iterate(int state)
           useBook(false);  //we're out of book
     }
 
+    /*
     //if there is only one legal move, make it
     MoveArray l;
     board_ptr->generate(l, true);  //legal moves only
@@ -109,7 +110,7 @@ bool search_mtdf::iterate(int state)
       xboard_ptr->print_result(m);
       return false;
     }
-
+    */
 
     // Note the start time.  If we're to think, then set the alarm.  (If we're
     // to analyze or ponder, then there's no need to set the alarm.  We analyze
@@ -143,22 +144,24 @@ bool search_mtdf::iterate(int state)
         //guess[depth & 1] = mtdf(depth, guess[depth & 1].value);
         guess[depth & 1] = minimax(depth);
 
-        if ((timeout_flag) || (guess[depth & 1].is_null()))
+        //if (guess[depth&1].value == VALUE_CONTEMPT)
+        //{
+        //  m = guess[depth&1];
+        //}
+        if (timeout_flag) // || guess[depth & 1].is_null())
             // Oops.  Either the alarm has interrupted this iteration (and the
             // results are incomplete and unreliable), or there's no legal move
             // in this position (and the game must've ended).
             break;
         m = guess[depth & 1];
 
-        //extract_pv();
-        pv.addMove(m);
+        extract_pv();
         if (output)
         {
             if (strong_pondering)
                 pv.addMove(hint);
-            //please try to always score from "our" perspective
             xboard_ptr->print_output(depth,
-                board_ptr->get_whose()? -m.value: m.value,
+                m.value,  //always score from "our" perspective
                 clock_ptr->get_elapsed(), nodes, pv);
             if (strong_pondering)
               pv.removeLast();
@@ -246,13 +249,16 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
 ///
 /// This method also implements null move pruning.
 
+
     // Local variables that pertain to the current position:
     bool whose = board_ptr->get_whose();     // The color on move.
     bitboard_t hash = board_ptr->get_hash(); // This position's hash.
-    int status = board_ptr->get_status(false);   // Whether the game is over.
+    int status = board_ptr->get_status(0);   // Whether the game is over.
     value_t saved_alpha = alpha;             // Saved lower bound on score.
     value_t saved_beta = beta;               // Saved upper bound on score.
     Move null_move;                        // The all-important null move.
+    //vector<Move> l;                          // The move list.
+    //list<Move>::iterator it;               // The move list's iterator.
     Move m;                                // The best move and score.
 
     //set the special flag for deeper searches (captures, etc.)
@@ -277,7 +283,7 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
             case ILLEGAL      : m.value = -VALUE_ILLEGAL;      break;
         }
                       
-        //table_ptr->store(hash, depth, EXACT, m);  //mark this spot in hash table
+        table_ptr->store(hash, depth, EXACT, m);  //mark this spot in hash table
 
 #ifndef _MSDEV_WINDOWS
         DEBUG_SEARCH_PRINT("terminal state %d.", status);
@@ -288,8 +294,8 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
     // If we've already sufficiently examined this position, then return the
     // best move from our previous search.  Otherwise, if we can, reduce the
     // size of our AlphaBeta window.
-    //if (table_ptr->probe(hash, depth, EXACT, &m))
-      //  return m;
+    if (table_ptr->probe(hash, depth, EXACT, &m))
+        return m;
     
 //  if (table_ptr->probe(hash, depth, UPPER, &m))
 //  {
@@ -319,8 +325,8 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
     {
         m.set_null();
         m.value = -board_ptr->evaluate();
-        //if (depth == SPECIAL_SEARCH_DEPTH)
-          //table_ptr->store(hash, depth, EXACT, m);
+        if (depth == SPECIAL_SEARCH_DEPTH)
+          table_ptr->store(hash, depth, EXACT, m);
 #ifndef _MSDEV_WINDOWS
         DEBUG_SEARCH_PRINT("evaluate() says %d.", board_ptr->get_whose() ? -m.value : m.value);
 #endif
@@ -331,15 +337,15 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
     {
         m.set_null();
         m.value = -board_ptr->evaluate();
-        //if (depth == 0)
-          //table_ptr->store(hash, depth, EXACT, m);
+        if (depth == 0)
+          table_ptr->store(hash, depth, EXACT, m);
 #ifndef _MSDEV_WINDOWS
         DEBUG_SEARCH_PRINT("evaluate() says %d.", board_ptr->get_whose() ? -m.value : m.value);
 #endif
         return m;
     }
 
-    /*  //currently just makes things worse
+    /*
     // Perform null move pruning.
     if (try_null_move && !board_ptr->zugzwang())
       {
@@ -421,8 +427,8 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
         if (MoveArrays[depth].theArray[i].value > m.value)
         {
           m = MoveArrays[depth].theArray[i];
-          if (m.value > alpha) 
-            alpha = m.value;
+          if (m.value > alpha) alpha = m.value;
+            //alpha = GREATER(alpha, (m = MoveArrays[depth].theArray[i]).value);
         }
         if ((beta <= alpha) || (timeout_flag))
             break;
@@ -447,8 +453,8 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
         else
             // We're in check; the position is a checkmate; we've lost.
             m.value = -(VALUE_KING);
-        //if (!timeout_flag)
-          //  table_ptr->store(hash, depth, EXACT, m);
+        if (!timeout_flag)
+            table_ptr->store(hash, depth, EXACT, m);
 #ifndef _MSDEV_WINDOWS
         DEBUG_SEARCH_PRINT("%s.", m.value == VALUE_ILLEGAL ? "Illegal position" : m.value == VALUE_CONTEMPT ? "Stalemated" : "Checkmated");
 #endif
@@ -459,15 +465,15 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
     if (!timeout_flag)
     {
         // Nope, the results are complete and reliable.  Save them for progeny.
-        //if (m.value > saved_alpha && m.value < saved_beta)
+        if (m.value > saved_alpha && m.value < saved_beta)
             // When doing MTD(f) zero-window searches, our move search should
             // never return an exact score.  I've only accounted for this in the
             // interest of robustness.
-          //  table_ptr->store(hash, depth, EXACT, m);
-        //else if (m.value <= saved_alpha)
-          //  table_ptr->store(hash, depth, UPPER, m);
-        //else // m.value >= saved_beta
-          //  table_ptr->store(hash, depth, LOWER, m);
+            table_ptr->store(hash, depth, EXACT, m);
+        else if (m.value <= saved_alpha)
+            table_ptr->store(hash, depth, UPPER, m);
+        else // m.value >= saved_beta
+            table_ptr->store(hash, depth, LOWER, m);
         history_ptr->store(whose, m, depth);
     }
 #ifndef _MSDEV_WINDOWS
