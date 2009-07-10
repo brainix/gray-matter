@@ -190,6 +190,8 @@ void xboard::print_result(Move m)
     // Did we come up with a move?
     if (m.is_null())
     {
+      if (m.value == VALUE_CONTEMPT)
+        draw = true;
         // No.  :'(  Give up.
         print_resignation();
         return;
@@ -223,7 +225,7 @@ void xboard::print_resignation()
 /// We've determined our situation to be hopeless.  If our opponent had offered
 /// a draw before, accept it now.  Otherwise, resign.
 
-    printf("%s\n", draw ? "offer draw" : "resign");
+    printf("%s\n", draw ? "draw" : "resign");
 
     // In TestSuite mode, continue processing TestSuite
     if (ts_mode)
@@ -281,7 +283,7 @@ void xboard::do_protover() const
     printf("feature sigint=0\n");
 
 #ifdef _MSDEV_WINDOWS
-    printf("feature myname=\"graySVN1550\"\n");
+    printf("feature myname=\"graySVN1554\"\n");
 #else
   #ifdef SVN_REV
     printf("feature myname=\"Gray1 Matter rev %s\"\n", SVN_REV);

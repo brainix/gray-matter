@@ -1731,12 +1731,10 @@ int board_base::mate()
 /// move doesn't have a legal move.  The only difference: during stalemate, her
 /// king isn't attacked; during checkmate, her king is attacked.
 
-    //vector<Move> l;
     MoveArray l;
-    //vector<Move>::iterator it;
     bool escape = false;
 
-    // Look for a legal move.
+    // Look for a move (not necessarily a legal one)
     generate(l);
 
     for (unsigned i=0;i<l.mNumElements;++i)

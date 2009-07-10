@@ -158,7 +158,7 @@ bool search_mtdf::iterate(int state)
           value_t value = m.value;
             if (strong_pondering)
                 pv.addMove(hint);
-            xboard_ptr->print_output(depth+SPECIAL_SEARCH_DEPTH,value   ,           
+            xboard_ptr->print_output(depth,value,           
                 clock_ptr->get_elapsed(), nodes, pv);
             if (strong_pondering)
               pv.removeLast();
@@ -344,7 +344,7 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
       null_move.set_null();
       DEBUG_SEARCH_ADD_MOVE(null_move);
       board_ptr->make(null_move);
-      null_move = minimax(depth - R, -beta, -alpha, false, false);
+      null_move = minimax(depth + R, -beta, -alpha, false, false);
       DEBUG_SEARCH_DEL_MOVE(null_move);
       board_ptr->unmake();
       if (-null_move.value >= beta)
