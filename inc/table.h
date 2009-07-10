@@ -30,11 +30,6 @@
 #include "bitboard.h"
 #include "move.h"
 
-// Transposition table entry replacement policies:
-#define DEEP        0 // Replace if same depth or deeper.
-#define FRESH       1 // Replace always.
-#define POLICIES    2
-
 // Transposition table entry types:
 #define USELESS     0 // Useless.
 #define BOOK        1 // Prescribed by the opening book.
@@ -66,28 +61,26 @@ public:
     ~table();
     inline void clear()
     {
-      for (int policy = DEEP; policy <= FRESH; policy++)
         for (uint64_t index = 0; index < slots; index++)
         {
-            data[policy][index].hash = 0;
-            data[policy][index].depth = 0;
-            data[policy][index].type = USELESS;
-            data[policy][index].move.set_null();
-            data[policy][index].move.value = 0;
+            data[index].hash = 0;
+            data[index].depth = MAX_DEPTH;
+            data[index].type = USELESS;
+            data[index].move.set_null();
+            data[index].move.value = 0;
         }
     }
 
     inline bool probe(bitboard_t hash, int depth, int type, Move *move_ptr)
     {
       uint64_t index = hash % slots;
-      for (int policy = DEEP; policy <= FRESH; policy++)
-          if (data[policy][index].hash == hash)
+          if (data[index].hash == hash)
           {
-              *move_ptr = data[policy][index].move;
-              if (data[policy][index].depth >= depth &&
-                  (data[policy][index].type == BOOK  ||
-                   data[policy][index].type == EXACT ||
-                   data[policy][index].type == type))
+              *move_ptr = data[index].move;
+              if (data[index].depth < depth &&
+                  (data[index].type == BOOK  ||
+                   data[index].type == EXACT ||
+                   data[index].type == type))
               {
                   successful++;
                   total++;
@@ -106,18 +99,17 @@ public:
     inline void store(bitboard_t hash, int depth, int type, Move move)
     {
       uint64_t index = hash % slots;
-      for (int policy = DEEP; policy <= FRESH; policy++)
-        if (depth >= data[policy][index].depth || policy == FRESH)
+        if (depth <= data[index].depth)
         {
-            data[policy][index].hash = hash;
-            data[policy][index].depth = depth;
-            data[policy][index].type = type;
-            data[policy][index].move = move;
+            data[index].hash = hash;
+            data[index].depth = depth;
+            data[index].type = type;
+            data[index].move = move;
         }
     }
 private:
     uint64_t slots;      ///< The number of slots.
-    xpos_slot_t **data;  ///< The slots themselves.
+    xpos_slot_t *data;   ///< The slots themselves.
     int successful;      ///< The number of successful queries.
     int semi_successful; ///< The number of semi-successful queries.
     int unsuccessful;    ///< The number of unsuccessful queries;
