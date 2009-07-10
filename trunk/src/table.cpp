@@ -32,11 +32,9 @@ table::table(int mb)
 
     try
     {
-        if ((slots = mb * MB / POLICIES / sizeof(xpos_slot_t)) == 0)
+        if ((slots = mb * MB / sizeof(xpos_slot_t)) == 0)
             throw;
-        data = new xpos_slot_t*[POLICIES];
-        for (int policy = DEEP; policy <= FRESH; policy++)
-            data[policy] = new xpos_slot_t[(size_t)slots];
+        data = new xpos_slot_t[(size_t)slots];
     }
     catch (...)
     {
@@ -55,11 +53,6 @@ table::table(int mb)
 \*----------------------------------------------------------------------------*/
 table::~table()
 {
-
-/// Destructor.
-
-    for (int policy = DEEP; policy <= FRESH; policy++)
-        delete[] data[policy];
     delete[] data;
 }
 

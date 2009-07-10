@@ -138,16 +138,13 @@ bool search_mtdf::iterate(int state)
     // Perform iterative deepening until the alarm has sounded (if we're
     // thinking), our opponent has moved (if we're analyzing or pondering), or
     // we've reached the maximum depth (in any case).
-    for (int depth = SPECIAL_SEARCH_DEPTH+1; depth < (max_depth); depth++)
+    for (int depth = 1; depth < (MAX_DEPTH-SPECIAL_SEARCH_DEPTH); depth++)
     {
+        set_depth(depth);  //max max depth to search for this iteration
         DEBUG_SEARCH_INIT(1, "");
         //guess[depth & 1] = mtdf(depth, guess[depth & 1].value);
-        guess[depth & 1] = minimax(depth);
+        guess[depth & 1] = minimax(1);
 
-        //if (guess[depth&1].value == VALUE_CONTEMPT)
-        //{
-        //  m = guess[depth&1];
-        //}
         if (timeout_flag) // || guess[depth & 1].is_null())
             // Oops.  Either the alarm has interrupted this iteration (and the
             // results are incomplete and unreliable), or there's no legal move
@@ -161,7 +158,7 @@ bool search_mtdf::iterate(int state)
           value_t value = m.value;
             if (strong_pondering)
                 pv.addMove(hint);
-            xboard_ptr->print_output(depth,value   ,           
+            xboard_ptr->print_output(depth+SPECIAL_SEARCH_DEPTH,value   ,           
                 clock_ptr->get_elapsed(), nodes, pv);
             if (strong_pondering)
               pv.removeLast();
@@ -259,7 +256,7 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
     Move m;                                // The best move and score.
 
     //set the special flag for deeper searches (captures, etc.)
-    bool specialFlag = (specialCase && (depth <= SPECIAL_SEARCH_DEPTH))?true:false;
+    bool specialFlag = (specialCase && (depth >= (max_depth-SPECIAL_SEARCH_DEPTH)))?true:false;
 
     // Increment the number of positions searched.
     nodes++;
@@ -279,6 +276,8 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
             case CHECKMATE    : m.value = -VALUE_KING;         break;
             case ILLEGAL      : m.value = -VALUE_ILLEGAL;      break;
         }
+        table_ptr->store(hash, depth, EXACT, m);
+
 #ifndef _MSDEV_WINDOWS
         DEBUG_SEARCH_PRINT("terminal state %d.", status);
 #endif
@@ -314,7 +313,7 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
     // we have to do is apply the static evaluator.
     //numbers less than SPECIAL_SEARCH_DEPTH indicate special conditions
     //ie. we're exploring check moves and captures lines
-    if ((depth <= SPECIAL_SEARCH_DEPTH) && (!specialFlag))  //uninteresting leaf node
+    if ((depth > max_depth) && (!specialFlag))  //uninteresting leaf node
     {
         m.set_null();
         m.value = -board_ptr->evaluate();
@@ -326,7 +325,7 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
         return m;
     }
 
-    if (depth <= 0) //leaf node in any case
+    if (depth > (max_depth+SPECIAL_SEARCH_DEPTH)) //leaf node in any case
     {
         m.set_null();
         m.value = -board_ptr->evaluate();
@@ -412,7 +411,7 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
         DEBUG_SEARCH_ADD_MOVE(MoveArrays[depth].theArray[i]);
         bool capture = board_ptr->make(MoveArrays[depth].theArray[i]);
         bool check = board_ptr->check(false);
-        MoveArrays[depth].theArray[i].value = -minimax(depth - 1, -beta, -alpha, (capture||check)).value;
+        MoveArrays[depth].theArray[i].value = -minimax(depth + 1, -beta, -alpha, (capture||check)).value;
         DEBUG_SEARCH_DEL_MOVE(MoveArrays[depth].theArray[i]);
         board_ptr->unmake();
         if (ABS(MoveArrays[depth].theArray[i].value) == VALUE_ILLEGAL)
