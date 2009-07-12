@@ -77,7 +77,9 @@ public:
           if (data[index].hash == hash)
           {
               *move_ptr = data[index].move;
-              if (data[index].depth < depth &&
+              //if the data in the table is valid for this depth
+              //just return the move
+              if (data[index].depth >= depth &&
                   (data[index].type == BOOK  ||
                    data[index].type == EXACT ||
                    data[index].type == type))
@@ -99,7 +101,7 @@ public:
     inline void store(bitboard_t hash, int depth, int type, Move move)
     {
       uint64_t index = hash % slots;
-        if (depth <= data[index].depth)
+        if (depth > data[index].depth)
         {
             data[index].hash = hash;
             data[index].depth = depth;
