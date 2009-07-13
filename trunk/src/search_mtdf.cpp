@@ -153,9 +153,15 @@ bool search_mtdf::iterate(int state)
         m = guess[depth & 1];
 
         extract_pv();
+
+        if (pv.size() == 0)
+          pv.addMove(m);
+
         if (output)
         {
-          value_t value = m.value;
+            value_t value = m.value;
+            if (state == PONDERING)
+              value *= -1;  //always score from our real perspective
             if (strong_pondering)
                 pv.addMove(hint);
             xboard_ptr->print_output(depth,value,           
@@ -288,7 +294,7 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
 
     // If we've already searched this node as deep or deeper
     // then we are currently requesting, just return the node
-    if (table_ptr->probe(hash, depth, EXACT, &m))
+    if (table_ptr->probe(hash, max_depth-depth, EXACT, &m))
         return m;
     
 //  if (table_ptr->probe(hash, depth, UPPER, &m))
@@ -378,10 +384,10 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
     // heuristic.
     for (unsigned i=0;i<MoveArrays[depth].mNumElements;++i)
     {
-      MoveArrays[depth].theArray[i].value = 
-      history_ptr->probe(whose, MoveArrays[depth].theArray[i]);
-        //MoveArrays[depth].theArray[i] == m ? VALUE_KING : 
-        //history_ptr->probe(whose, MoveArrays[depth].theArray[i]);
+      if (history_ptr->probe(whose, MoveArrays[depth].theArray[i]))
+      {
+        MoveArrays[depth].theArray[i].value = VALUE_KING;
+      }
     }
 
     // sort the move list.
@@ -473,7 +479,7 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
             table_ptr->store(hash, max_depth-depth, UPPER, m);
         else // m.value >= saved_beta
             table_ptr->store(hash, max_depth-depth, LOWER, m);
-       history_ptr->store(whose, m, 1); //max_depth-depth);
+       history_ptr->store(whose, m, max_depth-depth);
     }
  
 #ifndef _MSDEV_WINDOWS
