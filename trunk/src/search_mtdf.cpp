@@ -286,10 +286,8 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
         return m;
     }
 
-    // If we've already searched this node to our max_depth
-    // (for this iteration) or greater,
-    // just return the move from our previous search.  Otherwise, if we 
-    // can, reduce the size of our AlphaBeta window.
+    // If we've already searched this node as deep or deeper
+    // then we are currently requesting, just return the node
     if (table_ptr->probe(hash, depth, EXACT, &m))
         return m;
     
@@ -314,26 +312,27 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
 
     // If we've reached the maximum search depth, then this node is a leaf - all
     // we have to do is apply the static evaluator.
-    // numbers more than max_depth indicate special conditions
-    //ie. we're exploring check moves and captures lines
-    if ((depth > max_depth) && (!specialFlag))  //uninteresting leaf node
+    // if the special flag is set, we need to go deeper
+    if ((depth >= max_depth) && (!specialFlag))  //uninteresting leaf node
     {
         m.set_null();
         m.value = -board_ptr->evaluate();
-        //if (depth == SPECIAL_SEARCH_DEPTH)
-          table_ptr->store(hash, depth, EXACT, m);
+        //not any special case, just a leaf node, store the position
+        if (depth == max_depth)
+          table_ptr->store(hash, 1, EXACT, m);
 #ifndef _MSDEV_WINDOWS
         DEBUG_SEARCH_PRINT("evaluate() says %d.", board_ptr->get_whose() ? -m.value : m.value);
 #endif
         return m;
     }
 
-    if (depth > (max_depth+SPECIAL_SEARCH_DEPTH)) //leaf node in any case
+    //this is a leaf node in any case
+    if (depth >= (max_depth+SPECIAL_SEARCH_DEPTH)) //leaf node in any case
     {
         m.set_null();
         m.value = -board_ptr->evaluate();
-        //if (depth == 0)
-          table_ptr->store(hash, depth, EXACT, m);
+        if (depth == (max_depth+SPECIAL_SEARCH_DEPTH))
+          table_ptr->store(hash, 1, EXACT, m);
 #ifndef _MSDEV_WINDOWS
         DEBUG_SEARCH_PRINT("evaluate() says %d.", board_ptr->get_whose() ? -m.value : m.value);
 #endif
@@ -380,8 +379,9 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
     for (unsigned i=0;i<MoveArrays[depth].mNumElements;++i)
     {
       MoveArrays[depth].theArray[i].value = 
-        MoveArrays[depth].theArray[i] == m ? VALUE_KING : 
-        history_ptr->probe(whose, MoveArrays[depth].theArray[i]);
+      history_ptr->probe(whose, MoveArrays[depth].theArray[i]);
+        //MoveArrays[depth].theArray[i] == m ? VALUE_KING : 
+        //history_ptr->probe(whose, MoveArrays[depth].theArray[i]);
     }
 
     // sort the move list.
@@ -409,11 +409,13 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
     // Score each move in the list.
     m.set_null();
     m.value = -VALUE_ILLEGAL;
+    bool capture = false;
+    bool check = false;
     for(unsigned i=0;i<MoveArrays[depth].mNumElements;++i)
     {
         DEBUG_SEARCH_ADD_MOVE(MoveArrays[depth].theArray[i]);
-        bool capture = board_ptr->make(MoveArrays[depth].theArray[i]);
-        bool check = board_ptr->check(false);
+        capture = board_ptr->make(MoveArrays[depth].theArray[i]);
+        check = board_ptr->check(false);
         MoveArrays[depth].theArray[i].value = -minimax(depth + 1, -beta, -alpha, (capture||check)).value;
         DEBUG_SEARCH_DEL_MOVE(MoveArrays[depth].theArray[i]);
         board_ptr->unmake();
@@ -466,12 +468,12 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
             // When doing MTD(f) zero-window searches, our move search should
             // never return an exact score.  I've only accounted for this in the
             // interest of robustness.
-            table_ptr->store(hash, max_depth, EXACT, m);
+            table_ptr->store(hash, max_depth-depth, EXACT, m);
         else if (m.value <= saved_alpha)
-            table_ptr->store(hash, max_depth, UPPER, m);
+            table_ptr->store(hash, max_depth-depth, UPPER, m);
         else // m.value >= saved_beta
-            table_ptr->store(hash, max_depth, LOWER, m);
-       history_ptr->store(whose, m, depth);
+            table_ptr->store(hash, max_depth-depth, LOWER, m);
+       history_ptr->store(whose, m, 1); //max_depth-depth);
     }
  
 #ifndef _MSDEV_WINDOWS

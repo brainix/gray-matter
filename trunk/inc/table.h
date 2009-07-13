@@ -129,8 +129,17 @@ public:
     history();
     ~history();
     void clear();
-    int probe(bool color, Move m) const;
-    void store(bool color, Move m, int depth);
+    inline int probe(bool color, Move m) const
+    {
+      return data[color][m.x1][m.y1][m.x2][m.y2];  
+    };
+    
+    inline void store(bool color, Move m, int depth)
+    {
+      /// Gray Matter has searched to the specified depth and determined the specified
+      /// move for the specified color to be the best.  Note this.
+      data[color][m.x1][m.y1][m.x2][m.y2] += 1 << depth;
+    }
 private:
     int *****data;
 };
