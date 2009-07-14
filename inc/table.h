@@ -49,7 +49,7 @@ typedef struct xpos_slot
     bitboard_t hash;                   ///< Zobrist hash key.           64 bits
     uint16_t depth;                    ///< Depth of our search.     +  16 bits
     uint16_t type;                     ///< Upper, exact, or lower.  +  16 bits
-    Move move;                       ///< Best move and score.     +  32 bits
+    Move move;                         ///< Best move and score.     +  32 bits
 } xpos_slot_t;                         //                            = 128 bits
 #pragma pack()
 
@@ -64,7 +64,7 @@ public:
         for (uint64_t index = 0; index < slots; index++)
         {
             data[index].hash = 0;
-            data[index].depth = MAX_DEPTH;
+            data[index].depth = 0;
             data[index].type = USELESS;
             data[index].move.set_null();
             data[index].move.value = 0;
@@ -73,7 +73,7 @@ public:
 
     inline bool probe(bitboard_t hash, int depth, int type, Move *move_ptr)
     {
-      uint64_t index = hash % slots;
+      uint64_t index = ((hash >> 32) + (hash & 0x00000000FFFFFFFF)) % slots;
           if (data[index].hash == hash)
           {
               *move_ptr = data[index].move;
@@ -100,7 +100,7 @@ public:
     }
     inline void store(bitboard_t hash, int depth, int type, Move move)
     {
-      uint64_t index = hash % slots;
+      uint64_t index = ((hash >> 32) + (hash & 0x00000000FFFFFFFF)) % slots;
         if (depth > data[index].depth)
         {
             data[index].hash = hash;
