@@ -369,3 +369,8 @@ string search_base::status_to_string(int status)
     }
     return str;
 }
+
+void search_base::reset_hash()
+{
+  table_ptr->clear();
+}

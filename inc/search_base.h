@@ -57,6 +57,7 @@ public:
     virtual void verify_prediction(Move m);
     virtual void change(int s, const board_base &now);
     static std::string status_to_string(int status);
+    void reset_hash();
 
 #ifdef DEBUG_SEARCH
     static string debug_pv, debug_mv, debug_pv_prefix;
