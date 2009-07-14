@@ -232,9 +232,7 @@ board_base& board_base::operator=(const board_base& that)
 \*----------------------------------------------------------------------------*/
 void board_base::set_board()
 {
-
-/// Set the board to the initial position.
-
+    /// Set the board to the initial position.
     init_state();
     init_rotation();
     init_hash();

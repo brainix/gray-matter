@@ -289,8 +289,9 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
 
     // If we've already searched this node as deep or deeper
     // then we are currently requesting, just return the node
-    if (table_ptr->probe(hash, max_depth-depth, EXACT, &m))
-        return m;
+    // THERE IS STILL A HASH TABLE BUG, DISABLED FOR NOW
+    //if (table_ptr->probe(hash, max_depth-depth, EXACT, &m))
+      //  return m;
     
 //  if (table_ptr->probe(hash, depth, UPPER, &m))
 //  {
