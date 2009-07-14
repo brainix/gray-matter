@@ -154,17 +154,12 @@ bool search_mtdf::iterate(int state)
 
         extract_pv();
 
-        if (pv.size() == 0)
-          pv.addMove(m);
-
         if (output)
         {
             value_t value = m.value;
-            if (state == PONDERING)
-              value *= -1;  //always score from our real perspective
             if (strong_pondering)
                 pv.addMove(hint);
-            xboard_ptr->print_output(depth,value,           
+            xboard_ptr->print_output(depth+SPECIAL_SEARCH_DEPTH,value,           
                 clock_ptr->get_elapsed(), nodes, pv);
             if (strong_pondering)
               pv.removeLast();
@@ -324,8 +319,7 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
         m.set_null();
         m.value = -board_ptr->evaluate();
         //not any special case, just a leaf node, store the position
-        if (depth == max_depth)
-          table_ptr->store(hash, 1, EXACT, m);
+        table_ptr->store(hash, 1, EXACT, m);
 #ifndef _MSDEV_WINDOWS
         DEBUG_SEARCH_PRINT("evaluate() says %d.", board_ptr->get_whose() ? -m.value : m.value);
 #endif
@@ -337,8 +331,7 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
     {
         m.set_null();
         m.value = -board_ptr->evaluate();
-        if (depth == (max_depth+SPECIAL_SEARCH_DEPTH))
-          table_ptr->store(hash, 1, EXACT, m);
+        table_ptr->store(hash, 1, EXACT, m);
 #ifndef _MSDEV_WINDOWS
         DEBUG_SEARCH_PRINT("evaluate() says %d.", board_ptr->get_whose() ? -m.value : m.value);
 #endif
