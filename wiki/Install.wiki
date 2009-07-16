@@ -2,8 +2,8 @@
 #labels Featured,Phase-Deploy
 
   * [http://ftp.gnu.org/gnu/winboard/winboard-4_2_7a.exe Download] and run the !WinBoard installer.  Follow the on-screen instructions.
-  * Download a copy of a windows executable from the downloads tab and put it into !WinBoard's directory (you may also rename it to gray.exe).
-  * Run !WinBoard.  In the *{{{WinBoard Startup}}}* window, replace the first *{{{GNUChess}}}* with *{{{gray.exe}}}* like so:
+  * [http://code.google.com/p/gray-matter/downloads/list Download] a copy of a windows executable and put it into !WinBoard's directory.
+  * Run !WinBoard.  In the *{{{WinBoard Startup}}}* window, replace the first *{{{GNUChess}}}* with the name of your executable like so:
 
 [http://gray-matter.googlecode.com/files/WinBoard.jpg]
 
