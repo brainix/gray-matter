@@ -28,6 +28,8 @@
 #include <list>
 
 #include "move.h"
+#include "table.h"
+#include "board_base.h"
 
 // Token types:
 #define TOKEN_UNKNOWN       0 // Unknown.
@@ -48,10 +50,6 @@
                          (c) == (int) '+' || (c) == (int) '#' || \
                          (c) == (int) '=' || (c) == (int) ':' || \
                          (c) == (int) '-')
-
-// Forward declarations:
-class board_base;
-class table;
 
 /// Opening book.
 class book

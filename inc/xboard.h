@@ -23,9 +23,8 @@
 #define XBOARD_H
 
 #include <vector>
-
-#include "search_base.h"
 #include "book.h"
+#include "search_base.h"
 
 #define BUFFER_SIZE	160
 

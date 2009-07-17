@@ -25,7 +25,10 @@
 // C++ stuff:
 #include <string>
 
-#include "move.h"
+#include "table.h"
+#include "clock.h"
+#include "board_base.h"
+class xboard;
 
 // Search statuses:
 #define IDLING          0 // Idling (doing nothing)
@@ -34,13 +37,6 @@
 #define PONDERING       3 // Pondering (on our opponent's time).
 #define QUITTING        4 // Terminating search thread.
 #define SEARCH_STATS    5
-
-// Forward declarations:
-class board_base;
-class table;
-class history;
-class chess_clock;
-class xboard;
 
 /// Move search base.
 class search_base
@@ -57,7 +53,7 @@ public:
     virtual void verify_prediction(Move m);
     virtual void change(int s, const board_base &now);
     static std::string status_to_string(int status);
-    void reset_hash();
+    void reset();
 
 #ifdef DEBUG_SEARCH
     static string debug_pv, debug_mv, debug_pv_prefix;

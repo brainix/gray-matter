@@ -370,7 +370,8 @@ string search_base::status_to_string(int status)
     return str;
 }
 
-void search_base::reset_hash()
+void search_base::reset()
 {
   table_ptr->clear();
+  history_ptr->clear();
 }
