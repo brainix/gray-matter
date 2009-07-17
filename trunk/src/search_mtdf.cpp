@@ -154,12 +154,21 @@ bool search_mtdf::iterate(int state)
 
         extract_pv();
 
+        bool switchValue = false;
+        if (pv.size() == 0)
+        {
+          pv.addMove(m);
+          switchValue = true;
+        }
+
         if (output)
         {
             value_t value = m.value;
+            if (switchValue && (state == PONDERING))
+              value *= -1;
             if (strong_pondering)
                 pv.addMove(hint);
-            xboard_ptr->print_output(depth+SPECIAL_SEARCH_DEPTH,value,           
+            xboard_ptr->print_output(depth,value,           
                 clock_ptr->get_elapsed(), nodes, pv);
             if (strong_pondering)
               pv.removeLast();
@@ -270,16 +279,33 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
         m.set_null();
         switch (status)
         {
-            case STALEMATE    : m.value = +VALUE_CONTEMPT;     break;
-            case INSUFFICIENT : m.value = +VALUE_CONTEMPT;     break;
-            case THREE        : m.value = +VALUE_CONTEMPT;     break;
-            case FIFTY        : m.value = +VALUE_CONTEMPT;     break;
-            case CHECKMATE    : m.value = -VALUE_KING;         break;
-            case ILLEGAL      : m.value = -VALUE_ILLEGAL;      break;
+            case STALEMATE: 
+              m.value = +VALUE_CONTEMPT;     
+              //table_ptr->store(hash, max_depth-depth, EXACT, m);
+              break;
+            case INSUFFICIENT: 
+              m.value = +VALUE_CONTEMPT;     
+              //table_ptr->store(hash, MAX_DEPTH-1, EXACT, m);
+              break;
+            case THREE: 
+              m.value = +VALUE_CONTEMPT;     
+              //table_ptr->store(hash, MAX_DEPTH-1, EXACT, m);
+              break;
+            case FIFTY: 
+              m.value = +VALUE_CONTEMPT;     
+              //table_ptr->store(hash, MAX_DEPTH-1, EXACT, m);
+              break;
+            case CHECKMATE: 
+              m.value = -VALUE_KING;         
+              table_ptr->store(hash, max_depth-depth, EXACT, m);
+              break;
+            case ILLEGAL: 
+              m.value = -VALUE_ILLEGAL;      
+              //table_ptr->store(hash, MAX_DEPTH-1, EXACT, m);
+              break;
+            default: 
+              break;
         }
-        //i.e. we've searched 'til infinity on this node so always
-        //return this value from the hash table
-        table_ptr->store(hash, MAX_DEPTH, EXACT, m);
 
 #ifndef _MSDEV_WINDOWS
         DEBUG_SEARCH_PRINT("terminal state %d.", status);
@@ -289,11 +315,12 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
 
     // If we've already searched this node as deep or deeper
     // then we are currently requesting, just return the node
-    // THERE IS STILL A HASH TABLE BUG, DISABLED FOR NOW
-    //if (table_ptr->probe(hash, max_depth-depth, EXACT, &m))
-      //  return m;
-    
-//  if (table_ptr->probe(hash, depth, UPPER, &m))
+    // false means, either we need to search deeper (but best move is still populated)
+    // or we haven't seen this position before
+    if (table_ptr->probe(hash, max_depth-depth, EXACT, &m))
+      return m;
+
+    //  if (table_ptr->probe(hash, depth, UPPER, &m))
 //  {
 //      if (m.value <= alpha)
 //          return m;
@@ -320,7 +347,7 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
         m.set_null();
         m.value = -board_ptr->evaluate();
         //not any special case, just a leaf node, store the position
-        table_ptr->store(hash, 1, EXACT, m);
+        //table_ptr->store(hash, 1, EXACT, m);
 #ifndef _MSDEV_WINDOWS
         DEBUG_SEARCH_PRINT("evaluate() says %d.", board_ptr->get_whose() ? -m.value : m.value);
 #endif
@@ -332,7 +359,7 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
     {
         m.set_null();
         m.value = -board_ptr->evaluate();
-        table_ptr->store(hash, 1, EXACT, m);
+        //table_ptr->store(hash, 1, EXACT, m);
 #ifndef _MSDEV_WINDOWS
         DEBUG_SEARCH_PRINT("evaluate() says %d.", board_ptr->get_whose() ? -m.value : m.value);
 #endif
@@ -346,7 +373,7 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
       null_move.set_null();
       DEBUG_SEARCH_ADD_MOVE(null_move);
       board_ptr->make(null_move);
-      null_move = minimax(depth + R, -beta, -alpha, false, false);
+      null_move = minimax(depth + 1, -beta, -alpha, false, false);
       DEBUG_SEARCH_DEL_MOVE(null_move);
       board_ptr->unmake();
       if (-null_move.value >= beta)
@@ -370,25 +397,24 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
         return m;
     }
 
-    // If according to the transposition table, a previous search from this
-    // position determined this move to be best, then in this search, this
-    // move could be good too - score this move highly to force it to the
-    // front of the list to score it first to hopefully cause an earlier
-    // cutoff.  Otherwise, score this move according to the history
-    // heuristic.
+    // Here, m is either a null move, or the best move as discovered
+    // from a prior iteration
+
+    // If it matches, set it to VALUE_KING so we look at it first
+    // else, just use the history heuristic
     for (unsigned i=0;i<MoveArrays[depth].mNumElements;++i)
     {
-      if (history_ptr->probe(whose, MoveArrays[depth].theArray[i]))
-      {
-        MoveArrays[depth].theArray[i].value = VALUE_KING;
-      }
+      MoveArrays[depth].theArray[i].value = 
+        MoveArrays[depth].theArray[i] == m ? VALUE_KING : 
+        history_ptr->probe(whose, MoveArrays[depth].theArray[i]);
     }
 
     // sort the move list.
     Move tmpMove;
+    unsigned bestIndex;
     for(unsigned i=0;i<MoveArrays[depth].mNumElements;++i)
     {
-      unsigned bestIndex = i;
+      bestIndex = i;
       for (unsigned j=i;j<MoveArrays[depth].mNumElements;++j)
       {
         if (MoveArrays[depth].theArray[j].value > MoveArrays[depth].theArray[bestIndex].value)
@@ -426,6 +452,8 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
           m = MoveArrays[depth].theArray[i];
           if (m.value > alpha) alpha = m.value;
         }
+        //if beta <= alpha, this position can't yield anything better than
+        //what we've already searched, so quit
         if ((beta <= alpha) || (timeout_flag))
             break;
     }
@@ -453,7 +481,7 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
         //a terminal one, store it with max depth so we always return
         //it on a hash table probe (we'll never want to explore deeper).
         if (!timeout_flag)
-            table_ptr->store(hash, MAX_DEPTH, EXACT, m);
+            table_ptr->store(hash, max_depth-depth, EXACT, m);
 #ifndef _MSDEV_WINDOWS
         DEBUG_SEARCH_PRINT("%s.", m.value == VALUE_ILLEGAL ? "Illegal position" : m.value == VALUE_CONTEMPT ? "Stalemated" : "Checkmated");
 #endif
@@ -464,17 +492,18 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
     if (!timeout_flag)
     {
         // Nope, the results are complete and reliable.  Save them for progeny.
-        if (m.value > saved_alpha && m.value < saved_beta)
+        //if (m.value > saved_alpha && m.value < saved_beta)
             // When doing MTD(f) zero-window searches, our move search should
             // never return an exact score.  I've only accounted for this in the
             // interest of robustness.
             table_ptr->store(hash, max_depth-depth, EXACT, m);
-        else if (m.value <= saved_alpha)
-            table_ptr->store(hash, max_depth-depth, UPPER, m);
-        else // m.value >= saved_beta
-            table_ptr->store(hash, max_depth-depth, LOWER, m);
-       history_ptr->store(whose, m, max_depth-depth);
+        //else if (m.value <= saved_alpha)
+          //  table_ptr->store(hash, max_depth-depth, UPPER, m);
+        //else // m.value >= saved_beta
+          //  table_ptr->store(hash, max_depth-depth, LOWER, m);
+       history_ptr->store(whose, m); //this seems like a good move
     }
+    
  
 #ifndef _MSDEV_WINDOWS
     DEBUG_SEARCH_PRINTM(m, "max of %d children: %d.", MoveArrays[depth].mNumElements, m.value);

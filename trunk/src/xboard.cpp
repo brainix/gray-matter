@@ -26,6 +26,7 @@
 #include "xboard.h"
 #include "board_heuristic.h"
 #include "clock.h"
+#include "search_base.h"
 
 /*----------------------------------------------------------------------------*\
  |                                  xboard()                                  |
@@ -322,7 +323,7 @@ void xboard::do_new()
     draw = false;
     sync = true;
     board_ptr->set_board();
-    search_ptr->reset_hash();
+    search_ptr->reset();  //clear hashes and history
     search_ptr->change(IDLING, *board_ptr);
     search_ptr->set_depth(MAX_DEPTH);
     book_ptr->read();

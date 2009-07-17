@@ -77,9 +77,7 @@ public:
           if (data[index].hash == hash)
           {
               *move_ptr = data[index].move;
-              //if the data in the table is valid for this depth
-              //just return the move
-              if (data[index].depth >= depth &&
+              if (data[index].depth > depth &&
                   (data[index].type == BOOK  ||
                    data[index].type == EXACT ||
                    data[index].type == type))
@@ -131,14 +129,14 @@ public:
     void clear();
     inline int probe(bool color, Move m) const
     {
+      //returns the depth at which this move is still considered the best
       return data[color][m.x1][m.y1][m.x2][m.y2];  
     };
     
-    inline void store(bool color, Move m, int depth)
+    inline void store(bool color, Move m) //, int depth)
     {
-      /// Gray Matter has searched to the specified depth and determined the specified
-      /// move for the specified color to be the best.  Note this.
-      data[color][m.x1][m.y1][m.x2][m.y2] += 1 << depth;
+      // mark this as a good move
+      data[color][m.x1][m.y1][m.x2][m.y2] = m.value;
     }
 private:
     int *****data;
