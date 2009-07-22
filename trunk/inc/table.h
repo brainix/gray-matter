@@ -73,7 +73,15 @@ public:
 
     inline bool probe(bitboard_t hash, int depth, int type, Move *move_ptr)
     {
-      uint64_t index = ((hash >> 32) + (hash & 0x00000000FFFFFFFF)) % slots;
+      uint64_t index = 0;
+      index += (hash & 0x0000000000FFFFFF);
+      index += (hash & 0x00000000FFFFFF00) >> 2;
+      index += (hash & 0x000000FFFFFF0000) >> 4;
+      index += (hash & 0x0000FFFFFF000000) >> 6;
+      index += (hash & 0x00FFFFFF00000000) >> 8;
+      index += (hash & 0xFFFFFF0000000000) >> 10;            
+      index = index%slots;
+
           if (data[index].hash == hash)
           {
               *move_ptr = data[index].move;
@@ -82,38 +90,48 @@ public:
                    data[index].type == EXACT ||
                    data[index].type == type))
               {
-                  successful++;
-                  total++;
+                  //successful++;
+                  //total++;
                   return true;
               }
-              semi_successful++;
-              total++;
+              //semi_successful++;
+              //total++;
               return false;
           }
       move_ptr->set_null();
       move_ptr->value = 0;
-      unsuccessful++;
-      total++;
+      //unsuccessful++;
+      //total++;
       return false;
     }
-    inline void store(bitboard_t hash, int depth, int type, Move move)
+    inline void store(bitboard_t hash, int depth, int type, Move& move)
     {
-      uint64_t index = ((hash >> 32) + (hash & 0x00000000FFFFFFFF)) % slots;
-        if (depth > data[index].depth)
+      uint64_t index = 0;
+      index += (hash & 0x0000000000FFFFFF);
+      index += (hash & 0x00000000FFFFFF00) >> 2;
+      index += (hash & 0x000000FFFFFF0000) >> 4;
+      index += (hash & 0x0000FFFFFF000000) >> 6;
+      index += (hash & 0x00FFFFFF00000000) >> 8;
+      index += (hash & 0xFFFFFF0000000000) >> 10;
+      index = index % slots;      
+      //overwrite if deeper or in conflict
+        if ((data[index].hash != hash) ||
+            (depth > data[index].depth))
         {
-            data[index].hash = hash;
-            data[index].depth = depth;
-            data[index].type = type;
-            data[index].move = move;
+          data[index].hash = hash;
+          data[index].depth = depth;
+          data[index].type = type;
+          data[index].move = move;
+          return;
         }
     }
 private:
     uint64_t slots;      ///< The number of slots.
     xpos_slot_t *data;   ///< The slots themselves.
-    int successful;      ///< The number of successful queries.
-    int semi_successful; ///< The number of semi-successful queries.
-    int unsuccessful;    ///< The number of unsuccessful queries;
-    int total;           ///< The total number of queries.
+    //int successful;      ///< The number of successful queries.
+    //int semi_successful; ///< The number of semi-successful queries.
+    //int unsuccessful;    ///< The number of unsuccessful queries;
+    //int total;           ///< The total number of queries.
 };
 
 /*----------------------------------------------------------------------------*\
@@ -172,9 +190,9 @@ public:
        uint64_t index = hash % slots;
        bool found = data[index].hash == hash;
        *value_ptr = found ? data[index].value : 0;
-       successful += found ? 1 : 0;
-       unsuccessful += found ? 0 : 1;
-       total++;
+       //successful += found ? 1 : 0;
+       //unsuccessful += found ? 0 : 1;
+       //total++;
        return found;
     }
     inline void store(bitboard_t hash, value_t value)
@@ -189,9 +207,9 @@ public:
 private:
     uint64_t slots;    ///< The number of slots.
     pawn_slot_t *data; ///< The slots themselves.
-    int successful;    ///< The number of successful queries.
-    int unsuccessful;  ///< The number of unsuccessful queries;
-    int total;         ///< The total number of queries.
+    //int successful;    ///< The number of successful queries.
+    //int unsuccessful;  ///< The number of unsuccessful queries;
+    //int total;         ///< The total number of queries.
 };
 
 #endif

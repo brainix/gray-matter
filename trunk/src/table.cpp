@@ -42,10 +42,10 @@ table::table(int mb)
     }
     clear();
 
-    successful = 0;
-    semi_successful = 0;
-    unsuccessful = 0;
-    total = 0;
+    //successful = 0;
+    //semi_successful = 0;
+    //unsuccessful = 0;
+    //total = 0;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -143,9 +143,9 @@ PawnTable::PawnTable(int mb)
     }
     clear();
 
-    successful = 0;
-    unsuccessful = 0;
-    total = 0;
+    //successful = 0;
+    //unsuccessful = 0;
+    //total = 0;
 }
 
 /*----------------------------------------------------------------------------*\

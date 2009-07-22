@@ -297,7 +297,7 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
               break;
             case CHECKMATE: 
               m.value = -VALUE_KING;         
-              table_ptr->store(hash, max_depth-depth, EXACT, m);
+              //table_ptr->store(hash, max_depth-depth, EXACT, m);
               break;
             case ILLEGAL: 
               m.value = -VALUE_ILLEGAL;      
@@ -347,7 +347,7 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
         m.set_null();
         m.value = -board_ptr->evaluate();
         //not any special case, just a leaf node, store the position
-        //table_ptr->store(hash, 1, EXACT, m);
+        table_ptr->store(hash, 0, EXACT, m);
 #ifndef _MSDEV_WINDOWS
         DEBUG_SEARCH_PRINT("evaluate() says %d.", board_ptr->get_whose() ? -m.value : m.value);
 #endif
@@ -359,7 +359,7 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
     {
         m.set_null();
         m.value = -board_ptr->evaluate();
-        //table_ptr->store(hash, 1, EXACT, m);
+        table_ptr->store(hash, 0, EXACT, m);
 #ifndef _MSDEV_WINDOWS
         DEBUG_SEARCH_PRINT("evaluate() says %d.", board_ptr->get_whose() ? -m.value : m.value);
 #endif
