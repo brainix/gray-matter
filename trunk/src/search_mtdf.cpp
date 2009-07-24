@@ -279,32 +279,13 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
         m.set_null();
         switch (status)
         {
-            case STALEMATE: 
-              m.value = +VALUE_CONTEMPT;     
-              //table_ptr->store(hash, max_depth-depth, EXACT, m);
-              break;
-            case INSUFFICIENT: 
-              m.value = +VALUE_CONTEMPT;     
-              //table_ptr->store(hash, MAX_DEPTH-1, EXACT, m);
-              break;
-            case THREE: 
-              m.value = +VALUE_CONTEMPT;     
-              //table_ptr->store(hash, MAX_DEPTH-1, EXACT, m);
-              break;
-            case FIFTY: 
-              m.value = +VALUE_CONTEMPT;     
-              //table_ptr->store(hash, MAX_DEPTH-1, EXACT, m);
-              break;
-            case CHECKMATE: 
-              m.value = -VALUE_KING;         
-              //table_ptr->store(hash, max_depth-depth, EXACT, m);
-              break;
-            case ILLEGAL: 
-              m.value = -VALUE_ILLEGAL;      
-              //table_ptr->store(hash, MAX_DEPTH-1, EXACT, m);
-              break;
-            default: 
-              break;
+            case STALEMATE:     m.value = +VALUE_CONTEMPT;     break;
+            case INSUFFICIENT:  m.value = +VALUE_CONTEMPT;     break;
+            case THREE:         m.value = +VALUE_CONTEMPT;     break;
+            case FIFTY:         m.value = +VALUE_CONTEMPT;     break;
+            case CHECKMATE:     m.value = -VALUE_KING;         break;
+            case ILLEGAL:       m.value = -VALUE_ILLEGAL;      break;
+            default:                                           break;
         }
 
 #ifndef _MSDEV_WINDOWS
@@ -346,8 +327,6 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
     {
         m.set_null();
         m.value = -board_ptr->evaluate();
-        //not any special case, just a leaf node, store the position
-        //table_ptr->store(hash, 0, EXACT, m);
 #ifndef _MSDEV_WINDOWS
         DEBUG_SEARCH_PRINT("evaluate() says %d.", board_ptr->get_whose() ? -m.value : m.value);
 #endif
@@ -359,7 +338,6 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
     {
         m.set_null();
         m.value = -board_ptr->evaluate();
-        //table_ptr->store(hash, 0, EXACT, m);
 #ifndef _MSDEV_WINDOWS
         DEBUG_SEARCH_PRINT("evaluate() says %d.", board_ptr->get_whose() ? -m.value : m.value);
 #endif
@@ -496,8 +474,7 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
             // When doing MTD(f) zero-window searches, our move search should
             // never return an exact score.  I've only accounted for this in the
             // interest of robustness.
-      if ((max_depth-depth) > 3)
-            table_ptr->store(hash, max_depth-depth, EXACT, m);
+            table_ptr->store(hash, max_depth-depth-1, EXACT, m);
         //else if (m.value <= saved_alpha)
           //  table_ptr->store(hash, max_depth-depth, UPPER, m);
         //else // m.value >= saved_beta

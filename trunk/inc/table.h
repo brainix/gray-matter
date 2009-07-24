@@ -47,8 +47,8 @@
 typedef struct xpos_slot
 {
     bitboard_t hash;                   ///< Zobrist hash key.           64 bits
-    uint16_t depth;                    ///< Depth of our search.     +  16 bits
-    uint16_t type;                     ///< Upper, exact, or lower.  +  16 bits
+    int16_t depth;                     ///< Depth of our search.     +  16 bits
+    int16_t type;                      ///< Upper, exact, or lower.  +  16 bits
     Move move;                         ///< Best move and score.     +  32 bits
 } xpos_slot_t;                         //                            = 128 bits
 #pragma pack()

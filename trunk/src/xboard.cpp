@@ -287,7 +287,7 @@ void xboard::do_protover() const
     printf("feature myname=\"graySVN1566\"\n");
 #else
   #ifdef SVN_REV
-    printf("feature myname=\"GrayX Matter rev %s\"\n", SVN_REV);
+    printf("feature myname=\"Gray Matter rev %s\"\n", SVN_REV);
   #else
     printf("feature myname=\"Gray Matter 0.0\"\n");
   #endif
