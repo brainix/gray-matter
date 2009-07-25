@@ -265,7 +265,7 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
     //Move null_move;                        // The all-important null move.
     Move m;                                // The best move and score.
 
-    //set the special flag for deeper searches (captures, etc.)
+    //set the special flag for deeper searches (captures and checks)
     bool specialFlag = (specialCase && (depth >= (max_depth-SPECIAL_SEARCH_DEPTH)))?true:false;
 
     // Increment the number of positions searched.
@@ -417,9 +417,10 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
     bool check = false;
     for(unsigned i=0;i<MoveArrays[depth].mNumElements;++i)
     {
+        check = board_ptr->check(true) | board_ptr->check(false); //in check now?
         DEBUG_SEARCH_ADD_MOVE(MoveArrays[depth].theArray[i]);
         capture = board_ptr->make(MoveArrays[depth].theArray[i]);
-        check = board_ptr->check(false);
+        check = check | board_ptr->check(true) | board_ptr->check(false); //how 'bout now?
         MoveArrays[depth].theArray[i].value = -minimax(depth + 1, -beta, -alpha, (capture||check)).value;
         DEBUG_SEARCH_DEL_MOVE(MoveArrays[depth].theArray[i]);
         board_ptr->unmake();
@@ -474,7 +475,7 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
             // When doing MTD(f) zero-window searches, our move search should
             // never return an exact score.  I've only accounted for this in the
             // interest of robustness.
-            if ((max_depth-depth) > 3)
+        if ((max_depth-depth) > 3)
             table_ptr->store(hash, max_depth-depth-1, EXACT, m);
         //else if (m.value <= saved_alpha)
           //  table_ptr->store(hash, max_depth-depth, UPPER, m);

@@ -44,7 +44,10 @@ private:
     // The values of having the white king on different squares during an
     // endgame with pawns (of both colors) only on the queen side:
     static const value_t value_king_position[8][8];
-
+    
+    //in the end game, the value of being in the middle or not
+    static const value_t value_king_middle[8][8];
+    
     // The values of various pawn structure features:
     static const value_t value_pawn_passed[8];
     static const value_t value_pawn_doubled[9];
