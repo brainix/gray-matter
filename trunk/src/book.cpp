@@ -91,6 +91,7 @@ void book::populate_games(list<string>& tokens)
             if (moves.empty())
                 continue;
             //randomly put game on front or back
+            srand(time(NULL));
             if (rand() % 1)
               games.push_back(moves);
             else
