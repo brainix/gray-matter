@@ -61,7 +61,7 @@ void chess_clock::set_mode(int color, int new_moves, int new_csecs, int new_inc)
 \*----------------------------------------------------------------------------*/
 void chess_clock::update_remaining_csecs(int color, int new_csecs)
 {
-    remaining_csecs[color] = new_csecs;
+    remaining_csecs[color] = new_csecs - 300;  //always spare a second
 }
 
 /*----------------------------------------------------------------------------*\
