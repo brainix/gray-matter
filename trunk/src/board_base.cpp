@@ -1094,34 +1094,26 @@ void board_base::coord_to_san(Move m, string& san)
 			case ROOK   : generate_rook(l);   break;
 			case BISHOP : generate_bishop(l); break;
 			case KNIGHT : generate_knight(l); break;
-			case PAWN   : generate_pawn(l);   break;
+			//case PAWN : (impossible)
 		}
 
-    for (unsigned i=0;i<l.mNumElements;++i)
-    {
-				// We found another 'shape' that can move to the 'to' square
-				if (l.theArray[i].x1 != m.x1)
-					// It suffices to add file of 'from' square
-					add_file = true;
-				else
-					// Ranks must differ, so adding rank of 'from' square
-					add_rank = true;
-    }
-    /*
-		for (vector<Move>::iterator it = l.begin(); it != l.end(); it++)
-			if ((it->x1 != m.x1 || it->y1 != m.y1) && it->x2 == m.x2 && it->y2 == m.y2)
+		for (unsigned i = 0; i < l.mNumElements; ++i)
+		{
+			Move m2 = l.theArray[i];
+			if ((m2.x1 != m.x1 || m2.y1 != m.y1) && m2.x2 == m.x2 && m2.y2 == m.y2)
 			{
 				// We found another 'shape' that can move to the 'to' square
-				if (it->x1 != m.x1)
+				if (m2.x1 != m.x1)
 					// It suffices to add file of 'from' square
 					add_file = true;
 				else
 					// Ranks must differ, so adding rank of 'from' square
 					add_rank = true;
 			}
-      */
-		// For capturing pawns the file is already added
-		if (add_file && shape != PAWN)
+		}
+
+		// Add file or rank to avoid move ambiguity
+		if (add_file)
 			sanstr << static_cast<char>(m.x1 + 'a');
 		if (add_rank)
 			sanstr << static_cast<char>(m.y1 + '1');
