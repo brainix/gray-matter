@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <iostream>
 #include <sstream>
+#include <assert.h>
 
 #include "xboard.h"
 #include "board_heuristic.h"
@@ -772,8 +773,7 @@ void xboard::do_test() {
 		cerr << "Unknown file type '" << testfile << "'" << endl;
 	}
 
-	if (ts_fen.size() != ts_sol.size()) {
-	}
+	assert(ts_fen.size() == ts_sol.size());
 
 	if (ts_fen.size()) {
 		ts_mode = true;
