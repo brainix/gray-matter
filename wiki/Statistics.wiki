@@ -15,3 +15,4 @@ first (Correct + Failed) positions of the database.
 || ECE3.PGN || 1402 || 26 / 12 || 1797 || jonne || Not much time ||
 || ECE3.PGN || 1402 || 203 / 209 || 1797 || jonne || Resigned position 413? ||
 || ECE3.PGN || 1432 || 187 / 286 || 1797 || jonne || Problems: 2x 1/2 1/2 {stalemate}, 3x resigned (including position 413 and twice shortly after) ||
+|| WAC.EPD || 1575 || 202 / 0 || 300 || jonne || See TestSuiteWAC for details ||
