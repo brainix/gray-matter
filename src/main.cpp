@@ -38,10 +38,6 @@ int main(int argc, char **argv)
 {
     // First parse the configuration file, if it exists.
     ConfigFile config;
-    config.dump(cout);
-
-    cout << endl;
-    cout << "Parsing command line parameters. . ." << endl;
 
     for(int i=1;i<argc;++i)
     {
@@ -122,7 +118,7 @@ int main(int argc, char **argv)
         }
     }
 
-    cout << "After processing command line arguments. . " << endl;
+	// Dump configuration items.
     config.dump(cout);
 
     // Seed the random number generator.
