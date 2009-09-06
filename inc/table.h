@@ -74,12 +74,12 @@ public:
     inline bool probe(bitboard_t hash, int depth, int type, Move *move_ptr)
     {
       uint64_t index = 0;
-      index += (hash & 0x0000000000FFFFFF);
-      index += (hash & 0x00000000FFFFFF00) >> 2;
-      index += (hash & 0x000000FFFFFF0000) >> 4;
-      index += (hash & 0x0000FFFFFF000000) >> 6;
-      index += (hash & 0x00FFFFFF00000000) >> 8;
-      index += (hash & 0xFFFFFF0000000000) >> 10;            
+      index += (hash & 0x0000000000FFFFFFLL);
+      index += (hash & 0x00000000FFFFFF00LL) >> 2;
+      index += (hash & 0x000000FFFFFF0000LL) >> 4;
+      index += (hash & 0x0000FFFFFF000000LL) >> 6;
+      index += (hash & 0x00FFFFFF00000000LL) >> 8;
+      index += (hash & 0xFFFFFF0000000000LL) >> 10;            
       index = index%slots;
 
           if (data[index].hash == hash)
@@ -107,12 +107,12 @@ public:
     inline void store(bitboard_t hash, int depth, int type, Move& move)
     {
             uint64_t index = 0;
-      index += (hash & 0x0000000000FFFFFF);
-      index += (hash & 0x00000000FFFFFF00) >> 2;
-      index += (hash & 0x000000FFFFFF0000) >> 4;
-      index += (hash & 0x0000FFFFFF000000) >> 6;
-      index += (hash & 0x00FFFFFF00000000) >> 8;
-      index += (hash & 0xFFFFFF0000000000) >> 10;            
+      index += (hash & 0x0000000000FFFFFFLL);
+      index += (hash & 0x00000000FFFFFF00LL) >> 2;
+      index += (hash & 0x000000FFFFFF0000LL) >> 4;
+      index += (hash & 0x0000FFFFFF000000LL) >> 6;
+      index += (hash & 0x00FFFFFF00000000LL) >> 8;
+      index += (hash & 0xFFFFFF0000000000LL) >> 10;            
       index = index%slots;
 
       //overwrite if deeper or in conflict
