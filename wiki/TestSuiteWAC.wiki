@@ -2,6 +2,8 @@
 
 I do not know the details of the [http://www.jakob.at/steffen/hossa/testsuites/wac.html WAC] test positions yet, but I guess Gray Matter should be able to solve most of these positions within a few seconds. It seems a good test suite to test Gray Matter.
 
+Update: The WAC seems to be “Win At Chess” (Fred Reinfeld), 1958. Moreover, there seems to be a corrected edition wacnew.epd, which I'll use here in the future.
+
 Gray Matter, svn version 1574M, compiled on my HP laptop with Fedora 11,
 produced the below results with the command "test tst/wac.epd": 
 
