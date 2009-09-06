@@ -795,15 +795,6 @@ void xboard::test_suite_next(Move m) {
 		string desc = ts_desc.front();
 		ts_desc.erase(ts_desc.begin());
 
-		// Remove several characters from solution, from the end:
-		string::size_type pos = solution.find_last_not_of("\r\n \t\":!?");
-		if (pos != string::npos)
-			solution = solution.substr(0, pos+1);
-		// Remove from the beginning:
-		pos = solution.find_first_not_of("\r\n \t1.");
-		if (pos != string::npos)
-			solution = solution.substr(pos);
-
 		// Convert our move to san
 		string str;
 		board_ptr->unmake();
@@ -813,10 +804,14 @@ void xboard::test_suite_next(Move m) {
 		if (str == "null") {
 			cerr << desc << " : error!" << endl;
 			ts_erroneous++;
-		} else if (solution == str) {
+		} else if (solution.find(str) != string::npos) {
+			// Gray's suggestion (str) is a substring of the best move (bm) string.
+			// Because there can be multiple best moves, we assume that Gray is right
+			// if 'str' is a substring of 'solution'.
 			cerr << desc << " : '" << solution << "' == '" << str << "'" << endl;
 			ts_success++;
 		} else {
+			// Gray's suggestion is not found in the best move (bm) string.
 			cerr << desc << " : '" << solution << "' != '" << str << "'" << endl;
 			ts_failure++;
 		}
