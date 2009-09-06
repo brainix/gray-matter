@@ -1,7 +1,7 @@
 #==============================================================================#
-#	GNUmakefile							       #
-#									       #
-#	Copyright © 2005-2008, The Gray Matter Team, original authors.	       #
+#	GNUmakefile                                                                #
+#                                                                              #
+#	Copyright © 2005-2008, The Gray Matter Team, original authors.             #
 #==============================================================================#
 
 # Your operating system.  This must be LINUX, OS_X, or WINDOWS.

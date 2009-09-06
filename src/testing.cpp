@@ -72,14 +72,14 @@ void testing::test_perft(int depth)
 
 	// Initial position
 	fen.push_back("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-  uint64_t fen1[] = {20, 400, 8902, 197281, 4865609, 119060324,
-    3195901860, 84998978956, 2439530234167, 69352859712417};
+  uint64_t fen1[] = {20LL, 400LL, 8902LL, 197281LL, 4865609LL, 119060324LL,
+    3195901860LL, 84998978956LL, 2439530234167LL, 69352859712417LL};
 	vector<uint64_t> perft1(fen1, fen1 + sizeof(fen1) / sizeof(uint64_t));
 	perft_score.push_back(perft1);
 
   // This position is very good because it catches many possible bugs.
 	fen.push_back("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
-  uint64_t fen2[] = {48, 2039, 97862, 4085603, 193690690, 8031647685};
+  uint64_t fen2[] = {48LL, 2039LL, 97862LL, 4085603LL, 193690690LL, 8031647685LL};
 	vector<uint64_t> perft2(fen2, fen2 + sizeof(fen2) / sizeof(uint64_t));
 	perft_score.push_back(perft2);
 
@@ -89,18 +89,17 @@ void testing::test_perft(int depth)
 	perft_score.push_back(perft3);
 
 	fen.push_back("8/7p/p5pb/4k3/P1pPn3/8/P5PP/1rB2RK1 b - d3 0 28");
-	uint64_t fen4[] = {0,0,0,0,0,38633283};
+	uint64_t fen4[] = {0LL,0LL,0LL,0LL,0LL,38633283LL};
 	vector<uint64_t> perft4(fen4, fen4 + sizeof(fen4) / sizeof(uint64_t));
 	perft_score.push_back(perft4);
 
-/*
 	fen.push_back("rnbqkb1r/ppppp1pp/7n/4Pp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6 0 3");
-	uint64_t fen5[] = {0,0,0,0,11139762};
+	uint64_t fen5[] = {0LL,0LL,0LL,0LL,11139762LL};
 	vector<uint64_t> perft5(fen5, fen5 + sizeof(fen5) / sizeof(uint64_t));
 	perft_score.push_back(perft5);
-*/
+
 	fen.push_back("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1");
-	uint64_t fen6[] = {0,0,0,0,0,11030083,178633661};
+	uint64_t fen6[] = {0LL,0LL,0LL,0LL,0LL,11030083LL,178633661LL};
 	vector<uint64_t> perft6(fen6, fen6 + sizeof(fen6) / sizeof(uint64_t));
 	perft_score.push_back(perft6);
 
