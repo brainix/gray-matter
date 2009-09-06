@@ -64,6 +64,10 @@ ConfigFile::ConfigFile() {
   items["book_moves"] = STRINGIFY(BOOK_MOVES); // in plies
   items["overhead"] = STRINGIFY(OVERHEAD); // in centiseconds
 
+#ifdef SVN_REV
+	items["svn_version"] = SVN_REV;
+#endif
+  
   items["xml_dump"] = "false";
   items["xml_dir"] = "/tmp";
   items["xml_depth"] = "3";
