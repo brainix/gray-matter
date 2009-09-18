@@ -1,0 +1,4 @@
+#summary This page contains Adam's ideas to make Gray Matter stronger.
+
+=Clock=
+* Allocate clock time depending on contention (the higher the contention, the more thinking time per move).
