@@ -1,4 +1,12 @@
 #summary This page contains Adam's ideas to make Gray Matter stronger.
 
 =Clock=
-* Allocate clock time depending on contention (the higher the contention, the more thinking time per move).
+Allocate clock time depending on contention (the higher the contention, the more thinking time per move).
+
+=Evaluation=
+* Reward knight + queen endgames (+25) vs. bishop + queen
+* Reward bishop + rook endgames (+25) vs. knight + rook
+* Determine open vs. closed games / fluidity of central pawns / potential pawn breaks (D4, E4, D5, E5 -> C4 C5 F4 F5 -> D3, E3, D6, E6)
+* In open games reward bishops (+15).  If you have 2 bishops and your opponent does not have 2 bishops, reward your two bishops more (+10).
+* In closed games reward knights (+15)
+* Possibly reward knights blocking center pawns - Adam doesn't know how he feels about this.  "Hmmz0rz." -Adam
