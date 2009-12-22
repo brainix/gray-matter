@@ -9,6 +9,8 @@ Type:
   * *{{{gmake}}}*
 
 = Download and Compile on Snow Leopard =
+
+Type:
   * *{{{svn checkout http://gray-matter.googlecode.com/svn/trunk/ gray-matter/}}}*
   * *{{{cd gray-matter/}}}*
   * *{{{I edited GNUmakefile and set PLAT = OS_X, ARCH = nocona and I appended -mtune=generic to the MACH variable}}}*
