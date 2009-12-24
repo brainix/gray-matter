@@ -27,7 +27,7 @@
 #include "search_base.h"
 
 #define BUFFER_SIZE	160
-#define TESTSUITE_TIMETOMOVE 5*60*100 // 5 seconds
+#define TESTSUITE_TIMETOMOVE 10*100 // 10 seconds
 
 /// Chess Engine Communication Protocol.
 class xboard
