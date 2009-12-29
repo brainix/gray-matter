@@ -240,6 +240,9 @@ void search_base::handle()
 /// The alarm has sounded.  Handle it.
 
     mutex_lock(&timeout_mutex);
+#ifndef _MSDEV_WINDOWS    
+	DEBUG_SEARCH_PRINT("Setting timeout flag");
+#endif
     timeout_flag = true;
     mutex_unlock(&timeout_mutex);
 }

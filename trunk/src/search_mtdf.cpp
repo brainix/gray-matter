@@ -141,6 +141,9 @@ bool search_mtdf::iterate(int state)
     for (int depth = 1; depth < (MAX_DEPTH-SPECIAL_SEARCH_DEPTH); depth++)
     {
         set_depth(depth);  //max max depth to search for this iteration
+#ifndef _MSDEV_WINDOWS        
+        DEBUG_SEARCH_PRINT("Iterative deepening maxdepth set to %d.", depth);
+#endif
         DEBUG_SEARCH_INIT(1, "");
         //guess[depth & 1] = mtdf(depth, guess[depth & 1].value);
         guess[depth & 1] = minimax(1);  //start at depth 1 and go deeper
