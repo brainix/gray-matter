@@ -150,6 +150,16 @@ void xboard::loop(search_base *s, chess_clock *c, book *o)
             do_analyze();
         else if (!strncmp(buffer, "exit", 4))
             do_exit();
+
+        // These commands are for Scid, which is slightly different from xboard,
+        // note that to use Gray matter you must configure it as an xboard engine (uncheck UCI).
+        else if (!strncmp(buffer, "ponder off", 10))
+        	do_easy();
+        else if (!strncmp(buffer, "white", 5))
+        	; // We already know this from the FEN, so we ignore it.
+        else if (!strncmp(buffer, "black", 5))
+        	; // We already know this from the FEN, so we ignore it.
+
         // These commands are not part of the Chess Engine Interface Protocol,
         // but they come in handy to us.
         else if (!strncmp(buffer, "display", 7))
@@ -823,7 +833,6 @@ void xboard::test_suite_next(Move m) {
 		ts_fen.erase(ts_fen.begin());
 		do_setboard(fen);
 		clock_ptr->set_mode(board_ptr->get_whose(), 1, TESTSUITE_TIMETOMOVE, 0);
-		// cout << "Clock: " << clock_ptr->to_string(board_ptr->get_whose()) << endl;
 		do_go();
 	} else {
 		// Test suite finished
