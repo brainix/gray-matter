@@ -66,6 +66,8 @@ ConfigFile::ConfigFile() {
 
 #ifdef SVN_REV
 	items["svn_version"] = SVN_REV;
+#else
+	items["svn_version"] = "0";
 #endif
   
   items["xml_dump"] = "false";

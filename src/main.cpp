@@ -119,7 +119,13 @@ int main(int argc, char **argv)
     }
 
 	// Dump configuration items.
-    config.dump(cout);
+    config.dump(cerr);
+
+    // Say hello
+    if (config.getInt("svn_version") > 0)
+    	cout << "Gray matter (svn version " << config.getInt("svn_version") << endl;
+    else
+    	cout << "Gray matter" << endl;
 
     // Seed the random number generator.
     srand((unsigned int)time(NULL));

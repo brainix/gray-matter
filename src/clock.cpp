@@ -24,6 +24,7 @@
 #include "gray.h"
 #include "clock.h"
 #include "library.h"
+#include "search_base.h"
 
 /*----------------------------------------------------------------------------*\
  |                               chess_clock()                                |
@@ -103,6 +104,9 @@ void chess_clock::set_alarm(int color) const
     int moves = remaining_moves[color] ? remaining_moves[color] : 40;
     int csecs_per_move = csecs / moves + inc[color] - overhead;
     csecs_per_move = GREATER(csecs_per_move, 1);
+#ifndef _MSDEV_WINDOWS
+    DEBUG_SEARCH_PRINT("Setting alarm to %d csecs from now.", csecs_per_move);
+#endif
     timer_set(csecs_per_move);
 }
 
