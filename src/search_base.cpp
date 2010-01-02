@@ -202,14 +202,11 @@ void search_base::change(int s, const board_base& now)
 
     // Wait for the board, grab the board, set the board position, and release
     // the board.
-    if (s == ANALYZING || s == THINKING || s == PONDERING)
-    {
-        board_ptr->lock();
-        *board_ptr = now;
-        extract_pv();
-        extract_hint(s);
-        board_ptr->unlock();
-    }
+	board_ptr->lock();
+	*board_ptr = now;
+	extract_pv();
+	extract_hint(s);
+	board_ptr->unlock();
 
     // Send the command to think.
     mutex_lock(&search_mutex);
