@@ -495,8 +495,8 @@ int board_base::get_status(bool mate_test)
             case STALEMATE: return STALEMATE;
             case CHECKMATE: return CHECKMATE;
         }
-    if (insufficient())
-        return INSUFFICIENT;
+    //if (insufficient())
+        //return INSUFFICIENT;
     if (three())
         return THREE;
     if (fifty())
@@ -1883,23 +1883,98 @@ bool board_base::fifty() const
     return state.fifty >= 50;
 }
 
+inline uint64_t rotateRight(uint64_t x, int s) 
+  {return (x >> s) | (x << (64-s));}
+
+inline uint64_t rotateLeft(uint64_t x, int s) 
+  {return (x << s) | (x >> (64-s));}
+
+inline uint64_t flipVertical(uint64_t x) {
+    return  ( (x << 56)                        ) |
+            ( (x << 40) & (0x00ff000000000000) ) |
+            ( (x << 24) & (0x0000ff0000000000) ) |
+            ( (x <<  8) & (0x000000ff00000000) ) |
+            ( (x >>  8) & (0x00000000ff000000) ) |
+            ( (x >> 24) & (0x0000000000ff0000) ) |
+            ( (x >> 40) & (0x000000000000ff00) ) |
+            ( (x >> 56) );
+}
+
+inline uint64_t flipDiagA1H8(uint64_t x) 
+{
+   uint64_t t;
+   t  = 0x0f0f0f0f00000000 & (x ^ (x << 28));
+   x ^=       t ^ (t >> 28) ;
+   t  = 0x3333000033330000 & (x ^ (x << 14));
+   x ^=       t ^ (t >> 14) ;
+   t  = 0x5500550055005500 & (x ^ (x <<  7));
+   x ^=       t ^ (t >>  7) ;
+   return x;
+}
+
+/*
+uint64_t flipDiagA8H1(uint64_t x)
+{
+   uint64_t t;
+   t  =       x ^ (x << 36) ;
+   x ^= 0xf0f0f0f00f0f0f0f & (t ^ (x >> 36));
+   t  = 0xcccc0000cccc0000 & (x ^ (x << 18));
+   x ^=       t ^ (t >> 18) ;
+   t  = 0xaa00aa00aa00aa00 & (x ^ (x <<  9));
+   x ^=       t ^ (t >>  9) ;
+   return x;
+}
+*/
+
+uint64_t rotate45clockwise (uint64_t x) {
+   const uint64_t k1 = (0xAAAAAAAAAAAAAAAA);
+   const uint64_t k2 = (0xCCCCCCCCCCCCCCCC);
+   const uint64_t k4 = (0xF0F0F0F0F0F0F0F0);
+   x ^= k1 & (x ^ rotateRight(x,  8));
+   x ^= k2 & (x ^ rotateRight(x, 16));
+   x ^= k4 & (x ^ rotateRight(x, 32));
+   return x;
+}
+
+uint64_t rotate45counter(uint64_t x) {
+   const uint64_t k1 = (0x5555555555555555);
+   const uint64_t k2 = (0x3333333333333333);
+   const uint64_t k4 = (0x0f0f0f0f0f0f0f0f);
+   x ^= k1 & (x ^ rotateRight(x,  8));
+   x ^= k2 & (x ^ rotateRight(x, 16));
+   x ^= k4 & (x ^ rotateRight(x, 32));
+   return x;
+}
+
 /*----------------------------------------------------------------------------*\
  |                                  rotate()                                  |
 \*----------------------------------------------------------------------------*/
 bitboard_t board_base::rotate(bitboard_t b1, int map, int angle) const
 {
-
-/// Rotate a BitBoard.
-
     bitboard_t b2 = 0;
 
-    for (int n, x, y; (n = FST(b1)) != -1; BIT_CLR(b1, x, y))
+    if (b1 == 0) return 0;
+
+    switch(angle)
     {
-        x = n & 0x7;
-        y = n >> 3;
-        BIT_SET(b2, coord[map][angle][x][y][X], coord[map][angle][x][y][Y]);
+      case ZERO:
+          return b1;
+      case R90:
+        if (map == MAP)           //rotate forwards
+          return flipDiagA1H8(flipVertical(b1));
+        else                      //rotate backwards
+          return flipVertical (flipDiagA1H8 (b1) );
+      case L45:
+      case R45:
+        for (int n, x, y; (n = FST(b1)) != -1; BIT_CLR(b1, x, y))
+        {
+            x = n & 0x7;
+            y = n >> 3;
+            BIT_SET(b2, coord[map][angle][x][y][X], coord[map][angle][x][y][Y]);
+        }
+        return b2;
     }
-    return b2;
+  return 0;
 }
 
 /*----------------------------------------------------------------------------*\
