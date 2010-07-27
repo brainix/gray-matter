@@ -488,7 +488,6 @@ int find_64(uint64_t n)
       uint32_t v = (n >> 32);
       return find_32(v) + 32;
     }
-    //return ffsll(n);
 #elif defined(OS_X)
     return ffs(n >> shift) + shift;
 #elif defined(_MINGW_WINDOWS)
@@ -508,36 +507,6 @@ int find_32(uint32_t n)
   if (n == 0) return 0;
   return MultiplyDeBruijnBitPosition[((uint32_t)((n & -n) * 0x077CB531U)) >> 27];
 }
-/*
-#if defined(LINUX) || defined(OS_X)
-  if (n == 0) return 0;
-  //if (ffs(n) != (MultiplyDeBruijnBitPosition[((uint32_t)((n & -n) * 0x077CB531U)) >> 27]))
-  //  std::cout << "ffs: " << ffs(n) << " debruj: " << MultiplyDeBruijnBitPosition[((uint32_t)((n & -n) * 0x077CB531U)) >> 27] << std::endl;
-  return MultiplyDeBruijnBitPosition[((uint32_t)((n & -n) * 0x077CB531U)) >> 27];
-  //return ffs(n);
-#elif defined(_MINGW_WINDOWS)
-//this should be faster
-//if (n == 0) return 0;
-//someone please check it out next time they are messing with this code
-//return MultiplyDeBruijnBitPosition[((uint32_t)((n & -n) * 0x077CB531U)) >> 27];
-
-    static const uint8_t table[] =
-    {
-        0,1,2,2,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,
-        6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,
-        7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
-        7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
-        8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,
-        8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,
-        8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,
-        8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8
-    };
-    n &= (-1)*n;
-    int shift = (uint32_t) n <= 0xFFFF ? ((uint32_t) n <= 0xFF ? 0 : 8) : ((uint32_t) n <= 0xFFFFFF ? 16 : 24);
-    return table[n >> shift] + shift;
-#endif
-}
-*/
 
 /*----------------------------------------------------------------------------*\
  |                            get_home_directory()                            |
