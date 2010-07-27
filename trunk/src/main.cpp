@@ -104,7 +104,7 @@ int main(int argc, char **argv)
         case 'p':
           {
             // Specifying correctness and performance tests.
-            testing t(&argv[i][2]);
+            testing t(&argv[i][1]);
             t.start();
             break;
           }
@@ -118,14 +118,14 @@ int main(int argc, char **argv)
         }
     }
 
-	// Dump configuration items.
+    // Dump configuration items.
     config.dump(cerr);
 
     // Say hello
     if (config.getInt("svn_version") > 0)
-    	cout << "Gray matter (svn version " << config.getInt("svn_version") << endl;
+        cout << "Gray matter (svn version " << config.getInt("svn_version") << endl;
     else
-    	cout << "Gray matter" << endl;
+        cout << "Gray matter" << endl;
 
     // Seed the random number generator.
     srand((unsigned int)time(NULL));
