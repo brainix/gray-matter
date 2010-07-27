@@ -20,6 +20,20 @@
  */
 
 #include "library.h"
+#include <iostream>
+
+//fast bit index lookup assistance
+//static const int MultiplyDeBruijnBitPosition[32] = 
+//{
+// 0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8, 
+//  31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9
+//};
+static const int MultiplyDeBruijnBitPosition[32] = 
+{
+  1,2,29,3,30,15,25,4,31,23,21,16,26,18,5,9,
+  32,28,14,24,22,20,17,8,27,13,19,7,12,6,11,10
+};
+
 
 //Windows needs a variable to hold the time per move
 //since it seems to get lost/corrupted in the current
@@ -297,12 +311,12 @@ DWORD timer_handler(LPVOID arg)
 // So, in order to replicate its functionality, we have to jump through these
 // hoops:
 //
-//	1. Create a timer thread.  Then, within the timer thread:
-//	2. Create an alarm.
-//	3. Set the alarm.
-//	4. Wait for the alarm to sound.
-//	5. Somehow notify the other thread.
-//	6. Exit the timer thread.
+//  1. Create a timer thread.  Then, within the timer thread:
+//  2. Create an alarm.
+//  3. Set the alarm.
+//  4. Wait for the alarm to sound.
+//  5. Somehow notify the other thread.
+//  6. Exit the timer thread.
 //
 // This way, while the timer thread waits for the alarm to sound, the other
 // thread continues with its work.  At this point, the timer thread has already
@@ -454,7 +468,6 @@ int count_64(uint64_t n)
 \*----------------------------------------------------------------------------*/
 int find_64(uint64_t n)
 {
-
 // Find the first (least significant) set bit in a 64-bit integer.  The return
 // value ranges from 0 (for no bit set), to 1 (for the least significant bit
 // set), to 64 (for only the most significant bit set).
@@ -465,7 +478,17 @@ int find_64(uint64_t n)
 #endif
 
 #if defined(LINUX)
-    return ffsll(n);
+    if (n <= 0x00000000FFFFFFFF)
+    {
+      uint32_t v = n & 0x00000000FFFFFFFFULL;
+      return find_32(v);
+    }
+    else
+    {
+      uint32_t v = (n >> 32);
+      return find_32(v) + 32;
+    }
+    //return ffsll(n);
 #elif defined(OS_X)
     return ffs(n >> shift) + shift;
 #elif defined(_MINGW_WINDOWS)
@@ -478,14 +501,26 @@ int find_64(uint64_t n)
 \*----------------------------------------------------------------------------*/
 int find_32(uint32_t n)
 {
-
 // Find the first (least significant) set bit in a 32-bit integer.  The return
 // value ranges from 0 (for no bit set), to 1 (for the least significant bit
 // set), to 32 (for only the most significant bit set).
 
+  if (n == 0) return 0;
+  return MultiplyDeBruijnBitPosition[((uint32_t)((n & -n) * 0x077CB531U)) >> 27];
+}
+/*
 #if defined(LINUX) || defined(OS_X)
-    return ffs(n);
+  if (n == 0) return 0;
+  //if (ffs(n) != (MultiplyDeBruijnBitPosition[((uint32_t)((n & -n) * 0x077CB531U)) >> 27]))
+  //  std::cout << "ffs: " << ffs(n) << " debruj: " << MultiplyDeBruijnBitPosition[((uint32_t)((n & -n) * 0x077CB531U)) >> 27] << std::endl;
+  return MultiplyDeBruijnBitPosition[((uint32_t)((n & -n) * 0x077CB531U)) >> 27];
+  //return ffs(n);
 #elif defined(_MINGW_WINDOWS)
+//this should be faster
+//if (n == 0) return 0;
+//someone please check it out next time they are messing with this code
+//return MultiplyDeBruijnBitPosition[((uint32_t)((n & -n) * 0x077CB531U)) >> 27];
+
     static const uint8_t table[] =
     {
         0,1,2,2,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,
@@ -502,6 +537,7 @@ int find_32(uint32_t n)
     return table[n >> shift] + shift;
 #endif
 }
+*/
 
 /*----------------------------------------------------------------------------*\
  |                            get_home_directory()                            |

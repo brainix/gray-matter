@@ -1,7 +1,7 @@
-/*----------------------------------------------------------------------------*\
- |	testing.cpp - correctness and performance tests implementation	      |
- |									      |
- |	Copyright © 2005-2008, The Gray Matter Team, original authors.	      |
+/*----------------------------------------------------------------------------*f
+ |  testing.cpp - correctness and performance tests implementation        |
+ |                                        |
+ |  Copyright © 2005-2008, The Gray Matter Team, original authors.        |
 \*----------------------------------------------------------------------------*/
 
 /*
@@ -50,7 +50,7 @@ void testing::start()
   else if(test_name == "perft10") test_perft(10);
   else 
   {
-	  cerr << "Unknown test: '" << test_name << "'" << endl;
+      cerr << "Unknown test: '" << test_name << "'" << endl;
     cerr << "try \"-perft1\" or \"-perft2\", etc. . ." << endl;
     cerr << "Note: we are currently only supporting up to depth 10." << endl;
   }
@@ -58,66 +58,70 @@ void testing::start()
 }
 
 /*----------------------------------------------------------------------------*\
- |				 test_perft_1()				      |
+ |               test_perft()                   |
 \*----------------------------------------------------------------------------*/
 // This tests some known perft() output values to what we produce.
 // Data is from http://www.albert.nu/programs/sharper/perft.htm
 //
 void testing::test_perft(int depth) 
 {
-	vector <string> fen;
-	vector <vector <uint64_t> > perft_score;
+    vector <string> fen;
+    vector <vector <uint64_t> > perft_score;
 
   if (depth == 0) return;
 
-	// Initial position
-	fen.push_back("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    // Initial position
+    fen.push_back("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
   uint64_t fen1[] = {20LL, 400LL, 8902LL, 197281LL, 4865609LL, 119060324LL,
     3195901860LL, 84998978956LL, 2439530234167LL, 69352859712417LL};
-	vector<uint64_t> perft1(fen1, fen1 + sizeof(fen1) / sizeof(uint64_t));
-	perft_score.push_back(perft1);
+    vector<uint64_t> perft1(fen1, fen1 + sizeof(fen1) / sizeof(uint64_t));
+    perft_score.push_back(perft1);
 
   // This position is very good because it catches many possible bugs.
-	fen.push_back("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
+    fen.push_back("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
   uint64_t fen2[] = {48LL, 2039LL, 97862LL, 4085603LL, 193690690LL, 8031647685LL};
-	vector<uint64_t> perft2(fen2, fen2 + sizeof(fen2) / sizeof(uint64_t));
-	perft_score.push_back(perft2);
+    vector<uint64_t> perft2(fen2, fen2 + sizeof(fen2) / sizeof(uint64_t));
+    perft_score.push_back(perft2);
 
-	fen.push_back("8/3K4/2p5/p2b2r1/5k2/8/8/1q6 b - - 1 67");
-	uint64_t fen3[] = {50, 279};
-	vector<uint64_t> perft3(fen3, fen3 + sizeof(fen3) / sizeof(uint64_t));
-	perft_score.push_back(perft3);
+    //level 3
+    fen.push_back("8/3K4/2p5/p2b2r1/5k2/8/8/1q6 b - - 1 67");
+    uint64_t fen3[] = {50, 279};
+    vector<uint64_t> perft3(fen3, fen3 + sizeof(fen3) / sizeof(uint64_t));
+    perft_score.push_back(perft3);
 
-	fen.push_back("8/7p/p5pb/4k3/P1pPn3/8/P5PP/1rB2RK1 b - d3 0 28");
-	uint64_t fen4[] = {0LL,0LL,0LL,0LL,0LL,38633283LL};
-	vector<uint64_t> perft4(fen4, fen4 + sizeof(fen4) / sizeof(uint64_t));
-	perft_score.push_back(perft4);
+     //level 4
+    fen.push_back("8/7p/p5pb/4k3/P1pPn3/8/P5PP/1rB2RK1 b - d3 0 28");
+    uint64_t fen4[] = {0LL,0LL,0LL,0LL,0LL,38633283LL};
+    vector<uint64_t> perft4(fen4, fen4 + sizeof(fen4) / sizeof(uint64_t));
+    perft_score.push_back(perft4);
+/*
+    //level 5
+    fen.push_back("rnbqkb1r/ppppp1pp/7n/4Pp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6 0 3");
+    uint64_t fen5[] = {0LL,0LL,0LL,0LL,11139762LL};
+    vector<uint64_t> perft5(fen5, fen5 + sizeof(fen5) / sizeof(uint64_t));
+    perft_score.push_back(perft5);
 
-	fen.push_back("rnbqkb1r/ppppp1pp/7n/4Pp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6 0 3");
-	uint64_t fen5[] = {0LL,0LL,0LL,0LL,11139762LL};
-	vector<uint64_t> perft5(fen5, fen5 + sizeof(fen5) / sizeof(uint64_t));
-	perft_score.push_back(perft5);
+    //level 6
+    fen.push_back("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1");
+    uint64_t fen6[] = {0LL,0LL,0LL,0LL,0LL,11030083LL};//,178633661LL};
+    vector<uint64_t> perft6(fen6, fen6 + sizeof(fen6) / sizeof(uint64_t));
+    perft_score.push_back(perft6);
+*/
 
-	fen.push_back("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1");
-	uint64_t fen6[] = {0LL,0LL,0LL,0LL,0LL,11030083LL,178633661LL};
-	vector<uint64_t> perft6(fen6, fen6 + sizeof(fen6) / sizeof(uint64_t));
-	perft_score.push_back(perft6);
-
-
-	// Print all test results
-	cout << "This performance test compares to the following data:" << endl;
-	for(size_t i = 0; i < fen.size(); i++) 
+    // Print all test results
+    cout << "This performance test compares to the following data:" << endl;
+    for(size_t i = 0; i < fen.size(); i++) 
   {
-	  cout << "FEN[" << i << "]: " << fen[i] << endl << "\t";
-	  copy(perft_score[i].begin(), perft_score[i].end()-1, 
-		  ostream_iterator<uint64_t>(cout, ", "));
-	  cout << perft_score[i].back() << endl;
-	}
+      cout << "FEN[" << i << "]: " << fen[i] << endl << "\t";
+      copy(perft_score[i].begin(), perft_score[i].end()-1, 
+          ostream_iterator<uint64_t>(cout, ", "));
+      cout << perft_score[i].back() << endl;
+    }
 
-	// Now run the tests
-	uint64_t pval;
-	board_base *board_ptr = new board_heuristic();
-	string move_str, board_str;
+    // Now run the tests
+    uint64_t pval;
+    board_base *board_ptr = new board_heuristic();
+    string move_str, board_str;
 
   double timeStart = clock();
 
@@ -125,53 +129,53 @@ void testing::test_perft(int depth)
   {
     for(size_t feni = 0; feni < fen.size(); feni++) 
     {
-	    //if(currDepth < static_cast<signed>(perft_score[feni].size()))
-	    //  tests_left = true;
+        //if(currDepth < static_cast<signed>(perft_score[feni].size()))
+        //  tests_left = true;
 
-	    if(currDepth < static_cast<signed>(perft_score[feni].size()) && 
-	       perft_score[feni][currDepth] != 0)  // zero means value is unknown
+        if(currDepth < static_cast<signed>(perft_score[feni].size()) && 
+           perft_score[feni][currDepth] != 0)  // zero means value is unknown
       {
-	      cout << "Testing FEN[" << feni << "] at depth <" 
+          cout << "Testing FEN[" << feni << "] at depth <" 
              << (currDepth+1) << "> ";
-	      if(!board_ptr->set_board_fen(fen[feni])) 
+          if(!board_ptr->set_board_fen(fen[feni])) 
         {
-		      cout << "Error setting fen." << endl;
-		      exit(EXIT_FAILURE);
-	      }
-	      board_str = board_ptr->to_string();
-	      pval = board_ptr->perft(currDepth+1);
+              cout << "Error setting fen:" << &fen[feni] << endl;
+              exit(EXIT_FAILURE);
+          }
+          board_str = board_ptr->to_string();
+          pval = board_ptr->perft(currDepth+1);
 
-	      if(pval != perft_score[feni][currDepth])
+          if(pval != perft_score[feni][currDepth])
         {
-		      cout << "Problem with fen = '" << fen[feni] << "'" << endl;
-		      cout << board_str;
-		      cout << "At depth " << (currDepth+1) << ":" << endl;
-		      cout << "  Expected perft = " << perft_score[feni][currDepth] << endl;
-		      cout << "  Computed perft = " << pval << endl;
-		      cout << "Repeating perft() with more details:" << endl;
+              cout << "Problem with fen = '" << fen[feni] << "'" << endl;
+              cout << board_str;
+              cout << "At depth " << (currDepth+1) << ":" << endl;
+              cout << "  Expected perft = " << perft_score[feni][currDepth] << endl;
+              cout << "  Computed perft = " << pval << endl;
+              cout << "Repeating perft() with more details:" << endl;
 
           MoveArray l(MAX_MOVES_PER_TURN);
-		      board_ptr->generate(l, true);
+              board_ptr->generate(l, true);
           for (unsigned i=0;i<l.mNumElements;++i)
           {
-		        board_ptr->coord_to_san(l.theArray[i], move_str);
-		        board_ptr->make(l.theArray[i]);
-		        pval = board_ptr->perft(currDepth);
-		        cout << move_str << " : " << pval << ", ";
-		        board_ptr->unmake();
-			    }
-		      cout << endl << endl;
-	      }
+                board_ptr->coord_to_san(l.theArray[i], move_str);
+                board_ptr->make(l.theArray[i]);
+                pval = board_ptr->perft(currDepth);
+                cout << move_str << " : " << pval << ", ";
+                board_ptr->unmake();
+                }
+              cout << endl << endl;
+          }
         else  //the score was correct.
         {
           cout << " Correct!" << endl;
         }
-	    }
+        }
     }
     //finished the level . . how long did it take?
     double timeEnd = clock();
     cout << "......................................" 
          << (timeEnd - timeStart)/CLOCKS_PER_SEC << " seconds." << endl;
   }
-	exit(EXIT_SUCCESS);
+    exit(EXIT_SUCCESS);
 }
