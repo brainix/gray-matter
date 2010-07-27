@@ -263,8 +263,8 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
     bool whose = board_ptr->get_whose();     // The color on move.
     bitboard_t hash = board_ptr->get_hash(); // This position's hash.
     int status = board_ptr->get_status(0);   // Whether the game is over.
-    //value_t saved_alpha = alpha;             // Saved lower bound on score.
-    //value_t saved_beta = beta;               // Saved upper bound on score.
+    value_t saved_alpha = alpha;             // Saved lower bound on score.
+    value_t saved_beta = beta;               // Saved upper bound on score.
     //Move null_move;                        // The all-important null move.
     Move m;                                // The best move and score.
 
@@ -474,17 +474,21 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
     if (!timeout_flag)
     {
         // Nope, the results are complete and reliable.  Save them for progeny.
-        //if (m.value > saved_alpha && m.value < saved_beta)
+        if (m.value > saved_alpha && m.value < saved_beta)
+        {
             // When doing MTD(f) zero-window searches, our move search should
-            // never return an exact score.  I've only accounted for this in the
+            // never return an exact score. I've only accounted for this in the
             // interest of robustness.
-        if ((max_depth-depth) > 3)
+          if ((max_depth-depth) > 3)
             table_ptr->store(hash, max_depth-depth-1, EXACT, m);
-        //else if (m.value <= saved_alpha)
-          //  table_ptr->store(hash, max_depth-depth, UPPER, m);
-        //else // m.value >= saved_beta
-          //  table_ptr->store(hash, max_depth-depth, LOWER, m);
-       history_ptr->store(whose, m); //this seems like a good move
+          //else if (m.value <= saved_alpha)
+            //table_ptr->store(hash, max_depth-depth, UPPER, m);
+        }
+        else // m.value >= saved_beta
+        {
+          table_ptr->store(hash, max_depth-depth, LOWER, m);
+        }
+        history_ptr->store(whose, m); //this seems like a good move
     }
     
  
