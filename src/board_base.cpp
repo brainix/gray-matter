@@ -1631,7 +1631,7 @@ void board_base::precomp_row() const
             for (int dir = -1; dir <= 1; dir += 2)
                 for (int j = x + dir; j >= 0 && j <= 7; j += dir)
                 {
-                    BIT_SET((bitboard_t&)squares_row[x][occ], j, 0);
+                    BIT_SET((bitboard_t&)(squares_row[x][occ]),j, 0);
                     if (BIT_GET(occ, j, 0))
                         // Oops.  The sliding piece can't slide through an enemy
                         // piece.

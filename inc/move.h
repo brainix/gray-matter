@@ -118,6 +118,15 @@ public:
     mNumElements = 0;
   }
 
+  inline MoveArray& operator=(const MoveArray& that)
+  {
+     mArraySize = that.mArraySize;
+     mNumElements = that.mNumElements;
+     for(unsigned i = 0;i<that.mNumElements;i++)
+       theArray[i] = that.theArray[i];
+     return *this;
+  }
+
   inline size_t size()
   {
     return mNumElements;
