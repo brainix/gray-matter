@@ -67,7 +67,6 @@ typedef pthread_cond_t cond_t;       // Condition variable.
 
 // Win32 header files:
 #ifdef _MSDEV_WINDOWS
-#define _WIN32_WINNT 0x0501
 #include "MSDEVstdint.h"
 #else
 #include <stdint.h>
@@ -124,7 +123,9 @@ class Library
   static int timer_function(void (*function)(void *), void *data);
   static int timer_set(int csec);
   static int timer_cancel();
-  static void timer_handler(int num);
+#if defined(LINUX) || defined(OS_X)
+  void timer_handler(int num);
+#endif
 
   // Function prototypes related to 64-bit pseudo-random number generation and
   // bitwise operations:
@@ -140,5 +141,8 @@ class Library
   static void *callback_data;
 };
 
+#if defined(_MINGW_WINDOWS)
+  DWORD timer_handler(LPVOID arg);
+#endif
 
 #endif
