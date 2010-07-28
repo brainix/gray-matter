@@ -446,17 +446,15 @@ uint64_t rand_64()
 
 /*----------------------------------------------------------------------------*\
  |                                 count_64()                                 |
+ |   Count the number of set bits in a 64-bit integer.
 \*----------------------------------------------------------------------------*/
 int count_64(uint64_t n)
 {
-
-// Count the number of set bits in a 64-bit integer.
-
-    int sum;
-
-    for (sum = 0; n; sum++) // Count until n is clear.
-        n &= n - 1;         // Clear n's least significant set bit.
-    return sum;
+    n = n - ((n >> 1) & (uint64_t)~(uint64_t)0/3);
+    n = (n & (uint64_t)~(uint64_t)0/15*3) + 
+                     ((n >> 2) & (uint64_t)~(uint64_t)0/15*3);
+    n = (n + (n >> 4)) & (uint64_t)~(uint64_t)0/255*15;   
+    return (uint64_t)(n * ((uint64_t)~(uint64_t)0/255)) >> (sizeof(n) - 1) * 8;
 }
 
 // These next two functions, we shamelessly yoinked from the GNU C Library,
