@@ -471,23 +471,20 @@ bitboard_t board_base::get_hash() const
 int board_base::get_status(bool mate_test)
 {
 
-/// Determine the status of the game.  This must be one of:
-///	· still in progress
-///	· stalemated
-///	· drawn due to insufficient material
-///	· drawn due to threefold repetition
-///	· drawn due to the fifty move rule
-///	· checkmated
-///	· illegal position
-
-    // Is a king missing?
-    if (!state.piece[WHITE][KING] || !state.piece[BLACK][KING])
-        return ILLEGAL;
-
-    // Are the kings attacking one other?
-    int n = FST(state.piece[WHITE][KING]);
-    if (squares_king[n & 0x7][n >> 3] & state.piece[BLACK][KING])
-        return ILLEGAL;
+    /// Determine the status of the game.  This must be one of:
+    ///  - still in progress
+    ///  - stalemated
+    ///  - drawn due to insufficient material
+    ///  - drawn due to threefold repetition
+    ///  - drawn due to the fifty move rule
+    ///  - checkmated
+    ///  - illegal position
+    ///
+    /// For speed, try to test in order of likelyhood of happening.
+     
+    // can a king be taken? (do this before insufficient test)
+    if (check(state.piece[OFF_MOVE][KING], ON_MOVE))
+      return ILLEGAL;
 
     if (mate_test)
         switch (mate())
@@ -495,12 +492,16 @@ int board_base::get_status(bool mate_test)
             case STALEMATE: return STALEMATE;
             case CHECKMATE: return CHECKMATE;
         }
-    //if (insufficient())
-        //return INSUFFICIENT;
     if (three())
         return THREE;
+    if (insufficient())
+        return INSUFFICIENT;
     if (fifty())
         return FIFTY;
+
+    // Is a king missing?
+    if (!state.piece[WHITE][KING] || !state.piece[BLACK][KING])
+        return ILLEGAL;
 
     return IN_PROGRESS;
 }
@@ -543,9 +544,7 @@ unsigned board_base::get_num_pieces(const bool color) const
 \*----------------------------------------------------------------------------*/
 bool board_base::check(bool off_move) const
 {
-    bool defense = off_move ? OFF_MOVE : ON_MOVE;
-    bool offense = off_move ? ON_MOVE : OFF_MOVE;
-    return check(state.piece[defense][KING], offense);
+    return check(state.piece[off_move][KING], !off_move);
 }
 
 /*----------------------------------------------------------------------------*\
