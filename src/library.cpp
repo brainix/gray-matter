@@ -295,7 +295,7 @@ void Library::timer_handler(int num)
     (*callback)(callback_data);
 }
 #elif defined(_MINGW_WINDOWS)
-DWORD Library::timer_handler(LPVOID arg)
+DWORD timer_handler(LPVOID arg)
 {
 
 // On Windows, Steve Ballmer is too busy throwing chairs to implement SIGALRM.
@@ -319,7 +319,7 @@ DWORD Library::timer_handler(LPVOID arg)
                                                        // notifying the other
                                                        // thread.
 
-    double dTimeInterval = (double)timePerMove;
+    double dTimeInterval = (double)Library::timePerMove;
 
     HANDLE timer_id = INVALID_HANDLE_VALUE;
 
@@ -342,13 +342,13 @@ DWORD Library::timer_handler(LPVOID arg)
         goto end;
 
     // Notify the other thread - call the previously specified function.
-    (*callback)(callback_data);
+    (*Library::callback)(Library::callback_data);
 
     // Exit the timer thread.
 end:
     if (timer_id != INVALID_HANDLE_VALUE)
         CloseHandle(timer_id);
-    thread_destroy(&timer_thread);
+    Library::thread_destroy(&timer_thread);
     return 0;
 }
 #endif
