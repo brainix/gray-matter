@@ -466,31 +466,17 @@ int count_64(uint64_t n)
 \*----------------------------------------------------------------------------*/
 int find_64(uint64_t n)
 {
-// Find the first (least significant) set bit in a 64-bit integer.  The return
-// value ranges from 0 (for no bit set), to 1 (for the least significant bit
-// set), to 64 (for only the most significant bit set).
+  // Find the first (least significant) set bit in a 64-bit integer.  The return
+  // value ranges from 0 (for no bit set), to 1 (for the least significant bit
+  // set), to 64 (for only the most significant bit set).
+  // Optionally, use ffs, ffsl, ffsll, but this code is more portable
+  // and just as fast
+  if (n == 0) return 0;
 
-#if defined(OS_X) || defined(_MINGW_WINDOWS)
-    n &= (-1)*n;
-    int shift = (uint64_t) n <= 0xFFFFFFFFULL ? 0 : 32;
-#endif
+  int c = find_32(n); //the lower 32 bits
+  if (c) return c;
 
-#if defined(LINUX)
-    if (n <= 0x00000000FFFFFFFF)
-    {
-      uint32_t v = n & 0x00000000FFFFFFFFULL;
-      return find_32(v);
-    }
-    else
-    {
-      uint32_t v = (n >> 32);
-      return find_32(v) + 32;
-    }
-#elif defined(OS_X)
-    return ffs(n >> shift) + shift;
-#elif defined(_MINGW_WINDOWS)
-    return find_32((uint32_t)(n >> shift)) + shift;
-#endif
+  return find_32(n >> 32) + 32; //the higher 32 bits
 }
 
 /*----------------------------------------------------------------------------*\
@@ -498,12 +484,13 @@ int find_64(uint64_t n)
 \*----------------------------------------------------------------------------*/
 int find_32(uint32_t n)
 {
-// Find the first (least significant) set bit in a 32-bit integer.  The return
-// value ranges from 0 (for no bit set), to 1 (for the least significant bit
-// set), to 32 (for only the most significant bit set).
-
-  if (n == 0) return 0;
-  return MultiplyDeBruijnBitPosition[((uint32_t)((n & -n) * 0x077CB531U)) >> 27];
+  // Find the first (least significant) set bit in a 32-bit integer.  The return
+  // value ranges from 0 (for no bit set), to 1 (for the least significant bit
+  // set), to 32 (for only the most significant bit set).
+  if (n == 0) 
+    return 0;
+  else 
+    return MultiplyDeBruijnBitPosition[((uint32_t)((n & -n) * 0x077CB531U)) >> 27];
 }
 
 /*----------------------------------------------------------------------------*\
