@@ -53,11 +53,11 @@ search_base::search_base(table *t, history *h, chess_clock *c, xboard *x)
     clock_ptr = c;
     xboard_ptr = x;
 
-    mutex_create(&timeout_mutex);
+    Library::mutex_create(&timeout_mutex);
     clock_ptr->set_callback((clock_callback_t) _handle, this);
-    mutex_create(&search_mutex);
-    cond_create(&search_cond, NULL);
-    thread_create(&search_thread, (entry_t) _start, this);
+    Library::mutex_create(&search_mutex);
+    Library::cond_create(&search_cond, NULL);
+    Library::thread_create(&search_thread, (entry_t) _start, this);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -68,9 +68,9 @@ search_base::~search_base()
 
 /// Destructor.
 
-    cond_destroy(&search_cond);
-    mutex_destroy(&search_mutex);
-    mutex_destroy(&timeout_mutex);
+    Library::cond_destroy(&search_cond);
+    Library::mutex_destroy(&search_mutex);
+    Library::mutex_destroy(&timeout_mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -147,9 +147,9 @@ void search_base::move_now()
 {
     if (search_status != THINKING)
         return;
-    mutex_lock(&timeout_mutex);
+    Library::mutex_lock(&timeout_mutex);
     timeout_flag = true;
-    mutex_unlock(&timeout_mutex);
+    Library::mutex_unlock(&timeout_mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -196,9 +196,9 @@ void search_base::change(int s, const board_base& now)
 ///	 12         start thinking
 
     // Force pondering timeout.
-    mutex_lock(&timeout_mutex);
+    Library::mutex_lock(&timeout_mutex);
     timeout_flag = true;
-    mutex_unlock(&timeout_mutex);
+    Library::mutex_unlock(&timeout_mutex);
 
     // Wait for the board, grab the board, set the board position, and release
     // the board.
@@ -209,15 +209,15 @@ void search_base::change(int s, const board_base& now)
 	board_ptr->unlock();
 
     // Send the command to think.
-    mutex_lock(&search_mutex);
+    Library::mutex_lock(&search_mutex);
 #ifndef _MSDEV_WINDOWS
     DEBUG_SEARCH_PRINTA("search_base::change changes state from %s to %s.",
         status_to_string(search_status).c_str(), status_to_string(s).c_str());
 #endif
     search_status = s;
     token_update++;
-    cond_signal(&search_cond);
-    mutex_unlock(&search_mutex);
+    Library::cond_signal(&search_cond);
+    Library::mutex_unlock(&search_mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -236,12 +236,12 @@ void search_base::handle()
 
 /// The alarm has sounded.  Handle it.
 
-    mutex_lock(&timeout_mutex);
+    Library::mutex_lock(&timeout_mutex);
 #ifndef _MSDEV_WINDOWS    
 	DEBUG_SEARCH_PRINT("Setting timeout flag");
 #endif
     timeout_flag = true;
-    mutex_unlock(&timeout_mutex);
+    Library::mutex_unlock(&timeout_mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -268,11 +268,11 @@ void search_base::start()
     do
     {
         // Wait for either the status or the board to change.
-        mutex_lock(&search_mutex);
+        Library::mutex_lock(&search_mutex);
         while (!token_update)
-            cond_wait(&search_cond, &search_mutex);
+            Library::cond_wait(&search_cond, &search_mutex);
         token_update = 0;
-        mutex_unlock(&search_mutex);
+        Library::mutex_unlock(&search_mutex);
 
         // Do the requested work - idle, analyze, think, ponder, or quit.
 #ifndef _MSDEV_WINDOWS
@@ -285,14 +285,14 @@ void search_base::start()
             search_status == THINKING  ||
             search_status == PONDERING)
         {
-            mutex_lock(&timeout_mutex);
+            Library::mutex_lock(&timeout_mutex);
             timeout_flag = false;
-            mutex_unlock(&timeout_mutex);
+            Library::mutex_unlock(&timeout_mutex);
             iterate(search_status);
         }
     } while (search_status != QUITTING);
 
-    thread_destroy(NULL);
+    Library::thread_destroy(NULL);
 }
 
 /*----------------------------------------------------------------------------*\

@@ -72,7 +72,7 @@ public:
   inline static bitboard_t  DIAG_SET(int n, bitrow_t d){return ((bitboard_t) (d) << diag_index[n]);}
 
   // This macro finds the first set bit in a BitBoard.
-  inline static int FST(bitboard_t b){return (find_64(b) - 1);}
+  inline static int FST(bitboard_t b){return (Library::find_64(b) - 1);}
 
   // Convenient BitBoards:
   static const bitboard_t SQUARES_CENTER           = 0x0000001818000000ULL; // 4 center squares.

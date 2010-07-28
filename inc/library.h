@@ -89,38 +89,56 @@ typedef struct                        // Condition variable.
 
 #endif
 
-// Function prototypes related to threads:
-int thread_create(thread_t *thread, entry_t entry, void *arg);
-int thread_wait(thread_t *thread);
-int thread_destroy(thread_t *thread);
 
-// Function prototypes related to mutexes:
-int mutex_create(mutex_t *mutex);
-int mutex_try_lock(mutex_t *mutex);
-int mutex_lock(mutex_t *mutex);
-int mutex_unlock(mutex_t *mutex);
-int mutex_destroy(mutex_t *mutex);
+class Library
+{
+  public:
+  //this method helps look up bits
+  static const int MultiplyDeBruijnBitPosition[32];
 
-// Function prototypes related to condition variables:
-int cond_create(cond_t *cond, void *attr);
-int cond_wait(cond_t *cond, mutex_t *mutex);
-int cond_signal(cond_t *cond);
-int cond_broadcast(cond_t *cond);
-int cond_destroy(cond_t *cond);
+  //Windows needs a variable to hold the time per move
+  //since it seems to get lost/corrupted in the current
+  //threading model
+  static unsigned int timePerMove;
 
-// Function prototypes related to timers:
-int timer_function(void (*function)(void *), void *data);
-int timer_set(int csec);
-int timer_cancel();
+  // Function prototypes related to threads:
+  static int thread_create(thread_t *thread, entry_t entry, void *arg);
+  static int thread_wait(thread_t *thread);
+  static int thread_destroy(thread_t *thread);
 
-// Function prototypes related to 64-bit pseudo-random number generation and
-// bitwise operations:
-uint64_t rand_64();
-int count_64(uint64_t n);
-int find_64(uint64_t n);
-int find_32(uint32_t n);
+  // Function prototypes related to mutexes:
+  static int mutex_create(mutex_t *mutex);
+  static int mutex_try_lock(mutex_t *mutex);
+  static int mutex_lock(mutex_t *mutex);
+  static int mutex_unlock(mutex_t *mutex);
+  static int mutex_destroy(mutex_t *mutex);
 
-// Filesystem utilities
-char* get_home_directory();
+  // Function prototypes related to condition variables:
+  static int cond_create(cond_t *cond, void *attr);
+  static int cond_wait(cond_t *cond, mutex_t *mutex);
+  static int cond_signal(cond_t *cond);
+  static int cond_broadcast(cond_t *cond);
+  static int cond_destroy(cond_t *cond);
+
+  // Function prototypes related to timers:
+  static int timer_function(void (*function)(void *), void *data);
+  static int timer_set(int csec);
+  static int timer_cancel();
+  static void timer_handler(int num);
+
+  // Function prototypes related to 64-bit pseudo-random number generation and
+  // bitwise operations:
+  static uint64_t rand_64();
+  static int count_64(uint64_t n);
+  static int find_64(uint64_t n);
+  static int find_32(uint32_t n);
+
+  // Filesystem utilities
+  static char* get_home_directory();
+
+  static void (*callback)(void*);
+  static void *callback_data;
+};
+
 
 #endif

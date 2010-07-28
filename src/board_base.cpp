@@ -180,7 +180,7 @@ board_base::board_base()
     }
     set_board();
 
-    mutex_create(&mutex);
+    Library::mutex_create(&mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -191,7 +191,7 @@ board_base::~board_base()
 
 /// Destructor.
 
-    mutex_destroy(&mutex);
+    Library::mutex_destroy(&mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -384,7 +384,7 @@ bool board_base::set_board_fen(string& fen)
     // string.  For now, just make sure that both colors have one king each
     // and that the color off move isn't in check.
     for (int color = WHITE; color <= BLACK; color++)
-        if (count_64(state.piece[color][KING]) != 1)
+        if (Library::count_64(state.piece[color][KING]) != 1)
             return set_board_fen_error(fen, "One color has no king.", x, y);
     if (check(state.piece[OFF_MOVE][KING], ON_MOVE))
         return set_board_fen_error(fen, "Color off move is in check.", x, y);
@@ -429,7 +429,7 @@ void board_base::lock()
 
 /// Wait for the board, then grab the board.
 
-    mutex_lock(&mutex);
+    Library::mutex_lock(&mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -440,7 +440,7 @@ void board_base::unlock()
 
 /// Release the board.
 
-    mutex_unlock(&mutex);
+    Library::mutex_unlock(&mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -1294,18 +1294,18 @@ void board_base::precomp_key() const
         for (int shape = PAWN; shape <= KING; shape++)
             for (int y = 0; y <= 7; y++)
                 for (int x = 0; x <= 7; x++)
-                    key_piece[color][shape][x][y] = rand_64();
+                    key_piece[color][shape][x][y] = Library::rand_64();
 
         for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
             for (int stat = CAN_CASTLE; stat <= HAS_CASTLED; stat++)
-                key_castle[color][side][stat] = rand_64();
+                key_castle[color][side][stat] = Library::rand_64();
     }
 
-    key_no_en_passant = rand_64();
+    key_no_en_passant = Library::rand_64();
     for (int x = 0; x < 8; ++x)
-        key_en_passant[x] = rand_64();
+        key_en_passant[x] = Library::rand_64();
 
-    key_on_move = rand_64();
+    key_on_move = Library::rand_64();
 }
 
 /*----------------------------------------------------------------------------*\
@@ -1844,10 +1844,10 @@ bool board_base::insufficient() const
 
     for (int color = WHITE; color <= BLACK; color++)
     {
-        n_count += count_64(state.piece[color][KNIGHT]);
-        b_count += count_64(state.piece[color][BISHOP]);
-        b_array[color][WHITE] = count_64(state.piece[color][BISHOP] & SQUARES_WHITE);
-        b_array[color][BLACK] = count_64(state.piece[color][BISHOP] & SQUARES_BLACK);
+        n_count += Library::count_64(state.piece[color][KNIGHT]);
+        b_count += Library::count_64(state.piece[color][BISHOP]);
+        b_array[color][WHITE] = Library::count_64(state.piece[color][BISHOP] & SQUARES_WHITE);
+        b_array[color][BLACK] = Library::count_64(state.piece[color][BISHOP] & SQUARES_BLACK);
     }
     return (n_count + b_count <= 1) ||
         ((n_count == 0) && (b_count == 2) && 

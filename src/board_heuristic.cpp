@@ -267,7 +267,7 @@ value_t board_heuristic::evaluate_pawns() const
             //
             bitboard_t pawns = state.piece[color][PAWN];
             bitboard_t pawns_on_col = pawns & COL_MSK(y);
-            int num_on_col = count_64(pawns_on_col);
+            int num_on_col = Library::count_64(pawns_on_col);
 
             if (!(pawns & squares_adj_cols[x]))
             {
@@ -384,7 +384,7 @@ value_t board_heuristic::evaluate_bishops() const
 
             // Reward bishops (over knights) during endgames with pawns on both
             // sides of the board.
-            int friendly_piece_count = count_64(ALL(state, color));
+            int friendly_piece_count = Library::count_64(ALL(state, color));
             bool endgame = friendly_piece_count < 7;
             if (!endgame)
                 goto no_bishop_over_knight;
@@ -472,7 +472,7 @@ value_t board_heuristic::evaluate_rooks() const
             sum += sign * value_rook_on_7th;
             rooks = state.piece[color][ROOK];
             rooks_on_7th = rooks & seventh_row;
-            num_rooks_on_7th = count_64(rooks_on_7th);
+            num_rooks_on_7th = Library::count_64(rooks_on_7th);
             if (num_rooks_on_7th < 2)
                 goto no_rook_on_7th;
             sum += sign * value_rooks_on_7th;
@@ -534,7 +534,7 @@ value_t board_heuristic::evaluate_queens() const
 no_queen_on_7th:
 
             //
-            if (count_64(state.piece[color][PAWN]) > 4)
+            if (Library::count_64(state.piece[color][PAWN]) > 4)
             {
                 int enemy_king_n = FST(state.piece[!color][KING]);
                 int enemy_king_x = enemy_king_n & 0x7;
