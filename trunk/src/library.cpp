@@ -22,28 +22,21 @@
 #include "library.h"
 #include <iostream>
 
-//fast bit index lookup assistance
-//static const int MultiplyDeBruijnBitPosition[32] = 
-//{
-// 0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8, 
-//  31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9
-//};
-static const int MultiplyDeBruijnBitPosition[32] = 
+unsigned int Library::timePerMove = 0;
+
+void (*Library::callback)(void*) = NULL;
+void *Library::callback_data = NULL;
+
+const int Library::MultiplyDeBruijnBitPosition[32] = 
 {
   1,2,29,3,30,15,25,4,31,23,21,16,26,18,5,9,
   32,28,14,24,22,20,17,8,27,13,19,7,12,6,11,10
 };
 
-
-//Windows needs a variable to hold the time per move
-//since it seems to get lost/corrupted in the current
-//threading model
-unsigned int timePerMove = 0;
-
 /*----------------------------------------------------------------------------*\
  |                              thread_create()                               |
 \*----------------------------------------------------------------------------*/
-int thread_create(thread_t *thread, entry_t entry, void *arg)
+int Library::thread_create(thread_t *thread, entry_t entry, void *arg)
 {
 
 // Create a thread.
@@ -58,7 +51,7 @@ int thread_create(thread_t *thread, entry_t entry, void *arg)
 /*----------------------------------------------------------------------------*\
  |                               thread_wait()                                |
 \*----------------------------------------------------------------------------*/
-int thread_wait(thread_t *thread)
+int Library::thread_wait(thread_t *thread)
 {
 
 // Wait for a thread to exit.
@@ -73,7 +66,7 @@ int thread_wait(thread_t *thread)
 /*----------------------------------------------------------------------------*\
  |                              thread_destroy()                              |
 \*----------------------------------------------------------------------------*/
-int thread_destroy(thread_t *thread)
+int Library::thread_destroy(thread_t *thread)
 {
 
 // Destroy a thread.  If thread is NULL, destroy the calling thread.  Otherwise,
@@ -110,7 +103,7 @@ int thread_destroy(thread_t *thread)
 /*----------------------------------------------------------------------------*\
  |                               mutex_create()                               |
 \*----------------------------------------------------------------------------*/
-int mutex_create(mutex_t *mutex)
+int Library::mutex_create(mutex_t *mutex)
 {
 #if defined(LINUX) || defined(OS_X)
     return pthread_mutex_init(mutex, NULL) ? CRITICAL : SUCCESSFUL;
@@ -123,7 +116,7 @@ int mutex_create(mutex_t *mutex)
 /*----------------------------------------------------------------------------*\
  |                              mutex_try_lock()                              |
 \*----------------------------------------------------------------------------*/
-int mutex_try_lock(mutex_t *mutex)
+int Library::mutex_try_lock(mutex_t *mutex)
 {
 #if defined(LINUX) || defined(OS_X)
     switch (pthread_mutex_trylock(mutex))
@@ -140,7 +133,7 @@ int mutex_try_lock(mutex_t *mutex)
 /*----------------------------------------------------------------------------*\
  |                                mutex_lock()                                |
 \*----------------------------------------------------------------------------*/
-int mutex_lock(mutex_t *mutex)
+int Library::mutex_lock(mutex_t *mutex)
 {
 #if defined(LINUX) || defined(OS_X)
     return pthread_mutex_lock(mutex) ? CRITICAL : SUCCESSFUL;
@@ -152,7 +145,7 @@ int mutex_lock(mutex_t *mutex)
 /*----------------------------------------------------------------------------*\
  |                               mutex_unlock()                               |
 \*----------------------------------------------------------------------------*/
-int mutex_unlock(mutex_t *mutex)
+int Library::mutex_unlock(mutex_t *mutex)
 {
 #if defined(LINUX) || defined(OS_X)
     return pthread_mutex_unlock(mutex) ? CRITICAL : SUCCESSFUL;
@@ -164,7 +157,7 @@ int mutex_unlock(mutex_t *mutex)
 /*----------------------------------------------------------------------------*\
  |                              mutex_destroy()                               |
 \*----------------------------------------------------------------------------*/
-int mutex_destroy(mutex_t *mutex)
+int Library::mutex_destroy(mutex_t *mutex)
 {
 #if defined(LINUX) || defined(OS_X)
     return pthread_mutex_destroy(mutex) ? CRITICAL : SUCCESSFUL;
@@ -176,7 +169,7 @@ int mutex_destroy(mutex_t *mutex)
 /*----------------------------------------------------------------------------*\
  |                               cond_create()                                |
 \*----------------------------------------------------------------------------*/
-int cond_create(cond_t *cond, void *attr)
+int Library::cond_create(cond_t *cond, void *attr)
 {
 #if defined(LINUX) || defined(OS_X)
     return pthread_cond_init(cond, (pthread_condattr_t *) attr) ? CRITICAL : SUCCESSFUL;
@@ -195,7 +188,7 @@ int cond_create(cond_t *cond, void *attr)
 /*----------------------------------------------------------------------------*\
  |                                cond_wait()                                 |
 \*----------------------------------------------------------------------------*/
-int cond_wait(cond_t *cond, mutex_t *mutex)
+int Library::cond_wait(cond_t *cond, mutex_t *mutex)
 {
 #if defined(LINUX) || defined(OS_X)
     return pthread_cond_wait(cond, mutex) ? CRITICAL : SUCCESSFUL;
@@ -222,7 +215,7 @@ int cond_wait(cond_t *cond, mutex_t *mutex)
 /*----------------------------------------------------------------------------*\
  |                               cond_signal()                                |
 \*----------------------------------------------------------------------------*/
-int cond_signal(cond_t *cond)
+int Library::cond_signal(cond_t *cond)
 {
 #if defined(LINUX) || defined(OS_X)
     return pthread_cond_signal(cond) ? CRITICAL : SUCCESSFUL;
@@ -240,7 +233,7 @@ int cond_signal(cond_t *cond)
 /*----------------------------------------------------------------------------*\
  |                              cond_broadcast()                              |
 \*----------------------------------------------------------------------------*/
-int cond_broadcast(cond_t *cond)
+int Library::cond_broadcast(cond_t *cond)
 {
 #if defined(LINUX) || defined(OS_X)
     return pthread_cond_broadcast(cond) ? CRITICAL : SUCCESSFUL;
@@ -270,7 +263,7 @@ int cond_broadcast(cond_t *cond)
 /*----------------------------------------------------------------------------*\
  |                               cond_destroy()                               |
 \*----------------------------------------------------------------------------*/
-int cond_destroy(cond_t *cond)
+int Library::cond_destroy(cond_t *cond)
 {
 #if defined(LINUX) || defined(OS_X)
     return pthread_cond_destroy(cond) ? CRITICAL : SUCCESSFUL;
@@ -284,9 +277,7 @@ int cond_destroy(cond_t *cond)
 #endif
 }
 
-// Global variables:
-void (*callback)(void*);
-void *callback_data;
+
 #if defined(_MINGW_WINDOWS)
 thread_t timer_thread = INVALID_HANDLE_VALUE;
 #endif
@@ -295,7 +286,7 @@ thread_t timer_thread = INVALID_HANDLE_VALUE;
  |                              timer_handler()                               |
 \*----------------------------------------------------------------------------*/
 #if defined(LINUX) || defined(OS_X)
-void timer_handler(int num)
+void Library::timer_handler(int num)
 {
 
 // On Linux and OS X, the alarm has sounded.  Call the previously specified
@@ -304,7 +295,7 @@ void timer_handler(int num)
     (*callback)(callback_data);
 }
 #elif defined(_MINGW_WINDOWS)
-DWORD timer_handler(LPVOID arg)
+DWORD Library::timer_handler(LPVOID arg)
 {
 
 // On Windows, Steve Ballmer is too busy throwing chairs to implement SIGALRM.
@@ -365,7 +356,7 @@ end:
 /*----------------------------------------------------------------------------*\
  |                              timer_function()                              |
 \*----------------------------------------------------------------------------*/
-int timer_function(void (*function)(void *), void *data)
+int Library::timer_function(void (*function)(void *), void *data)
 {
 
 // Specify the function to be called once the alarm has sounded.
@@ -381,7 +372,7 @@ int timer_function(void (*function)(void *), void *data)
 /*----------------------------------------------------------------------------*\
  |                                timer_set()                                 |
 \*----------------------------------------------------------------------------*/
-int timer_set(int csec)
+int Library::timer_set(int csec)
 {
 
 // Set the alarm to sound after the specified number of seconds.
@@ -406,7 +397,7 @@ struct itimerval itimerval;
 /*----------------------------------------------------------------------------*\
  |                               timer_cancel()                               |
 \*----------------------------------------------------------------------------*/
-int timer_cancel()
+int Library::timer_cancel()
 {
 
 // Cancel any pending alarm.
@@ -430,7 +421,7 @@ int timer_cancel()
 /*----------------------------------------------------------------------------*\
  |                                 rand_64()                                  |
 \*----------------------------------------------------------------------------*/
-uint64_t rand_64()
+uint64_t Library::rand_64()
 {
 
 // Generate a 64-bit pseudo-random number.
@@ -448,7 +439,7 @@ uint64_t rand_64()
  |                                 count_64()                                 |
  |   Count the number of set bits in a 64-bit integer.
 \*----------------------------------------------------------------------------*/
-int count_64(uint64_t n)
+int Library::count_64(uint64_t n)
 {
     n = n - ((n >> 1) & (uint64_t)~(uint64_t)0/3);
     n = (n & (uint64_t)~(uint64_t)0/15*3) + 
@@ -457,14 +448,10 @@ int count_64(uint64_t n)
     return (uint64_t)(n * ((uint64_t)~(uint64_t)0/255)) >> (sizeof(n) - 1) * 8;
 }
 
-// These next two functions, we shamelessly yoinked from the GNU C Library,
-// version 2.5, copyright © 1991-1998, the Free Software Foundation, originally
-// written by Torbjorn Granlund <tege@sics.se>.
-
 /*----------------------------------------------------------------------------*\
  |                                 find_64()                                  |
 \*----------------------------------------------------------------------------*/
-int find_64(uint64_t n)
+int Library::find_64(uint64_t n)
 {
   // Find the first (least significant) set bit in a 64-bit integer.  The return
   // value ranges from 0 (for no bit set), to 1 (for the least significant bit
@@ -482,7 +469,7 @@ int find_64(uint64_t n)
 /*----------------------------------------------------------------------------*\
  |                                 find_32()                                  |
 \*----------------------------------------------------------------------------*/
-int find_32(uint32_t n)
+int Library::find_32(uint32_t n)
 {
   // Find the first (least significant) set bit in a 32-bit integer.  The return
   // value ranges from 0 (for no bit set), to 1 (for the least significant bit
@@ -497,7 +484,7 @@ int find_32(uint32_t n)
  |                            get_home_directory()                            |
 \*----------------------------------------------------------------------------*/
 /** Return the current user's home directory. */
-char* get_home_directory()
+char* Library::get_home_directory()
 {
 #if defined(LINUX)
     return getenv("HOME");

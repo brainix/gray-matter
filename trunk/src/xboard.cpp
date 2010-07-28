@@ -350,7 +350,7 @@ void xboard::do_quit() const
 {
     thread_t thread = search_ptr->get_thread(); 
     search_ptr->change(QUITTING, *board_ptr);
-    thread_wait(&thread);
+    Library::thread_wait(&thread);
 }
 
 /*----------------------------------------------------------------------------*\
