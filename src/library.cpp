@@ -286,13 +286,13 @@ thread_t timer_thread = INVALID_HANDLE_VALUE;
  |                              timer_handler()                               |
 \*----------------------------------------------------------------------------*/
 #if defined(LINUX) || defined(OS_X)
-void Library::timer_handler(int num)
+void timer_handler(int num)
 {
 
 // On Linux and OS X, the alarm has sounded.  Call the previously specified
 // function.
 
-    (*callback)(callback_data);
+    (*Library::callback)(Library::callback_data);
 }
 #elif defined(_MINGW_WINDOWS)
 DWORD timer_handler(LPVOID arg)
