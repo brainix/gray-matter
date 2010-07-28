@@ -264,7 +264,6 @@ void search_base::start()
 /// and repeat, until XBoard commands us to quit.
 
     search_status = IDLING;
-    bitboard_t board_hash = board_ptr->get_hash();
 
     do
     {
@@ -277,6 +276,7 @@ void search_base::start()
 
         // Do the requested work - idle, analyze, think, ponder, or quit.
 #ifndef _MSDEV_WINDOWS
+        bitboard_t board_hash = board_ptr->get_hash();
         DEBUG_SEARCH_PRINTA("search_base::start doing requested work (hash = %llx, status = %s).",
             (long long unsigned)board_hash, status_to_string(search_status).c_str());
 #endif
