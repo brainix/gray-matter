@@ -180,7 +180,7 @@ board_base::board_base()
     }
     set_board();
 
-    Library::mutex_create(&mutex);
+    mutex_create(&mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -191,7 +191,7 @@ board_base::~board_base()
 
 /// Destructor.
 
-    Library::mutex_destroy(&mutex);
+    mutex_destroy(&mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -384,7 +384,7 @@ bool board_base::set_board_fen(string& fen)
     // string.  For now, just make sure that both colors have one king each
     // and that the color off move isn't in check.
     for (int color = WHITE; color <= BLACK; color++)
-        if (Library::count_64(state.piece[color][KING]) != 1)
+        if (count_64(state.piece[color][KING]) != 1)
             return set_board_fen_error(fen, "One color has no king.", x, y);
     if (check(state.piece[OFF_MOVE][KING], ON_MOVE))
         return set_board_fen_error(fen, "Color off move is in check.", x, y);
@@ -429,7 +429,7 @@ void board_base::lock()
 
 /// Wait for the board, then grab the board.
 
-    Library::mutex_lock(&mutex);
+    mutex_lock(&mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -440,7 +440,7 @@ void board_base::unlock()
 
 /// Release the board.
 
-    Library::mutex_unlock(&mutex);
+    mutex_unlock(&mutex);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -471,20 +471,23 @@ bitboard_t board_base::get_hash() const
 int board_base::get_status(bool mate_test)
 {
 
-    /// Determine the status of the game.  This must be one of:
-    ///  - still in progress
-    ///  - stalemated
-    ///  - drawn due to insufficient material
-    ///  - drawn due to threefold repetition
-    ///  - drawn due to the fifty move rule
-    ///  - checkmated
-    ///  - illegal position
-    ///
-    /// For speed, try to test in order of likelyhood of happening.
-     
-    // can a king be taken? (do this before insufficient test)
-    if (check(state.piece[OFF_MOVE][KING], ON_MOVE))
-      return ILLEGAL;
+  /// Determine the status of the game.  This must be one of:
+  ///· still in progress
+  ///· stalemated
+  ///· drawn due to insufficient material
+  ///· drawn due to threefold repetition
+  ///· drawn due to the fifty move rule
+  ///· checkmated
+  ///· illegal position
+
+    // Is a king missing?
+    if (!state.piece[WHITE][KING] || !state.piece[BLACK][KING])
+        return ILLEGAL;
+
+    // Are the kings attacking one other?
+    int n = FST(state.piece[WHITE][KING]);
+    if (squares_king[n & 0x7][n >> 3] & state.piece[BLACK][KING])
+        return ILLEGAL;
 
     if (mate_test)
         switch (mate())
@@ -492,16 +495,12 @@ int board_base::get_status(bool mate_test)
             case STALEMATE: return STALEMATE;
             case CHECKMATE: return CHECKMATE;
         }
+    //if (insufficient())
+        //return INSUFFICIENT;
     if (three())
         return THREE;
-    if (insufficient())
-        return INSUFFICIENT;
     if (fifty())
         return FIFTY;
-
-    // Is a king missing?
-    if (!state.piece[WHITE][KING] || !state.piece[BLACK][KING])
-        return ILLEGAL;
 
     return IN_PROGRESS;
 }
@@ -544,7 +543,9 @@ unsigned board_base::get_num_pieces(const bool color) const
 \*----------------------------------------------------------------------------*/
 bool board_base::check(bool off_move) const
 {
-    return check(state.piece[off_move][KING], !off_move);
+    bool defense = off_move ? OFF_MOVE : ON_MOVE;
+    bool offense = off_move ? ON_MOVE : OFF_MOVE;
+    return check(state.piece[defense][KING], offense);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -1294,18 +1295,18 @@ void board_base::precomp_key() const
         for (int shape = PAWN; shape <= KING; shape++)
             for (int y = 0; y <= 7; y++)
                 for (int x = 0; x <= 7; x++)
-                    key_piece[color][shape][x][y] = Library::rand_64();
+                    key_piece[color][shape][x][y] = rand_64();
 
         for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
             for (int stat = CAN_CASTLE; stat <= HAS_CASTLED; stat++)
-                key_castle[color][side][stat] = Library::rand_64();
+                key_castle[color][side][stat] = rand_64();
     }
 
-    key_no_en_passant = Library::rand_64();
+    key_no_en_passant = rand_64();
     for (int x = 0; x < 8; ++x)
-        key_en_passant[x] = Library::rand_64();
+        key_en_passant[x] = rand_64();
 
-    key_on_move = Library::rand_64();
+    key_on_move = rand_64();
 }
 
 /*----------------------------------------------------------------------------*\
@@ -1844,10 +1845,10 @@ bool board_base::insufficient() const
 
     for (int color = WHITE; color <= BLACK; color++)
     {
-        n_count += Library::count_64(state.piece[color][KNIGHT]);
-        b_count += Library::count_64(state.piece[color][BISHOP]);
-        b_array[color][WHITE] = Library::count_64(state.piece[color][BISHOP] & SQUARES_WHITE);
-        b_array[color][BLACK] = Library::count_64(state.piece[color][BISHOP] & SQUARES_BLACK);
+        n_count += count_64(state.piece[color][KNIGHT]);
+        b_count += count_64(state.piece[color][BISHOP]);
+        b_array[color][WHITE] = count_64(state.piece[color][BISHOP] & SQUARES_WHITE);
+        b_array[color][BLACK] = count_64(state.piece[color][BISHOP] & SQUARES_BLACK);
     }
     return (n_count + b_count <= 1) ||
         ((n_count == 0) && (b_count == 2) && 
