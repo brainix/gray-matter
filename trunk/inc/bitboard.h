@@ -50,11 +50,11 @@ class bitBoardArray
 public:
   bitboard_t hashes[MAX_MOVES_PER_GAME];
   unsigned mNumElements;
-  inline bitBoardArray()
+	inline bitBoardArray()
   {
     mNumElements = 0;
   }
-  inline unsigned size() const
+	inline unsigned size() const
   {
     return mNumElements;
   }

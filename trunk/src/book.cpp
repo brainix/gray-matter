@@ -22,7 +22,6 @@
 #include "gray.h"
 #include "book.h"
 #include "board_heuristic.h"
-#include <time.h>
 
 using namespace std;
 
@@ -92,7 +91,7 @@ void book::populate_games(list<string>& tokens)
             if (moves.empty())
                 continue;
             //randomly put game on front or back
-            srand((unsigned)time(NULL));
+            srand(time(NULL));
             if (rand() % 1)
               games.push_back(moves);
             else

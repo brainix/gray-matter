@@ -54,7 +54,7 @@ string trim(string const& source, char const* delims = " \t\r\n'\"") {
 ConfigFile::ConfigFile() {
 
   ostringstream ostr;
-  ostr << Library::get_home_directory() << "/.graymatter";
+  ostr << get_home_directory() << "/.graymatter";
   ifstream file(ostr.str().c_str());
 
   // Setting default values

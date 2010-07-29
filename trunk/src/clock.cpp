@@ -37,7 +37,7 @@ chess_clock::chess_clock(int o)
     for (int color = WHITE; color <= BLACK; color++)
         set_mode(color, 40, 5 * 60 * 100, 0);
     overhead = o;
-    Library::timer_function(sound_alarm, this);
+    timer_function(sound_alarm, this);
     note_time();
 }
 
@@ -107,7 +107,7 @@ void chess_clock::set_alarm(int color) const
 #ifndef _MSDEV_WINDOWS
     DEBUG_SEARCH_PRINT("Setting alarm to %d csecs from now.", csecs_per_move);
 #endif
-    Library::timer_set(csecs_per_move);
+    timer_set(csecs_per_move);
 }
 
 /*----------------------------------------------------------------------------*\
@@ -130,7 +130,7 @@ void chess_clock::cancel_alarm() const
 
 /// Cancel the alarm.
 
-    Library::timer_cancel();
+    timer_cancel();
 }
 
 /*----------------------------------------------------------------------------*\
