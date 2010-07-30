@@ -678,7 +678,6 @@ bool board_base::make(Move m)
               BIT_SET(state.piece[ON_MOVE][shape], m.x2, m.y2);
               for (int angle = L45; angle <= R90; angle++)
               {
-                  BIT_CLR(rotation[angle][ON_MOVE], coord[MAP][angle][m.x1][m.y1][X], coord[MAP][angle][m.x1][m.y1][Y]);
                   BIT_SET(rotation[angle][ON_MOVE], coord[MAP][angle][m.x2][m.y2][X], coord[MAP][angle][m.x2][m.y2][Y]);
               }
               hash ^= key_piece[ON_MOVE][shape][m.x1][m.y1];
@@ -1756,7 +1755,6 @@ int board_base::mate()
 \*----------------------------------------------------------------------------*/
 bool board_base::check(bitboard_t b1, bool color) const
 {
-
 /// Is any of the specified squares being attacked by the specified color?
 /// Check for check.  ;-)
 
@@ -1866,14 +1864,17 @@ bool board_base::insufficient() const
 bool board_base::three() const
 {
   /// Is the game drawn by threefold repetition?
+
   int sum = 1;
 
-    for (unsigned i=0;i<hashes.mNumElements;++i)
-      if (hashes.hashes[i] == hash)
-        sum++;
+  for (unsigned i=0;i<hashes.mNumElements;++i)
+  {
+    if (hashes.hashes[i] == hash)
+      sum++;
     if (sum >= 3)
-          return true;
-    return false;
+      return true;
+  }
+  return false;
 }
 
 /*----------------------------------------------------------------------------*\

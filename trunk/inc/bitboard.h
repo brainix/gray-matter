@@ -22,6 +22,8 @@
 #ifndef BITBOARD_H
 #define BITBOARD_H
 
+#include <iostream>
+
 // Default Gray Matter stuff:
 #include "config.h"
 #include "library.h"
@@ -50,31 +52,48 @@ class bitBoardArray
 public:
   bitboard_t hashes[MAX_MOVES_PER_GAME];
   unsigned mNumElements;
-	inline bitBoardArray()
+
+  inline bitBoardArray()
   {
     mNumElements = 0;
   }
-	inline unsigned size() const
+
+  inline unsigned size() const
   {
     return mNumElements;
   }
-	inline void addHash(const bitboard_t& hash)
-	{
-		hashes[mNumElements] = hash;
-		mNumElements++;
-	}
-	inline void clear()
+
+  inline void addHash(const bitboard_t& hash)
+  {
+    hashes[mNumElements] = hash;
+    mNumElements++;
+  }
+
+  inline void output()
+  {
+    std::cout << "outputting hashes:" << std::endl;
+    for (int i=0;i<mNumElements;++i)
+    {
+      std::cout << std::hex << hashes[i] << std::endl; 
+    }
+  }
+
+  inline void clear()
   {
     mNumElements = 0;
   }
-	inline void removeLast()
+
+  inline void removeLast()
   {
     mNumElements--;
   }
+
   inline bitBoardArray& operator=(const bitBoardArray& rhs)
   {
     for(unsigned i=0;i<rhs.mNumElements;++i)
+    {
       hashes[i] = rhs.hashes[i];
+    }
     mNumElements = rhs.mNumElements;
     return *this;
   }
