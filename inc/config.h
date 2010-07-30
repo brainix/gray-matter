@@ -24,8 +24,6 @@
 #include <windows.h>
 #endif
 
-
-
 // This file contains user-tunable settings for Gray Matter.  If you don't know
 // what you're doing, then leave this file alone.  The defaults are good enough
 // for me, so they're more than good enough for you.  ;-)
