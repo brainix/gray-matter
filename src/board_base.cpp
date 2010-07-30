@@ -711,7 +711,7 @@ bool board_base::make(Move m)
 
       // If we're moving a piece from one of our rooks' initial positions, then
       // make sure that we're no longer marked able to castle on that rook's side.
-      if ((m.x1 == 0 || m.x1 == 7) && (m.y1 == (ON_MOVE ? 7 : 0)) && state.castle[ON_MOVE][m.x1 == 7] == CAN_CASTLE)
+      if ((m.x1 == 0 || m.x1 == 7) && (m.y1 == (ON_MOVE ? 7 : 0)))
       {
           state.castle[ON_MOVE][m.x1 == 7] = CANT_CASTLE;
           hash ^= key_castle[ON_MOVE][m.x1 == 7][CANT_CASTLE];
