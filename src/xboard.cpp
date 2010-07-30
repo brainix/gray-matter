@@ -680,7 +680,9 @@ void xboard::do_test() {
 	// Parse the test suite
 	if(!inputfile) {
 		cerr << "Cannot open '" << testfile << "'" << endl;
-	} else if (TESTFILE.find(".EPD") != string::npos) {
+	} else if ((TESTFILE.find(".EPD") != string::npos) || 
+                   (TESTFILE.find(".epd") != string::npos))
+        {
 		// Extended Positinal Diagram, format is:
 		// FEN bm (best move) am (avoid move) 
 		//   pm (predicted move) pv (predicted variation)
@@ -714,7 +716,8 @@ void xboard::do_test() {
 				ts_erroneous++;
 			}
 		} while (inputfile.good());
-	} else if (TESTFILE.find(".PGN") != string::npos) {
+	} else if ((TESTFILE.find(".PGN") != string::npos) ||
+                   (TESTFILE.find(".pgn") != string::npos)) {
 		// Portable Game Notation
 		int status = 0;
 		string::size_type idx, pos;
@@ -784,7 +787,8 @@ void xboard::do_test() {
 		cerr << "Unknown file type '" << testfile << "'" << endl;
 	}
 
-	assert(ts_fen.size() == ts_sol.size());
+	if(ts_fen.size() != ts_sol.size())
+          cout << "GM: Can't find best moves. . we'll just try to get through it." << endl;
 
 	if (ts_fen.size()) {
 		ts_mode = true;
@@ -800,7 +804,8 @@ void xboard::do_test() {
 void xboard::test_suite_next(Move m) {
 
 	// Check whether we did the right thing
-	if (ts_sol.size()) {
+	if (ts_sol.size()) 
+        {
 		string solution = ts_sol.front();
 		ts_sol.erase(ts_sol.begin());
 		string desc = ts_desc.front();
@@ -812,18 +817,19 @@ void xboard::test_suite_next(Move m) {
 		board_ptr->coord_to_san(m, str);
 
 		// Compare result
-		if (str == "null") {
-			cerr << desc << " : error!" << endl;
+		if (str == "null") 
+                {
+			cout << desc << " : error!" << endl;
 			ts_erroneous++;
 		} else if (solution.find(str) != string::npos) {
 			// Gray's suggestion (str) is a substring of the best move (bm) string.
 			// Because there can be multiple best moves, we assume that Gray is right
 			// if 'str' is a substring of 'solution'.
-			cerr << desc << " : '" << solution << "' == '" << str << "'" << endl;
+			cout << desc << " : '" << solution << "' == '" << str << "'" << endl;
 			ts_success++;
 		} else {
 			// Gray's suggestion is not found in the best move (bm) string.
-			cerr << desc << " : '" << solution << "' != '" << str << "'" << endl;
+			cout << desc << " : '" << solution << "' != '" << str << "'" << endl;
 			ts_failure++;
 		}
 	}
@@ -834,7 +840,9 @@ void xboard::test_suite_next(Move m) {
 		ts_fen.erase(ts_fen.begin());
 		do_setboard(fen);
 		clock_ptr->set_mode(board_ptr->get_whose(), 1, TESTSUITE_TIMETOMOVE, 0);
+                
 		do_go();
+                cout << "Remaining Tests: " << ts_fen.size() << " - ";
 	} else {
 		// Test suite finished
 		ts_mode = false;

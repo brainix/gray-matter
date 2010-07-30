@@ -73,50 +73,30 @@ public:
 
     inline bool probe(bitboard_t hash, int depth, int type, Move *move_ptr)
     {
-      uint64_t index = 0;
-      index += (hash & 0x0000000000FFFFFFLL);
-      index += (hash & 0x00000000FFFFFF00LL) >> 2;
-      index += (hash & 0x000000FFFFFF0000LL) >> 4;
-      index += (hash & 0x0000FFFFFF000000LL) >> 6;
-      index += (hash & 0x00FFFFFF00000000LL) >> 8;
-      index += (hash & 0xFFFFFF0000000000LL) >> 10;            
-      index = index%slots;
+      uint64_t index = hash%slots;
 
-          if (data[index].hash == hash)
+      if (data[index].hash == hash)
+      {
+          if (data[index].depth > depth)
           {
+              //we've already searched this node
+              //the the specified depth or greater, so just
+              //return the move
               *move_ptr = data[index].move;
-              if (data[index].depth > depth &&
-                  (data[index].type == BOOK  ||
-                   data[index].type == EXACT ||
-                   data[index].type == type))
-              {
-                  //successful++;
-                  //total++;
-                  return true;
-              }
-              //semi_successful++;
-              //total++;
-              return false;
+              return true;
           }
-      move_ptr->set_null();
-      move_ptr->value = 0;
-      //unsuccessful++;
-      //total++;
+      }
       return false;
     }
+
+
     inline void store(bitboard_t hash, int depth, int type, Move& move)
     {
-            uint64_t index = 0;
-      index += (hash & 0x0000000000FFFFFFLL);
-      index += (hash & 0x00000000FFFFFF00LL) >> 2;
-      index += (hash & 0x000000FFFFFF0000LL) >> 4;
-      index += (hash & 0x0000FFFFFF000000LL) >> 6;
-      index += (hash & 0x00FFFFFF00000000LL) >> 8;
-      index += (hash & 0xFFFFFF0000000000LL) >> 10;            
-      index = index%slots;
+      uint64_t index = hash%slots;
 
-      //overwrite if deeper or in conflict
-        if ((data[index].hash != hash) ||
+      //overwrite if same board and deeper 
+      //or in conflict
+      if ((data[index].hash != hash) ||
             (depth > data[index].depth))
         {
           data[index].hash = hash;
@@ -126,13 +106,10 @@ public:
           return;
         }
     }
+
 private:
     uint64_t slots;      ///< The number of slots.
     xpos_slot_t *data;   ///< The slots themselves.
-    //int successful;      ///< The number of successful queries.
-    //int semi_successful; ///< The number of semi-successful queries.
-    //int unsuccessful;    ///< The number of unsuccessful queries;
-    //int total;           ///< The total number of queries.
 };
 
 /*----------------------------------------------------------------------------*\
@@ -183,24 +160,20 @@ public:
     void clear();
     inline bool probe(bitboard_t hash, value_t *value_ptr)
     {
-       /// Given the pawn structure described in hash, check the pawn table to see if
-       /// we've evaluated it before.  If so, then save its previous evaluation to the
-       /// memory pointed to by value_ptr and return success.  If not, then return
+       /// Given the pawn structure described in hash, check the 
+       /// pawn table to see if we've evaluated it before.  If so, 
+       /// then save its previous evaluation to the memory pointed 
+       /// to by value_ptr and return success.  If not, then return
        /// failure.
-
        uint64_t index = hash % slots;
        bool found = data[index].hash == hash;
        *value_ptr = found ? data[index].value : 0;
-       //successful += found ? 1 : 0;
-       //unsuccessful += found ? 0 : 1;
-       //total++;
        return found;
     }
     inline void store(bitboard_t hash, value_t value)
     {
       /// We've just evaluated the pawn structure described in hash.  Save its
       /// evaluation in the pawn table for future probes.
-
       uint64_t index = hash % slots;
       data[index].hash = hash;
       data[index].value = value;
@@ -208,9 +181,6 @@ public:
 private:
     uint64_t slots;    ///< The number of slots.
     pawn_slot_t *data; ///< The slots themselves.
-    //int successful;    ///< The number of successful queries.
-    //int unsuccessful;  ///< The number of unsuccessful queries;
-    //int total;         ///< The total number of queries.
 };
 
 #endif

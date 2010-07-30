@@ -485,8 +485,12 @@ int board_base::get_status(bool mate_test)
         return ILLEGAL;
 
     // Are the kings attacking one other?
-    int n = FST(state.piece[WHITE][KING]);
-    if (squares_king[n & 0x7][n >> 3] & state.piece[BLACK][KING])
+    //int n = FST(state.piece[WHITE][KING]);
+    //if (squares_king[n & 0x7][n >> 3] & state.piece[BLACK][KING])
+        //return ILLEGAL;
+
+    //if the king on move is in check, then this position is illegal
+    if (check(state.piece[OFF_MOVE][KING], ON_MOVE))
         return ILLEGAL;
 
     if (mate_test)
@@ -495,8 +499,8 @@ int board_base::get_status(bool mate_test)
             case STALEMATE: return STALEMATE;
             case CHECKMATE: return CHECKMATE;
         }
-    //if (insufficient())
-        //return INSUFFICIENT;
+    if (insufficient())
+        return INSUFFICIENT;
     if (three())
         return THREE;
     if (fifty())
