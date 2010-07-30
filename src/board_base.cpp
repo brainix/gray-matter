@@ -678,6 +678,7 @@ bool board_base::make(Move m)
               BIT_SET(state.piece[ON_MOVE][shape], m.x2, m.y2);
               for (int angle = L45; angle <= R90; angle++)
               {
+                  BIT_CLR(rotation[angle][ON_MOVE], coord[MAP][angle][m.x1][m.y1][X], coord[MAP][angle][m.x1][m.y1][Y]);
                   BIT_SET(rotation[angle][ON_MOVE], coord[MAP][angle][m.x2][m.y2][X], coord[MAP][angle][m.x2][m.y2][Y]);
               }
               hash ^= key_piece[ON_MOVE][shape][m.x1][m.y1];
