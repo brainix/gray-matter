@@ -43,6 +43,7 @@ typedef struct state
     int en_passant;                   ///< En passant vulnerability.
     bool on_move;                     ///< Color on move.
     int fifty;                        ///< 50 move rule counter.
+    unsigned iNumPieces;              ///< piece count
 } state_t;
 
 class stateArray
