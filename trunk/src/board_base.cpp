@@ -160,6 +160,8 @@ bitboard_t board_base::key_no_en_passant;
 bitboard_t board_base::key_en_passant[8];
 bitboard_t board_base::key_on_move;
 
+uint64_t board_base::singleBitMasks[8][8];
+
 /*----------------------------------------------------------------------------*\
  |                                board_base()                                |
 \*----------------------------------------------------------------------------*/
@@ -168,6 +170,11 @@ board_base::board_base()
 
 /// Constructor.  Important!  Seed the random number generator, issue
 /// <code>srand(time(NULL));</code> before instantiating this class!
+
+  //compute single bit masks
+  for (int i=0;i<8;++i)
+    for (int j=0;j<8;++j)
+      singleBitMasks[j][i] = 1ULL << (i*8+j);
 
     if (!precomputed_board_base)
     {

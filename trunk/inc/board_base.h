@@ -38,9 +38,12 @@ typedef uint8_t bitrow_t;
 /// This class represents the board and generates moves.
 class board_base
 {
+  //precomputed single bit masks
+  static bitboard_t singleBitMasks[8][8]; 
+
 public:
   inline static int         BIT_IDX(int x, int y) {return ((y) << 3 | (x));}
-  inline static bitboard_t  BIT_MSK(int x, int y) {return (1ULL << BIT_IDX(x, y));}
+  inline static bitboard_t  BIT_MSK(int x, int y) {return singleBitMasks[x][y];}
   inline static bool        BIT_GET(bitboard_t b, int x, int y) {return ((b) >> BIT_IDX(x, y) & 1);}
   inline static void        BIT_CLR(bitboard_t& b, unsigned x, unsigned y) {(b) &= ~BIT_MSK(x, y);}
   inline static void        BIT_SET(bitboard_t& b, int x, int y) {(b) |= BIT_MSK(x, y);}

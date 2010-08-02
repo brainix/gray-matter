@@ -72,7 +72,7 @@ public:
   inline void output()
   {
     std::cout << "outputting hashes:" << std::endl;
-    for (int i=0;i<mNumElements;++i)
+    for (unsigned i=0;i<mNumElements;++i)
     {
       std::cout << std::hex << hashes[i] << std::endl; 
     }
