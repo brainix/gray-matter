@@ -160,7 +160,7 @@ bitboard_t board_base::key_no_en_passant;
 bitboard_t board_base::key_en_passant[8];
 bitboard_t board_base::key_on_move;
 
-uint64_t board_base::singleBitMasks[8][8];
+uint64_t board_base::BIT_MSK[8][8];
 
 /*----------------------------------------------------------------------------*\
  |                                board_base()                                |
@@ -171,10 +171,12 @@ board_base::board_base()
 /// Constructor.  Important!  Seed the random number generator, issue
 /// <code>srand(time(NULL));</code> before instantiating this class!
 
-  //compute single bit masks
+  //compute some useful arrays 
   for (int i=0;i<8;++i)
     for (int j=0;j<8;++j)
-      singleBitMasks[j][i] = 1ULL << (i*8+j);
+    {
+      BIT_MSK[j][i] = 1ULL << (i*8+j);
+    }
 
     if (!precomputed_board_base)
     {
@@ -727,7 +729,7 @@ bool board_base::make(Move m)
       // If we're moving a piece to one of our opponent's rooks' initial
       // positions, then make sure that our opponent is no longer marked able to
       // castle on that rook's side.
-      if ((m.x2 == 0 || m.x2 == 7) && (m.y2 == (OFF_MOVE ? 7 : 0)) && state.castle[OFF_MOVE][m.x2 == 7] == CAN_CASTLE)
+      if ((m.x2 == 0 || m.x2 == 7) && (m.y2 == (OFF_MOVE ? 7 : 0)))// && state.castle[OFF_MOVE][m.x2 == 7] == CAN_CASTLE)
       {
           state.castle[OFF_MOVE][m.x2 == 7] = CANT_CASTLE;
           hash ^= key_castle[OFF_MOVE][m.x1 == 7][CANT_CASTLE];
