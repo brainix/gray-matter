@@ -386,6 +386,9 @@ bool board_base::set_board_fen(string& fen)
     if (!no_move_counts && ++index >= fen.length())
         return set_board_fen_error(fen, "FEN string too short (12).", x, y);
 
+    //update iNumPieces so we know when to check for insufficient
+    state.iNumPieces = get_num_pieces(BLACK) + get_num_pieces(WHITE);
+
     init_rotation();
     init_hash();
 
@@ -493,12 +496,8 @@ int board_base::get_status(bool mate_test)
     if (!state.piece[WHITE][KING] || !state.piece[BLACK][KING])
         return ILLEGAL;
 
-    // Are the kings attacking one other?
-    //int n = FST(state.piece[WHITE][KING]);
-    //if (squares_king[n & 0x7][n >> 3] & state.piece[BLACK][KING])
-        //return ILLEGAL;
-
     //if the king on move is in check, then this position is illegal
+    // This also covers if the kings attacking one other? maybe?
     if (check(state.piece[OFF_MOVE][KING], ON_MOVE))
         return ILLEGAL;
 
@@ -508,8 +507,11 @@ int board_base::get_status(bool mate_test)
             case STALEMATE: return STALEMATE;
             case CHECKMATE: return CHECKMATE;
         }
-    if (insufficient())
+    if (state.iNumPieces < 5)
+    {
+      if (insufficient())
         return INSUFFICIENT;
+    }
     if (three())
         return THREE;
     if (fifty())
@@ -715,6 +717,7 @@ bool board_base::make(Move m)
               // The move is a capture.  Reset the 50 move rule counter.
               state.fifty = -1;
               retValue = true;
+              state.iNumPieces--;
           }
       }
 
@@ -729,7 +732,7 @@ bool board_base::make(Move m)
       // If we're moving a piece to one of our opponent's rooks' initial
       // positions, then make sure that our opponent is no longer marked able to
       // castle on that rook's side.
-      if ((m.x2 == 0 || m.x2 == 7) && (m.y2 == (OFF_MOVE ? 7 : 0)))// && state.castle[OFF_MOVE][m.x2 == 7] == CAN_CASTLE)
+      if ((m.x2 == 0 || m.x2 == 7) && (m.y2 == (OFF_MOVE ? 7 : 0)))
       {
           state.castle[OFF_MOVE][m.x2 == 7] = CANT_CASTLE;
           hash ^= key_castle[OFF_MOVE][m.x1 == 7][CANT_CASTLE];
@@ -758,7 +761,7 @@ bool board_base::make(Move m)
           // At this point, we've moved the king.  Make sure that we're no longer
           // marked able to castle on either side.
           for (int side = QUEEN_SIDE; side <= KING_SIDE; side++)
-              if (state.castle[ON_MOVE][side] == CAN_CASTLE)
+              //if (state.castle[ON_MOVE][side] == CAN_CASTLE) //WHY?
               {
                   state.castle[ON_MOVE][side] = CANT_CASTLE;
                   hash ^= key_castle[ON_MOVE][side][CANT_CASTLE];
@@ -788,11 +791,13 @@ bool board_base::make(Move m)
                   BIT_CLR(rotation[angle][OFF_MOVE], coord[MAP][angle][m.x2][m.y1][X], coord[MAP][angle][m.x2][m.y1][Y]);
               hash ^= key_piece[OFF_MOVE][PAWN][m.x2][m.y1];
               pawn_hash ^= key_piece[OFF_MOVE][PAWN][m.x2][m.y1];
-		      }
+              state.iNumPieces--;
+          }
 
           // If we're advancing a pawn two squares, then mark it vulnerable to en
           // passant.
           state.en_passant = abs((int) m.y1 - (int) m.y2) == 2 ? (int) m.x1 : -1;
+
       }
       else
           // Oops.  We're not moving a pawn.  Mark no pawn vulnerable to en
@@ -1236,6 +1241,7 @@ void board_base::init_state()
     state.en_passant = -1;
     state.on_move = WHITE;
     state.fifty = 0;
+    state.iNumPieces = 32;
 }
 
 /*----------------------------------------------------------------------------*\
