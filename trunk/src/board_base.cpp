@@ -160,8 +160,9 @@ bitboard_t board_base::key_no_en_passant;
 bitboard_t board_base::key_en_passant[8];
 bitboard_t board_base::key_on_move;
 
-uint64_t board_base::BIT_MSK[8][8];
+bitboard_t board_base::BIT_MSK[8][8];
 bitboard_t board_base::ROW_MSK[8];
+int        board_base::BIT_IDX[8][8];
 
 /*----------------------------------------------------------------------------*\
  |                                board_base()                                |
@@ -177,7 +178,10 @@ board_base::board_base()
   {
     ROW_MSK[i] = 0xFFULL << i*8;
     for (int j=0;j<8;++j)
+    {
       BIT_MSK[j][i] = 1ULL << (i*8+j);
+      BIT_IDX[j][i] = i*8 + j;
+    }
   }
 
     if (!precomputed_board_base)
