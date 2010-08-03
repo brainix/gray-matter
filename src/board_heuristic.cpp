@@ -461,11 +461,11 @@ value_t board_heuristic::evaluate_rooks() const
             if (!is_rook_on_7th)
                 goto no_rook_on_7th;
             enemy_pawns = state.piece[!color][PAWN];
-            seventh_row = ROW_MSK(seventh);
+            seventh_row = ROW_MSK[seventh];
             is_enemy_pawn_on_7th = (enemy_pawns & seventh_row)?true:false;
             enemy_king = state.piece[!color][KING];
             eighth = color == WHITE ? 7 : 0;
-            eighth_row = ROW_MSK(eighth);
+            eighth_row = ROW_MSK[eighth];
             is_enemy_king_on_8th = (enemy_king & eighth_row)?true:false;
             if (!is_enemy_pawn_on_7th && !is_enemy_king_on_8th)
                 goto no_rook_on_7th;
@@ -518,11 +518,11 @@ value_t board_heuristic::evaluate_queens() const
             if (!is_queen_on_7th)
                 goto no_queen_on_7th;
             enemy_pawns = state.piece[!color][PAWN];
-            seventh_row = ROW_MSK(seventh);
+            seventh_row = ROW_MSK[seventh];
             is_enemy_pawn_on_7th = (enemy_pawns & seventh_row)?true:false;
             enemy_king = state.piece[!color][KING];
             eighth = color == WHITE ? 7 : 0;
-            eighth_row = ROW_MSK(eighth);
+            eighth_row = ROW_MSK[eighth];
             is_enemy_king_on_8th = (enemy_king & eighth_row)?true:false;
             if (!is_enemy_pawn_on_7th && !is_enemy_king_on_8th)
                 goto no_queen_on_7th;
@@ -623,7 +623,7 @@ void board_heuristic::precomp_pawn()
             // There can never be any pawn (of either color) on rank 1 or rank
             // 7.
             continue;
-        squares_pawn_duo[x][y] = squares_adj_cols[x] & ROW_MSK(y);
+        squares_pawn_duo[x][y] = squares_adj_cols[x] & ROW_MSK[y];
     }
 
     for (int color = WHITE; color <= BLACK; color++)
@@ -637,7 +637,7 @@ void board_heuristic::precomp_pawn()
             squares_pawn_potential_attacks[color][x][y] = 0;
             for (int k = y + sign; k >= 1 && k <= 6; k += sign)
                 squares_pawn_potential_attacks[color][x][y] |=
-                    squares_adj_cols[x] & ROW_MSK(k);
+                    squares_adj_cols[x] & ROW_MSK[k];
         }
     }
 }

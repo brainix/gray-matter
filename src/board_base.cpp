@@ -161,6 +161,7 @@ bitboard_t board_base::key_en_passant[8];
 bitboard_t board_base::key_on_move;
 
 uint64_t board_base::BIT_MSK[8][8];
+bitboard_t board_base::ROW_MSK[8];
 
 /*----------------------------------------------------------------------------*\
  |                                board_base()                                |
@@ -173,8 +174,11 @@ board_base::board_base()
 
   //compute single bit masks
   for (int i=0;i<8;++i)
+  {
+    ROW_MSK[i] = 0xFFULL << i*8;
     for (int j=0;j<8;++j)
       BIT_MSK[j][i] = 1ULL << (i*8+j);
+  }
 
     if (!precomputed_board_base)
     {
@@ -1511,8 +1515,8 @@ void board_base::generate_pawn(MoveArray& l, bool only_captures)
     // For its first move, a pawn can advance two squares.
     if (!only_captures)
     {
-        b = state.piece[ON_MOVE][PAWN] & ROW_MSK(ON_MOVE ? 6 : 1);
-        //bitboard_t rowMsk = ROW_MSK(ON_MOVE ? 6: 1);
+        b = state.piece[ON_MOVE][PAWN] & ROW_MSK[ON_MOVE ? 6 : 1];
+        //bitboard_t rowMsk = ROW_MSK[ON_MOVE ? 6: 1];
         if (b)  //only do this stuff if there are pawns there
         {
           for (int y = 1; y <= 2; y++)
@@ -1714,7 +1718,7 @@ void board_base::precomp_pawn()
                 squares_pawn_attacks[color][x][y] =  0;
             else
             {
-                bitboard_t row = ROW_MSK(y + (!color ? -1 : 1));
+                bitboard_t row = ROW_MSK[y + (!color ? -1 : 1)];
                 bitboard_t cols = squares_adj_cols[x];
                 squares_pawn_attacks[color][x][y] =  row & cols;
             }
