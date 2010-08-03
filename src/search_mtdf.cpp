@@ -463,8 +463,8 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
         //if we didn't hit the timeout flag, then this position is
         //a terminal one, store it with max depth so we always return
         //it on a hash table probe (we'll never want to explore deeper).
-        if (!timeout_flag)
-            table_ptr->store(hash, MAX_DEPTH, EXACT, m);
+        //if (!timeout_flag)
+            //table_ptr->store(hash, max_depth-depth, EXACT, m);
 #ifndef _MSDEV_WINDOWS
         DEBUG_SEARCH_PRINT("%s.", m.value == VALUE_ILLEGAL ? "Illegal position" : m.value == VALUE_CONTEMPT ? "Stalemated" : "Checkmated");
 #endif
@@ -475,11 +475,13 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
     if (!timeout_flag)
     {
         // Nope, the results are complete and reliable.  Save them for progeny.
-        //if (m.value > saved_alpha && m.value < saved_beta)
-        //{
-          // When doing MTD(f) zero-window searches, our move search should
-          // never return an exact score. I've only accounted for this in the
-          // interest of robustness.
+        if (m.value > saved_alpha && m.value < saved_beta)
+        {
+            // When doing MTD(f) zero-window searches, our move search should
+            // never return an exact score. I've only accounted for this in the
+            // interest of robustness.
+          //if ((max_depth-depth) > 3)
+            //table_ptr->store(hash, max_depth-depth-1, EXACT, m);
           if (depth < max_depth) //no special branches
             table_ptr->store(hash, max_depth-depth,EXACT,m);
           //else if (m.value <= saved_alpha)
@@ -488,7 +490,7 @@ Move search_mtdf::minimax(int depth, value_t alpha, value_t beta,
         //else // m.value >= saved_beta
         //{
           //table_ptr->store(hash, max_depth-depth, LOWER, m);
-        //}
+        }
         history_ptr->store(whose, m); //this seems like a good move
     }
     
