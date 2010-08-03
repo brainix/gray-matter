@@ -41,39 +41,32 @@ class board_base
 public:
   static bitboard_t BIT_MSK[8][8]; 
   static bitboard_t ROW_MSK[8];
-  inline static int         BIT_IDX(int x, int y) {return ((y) << 3 | (x));}
-  inline static bool        BIT_GET(bitboard_t b, int x, int y) {return ((b) >> BIT_IDX(x, y) & 1);}
+  static int BIT_IDX[8][8];
+  inline static bool        BIT_GET(bitboard_t b, int x, int y) {return ((b) >> BIT_IDX[x][y] & 1);}
   inline static void        BIT_CLR(bitboard_t& b, unsigned x, unsigned y) {(b) &= ~BIT_MSK[x][y];}
   inline static void        BIT_SET(bitboard_t& b, int x, int y) {(b) |= BIT_MSK[x][y];}
   inline static bitboard_t  BIT_MOV(bitboard_t& b, int x1, int y1, int x2, int y2) {return ((b) ^= BIT_MSK[x1][y1] | BIT_MSK[x2][y2]);}
 
   inline static int         ROW_NUM(int x,int y,int a){return ((a) == ZERO ? (y) : (x));}
   inline static int         ROW_LOC(int x,int y,int a){return ((a) == ZERO ? (x) : 7 - (y));}
-  inline static int         ROW_IDX(int n){return (BIT_IDX(0, n));}
-/*
-  inline static bitboard_t  ROW_MSK(int n)
+  inline static int         ROW_IDX(int n){return (BIT_IDX[0][n]);}
+  inline static bitrow_t    ROW_GET(bitboard_t b, int n)
   {
-    bitboard_t rm1 = 0xFFULL << ROW_IDX(n);
-    bitboard_t rm2 = ROW_MSK2[n];
-    if (rm1 != rm2)
-      std::cout << std::hex << rm1 << "," << rm2 << std::endl;
-    return (0xFFULL << ROW_IDX(n));
+    return ((bitrow_t)((b) >> ROW_IDX(n))); // & 0xFF));
   }
-*/
-  inline static bitrow_t    ROW_GET(bitboard_t b, int n){return ((bitrow_t)((b) >> ROW_IDX(n) & 0xFF));}
   inline static bitboard_t  ROW_CLR(bitboard_t& b, int n){return ((b) &= ~ROW_MSK[n]);}
   inline static bitboard_t  ROW_SET(bitboard_t& b, int n, bitrow_t r){return ((b) |= (bitboard_t) (r) << ROW_IDX(n));}
 
   // These macros manipulate columns in 0° rotated BitBoards and rows in 90°
   // rotated BitBoards.
-  inline static int         COL_IDX(int n){return (BIT_IDX(n, 0));}
+  inline static int         COL_IDX(int n){return (BIT_IDX[n][0]);}
   inline static bitboard_t  COL_MSK(int n){return (0x0101010101010101ULL << COL_IDX(n));}
   inline static bitboard_t  COL_CLR(bitboard_t& b, int n){return ((b) &= ~COL_MSK(n));}
 
   // These macros manipulate adjacent bits in 45° rotated BitBoards, which
   // correspond to diagonals in 0° and 90° rotated BitBoards.
   inline static int         DIAG_NUM(int x, int y, int a){return ((a) == L45 ? (x) + (y) : 7 - (x) + (y));}
-  inline static int         DIAG_LOC(int x, int y, int a){return (BIT_IDX(coord[MAP][a][x][y][X], coord[MAP][a][x][y][Y]) - diag_index[DIAG_NUM(x, y, a)]);}
+  inline static int         DIAG_LOC(int x, int y, int a){return (BIT_IDX[coord[MAP][a][x][y][X]][coord[MAP][a][x][y][Y]] - diag_index[DIAG_NUM(x, y, a)]);}
   inline static int         DIAG_LEN(int n){return (8 - abs(7 - (n)));}
   inline static int         DIAG_IDX(int n){return (diag_index[n]);}
   inline static bitboard_t  DIAG_MSK(int n){return ((bitboard_t) diag_mask[n] << diag_index[n]);}
