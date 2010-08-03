@@ -39,15 +39,14 @@ typedef uint8_t bitrow_t;
 class board_base
 {
   //precomputed single bit masks
-  static bitboard_t singleBitMasks[8][8]; 
+  static bitboard_t BIT_MSK[8][8]; 
 
 public:
   inline static int         BIT_IDX(int x, int y) {return ((y) << 3 | (x));}
-  inline static bitboard_t  BIT_MSK(int x, int y) {return singleBitMasks[x][y];}
   inline static bool        BIT_GET(bitboard_t b, int x, int y) {return ((b) >> BIT_IDX(x, y) & 1);}
-  inline static void        BIT_CLR(bitboard_t& b, unsigned x, unsigned y) {(b) &= ~BIT_MSK(x, y);}
-  inline static void        BIT_SET(bitboard_t& b, int x, int y) {(b) |= BIT_MSK(x, y);}
-  inline static bitboard_t  BIT_MOV(bitboard_t& b, int x1, int y1, int x2, int y2) {return ((b) ^= BIT_MSK(x1, y1) | BIT_MSK(x2, y2));}
+  inline static void        BIT_CLR(bitboard_t& b, unsigned x, unsigned y) {(b) &= ~BIT_MSK[x][y];}
+  inline static void        BIT_SET(bitboard_t& b, int x, int y) {(b) |= BIT_MSK[x][y];}
+  inline static bitboard_t  BIT_MOV(bitboard_t& b, int x1, int y1, int x2, int y2) {return ((b) ^= BIT_MSK[x1][y1] | BIT_MSK[x2][y2]);}
 
   inline static int         ROW_NUM(int x,int y,int a){return ((a) == ZERO ? (y) : (x));}
   inline static int         ROW_LOC(int x,int y,int a){return ((a) == ZERO ? (x) : 7 - (y));}
