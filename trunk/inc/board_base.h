@@ -38,10 +38,9 @@ typedef uint8_t bitrow_t;
 /// This class represents the board and generates moves.
 class board_base
 {
-  //precomputed single bit masks
-  static bitboard_t BIT_MSK[8][8]; 
-
 public:
+  static bitboard_t BIT_MSK[8][8]; 
+  static bitboard_t ROW_MSK[8];
   inline static int         BIT_IDX(int x, int y) {return ((y) << 3 | (x));}
   inline static bool        BIT_GET(bitboard_t b, int x, int y) {return ((b) >> BIT_IDX(x, y) & 1);}
   inline static void        BIT_CLR(bitboard_t& b, unsigned x, unsigned y) {(b) &= ~BIT_MSK[x][y];}
@@ -51,9 +50,18 @@ public:
   inline static int         ROW_NUM(int x,int y,int a){return ((a) == ZERO ? (y) : (x));}
   inline static int         ROW_LOC(int x,int y,int a){return ((a) == ZERO ? (x) : 7 - (y));}
   inline static int         ROW_IDX(int n){return (BIT_IDX(0, n));}
-  inline static bitboard_t  ROW_MSK(int n){return (0xFFULL << ROW_IDX(n));}
+/*
+  inline static bitboard_t  ROW_MSK(int n)
+  {
+    bitboard_t rm1 = 0xFFULL << ROW_IDX(n);
+    bitboard_t rm2 = ROW_MSK2[n];
+    if (rm1 != rm2)
+      std::cout << std::hex << rm1 << "," << rm2 << std::endl;
+    return (0xFFULL << ROW_IDX(n));
+  }
+*/
   inline static bitrow_t    ROW_GET(bitboard_t b, int n){return ((bitrow_t)((b) >> ROW_IDX(n) & 0xFF));}
-  inline static bitboard_t  ROW_CLR(bitboard_t& b, int n){return ((b) &= ~ROW_MSK(n));}
+  inline static bitboard_t  ROW_CLR(bitboard_t& b, int n){return ((b) &= ~ROW_MSK[n]);}
   inline static bitboard_t  ROW_SET(bitboard_t& b, int n, bitrow_t r){return ((b) |= (bitboard_t) (r) << ROW_IDX(n));}
 
   // These macros manipulate columns in 0° rotated BitBoards and rows in 90°
