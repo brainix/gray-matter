@@ -53,7 +53,7 @@
 
 //NOT a theoretical max, but should be sufficient for those
 //of us who actually try to win
-#define MAX_MOVES_PER_GAME 300  // only X moves per game
+#define MAX_MOVES_PER_GAME 500  // only X moves per game
 
 #define SPECIAL_SEARCH_DEPTH 5  // search X plys deeper for captures, etc. (odd number)
 #define R                    1  // Null move pruning depth reduction factor (in plies).
