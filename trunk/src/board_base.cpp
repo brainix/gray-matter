@@ -395,6 +395,8 @@ bool board_base::set_board_fen(string& fen)
     init_rotation();
     init_hash();
 
+    state.pieceCount = get_num_pieces(WHITE) + get_num_pieces(BLACK);
+
     // Sanity check the current state of the board resulting from the FEN
     // string.  For now, just make sure that both colors have one king each
     // and that the color off move isn't in check.
@@ -430,6 +432,7 @@ bool board_base::set_board_fen_error(string& fen, string reason, int x, int y)
     state.en_passant = -1;
     state.on_move = WHITE;
     state.fifty = 0;
+    state.pieceCount = 32;
     init_rotation();
     init_hash();
 
@@ -514,7 +517,8 @@ int board_base::get_status(bool mate_test)
             case STALEMATE: return STALEMATE;
             case CHECKMATE: return CHECKMATE;
         }
-    if (insufficient())
+    if (state.pieceCount < 5)
+      if (insufficient())
         return INSUFFICIENT;
     if (three())
         return THREE;
@@ -721,12 +725,13 @@ bool board_base::make(Move m)
               // The move is a capture.  Reset the 50 move rule counter.
               state.fifty = -1;
               retValue = true;
+              state.pieceCount--;
           }
       }
 
       // If we're moving a piece from one of our rooks' initial positions, then
       // make sure that we're no longer marked able to castle on that rook's side.
-      if ((m.x1 == 0 || m.x1 == 7) && (m.y1 == (ON_MOVE ? 7 : 0)))
+      if ((m.x1 == 0 || m.x1 == 7) && (m.y1 == (ON_MOVE ? 7 : 0)))// && state.castle[ON_MOVE][m.x1 == 7] == CAN_CASTLE)
       {
           state.castle[ON_MOVE][m.x1 == 7] = CANT_CASTLE;
           hash ^= key_castle[ON_MOVE][m.x1 == 7][CANT_CASTLE];
@@ -735,7 +740,7 @@ bool board_base::make(Move m)
       // If we're moving a piece to one of our opponent's rooks' initial
       // positions, then make sure that our opponent is no longer marked able to
       // castle on that rook's side.
-      if ((m.x2 == 0 || m.x2 == 7) && (m.y2 == (OFF_MOVE ? 7 : 0)) && state.castle[OFF_MOVE][m.x2 == 7] == CAN_CASTLE)
+      if ((m.x2 == 0 || m.x2 == 7) && (m.y2 == (OFF_MOVE ? 7 : 0)))// && state.castle[OFF_MOVE][m.x2 == 7] == CAN_CASTLE)
       {
           state.castle[OFF_MOVE][m.x2 == 7] = CANT_CASTLE;
           hash ^= key_castle[OFF_MOVE][m.x1 == 7][CANT_CASTLE];
@@ -794,7 +799,8 @@ bool board_base::make(Move m)
                   BIT_CLR(rotation[angle][OFF_MOVE], coord[MAP][angle][m.x2][m.y1][X], coord[MAP][angle][m.x2][m.y1][Y]);
               hash ^= key_piece[OFF_MOVE][PAWN][m.x2][m.y1];
               pawn_hash ^= key_piece[OFF_MOVE][PAWN][m.x2][m.y1];
-		      }
+              state.pieceCount--;
+           }
 
           // If we're advancing a pawn two squares, then mark it vulnerable to en
           // passant.
@@ -1242,6 +1248,7 @@ void board_base::init_state()
     state.en_passant = -1;
     state.on_move = WHITE;
     state.fifty = 0;
+    state.pieceCount = 32;
 }
 
 /*----------------------------------------------------------------------------*\
