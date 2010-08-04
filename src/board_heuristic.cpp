@@ -104,11 +104,11 @@ const value_t board_heuristic::value_position[SHAPES][8][8] =
 /// with pawns (of both colors) only on the queen side:
 const value_t board_heuristic::value_king_position[8][8] =
 {
-    /* A */ {-10,   0,  10,  20,  20,  20,  20, -10},
-    /* B */ {-10,   0,  10,  20,  40,  40,  20, -10},
-    /* C */ {-10,   0,  10,  20,  40,  40,  20, -10},
-    /* D */ {-10,   0,  10,  20,  40,  40,  20, -10},
-    /* E */ {-10,   0,  10,  10,  10,  10,  10, -10},
+    /* A */ { 10,  10,  10,  10,  10,  10,  10,  10},
+    /* B */ { 10,  10,  10,  10,  10,  10,  10,  10},
+    /* C */ { 20,  20,  20,  20,  20,  20,  20,  20},
+    /* D */ { 10,  10,  10,  10,  10,  10,  10,  10},
+    /* E */ {  0,   0,   0,   0,   0,   0,   0,   0},
     /* F */ {-10, -10, -10, -10, -10, -10, -10, -10},
     /* G */ {-20, -20, -20, -20, -20, -20, -20, -20},
     /* H */ {-40, -40, -40, -40, -40, -40, -40, -40}
@@ -218,8 +218,8 @@ value_t board_heuristic::evaluate() const
 
     value_t sum = 0;
 
-    if (!state.piece[ON_MOVE][KING])
-        return VALUE_ILLEGAL;
+    //if (!state.piece[ON_MOVE][KING])
+        //return VALUE_ILLEGAL;
 
     sum += evaluate_pawns();
     sum += evaluate_knights();
@@ -242,11 +242,10 @@ value_t board_heuristic::evaluate_pawns() const
 
     // If we've already evaluated this pawn structure, return our previous
     // evaluation.
-    if (pawn_table.probe(pawn_hash, &sum))
-        goto end;
-
-    for (int color = WHITE; color <= BLACK; color++)
+    if (!pawn_table.probe(pawn_hash, &sum))
     {
+      for (int color = WHITE; color <= BLACK; color++)
+      {
         sign = !color ? 1 : -1;
         bitboard_t b = state.piece[color][PAWN];
         int num_isolated = 0;
@@ -296,10 +295,11 @@ value_t board_heuristic::evaluate_pawns() const
 
         // Penalize isolated pawns.
         sum += sign * value_pawn_isolated[num_isolated];
-    }
+      } //end color
 
-    pawn_table.store(pawn_hash, sum);
-end:
+      pawn_table.store(pawn_hash, sum);
+    } //end table probe
+
     sign = !OFF_MOVE ? 1 : -1;
     return sign * sum;
 }
@@ -309,9 +309,6 @@ end:
 \*----------------------------------------------------------------------------*/
 value_t board_heuristic::evaluate_knights() const
 {
-
-///
-
     value_t sign, sum = 0;
     bitboard_t b;
 
