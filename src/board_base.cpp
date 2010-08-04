@@ -499,8 +499,8 @@ int board_base::get_status(bool mate_test)
   ///· illegal position
 
     // Is a king missing?
-    if (!state.piece[WHITE][KING] || !state.piece[BLACK][KING])
-        return ILLEGAL;
+    //if (!state.piece[WHITE][KING] || !state.piece[BLACK][KING])
+        //return ILLEGAL;
 
     // Are the kings attacking one other?
     //int n = FST(state.piece[WHITE][KING]);
@@ -508,8 +508,8 @@ int board_base::get_status(bool mate_test)
         //return ILLEGAL;
 
     //if the king on move is in check, then this position is illegal
-    if (check(state.piece[OFF_MOVE][KING], ON_MOVE))
-        return ILLEGAL;
+    //if (check(state.piece[OFF_MOVE][KING], ON_MOVE))
+        //return ILLEGAL;
 
     if (mate_test)
         switch (mate())

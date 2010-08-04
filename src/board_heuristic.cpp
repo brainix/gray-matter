@@ -384,8 +384,10 @@ value_t board_heuristic::evaluate_bishops() const
 
             // Reward bishops (over knights) during endgames with pawns on both
             // sides of the board.
-            int friendly_piece_count = count_64(ALL(state, color));
-            bool endgame = friendly_piece_count < 7;
+            //int friendly_piece_count = count_64(ALL(state, color));
+            bool endgame; // = friendly_piece_count < 7;
+            if (state.pieceCount < 7)
+              endgame = true;
             if (!endgame)
                 goto no_bishop_over_knight;
             enemy_bishop_present = (state.piece[!color][BISHOP]?true:false);
@@ -576,10 +578,15 @@ value_t board_heuristic::evaluate_kings() const
         {
             // There are pawns on both sides of the board.  The king should be
             // in the middle.
-            if (color == WHITE)
-              sum += sign * value_position[KING][x][y];
-            else
-              sum += sign * value_position[KING][7-x][7-y];
+            //if (color == WHITE)
+              //sum += sign * value_position[KING][x][y];
+            //else
+              //sum += sign * value_position[KING][7-x][7-y];
+
+            //NOTE: protonspring
+            //this seems to cause the king to wander towards the
+            //middle of the board, even in the middle of a heated battle
+
         }
         else if (pawns)
         {
@@ -594,10 +601,18 @@ value_t board_heuristic::evaluate_kings() const
               sum += sign * value_king_position[7-x][!color?y:7-y];
             }
         }
-        else  //there are no pawns left. . endgame likely
+
+        if (state.pieceCount < 7)
         {
             //middle of the board is better for end game
             sum += sign * value_king_middle[x][y];            
+
+            //but it is more important to push the other king
+            //to the edge if we can
+            int n = FST(state.piece[!color][KING]);
+            int x2 = n & 0x7;
+            int y2 = n >> 3;
+            sum += -2 * sign * value_king_middle[x2][y2];
         }
     }
     return sum;
